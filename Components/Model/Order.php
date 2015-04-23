@@ -1,0 +1,5 @@
+<?php
+
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base {
+
+}
