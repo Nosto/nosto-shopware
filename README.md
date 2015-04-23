@@ -1,0 +1,1 @@
+# nosto-shopware-plugin
