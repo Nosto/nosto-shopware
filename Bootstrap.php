@@ -255,7 +255,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view->addTemplateDir($this->Path() . 'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/embed.tpl');
 		$view->assign('nosto_account_name', $account->getName());
-		$view->assign('nosto_server_url', 'staging.nosto.com'); // todo: real server url
+		$view->assign('nosto_server_url', $this->getEnv('NOSTO_SERVER_URL', 'connect.nosto.com'));
 	}
 
 	/**
@@ -498,5 +498,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view->addTemplateDir($this->Path() . 'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/search/index.tpl');
 		$view->assign('nosto_search', $nosto_search);
+	}
+
+	/**
+	 * Returns environment variable by name.
+	 *
+	 * @param string $name the name of the env variable.
+	 * @param mixed $default the value to return if env variable is not found.
+	 * @return mixed the env variable.
+	 */
+	protected function getEnv($name, $default = false) {
+		return isset($_ENV[$name]) ? $_ENV[$name] : $default;
 	}
 }
