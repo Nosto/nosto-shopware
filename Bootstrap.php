@@ -203,8 +203,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			'controller' => 'NostoTagging',
 			'action'     => 'index',
 			'active'     => 1,
-//			'class'      => 'sprite-ui-scroll-pane-detail',
-//			'style'      => 'background-position: 5px 5px;'
+			'parent'	 => $this->Menu()->findOneBy('id', 23), // Configuration
+			'class'      => 'sprite-application-block'
 		));
 	}
 
@@ -244,12 +244,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		// todo: check if we have an account for the current shop
+		$shop = null; // todo: get active Shop
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		$account = $helper->findAccount($shop);
+		if (is_null($account) || !$account->isConnectedToNosto()) {
+			return;
+		}
 
 		$view = $controller->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/embed.tpl');
-		$view->assign('nosto_account_name', 'magento-760210c1'); // todo: real account
+		$view->assign('nosto_account_name', $account->getName());
 		$view->assign('nosto_server_url', 'staging.nosto.com'); // todo: real server url
 	}
 
@@ -274,7 +279,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		// todo: check if we have an account for the current shop
+		$shop = null; // todo: get active Shop
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		if (!$helper->accountExistsAndIsConnected($shop)) {
+			return;
+		}
 
 		$view = $controller->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
@@ -330,7 +339,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		// todo: check if we have an account for the current shop
+		$shop = null; // todo: get active Shop
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		if (!$helper->accountExistsAndIsConnected($shop)) {
+			return;
+		}
 
 		$nosto_customer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer();
 		$nosto_customer->loadData((int) Shopware()->Session()->sUserId);
@@ -361,7 +374,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		// todo: check if we have an account for the current shop
+		$shop = null; // todo: get active Shop
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		if (!$helper->accountExistsAndIsConnected($shop)) {
+			return;
+		}
 
 		$nosto_cart = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart();
 		$nosto_cart->loadData(Shopware()->Session()->sessionId);
@@ -391,7 +408,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		// todo: check if we have an account for the current shop
+		$shop = null; // todo: get active Shop
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		if (!$helper->accountExistsAndIsConnected($shop)) {
+			return;
+		}
 
 		$nosto_product = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 		$nosto_product->loadData((int) $controller->Request()->sArticle);
@@ -428,7 +449,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		// todo: check if we have an account for the current shop
+		$shop = null; // todo: get active Shop
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		if (!$helper->accountExistsAndIsConnected($shop)) {
+			return;
+		}
 
 		$nosto_category = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
 		$nosto_category->loadData((int) $controller->Request()->sCategory);
@@ -457,7 +482,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		// todo: check if we have an account for the current shop
+		$shop = null; // todo: get active Shop
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		if (!$helper->accountExistsAndIsConnected($shop)) {
+			return;
+		}
 
 		$nosto_search = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search();
 		$nosto_search->setSearchTerm($controller->Request()->sSearch);

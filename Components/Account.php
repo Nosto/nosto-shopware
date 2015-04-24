@@ -67,6 +67,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 	}
 
 	/**
+	 * Checks if a Nosto account exists for a Shop and that it is connected to Nosto.
+	 *
+	 * Connected here means that we have the API tokens exchanged during account creation or OAuth.
+	 *
+	 * @param \Shopware\Models\Shop\Shop $shop the shop to check the account for.
+	 * @return bool true if account exists and is connected to Nosto, false otherwise.
+	 */
+	public function accountExistsAndIsConnected(\Shopware\Models\Shop\Shop $shop) {
+		$account = $this->findAccount($shop);
+		return (!is_null($account) && $account->isConnectedToNosto());
+	}
+
+	/**
 	 * Builds the Nosto account administration iframe url and returns it.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.

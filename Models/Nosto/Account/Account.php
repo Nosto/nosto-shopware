@@ -110,7 +110,9 @@ class Account extends ModelEntity {
 	}
 
 	/**
-	 * @return \NostoAccount
+	 * Turns the account model into a NostoAccount object.
+	 *
+	 * @return \NostoAccount the object.
 	 */
 	public function toNostoAccount() {
 		$nosto_account = new \NostoAccount();
@@ -126,5 +128,14 @@ class Account extends ModelEntity {
 			}
 		}
 		return $nosto_account;
+	}
+
+	/**
+	 * Checks if the account is connected to Nosto.
+	 *
+	 * @return bool true if it is, false otherwise.
+	 */
+	public function isConnectedToNosto() {
+		return $this->toNostoAccount()->isConnectedToNosto();
 	}
 }
