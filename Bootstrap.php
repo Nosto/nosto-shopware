@@ -244,7 +244,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$shop = null; // todo: get active Shop
+		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$account = $helper->findAccount($shop);
 		if (is_null($account) || !$account->isConnectedToNosto()) {
@@ -279,7 +279,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$shop = null; // todo: get active Shop
+		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		if (!$helper->accountExistsAndIsConnected($shop)) {
 			return;
@@ -339,7 +339,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$shop = null; // todo: get active Shop
+		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		if (!$helper->accountExistsAndIsConnected($shop)) {
 			return;
@@ -374,7 +374,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$shop = null; // todo: get active Shop
+		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		if (!$helper->accountExistsAndIsConnected($shop)) {
 			return;
@@ -408,7 +408,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$shop = null; // todo: get active Shop
+		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		if (!$helper->accountExistsAndIsConnected($shop)) {
 			return;
@@ -449,7 +449,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$shop = null; // todo: get active Shop
+		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		if (!$helper->accountExistsAndIsConnected($shop)) {
 			return;
@@ -482,7 +482,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$shop = null; // todo: get active Shop
+		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		if (!$helper->accountExistsAndIsConnected($shop)) {
 			return;

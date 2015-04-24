@@ -30,9 +30,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 * ]
 	 */
 	public function getAccountsAction() {
-
-		// todo: this action seems to take a while, can we speed it up?
-
 		/** @var \Shopware\Models\Shop\Shop[] $result */
 		$result = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop')->findAll();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
