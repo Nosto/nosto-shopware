@@ -18,8 +18,9 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
                 title: account.get('shopName'),
                 xtype: 'component',
                 autoEl: {
-                    tag: 'iframe',
-                    src: account.get('url')
+                    'tag': 'iframe',
+                    'data-shopId': account.get('shopId'),
+                    'src': account.get('url')
                 },
                 shopId: account.get('shopId')
             });
@@ -45,7 +46,14 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
     },
 
     reloadIframe: function (account) {
-        var me = this;
-        // todo: find <iframe> in current tab and replace "src" with account.get('url')
+        var me = this,
+            elements;
+
+        elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
+        if (typeof elements[0] !== 'undefined') {
+            elements[0].src = account.get('url');
+        } else {
+            throw new Error('Nosto: failed to re-load iframe for shop #' + account.get('shopId'));
+        }
     }
 });

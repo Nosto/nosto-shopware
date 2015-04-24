@@ -1,9 +1,17 @@
 <?php
 
 require_once 'vendor/nosto/php-sdk/src/config.inc.php';
+require_once 'Models/Nosto/Account/Account.php';
 
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
+	/**
+	 * @inheritdoc
+	 */
+    public function afterInit() {
+        $this->registerCustomModels();
+    }
+
 	/**
 	 * @inheritdoc
 	 */
@@ -55,6 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function install()
 	{
+		$this->createTables();
 		$this->addConfiguration();
 		$this->registerEvents();
 		return true;
@@ -165,6 +174,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		$this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
 		return $this->Path() . '/Controllers/backend/NostoTagging.php';
+	}
+
+	/**
+	 * Creates needed db tables used by the plugin models.
+	 */
+	protected function createTables() {
+		$this->registerCustomModels();
+		$model_manager = Shopware()->Models();
+       	$schematic_tool = new Doctrine\ORM\Tools\SchemaTool($model_manager);
+		$schematic_tool->createSchema(
+			array(
+				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account')
+			)
+       );
 	}
 
 	/**

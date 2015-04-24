@@ -41,15 +41,21 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             }
             switch (data.type) {
                 case 'newAccount':
-                    // todo: handle errors.
-                    account.save();
-                    me.mainWindow.reloadIframe(account);
+                    account.save({
+                        success: function(record) {
+                            // todo: figure out of to get the account data binding to work.
+                            me.mainWindow.reloadIframe(record);
+                        }
+                    });
                     break;
 
                 case 'removeAccount':
-                    // todo: handle errors.
-                    account.destroy();
-                    me.mainWindow.reloadIframe(account);
+                    account.destroy({
+                        success: function(record) {
+                            // todo: figure out of to get the account data binding to work.
+                            me.mainWindow.reloadIframe(record);
+                        }
+                    });
                     break;
 
                 case 'connectAccount':

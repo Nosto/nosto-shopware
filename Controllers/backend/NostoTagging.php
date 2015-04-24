@@ -30,19 +30,25 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 * ]
 	 */
 	public function getAccountsAction() {
+
+		// todo: this action seems to take a while, can we speed it up?
+
 		/** @var \Shopware\Models\Shop\Shop[] $result */
 		$result = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop')->findAll();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$data = array();
 		foreach ($result as $shop) {
 			$account = $helper->findAccount($shop);
-			$data[] = array(
-				'id' => !is_null($account) ? $account->getId() : null,
-				'name' => !is_null($account) ? $account->getName() : null,
-				'url' => $helper->buildAccountIframeUrl($account),
+			$account_data = array(
+				'url' => $helper->buildAccountIframeUrl($shop, $account),
 				'shopId' => $shop->getId(),
 				'shopName' => $shop->getName(),
 			);
+			if (!is_null($account)) {
+				$account_data['id'] = $account->getId();
+				$account_data['name'] = $account->getName();
+			}
+			$data[] = $account_data;
 		}
 
 		$this->View()->assign(array('success' => true, 'data' => $data, 'total' => count($data)));
@@ -60,33 +66,72 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		/** @var \Shopware\Models\Shop\Shop $shop */
 		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
 
-		$data = array(
-			'id' => null,
-			'name' => null,
-			'url' => null,
-			'shopId' => $shop->getId(),
-			'shopName' => $shop->getName(),
-		);
-
-		try {
-			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-			$account = $helper->createAccount($shop, $email);
-			Shopware()->Models()->persist($account);
-			$data['id'] = $account->getId();
-			$data['name'] = $account->getName();
-			$data['url'] = $helper->buildAccountIframeUrl(
-				$account,
-				array(
-					'message_type' => NostoMessage::TYPE_SUCCESS,
-					'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
-				)
-			);
-		} catch (NostoException $e) {
-			var_dump($e);die;
-			// todo: log error
+		if (!is_null($shop)) {
+			try {
+				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+				$account = $helper->createAccount($shop, $email);
+				Shopware()->Models()->persist($account);
+				Shopware()->Models()->flush($account);
+				$data = array(
+					'id' => $account->getId(),
+					'name' => $account->getName(),
+					'url' => $helper->buildAccountIframeUrl(
+							$shop,
+							$account,
+							array(
+								'message_type' => NostoMessage::TYPE_SUCCESS,
+								'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
+							)
+						),
+					'shopId' => $shop->getId(),
+					'shopName' => $shop->getName(),
+				);
+				$this->View()->assign(array('success' => true, 'data' => array($data)));
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
+			}
 		}
 
-		$this->View()->assign(array('success' => true, 'data' => $data));
+		$this->View()->assign(array('success' => false));
+	}
+
+	/**
+	 * Ajax action for deleting a Nosto account for a Shop.
+	 *
+	 * This action should only be accessed by the Account model in the client side application.
+	 */
+	public function deleteAccountAction() {
+		$account_id = $this->Request()->getParam('id', null);
+		$shop_id = $this->Request()->getParam('shopId', null);
+
+		/** @var \Shopware\CustomModels\Nosto\Account\Account $account */
+		$account = Shopware()->Models()->find('\Shopware\CustomModels\Nosto\Account\Account', $account_id);
+		/** @var \Shopware\Models\Shop\Shop $shop */
+		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
+
+		if (!is_null($account) && !is_null($shop)) {
+			try {
+				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+				$helper->removeAccount($account);
+				$data = array(
+					'url' => $helper->buildAccountIframeUrl(
+							$shop,
+							null,
+							array(
+								'message_type' => NostoMessage::TYPE_SUCCESS,
+								'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
+							)
+						),
+					'shopId' => $shop->getId(),
+					'shopName' => $shop->getName(),
+				);
+				$this->View()->assign(array('success' => true, 'data' => array($data)));
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
+			}
+		}
+
+		$this->View()->assign(array('success' => false));
 	}
 
 	/**
@@ -96,16 +141,21 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 */
 	public function connectAccountAction() {
 		$shop_id = $this->Request()->getParam('shopId', null);
+
 		/** @var \Shopware\Models\Shop\Shop $shop */
 		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
 
-		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
-		$meta->loadData($shop);
-		$client = new NostoOAuthClient($meta);
-		$data = array(
-			'redirect_url' => $client->getAuthorizationUrl(),
-		);
+		if (!is_null($shop)) {
+			$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
+			$meta->loadData($shop);
+			$client = new NostoOAuthClient($meta);
+			$data = array(
+				'redirect_url' => $client->getAuthorizationUrl(),
+			);
 
-		$this->View()->assign(array('success' => true, 'data' => $data));
+			$this->View()->assign(array('success' => true, 'data' => $data));
+		} else {
+			$this->View()->assign(array('success' => false));
+		}
 	}
 }

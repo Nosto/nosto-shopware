@@ -1,5 +1,6 @@
 Ext.define('Shopware.apps.NostoTagging.model.Account', {
     extend: 'Ext.data.Model',
+    idProperty: 'id',
     fields:[
         { name:'id', type:'int' },
         { name:'name', type:'string' },
@@ -10,10 +11,9 @@ Ext.define('Shopware.apps.NostoTagging.model.Account', {
     proxy: {
         type: 'ajax',
         api: {
-           // todo: how is this chosen??
             create: '{url action=createAccount}',
-//            read : '{url action=getAccount}',
-            update: '{url action=createAccount}'
+            update: '{url action=createAccount}',
+            destroy: '{url action=deleteAccount}'
         },
         reader: {
             idProperty : 'id',

@@ -2,10 +2,14 @@
 
 class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 	/**
-	 * @param \Shopware\Models\Shop\Shop $shop
-	 * @param null $email
-	 * @return \Shopware\Plugins\Frontend\NostoTagging\Models\Account
-	 * @throws NostoException
+	 * Creates a new Nosto account for the given shop.
+	 *
+	 * Note that the account is not saved anywhere and it is up to the caller to handle it.
+	 *
+	 * @param \Shopware\Models\Shop\Shop $shop the shop to create the account for.
+	 * @param string|null $email (optional) the account owner email if different than the active admin user.
+	 * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
+	 * @throws NostoException if the account cannot be created for any reason.
 	 */
 	public function createAccount(\Shopware\Models\Shop\Shop $shop, $email = null) {
 		$account = $this->findAccount($shop);
@@ -15,11 +19,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 
 		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account();
 		$meta->loadData($shop);
-		//$meta->getOwner()->setEmail($email); // todo: validate email
+		$validator = new Zend_Validate_EmailAddress();
+		if ($validator->isValid($email)) {
+			$meta->getOwner()->setEmail($email);
+		}
 
 		$nosto_account = NostoAccount::create($meta);
 
-		$account = new \Shopware\Plugins\Frontend\NostoTagging\Models\Account();
+		$account = new \Shopware\CustomModels\Nosto\Account\Account();
 		$account->setShopId($shop->getId());
 		$account->setName($nosto_account->getName());
 		$data = array('apiTokens' => array());
@@ -28,35 +35,53 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 		}
 		$account->setData($data);
 
+		// todo: validate model.
+
 		return $account;
 	}
 
 	/**
-	 * @param \Shopware\Models\Shop\Shop $shop
-	 * @return \Shopware\Plugins\Frontend\NostoTagging\Models\Account
+	 * Removes the account and tells Nosto about it.
+	 *
+	 * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to remove.
 	 */
-	public function findAccount(\Shopware\Models\Shop\Shop $shop) {
-		// todo: implement
-		/** @var \Shopware\Plugins\Frontend\NostoTagging\Models\Account $account */
-		/*$account = Shopware()
-			->Models()
-			->getRepository('\Shopware\Plugins\Frontend\NostoTagging\Models\Account')
-			->findOneBy(array('shop_id' => $shop->getId()));*/
-		//var_dump($account);die;
-		return null;
+	public function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account) {
+		$nosto_account = $account->toNostoAccount();
+		Shopware()->Models()->remove($account);
+		Shopware()->Models()->flush();
+		// Notify Nosto that the account was deleted.
+		$nosto_account->delete();
 	}
 
 	/**
-	 * @param \Shopware\Plugins\Frontend\NostoTagging\Models\Account|null $account
-	 * @param array $params
-	 * @return string
+	 * Finds a Nosto account for the given shop and returns it.
+	 *
+	 * @param \Shopware\Models\Shop\Shop $shop the shop to get the account for.
+	 * @return \Shopware\CustomModels\Nosto\Account\Account the account or null if not found.
 	 */
-	public function buildAccountIframeUrl(\Shopware\Plugins\Frontend\NostoTagging\Models\Account $account = null, array $params = array()) {
-		// todo: implement
-//		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Account_Iframe();
-//		$meta->loadData($account);
-//		return Nosto::helper('iframe')->getUrl($meta, $account->convertIntoNostoAccount(), $params);
+	public function findAccount(\Shopware\Models\Shop\Shop $shop) {
+		return Shopware()
+			->Models()
+			->getRepository('\Shopware\CustomModels\Nosto\Account\Account')
+			->findOneBy(array('shop_id' => $shop->getId()));
+	}
 
-		return 'https://staging.nosto.com/hub/magento/install?email=christoffer.lindqvist@nosto.com';
+	/**
+	 * Builds the Nosto account administration iframe url and returns it.
+	 *
+	 * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
+	 * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url for or null if account does not exist.
+	 * @param array $params (optional) parameters for the url.
+	 * @return string the url.
+	 */
+	public function buildAccountIframeUrl(\Shopware\Models\Shop\Shop $shop, \Shopware\CustomModels\Nosto\Account\Account $account = null, array $params = array()) {
+		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
+		$meta->loadData($shop);
+		if (!is_null($account)) {
+			$nosto_account = $account->toNostoAccount();
+		} else {
+			$nosto_account = null;
+		}
+		return Nosto::helper('iframe')->getUrl($meta, $nosto_account, $params);
 	}
 }

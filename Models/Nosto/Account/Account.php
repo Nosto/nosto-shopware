@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopware\Plugins\Frontend\NostoTagging\Models;
+namespace Shopware\CustomModels\Nosto\Account;
 
 use Symfony\Component\Validator\Constraints as Assert,
 	Shopware\Components\Model\ModelEntity,
@@ -107,5 +107,24 @@ class Account extends ModelEntity {
 	public function getData()
 	{
 		return json_decode($this->data, true);
+	}
+
+	/**
+	 * @return \NostoAccount
+	 */
+	public function toNostoAccount() {
+		$nosto_account = new \NostoAccount();
+		$nosto_account->name = $this->getName();
+		foreach ($this->getData() as $key => $items) {
+			if ($key === 'apiTokens') {
+				foreach ($items as $token_name => $token_value) {
+					$token = new \NostoApiToken();
+					$token->name = $token_name;
+					$token->value = $token_value;
+					$nosto_account->tokens[] = $token;
+				}
+			}
+		}
+		return $nosto_account;
 	}
 }
