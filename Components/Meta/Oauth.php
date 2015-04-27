@@ -15,7 +15,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 * @param \Shopware\Models\Shop\Shop $shop
 	 */
 	public function loadData(\Shopware\Models\Shop\Shop $shop) {
-		$this->_redirect_url = 'http://localhost:1337/shopware/4.3.4/'; // todo: build url somehow.
+		$this->_redirect_url = Shopware()->Front()->Router()->assemble(array(
+			'module' => 'frontend',
+			'controller' => 'NostoTagging',
+			'action' => 'oauth'
+		));
 		$this->_language_code = strtolower(substr(Shopware()->Auth()->getIdentity()->locale->getLocale(), 0, 2));
 	}
 

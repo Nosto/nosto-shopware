@@ -55,7 +55,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 		// todo: get name from "basic information"
 		$this->_title = Shopware()->App() . ' - ' . $shop->getName();
 		$this->_name = substr(sha1(rand()), 0, 8);
-		$this->_front_page_url = 'http://localhost:1337/shopware/4.3.4/'; // todo: get shop url from somewhere
+		$this->_front_page_url = Shopware()->Front()->Router()->assemble(array(
+			'module' => 'frontend',
+			'controller' => 'index',
+		));
 		$this->_currency_code = strtoupper($shop->getCurrency()->getCurrency());
 		$this->_language_code = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
 		$this->_owner_language_code = strtolower(substr(Shopware()->Auth()->getIdentity()->locale->getLocale(), 0, 2));

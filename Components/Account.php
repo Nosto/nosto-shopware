@@ -25,7 +25,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 		}
 
 		$nosto_account = NostoAccount::create($meta);
+		$account = $this->convertAccount($nosto_account, $shop);
 
+		return $account;
+	}
+
+	/**
+	 * Converts a `NostoAccount` into a `\Shopware\CustomModels\Nosto\Account\Account` model.
+	 *
+	 * @param NostoAccount $nosto_account the account to convert.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the account belongs to.
+	 * @return \Shopware\CustomModels\Nosto\Account\Account the account model.
+	 */
+	public function convertAccount(\NostoAccount $nosto_account, \Shopware\Models\Shop\Shop $shop) {
 		$account = new \Shopware\CustomModels\Nosto\Account\Account();
 		$account->setShopId($shop->getId());
 		$account->setName($nosto_account->getName());
@@ -34,9 +46,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 			$data['apiTokens'][$token->name] = $token->value;
 		}
 		$account->setData($data);
-
 		// todo: validate model.
-
 		return $account;
 	}
 

@@ -177,6 +177,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Returns the path to the frontend controller file requested by event `Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging`.
+	 *
+	 * @param Enlight_Event_EventArgs $args the event arguments.
+	 * @return string the path to the controller file.
+	 */
+	public function getFrontendController(Enlight_Event_EventArgs $args) {
+		$this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
+		return $this->Path() . '/Controllers/frontend/NostoTagging.php';
+	}
+
+	/**
 	 * Creates needed db tables used by the plugin models.
 	 */
 	protected function createTables() {
@@ -195,8 +206,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	protected function addConfiguration()
 	{
-		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'getBackendController');
-
 		// todo: icon & position
 		$this->createMenuItem(array(
 			'label'      => 'Nosto', // todo: does not work
@@ -217,6 +226,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	protected function registerEvents()
 	{
+		// Register controller events.
+		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'getBackendController');
+		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'getFrontendController');
+		// Register tagging/recommendation events.
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch', 'onPostDispatch');
 		// todo: switch to controller action specific events?
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Index', 'onPostDispatchIndex');
