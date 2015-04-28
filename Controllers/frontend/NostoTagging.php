@@ -25,7 +25,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				$meta->loadData($shop);
 				$nosto_account = NostoAccount::syncFromNosto($meta, $code);
 
-				$account = $helper->convertAccount($nosto_account, $shop);
+				$account = $helper->convertToShopwareAccount($nosto_account, $shop);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
 
@@ -120,7 +120,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$account = $helper->findAccount($shop);
 		if (!is_null($account)) {
-			$cipher_text = NostoExporter::export($account->toNostoAccount(), $collection);
+			$cipher_text = NostoExporter::export($helper->convertToNostoAccount($account), $collection);
 			echo $cipher_text;
 		}
 		die();

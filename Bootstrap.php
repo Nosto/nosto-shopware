@@ -15,8 +15,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	/**
 	 * @inheritdoc
 	 */
-	public function getCapabilities()
-	{
+	public function getCapabilities() {
 		return array(
 			'install' => true,
 			'update' => true,
@@ -27,24 +26,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	/**
 	 * @inheritdoc
 	 */
-	public function getLabel()
-	{
+	public function getLabel() {
 		return 'Personalization for Shopware'; // todo: translate?
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getVersion()
-	{
+	public function getVersion() {
 		return '1.0.0';
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getInfo()
-	{
+	public function getInfo() {
 		return array(
 			'version' => $this->getVersion(),
 			'label' => $this->getLabel(),
@@ -61,8 +57,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	/**
 	 * @inheritdoc
 	 */
-	public function install()
-	{
+	public function install() {
 		$this->createTables();
 		$this->addConfiguration();
 		$this->registerEvents();
@@ -72,16 +67,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	/**
 	 * @inheritdoc
 	 */
-	public function uninstall()
-	{
+	public function uninstall() {
+		//$this->dropTables();
 		return true;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function update($version)
-	{
+	public function update($version) {
 		return true;
 	}
 
@@ -106,9 +100,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchIndex(Enlight_Controller_ActionEventArgs $args)
-	{
-		$this->addRecommendationPlaceholders($args, 'index', 'index', 'index');
+	public function onPostDispatchIndex(Enlight_Controller_ActionEventArgs $args) {
+		$this->addRecommendationPlaceholders($args, 'index', 'index', 'home');
 	}
 
 	/**
@@ -118,9 +111,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchDetail(Enlight_Controller_ActionEventArgs $args)
-	{
-		$this->addRecommendationPlaceholders($args, 'detail', 'index', 'index');
+	public function onPostDispatchDetail(Enlight_Controller_ActionEventArgs $args) {
+		$this->addRecommendationPlaceholders($args, 'detail', 'index', 'product');
 		$this->addProductTagging($args);
 	}
 
@@ -131,9 +123,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchListing(Enlight_Controller_ActionEventArgs $args)
-	{
-		$this->addRecommendationPlaceholders($args, 'listing', 'index', 'index');
+	public function onPostDispatchListing(Enlight_Controller_ActionEventArgs $args) {
+		$this->addRecommendationPlaceholders($args, 'listing', 'index', 'category');
 		$this->addCategoryTagging($args);
 	}
 
@@ -144,9 +135,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchCheckout(Enlight_Controller_ActionEventArgs $args)
-	{
+	public function onPostDispatchCheckout(Enlight_Controller_ActionEventArgs $args) {
 		$this->addRecommendationPlaceholders($args, 'checkout', 'cart', 'cart');
+		$this->addOrderTagging($args);
 	}
 
 	/**
@@ -156,47 +147,103 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchSearch(Enlight_Controller_ActionEventArgs $args)
-	{
-		$this->addRecommendationPlaceholders($args, 'search', 'defaultSearch', 'index');
+	public function onPostDispatchSearch(Enlight_Controller_ActionEventArgs $args) {
+		$this->addRecommendationPlaceholders($args, 'search', 'defaultSearch', 'search');
 		$this->addSearchTagging($args);
 	}
 
 	/**
-	 * Returns the path to the backend controller file requested by event `Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging`.
+	 * Event handler for the `Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging` event.
+	 *
+	 * Returns the path to the backend controller file.
 	 *
 	 * @param Enlight_Event_EventArgs $args the event arguments.
 	 * @return string the path to the controller file.
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::addConfiguration
 	 */
-	public function getBackendController(Enlight_Event_EventArgs $args)
-	{
+	public function onGetBackendController(Enlight_Event_EventArgs $args) {
 		$this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
 		return $this->Path() . '/Controllers/backend/NostoTagging.php';
 	}
 
 	/**
-	 * Returns the path to the frontend controller file requested by event `Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging`.
+	 * Event handler for the `Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging` event.
+	 *
+	 * Returns the path to the frontend controller file.
 	 *
 	 * @param Enlight_Event_EventArgs $args the event arguments.
 	 * @return string the path to the controller file.
 	 */
-	public function getFrontendController(Enlight_Event_EventArgs $args) {
+	public function onGetFrontendController(Enlight_Event_EventArgs $args) {
 		$this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
 		return $this->Path() . '/Controllers/frontend/NostoTagging.php';
+	}
+
+	/**
+	 * Hook handler for `sOrder::sSaveOrder::after`.
+	 *
+	 * Sends an API order confirmation to Nosto.
+	 *
+	 * @param Enlight_Hook_HookArgs $args the hook arguments.
+	 */
+	public function onOrderSSaveOrderAfter(Enlight_Hook_HookArgs $args) {
+		/** @var sOrder $sOrder */
+		$sOrder = $args->getSubject();
+		$this->confirmOrder($sOrder->sOrderNumber);
+	}
+
+	/**
+	 * Event handler for the `Shopware\Models\Article\Article::postPersist` event.
+	 *
+	 * Sends a re-crawl API call to Nosto for the added article.
+	 *
+	 * @param Enlight_Event_EventArgs $args
+	 */
+	public function onPostPersistArticle(Enlight_Event_EventArgs $args) {
+		/** @var Shopware\Models\Article\Article $model */
+		$model = $args->get('model');
+		$this->reCrawlProduct($model);
+	}
+
+	/**
+	 * Event handler for the `Shopware\Models\Article\Article::postUpdate` event.
+	 *
+	 * Sends a re-crawl API call to Nosto for the updated article.
+	 *
+	 * @param Enlight_Event_EventArgs $args
+	 */
+	public function onPostUpdateArticle(Enlight_Event_EventArgs $args) {
+		/** @var Shopware\Models\Article\Article $model */
+		$model = $args->get('model');
+		$this->reCrawlProduct($model);
+	}
+
+	/**
+	 * Event handler for the `Shopware\Models\Article\Article::postRemove` event.
+	 *
+	 * Sends a re-crawl API call to Nosto for the removed article.
+	 *
+	 * @param Enlight_Event_EventArgs $args
+	 */
+	public function onPostRemoveArticle(Enlight_Event_EventArgs $args) {
+		/** @var Shopware\Models\Article\Article $model */
+		$model = $args->get('model');
+		$this->reCrawlProduct($model);
 	}
 
 	/**
 	 * Creates needed db tables used by the plugin models.
 	 */
 	protected function createTables() {
+		return; // todo: remove once uninstall is implemented
 		$this->registerCustomModels();
 		$model_manager = Shopware()->Models();
        	$schematic_tool = new Doctrine\ORM\Tools\SchemaTool($model_manager);
 		$schematic_tool->createSchema(
 			array(
-				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account')
+				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
+//				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Customer\Customer'), // todo: uncomment once implemented
 			)
        );
 	}
@@ -204,9 +251,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	/**
 	 * Adds the plugin backend configuration menu item.
 	 */
-	protected function addConfiguration()
-	{
-		// todo: icon & position
+	protected function addConfiguration() {
+		// todo: icon, position and label
 		$this->createMenuItem(array(
 			'label'      => 'Nosto', // todo: does not work
 			'controller' => 'NostoTagging',
@@ -224,20 +270,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
-	protected function registerEvents()
-	{
-		// Register controller events.
-		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'getBackendController');
-		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'getFrontendController');
+	protected function registerEvents() {
+		// Register own controller events.
+		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'onGetBackendController');
+		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'onGetFrontendController');
 		// Register tagging/recommendation events.
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch', 'onPostDispatch');
-		// todo: switch to controller action specific events?
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Index', 'onPostDispatchIndex');
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Detail', 'onPostDispatchDetail');
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Listing', 'onPostDispatchListing');
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Checkout', 'onPostDispatchCheckout');
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Search', 'onPostDispatchSearch');
-		// todo: order "thank you" page
+		// Register order confirmation event.
+		$this->subscribeEvent('sOrder::sSaveOrder::after', 'onOrderSSaveOrderAfter');
+		// Register product re-crawl events.
+		$this->subscribeEvent('Shopware\Models\Article\Article::postPersist', 'onPostPersistArticle');
+		$this->subscribeEvent('Shopware\Models\Article\Article::postUpdate', 'onPostUpdateArticle');
+		$this->subscribeEvent('Shopware\Models\Article\Article::postRemove', 'onPostRemoveArticle');
 	}
 
 	/**
@@ -250,25 +299,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatch
 	 */
 	protected function addEmbedScript(Enlight_Controller_ActionEventArgs $args) {
-		$controller = $args->getSubject();
-		$request = $controller->Request();
-		$response = $controller->Response();
-		if(!$request->isDispatched() || $response->isException() || $request->getModuleName() != 'frontend') {
+		if(!$args->getSubject()->Request()->isDispatched()
+			|| $args->getSubject()->Response()->isException()
+			|| $args->getSubject()->Request()->getModuleName() != 'frontend'
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
 		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$account = $helper->findAccount($shop);
-		if (is_null($account) || !$account->isConnectedToNosto()) {
-			return;
-		}
+		$nosto_account = $helper->convertToNostoAccount($helper->findAccount($shop));
 
-		$view = $controller->View();
+		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/embed.tpl');
-		$view->assign('nosto_account_name', $account->getName());
-		$view->assign('nosto_server_url', $this->getEnv('NOSTO_SERVER_URL', 'connect.nosto.com'));
+		$view->assign('nosto_account_name', $nosto_account->getName());
+		$view->assign('nosto_server_url', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
 	}
 
 	/**
@@ -285,22 +331,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchCheckout
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchSearch
 	 */
-	protected function addRecommendationPlaceholders(Enlight_Controller_ActionEventArgs $args, $ctrl, $action, $tpl)
-	{
-		$controller = $args->getSubject();
-		if (!$this->validateEvent($controller, 'frontend', $ctrl, $action)) {
+	protected function addRecommendationPlaceholders(Enlight_Controller_ActionEventArgs $args, $ctrl, $action, $tpl) {
+		if (!$this->validateEvent($args->getSubject(), 'frontend', $ctrl, $action)
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
-		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		if (!$helper->accountExistsAndIsConnected($shop)) {
-			return;
-		}
-
-		$view = $controller->View();
+		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
-		$view->extendsTemplate('frontend/plugins/nosto_tagging/recommendations/'.$ctrl.'/'.$tpl.'.tpl');
+		$view->extendsTemplate('frontend/plugins/nosto_tagging/recommendations/'.$tpl.'.tpl');
 	}
 
 	/**
@@ -316,8 +355,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::addProductTagging
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::addCategoryTagging
 	 */
-	protected function validateEvent($controller, $module, $ctrl, $action)
-	{
+	protected function validateEvent($controller, $module, $ctrl, $action) {
 		$request = $controller->Request();
 		$response = $controller->Response();
 		$view = $controller->View();
@@ -345,16 +383,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatch
 	 */
 	protected function addCustomerTagging(Enlight_Controller_ActionEventArgs $args) {
-		$controller = $args->getSubject();
-		$request = $controller->Request();
-		$response = $controller->Response();
-		if(!$request->isDispatched() || $response->isException() || $request->getModuleName() != 'frontend') {
-			return;
-		}
-
-		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		if (!$helper->accountExistsAndIsConnected($shop)) {
+		if(!$args->getSubject()->Request()->isDispatched()
+			|| $args->getSubject()->Response()->isException()
+			|| $args->getSubject()->Request()->getModuleName() != 'frontend'
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
@@ -364,7 +396,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$view = $controller->View();
+		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/customer.tpl');
 		$view->assign('nosto_customer', $nosto_customer);
@@ -380,16 +412,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatch
 	 */
 	protected function addCartTagging(Enlight_Controller_ActionEventArgs $args) {
-		$controller = $args->getSubject();
-		$request = $controller->Request();
-		$response = $controller->Response();
-		if(!$request->isDispatched() || $response->isException() || $request->getModuleName() != 'frontend') {
-			return;
-		}
-
-		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		if (!$helper->accountExistsAndIsConnected($shop)) {
+		if(!$args->getSubject()->Request()->isDispatched()
+			|| $args->getSubject()->Response()->isException()
+			|| $args->getSubject()->Request()->getModuleName() != 'frontend'
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
@@ -399,7 +425,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
-		$view = $controller->View();
+		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/cart.tpl');
 		$view->assign('nosto_cart', $nosto_cart);
@@ -414,32 +440,25 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchDetail
 	 */
-	protected function addProductTagging(Enlight_Controller_ActionEventArgs $args)
-	{
-		$controller = $args->getSubject();
-		if (!$this->validateEvent($controller, 'frontend', 'detail', 'index')) {
-			return;
-		}
-
-		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		if (!$helper->accountExistsAndIsConnected($shop)) {
+	protected function addProductTagging(Enlight_Controller_ActionEventArgs $args) {
+		if (!$this->validateEvent($args->getSubject(), 'frontend', 'detail', 'index')
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
 		$nosto_product = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-		$nosto_product->loadData((int) $controller->Request()->sArticle);
+		$nosto_product->loadData((int) $args->getSubject()->Request()->sArticle);
 		if (!$nosto_product->validate()) {
 			return;
 		}
 
-		$view = $controller->View();
+		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
-		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/detail/index.tpl');
+		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/product.tpl');
 		$view->assign('nosto_product', $nosto_product);
 
 		$nosto_category = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
-		$nosto_category->loadData((int) $controller->Request()->sCategory);
+		$nosto_category->loadData((int) $args->getSubject()->Request()->sCategory);
 		if (!$nosto_category->validate()) {
 			return;
 		}
@@ -457,26 +476,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchListing
 	 */
 	protected function addCategoryTagging(Enlight_Controller_ActionEventArgs $args) {
-		$controller = $args->getSubject();
-		if (!$this->validateEvent($controller, 'frontend', 'listing', 'index')) {
-			return;
-		}
-
-		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		if (!$helper->accountExistsAndIsConnected($shop)) {
+		if (!$this->validateEvent($args->getSubject(), 'frontend', 'listing', 'index')
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
 		$nosto_category = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
-		$nosto_category->loadData((int) $controller->Request()->sCategory);
+		$nosto_category->loadData((int) $args->getSubject()->Request()->sCategory);
 		if (!$nosto_category->validate()) {
 			return;
 		}
 
-		$view = $controller->View();
+		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
-		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/listing/index.tpl');
+		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/category.tpl');
 		$view->assign('nosto_category', $nosto_category);
 	}
 
@@ -490,37 +503,115 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchSearch
 	 */
 	protected function addSearchTagging(Enlight_Controller_ActionEventArgs $args) {
-		$controller = $args->getSubject();
-		if (!$this->validateEvent($controller, 'frontend', 'search', 'defaultSearch')) {
-			return;
-		}
-
-		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		if (!$helper->accountExistsAndIsConnected($shop)) {
+		if (!$this->validateEvent($args->getSubject(), 'frontend', 'search', 'defaultSearch')
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
 		$nosto_search = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search();
-		$nosto_search->setSearchTerm($controller->Request()->sSearch);
+		$nosto_search->setSearchTerm($args->getSubject()->Request()->sSearch);
 		if (!$nosto_search->validate()) {
 			return;
 		}
 
-		$view = $controller->View();
+		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path() . 'Views/');
-		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/search/index.tpl');
+		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/search.tpl');
 		$view->assign('nosto_search', $nosto_search);
 	}
 
 	/**
-	 * Returns environment variable by name.
+	 * Adds the order tagging to the view.
 	 *
-	 * @param string $name the name of the env variable.
-	 * @param mixed $default the value to return if env variable is not found.
-	 * @return mixed the env variable.
+	 * This tagging should only be present on the checkout finish page.
+	 *
+	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchCheckout
 	 */
-	protected function getEnv($name, $default = false) {
-		return isset($_ENV[$name]) ? $_ENV[$name] : $default;
+	protected function addOrderTagging(Enlight_Controller_ActionEventArgs $args) {
+		if (!$this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'finish')
+			|| !$this->shopHasConnectedAccount()
+			|| !isset(Shopware()->Session()->sOrderVariables, Shopware()->Session()->sOrderVariables->sOrderNumber)) {
+			return;
+		}
+
+		$nosto_order = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+		$nosto_order->loadData(Shopware()->Session()->sOrderVariables->sOrderNumber);
+		if (!$nosto_order->validate()) {
+			return;
+		}
+
+		$view = $args->getSubject()->View();
+		$view->addTemplateDir($this->Path() . 'Views/');
+		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/order.tpl');
+		$view->assign('nosto_order', $nosto_order);
+	}
+
+	/**
+	 * Sends an order confirmation API call to Nosto for an order.
+	 *
+	 * @param int $order_number the order number to find the order model on.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onOrderSSaveOrderAfter
+	 */
+	protected function confirmOrder($order_number) {
+		$shop = Shopware()->Shop();
+		$account_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		$account = $account_helper->findAccount($shop);
+
+		if (!is_null($account)) {
+			$nosto_account = $account_helper->convertToNostoAccount($account);
+			if ($nosto_account->isConnectedToNosto()) {
+				try {
+					$model= new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+					$model->loadData($order_number);
+					$customer_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
+					NostoOrderConfirmation::send($model, $nosto_account, $customer_helper->getNostoId());
+				} catch (NostoException $e) {
+					Shopware()->Pluginlogger()->error($e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sends a product re-crawl API call to Nosto for an article (product).
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article model.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostPersistArticle
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateArticle
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostRemoveArticle
+	 */
+	protected function reCrawlProduct(Shopware\Models\Article\Article $article) {
+		$shop = null; // todo
+		$account_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		$account = $account_helper->findAccount($shop);
+
+		if (!is_null($account)) {
+			$nosto_account = $account_helper->convertToNostoAccount($account);
+			if ($nosto_account->isConnectedToNosto()) {
+				try {
+					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+					$model->assignId($article);
+					$model->assignUrl($article);
+					NostoProductReCrawl::send($model, $nosto_account);
+				} catch (NostoException $e) {
+					Shopware()->Pluginlogger()->error($e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks if the current active Shop has an Nosto account that is connected to Nosto.
+	 *
+	 * @return bool true if a account exists that is connected to Nosto, false otherwise.
+	 */
+	protected function shopHasConnectedAccount() {
+		$shop = Shopware()->Shop();
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		return $helper->accountExistsAndIsConnected($shop);
 	}
 }

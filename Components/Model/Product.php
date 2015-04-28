@@ -85,16 +85,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * Setter for the unique product id.
-	 *
-	 * @param int $product_id the product id.
-	 */
-	public function setProductId($product_id)
-	{
-		$this->product_id = $product_id;
-	}
-
-	/**
 	 * @inheritdoc
 	 */
 	public function getProductId()
@@ -199,7 +189,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * @param $id
+	 * Loads the model data from an article model.
+	 *
+	 * @param int $id the article model id.
 	 */
 	public function loadData($id)
 	{
@@ -210,15 +202,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $id);
 		if (!is_null($article)) {
 			$shop = Shopware()->Shop();
-			$router = Shopware()->Front()->Router();
 			$main_detail = $article->getMainDetail();
 
-			$this->url = $router->assemble(array(
-				'module' => 'frontend',
-				'controller' => 'detail',
-				'sArticle' => $article->getId(),
-			));
-			$this->product_id = $article->getId();
+			$this->assignId($article);
+			$this->assignUrl($article);
 			$this->name = $article->getName();
 
 			// todo: find the default/preview image
@@ -248,5 +235,32 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$this->brand = $article->getSupplier()->getName();
 			$this->date_published = $article->getAdded()->format('Y-m-d');
 		}
+	}
+
+	/**
+	 * Assigns an ID for the model from an article.
+	 *
+	 * This method exists in order to expose a public API to change the ID.
+	 *
+	 * @param \Shopware\Models\Article\Article $article
+	 */
+	public function assignId(\Shopware\Models\Article\Article $article) {
+		$this->product_id = (int) $article->getId();
+	}
+
+	/**
+	 * Assigns a url for the model from an article.
+	 *
+	 * This method exists in order to expose a public API to change the url.
+	 *
+	 * @param \Shopware\Models\Article\Article $article
+	 */
+	public function assignUrl(\Shopware\Models\Article\Article $article) {
+		// todo: for what shop??
+		$this->url = Shopware()->Front()->Router()->assemble(array(
+			'module' => 'frontend',
+			'controller' => 'detail',
+			'sArticle' => $article->getId(),
+		));
 	}
 }

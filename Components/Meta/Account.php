@@ -55,6 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 		// todo: get name from "basic information"
 		$this->_title = Shopware()->App() . ' - ' . $shop->getName();
 		$this->_name = substr(sha1(rand()), 0, 8);
+		// todo: index controller returns 404, how to get the base url?
 		$this->_front_page_url = Shopware()->Front()->Router()->assemble(array(
 			'module' => 'frontend',
 			'controller' => 'index',

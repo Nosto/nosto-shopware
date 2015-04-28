@@ -27,19 +27,28 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	protected $currency_code;
 
 	/**
+	 * Loads the line item data.
+	 *
+	 * @param int $product_id the line item product id.
+	 * @param int $quantity the line item quantity.
+	 * @param string $name the line item name.
+	 * @param float|int|string $unit_price the line item unit price.
+	 * @param string $currency_code the line item currency code.
+	 */
+	public function loadData($product_id, $quantity, $name, $unit_price, $currency_code) {
+		$this->product_id = ((int) $product_id > 0) ? (int) $product_id : -1;
+		$this->quantity = (int) $quantity;
+		$this->name = $name;
+		$this->unit_price = Nosto::helper('price')->format($unit_price);
+		$this->currency_code = strtoupper($currency_code);
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getProductId()
 	{
 		return $this->product_id;
-	}
-
-	/**
-	 * @param int $product_id
-	 */
-	public function setProductId($product_id)
-	{
-		$this->product_id = $product_id;
 	}
 
 	/**
@@ -51,27 +60,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	}
 
 	/**
-	 * @param int $quantity
-	 */
-	public function setQuantity($quantity)
-	{
-		$this->quantity = $quantity;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getName()
 	{
 		return $this->name;
-	}
-
-	/**
-	 * @param string $name
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
 	}
 
 	/**
@@ -83,26 +76,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	}
 
 	/**
-	 * @param string $unit_price
-	 */
-	public function setUnitPrice($unit_price)
-	{
-		$this->unit_price = $unit_price;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getCurrencyCode()
 	{
 		return $this->currency_code;
-	}
-
-	/**
-	 * @param string $currency_code
-	 */
-	public function setCurrencyCode($currency_code)
-	{
-		$this->currency_code = $currency_code;
 	}
 }

@@ -108,34 +108,4 @@ class Account extends ModelEntity {
 	{
 		return json_decode($this->data, true);
 	}
-
-	/**
-	 * Turns the account model into a NostoAccount object.
-	 *
-	 * @return \NostoAccount the object.
-	 */
-	public function toNostoAccount() {
-		$nosto_account = new \NostoAccount();
-		$nosto_account->name = $this->getName();
-		foreach ($this->getData() as $key => $items) {
-			if ($key === 'apiTokens') {
-				foreach ($items as $token_name => $token_value) {
-					$token = new \NostoApiToken();
-					$token->name = $token_name;
-					$token->value = $token_value;
-					$nosto_account->tokens[] = $token;
-				}
-			}
-		}
-		return $nosto_account;
-	}
-
-	/**
-	 * Checks if the account is connected to Nosto.
-	 *
-	 * @return bool true if it is, false otherwise.
-	 */
-	public function isConnectedToNosto() {
-		return $this->toNostoAccount()->isConnectedToNosto();
-	}
 }

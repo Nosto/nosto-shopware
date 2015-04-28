@@ -25,7 +25,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 		}
 
 		$nosto_account = NostoAccount::create($meta);
-		$account = $this->convertAccount($nosto_account, $shop);
+		$account = $this->convertToShopwareAccount($nosto_account, $shop);
 
 		return $account;
 	}
@@ -37,7 +37,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 	 * @param \Shopware\Models\Shop\Shop $shop the shop the account belongs to.
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the account model.
 	 */
-	public function convertAccount(\NostoAccount $nosto_account, \Shopware\Models\Shop\Shop $shop) {
+	public function convertToShopwareAccount(\NostoAccount $nosto_account, \Shopware\Models\Shop\Shop $shop) {
 		$account = new \Shopware\CustomModels\Nosto\Account\Account();
 		$account->setShopId($shop->getId());
 		$account->setName($nosto_account->getName());
@@ -51,12 +51,35 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 	}
 
 	/**
+	 * Converts a `\Shopware\CustomModels\Nosto\Account\Account` model into a `NostoAccount`.
+	 *
+	 * @param \Shopware\CustomModels\Nosto\Account\Account $account the account model.
+	 * @return NostoAccount the nosto account.
+	 */
+	public function convertToNostoAccount(\Shopware\CustomModels\Nosto\Account\Account $account) {
+		$nosto_account = new NostoAccount();
+		$nosto_account->name = $account->getName();
+		foreach ($account->getData() as $key => $items) {
+			if ($key === 'apiTokens') {
+				foreach ($items as $token_name => $token_value) {
+					$token = new NostoApiToken();
+					$token->name = $token_name;
+					$token->value = $token_value;
+					$nosto_account->tokens[] = $token;
+				}
+			}
+		}
+		return $nosto_account;
+	}
+
+	/**
 	 * Removes the account and tells Nosto about it.
 	 *
 	 * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to remove.
 	 */
 	public function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account) {
-		$nosto_account = $account->toNostoAccount();
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		$nosto_account = $helper->convertToNostoAccount($account);
 		Shopware()->Models()->remove($account);
 		Shopware()->Models()->flush();
 		// Notify Nosto that the account was deleted.
@@ -86,7 +109,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 	 */
 	public function accountExistsAndIsConnected(\Shopware\Models\Shop\Shop $shop) {
 		$account = $this->findAccount($shop);
-		return (!is_null($account) && $account->isConnectedToNosto());
+		if (is_null($account)) {
+			return false;
+		}
+		$nosto_account = $this->convertToNostoAccount($account);
+		return $nosto_account->isConnectedToNosto();
 	}
 
 	/**
@@ -101,7 +128,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
 		$meta->loadData($shop);
 		if (!is_null($account)) {
-			$nosto_account = $account->toNostoAccount();
+			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+			$nosto_account = $helper->convertToNostoAccount($account);
 		} else {
 			$nosto_account = null;
 		}
