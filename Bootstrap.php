@@ -68,7 +68,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @inheritdoc
 	 */
 	public function uninstall() {
-		//$this->dropTables();
+		$this->dropTables();
 		return true;
 	}
 
@@ -234,9 +234,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 	/**
 	 * Creates needed db tables used by the plugin models.
+	 *
+	 * Run on install.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
 	protected function createTables() {
-		return; // todo: remove once uninstall is implemented
 		$this->registerCustomModels();
 		$model_manager = Shopware()->Models();
        	$schematic_tool = new Doctrine\ORM\Tools\SchemaTool($model_manager);
@@ -249,7 +252,30 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Drops created db tables.
+	 *
+	 * Run on uninstall.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::uninstall
+	 */
+	protected function dropTables() {
+		$this->registerCustomModels();
+		$model_manager = Shopware()->Models();
+		$schematic_tool = new Doctrine\ORM\Tools\SchemaTool($model_manager);
+		$schematic_tool->dropSchema(
+			array(
+				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
+//				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Customer\Customer'), // todo: uncomment once implemented
+			)
+		);
+	}
+
+	/**
 	 * Adds the plugin backend configuration menu item.
+	 *
+	 * Run on install.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
 	protected function addConfiguration() {
 		// todo: icon, position and label
