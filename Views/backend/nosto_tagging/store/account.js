@@ -1,7 +1,7 @@
 Ext.define('Shopware.apps.NostoTagging.store.Account', {
     extend: 'Ext.data.Store',
     model: 'Shopware.apps.NostoTagging.model.Account',
-    autoLoad: true,
+    autoLoad: false,
     proxy: {
         type: 'ajax',
         url: '{url action=getAccounts}',

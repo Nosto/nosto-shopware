@@ -58,9 +58,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @inheritdoc
 	 */
 	public function install() {
-		$this->createTables();
-		$this->addConfiguration();
-		$this->registerEvents();
+		$this->createMyTables();
+		$this->createMyMenu();
+		$this->registerMyEvents();
 		return true;
 	}
 
@@ -68,7 +68,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @inheritdoc
 	 */
 	public function uninstall() {
-		$this->dropTables();
+		$this->dropMyTables();
 		return true;
 	}
 
@@ -159,8 +159,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Event_EventArgs $args the event arguments.
 	 * @return string the path to the controller file.
-	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::addConfiguration
 	 */
 	public function onGetBackendController(Enlight_Event_EventArgs $args) {
 		$this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
@@ -239,7 +237,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
-	protected function createTables() {
+	protected function createMyTables() {
 		$this->registerCustomModels();
 		$model_manager = Shopware()->Models();
        	$schematic_tool = new Doctrine\ORM\Tools\SchemaTool($model_manager);
@@ -258,7 +256,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::uninstall
 	 */
-	protected function dropTables() {
+	protected function dropMyTables() {
 		$this->registerCustomModels();
 		$model_manager = Shopware()->Models();
 		$schematic_tool = new Doctrine\ORM\Tools\SchemaTool($model_manager);
@@ -277,15 +275,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
-	protected function addConfiguration() {
+	protected function createMyMenu() {
 		// todo: icon, position and label
 		$this->createMenuItem(array(
-			'label'      => 'Nosto', // todo: does not work
+			'label' => 'Nosto',
 			'controller' => 'NostoTagging',
-			'action'     => 'index',
-			'active'     => 1,
-			'parent'	 => $this->Menu()->findOneBy('id', 23), // Configuration
-			'class'      => 'sprite-application-block'
+			'action' => 'Index',
+			'active' => 1,
+			'parent' => $this->Menu()->findOneBy('id', 23), // Configuration
+			'class' => 'sprite-application-block'
 		));
 	}
 
@@ -296,7 +294,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
-	protected function registerEvents() {
+	protected function registerMyEvents() {
 		// Register own controller events.
 		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'onGetBackendController');
 		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'onGetFrontendController');

@@ -4,11 +4,17 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     init: function () {
         var me = this;
         me.accountStore = me.getStore('Account');
-        me.accountStore.on('load', function (store) {
-            me.mainWindow = me.getView('Main').create({
-                accountStore: store
-            });
-            me.mainWindow.show();
+        me.accountStore.load({
+            callback: function(records, operation, success) {
+                if (success) {
+                    me.mainWindow = me.getView('Main').create({
+                        accountStore: me.accountStore
+                    });
+                    me.mainWindow.show();
+                } else {
+                    throw new Error('Nosto: failed to load accounts.');
+                }
+            }
         });
 
         // Register event handler for window.postMessage() messages from Nosto.
