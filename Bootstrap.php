@@ -217,7 +217,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function onPostPersistArticle(Enlight_Event_EventArgs $args) {
 		/** @var Shopware\Models\Article\Article $model */
-		$model = $args->get('model');
+		$model = $args->getEntity();
 		$this->reCrawlProduct($model);
 	}
 
@@ -230,7 +230,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function onPostUpdateArticle(Enlight_Event_EventArgs $args) {
 		/** @var Shopware\Models\Article\Article $model */
-		$model = $args->get('model');
+		$model = $args->getEntity();
 		$this->reCrawlProduct($model);
 	}
 
@@ -243,7 +243,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function onPostRemoveArticle(Enlight_Event_EventArgs $args) {
 		/** @var Shopware\Models\Article\Article $model */
-		$model = $args->get('model');
+		$model = $args->getEntity();
 		$this->reCrawlProduct($model);
 	}
 
@@ -625,20 +625,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostRemoveArticle
 	 */
 	protected function reCrawlProduct(Shopware\Models\Article\Article $article) {
-		$shop = null; // todo
+		/** @var \Shopware\Models\Shop\Shop[] $shops */
+		$shops = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop')->findAll();
 		$account_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$account = $account_helper->findAccount($shop);
-
-		if (!is_null($account)) {
-			$nosto_account = $account_helper->convertToNostoAccount($account);
-			if ($nosto_account->isConnectedToNosto()) {
-				try {
-					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-					$model->assignId($article);
-					$model->assignUrl($article);
-					NostoProductReCrawl::send($model, $nosto_account);
-				} catch (NostoException $e) {
-					Shopware()->Pluginlogger()->error($e);
+		foreach ($shops as $shop) {
+			$account = $account_helper->findAccount($shop);
+			if (!is_null($account)) {
+				$nosto_account = $account_helper->convertToNostoAccount($account);
+				if ($nosto_account->isConnectedToNosto()) {
+					try {
+						$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+						$model->assignId($article);
+						$model->assignUrl($article, $shop);
+						NostoProductReCrawl::send($model, $nosto_account);
+					} catch (NostoException $e) {
+						Shopware()->Pluginlogger()->error($e);
+					}
 				}
 			}
 		}

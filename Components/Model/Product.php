@@ -205,7 +205,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$main_detail = $article->getMainDetail();
 
 			$this->assignId($article);
-			$this->assignUrl($article);
+			$this->assignUrl($article, $shop);
 			$this->name = $article->getName();
 
 			// todo: find the default/preview image
@@ -242,7 +242,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 *
 	 * This method exists in order to expose a public API to change the ID.
 	 *
-	 * @param \Shopware\Models\Article\Article $article
+	 * @param \Shopware\Models\Article\Article $article the article to get the id from.
 	 */
 	public function assignId(\Shopware\Models\Article\Article $article) {
 		$this->product_id = (int) $article->getId();
@@ -253,14 +253,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 *
 	 * This method exists in order to expose a public API to change the url.
 	 *
-	 * @param \Shopware\Models\Article\Article $article
+	 * @param \Shopware\Models\Article\Article $article the article to create the url for.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop for the base url.
 	 */
-	public function assignUrl(\Shopware\Models\Article\Article $article) {
-		// todo: for what shop??
-		$this->url = Shopware()->Front()->Router()->assemble(array(
+	public function assignUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop) {
+		$url = Shopware()->Front()->Router()->assemble(array(
 			'module' => 'frontend',
 			'controller' => 'detail',
 			'sArticle' => $article->getId(),
 		));
+		// todo: can the shop be added in a cleaner way?
+		$url = NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
+		$this->url = $url;
 	}
 }
