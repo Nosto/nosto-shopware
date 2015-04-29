@@ -80,6 +80,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Event handler for the `Enlight_Controller_Action_PostDispatch_Backend_Index` event.
+	 *
+	 * Adds Nosto CSS to the backend <head>.
+	 *
+	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+	 */
+	public function onPostDispatchBackendIndex(Enlight_Controller_ActionEventArgs $args) {
+		if (!$this->validateEvent($args->getSubject(), 'backend', 'index', 'index')) {
+			return;
+		}
+
+		$view = $args->getSubject()->View();
+		$view->addTemplateDir($this->Path() . 'Views/');
+		$view->extendsTemplate('backend/plugins/nosto_tagging/header.tpl');
+	}
+
+	/**
 	 * Event handler for the `Enlight_Controller_Action_PostDispatch` event.
 	 *
 	 * Adds the embed Javascript, customer tagging and cart tagging to all pages.
@@ -100,7 +117,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchIndex(Enlight_Controller_ActionEventArgs $args) {
+	public function onPostDispatchFrontendIndex(Enlight_Controller_ActionEventArgs $args) {
 		$this->addRecommendationPlaceholders($args, 'index', 'index', 'home');
 	}
 
@@ -111,7 +128,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchDetail(Enlight_Controller_ActionEventArgs $args) {
+	public function onPostDispatchFrontendDetail(Enlight_Controller_ActionEventArgs $args) {
 		$this->addRecommendationPlaceholders($args, 'detail', 'index', 'product');
 		$this->addProductTagging($args);
 	}
@@ -123,7 +140,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchListing(Enlight_Controller_ActionEventArgs $args) {
+	public function onPostDispatchFrontendListing(Enlight_Controller_ActionEventArgs $args) {
 		$this->addRecommendationPlaceholders($args, 'listing', 'index', 'category');
 		$this->addCategoryTagging($args);
 	}
@@ -135,7 +152,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchCheckout(Enlight_Controller_ActionEventArgs $args) {
+	public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args) {
 		$this->addRecommendationPlaceholders($args, 'checkout', 'cart', 'cart');
 		$this->addOrderTagging($args);
 	}
@@ -147,7 +164,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatchSearch(Enlight_Controller_ActionEventArgs $args) {
+	public function onPostDispatchFrontendSearch(Enlight_Controller_ActionEventArgs $args) {
 		$this->addRecommendationPlaceholders($args, 'search', 'defaultSearch', 'search');
 		$this->addSearchTagging($args);
 	}
@@ -160,7 +177,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @param Enlight_Event_EventArgs $args the event arguments.
 	 * @return string the path to the controller file.
 	 */
-	public function onGetBackendController(Enlight_Event_EventArgs $args) {
+	public function onControllerPathBackend(Enlight_Event_EventArgs $args) {
 		$this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
 		return $this->Path() . '/Controllers/backend/NostoTagging.php';
 	}
@@ -173,7 +190,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @param Enlight_Event_EventArgs $args the event arguments.
 	 * @return string the path to the controller file.
 	 */
-	public function onGetFrontendController(Enlight_Event_EventArgs $args) {
+	public function onControllerPathFrontend(Enlight_Event_EventArgs $args) {
 		$this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
 		return $this->Path() . '/Controllers/frontend/NostoTagging.php';
 	}
@@ -276,14 +293,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
 	protected function createMyMenu() {
-		// todo: icon, position and label
+		// todo: icon & position
 		$this->createMenuItem(array(
 			'label' => 'Nosto',
 			'controller' => 'NostoTagging',
 			'action' => 'Index',
 			'active' => 1,
 			'parent' => $this->Menu()->findOneBy('id', 23), // Configuration
-			'class' => 'sprite-application-block'
+			'class' => 'nosto--icon'
 		));
 	}
 
@@ -295,22 +312,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
 	protected function registerMyEvents() {
-		// Register own controller events.
-		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'onGetBackendController');
-		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'onGetFrontendController');
-		// Register tagging/recommendation events.
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch', 'onPostDispatch');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Index', 'onPostDispatchIndex');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Detail', 'onPostDispatchDetail');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Listing', 'onPostDispatchListing');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Checkout', 'onPostDispatchCheckout');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Search', 'onPostDispatchSearch');
-		// Register order confirmation event.
-		$this->subscribeEvent('sOrder::sSaveOrder::after', 'onOrderSSaveOrderAfter');
-		// Register product re-crawl events.
+		// Backend events.
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Backend_Index', 'onPostDispatchBackendIndex');
+		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'onControllerPathBackend');
 		$this->subscribeEvent('Shopware\Models\Article\Article::postPersist', 'onPostPersistArticle');
 		$this->subscribeEvent('Shopware\Models\Article\Article::postUpdate', 'onPostUpdateArticle');
 		$this->subscribeEvent('Shopware\Models\Article\Article::postRemove', 'onPostRemoveArticle');
+		// Frontend events.
+		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'onControllerPathFrontend');
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch', 'onPostDispatch');
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Index', 'onPostDispatchFrontendIndex');
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Detail', 'onPostDispatchFrontendDetail');
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Listing', 'onPostDispatchFrontendListing');
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Checkout', 'onPostDispatchFrontendCheckout');
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Search', 'onPostDispatchFrontendSearch');
+		$this->subscribeEvent('sOrder::sSaveOrder::after', 'onOrderSSaveOrderAfter');
 	}
 
 	/**
@@ -349,11 +365,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @param string $action the action name.
 	 * @param string $tpl the template file name.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchIndex
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchDetail
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchListing
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchCheckout
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchSearch
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendIndex
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendDetail
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendListing
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendCheckout
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendSearch
 	 */
 	protected function addRecommendationPlaceholders(Enlight_Controller_ActionEventArgs $args, $ctrl, $action, $tpl) {
 		if (!$this->validateEvent($args->getSubject(), 'frontend', $ctrl, $action)
@@ -462,7 +478,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchDetail
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendDetail
 	 */
 	protected function addProductTagging(Enlight_Controller_ActionEventArgs $args) {
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'detail', 'index')
@@ -497,7 +513,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchListing
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendListing
 	 */
 	protected function addCategoryTagging(Enlight_Controller_ActionEventArgs $args) {
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'listing', 'index')
@@ -524,7 +540,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchSearch
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendSearch
 	 */
 	protected function addSearchTagging(Enlight_Controller_ActionEventArgs $args) {
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'search', 'defaultSearch')
@@ -551,7 +567,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchCheckout
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendCheckout
 	 */
 	protected function addOrderTagging(Enlight_Controller_ActionEventArgs $args) {
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'finish')
