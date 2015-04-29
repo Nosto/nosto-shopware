@@ -29,6 +29,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	protected $_items = array();
 
 	/**
+	 * @var bool if special line items like shipping cost should be included.
+	 */
+	protected $_include_special_line_items = true;
+
+	/**
 	 * Loads order details from the order model based on it's order number.
 	 *
 	 * @param int $order_number the order number of the order model.
@@ -54,18 +59,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 
 			foreach ($order->getDetails() as $detail) {
 				/** @var Shopware\Models\Order\Detail $detail */
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadData($detail);
-				$this->_items[] = $item;
+				if ($this->_include_special_line_items || $detail->getArticleId() > 0) {
+					$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+					$item->loadData($detail);
+					$this->_items[] = $item;
+				}
 			}
 
-			$shipping_cost = $order->getInvoiceShipping();
-			if ($shipping_cost > 0) {
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadSpecialItemData('Shipping cost', $shipping_cost, $order->getCurrency());
-				$this->_items[] = $item;
+			if ($this->_include_special_line_items) {
+				$shipping_cost = $order->getInvoiceShipping();
+				if ($shipping_cost > 0) {
+					$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+					$item->loadSpecialItemData('Shipping cost', $shipping_cost, $order->getCurrency());
+					$this->_items[] = $item;
+				}
 			}
 		}
+	}
+
+	/**
+	 * Disables the special line items so they are not included when calling `loadData()`.
+	 */
+	public function disableSpecialLineItems() {
+		$this->_include_special_line_items = false;
 	}
 
 	/**

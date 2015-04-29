@@ -75,18 +75,26 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	 * Result can be limited by the `limit` and `offset` GET parameters.
 	 */
 	public function exportProductsAction() {
-		// todo: implement
-
 		$page_size = (int)$this->Request()->getParam('limit', 100);
 		$current_offset = (int)$this->Request()->getParam('offset', 0);
+		$current_page = (int)($current_offset / $page_size);
 
-		$product_ids = array();
+		$builder = Shopware()->Models()->createQueryBuilder();
+		$result = $builder->select(array('articles.id'))
+			->from('\Shopware\Models\Article\Article', 'articles')
+			->where('articles.active = 1')
+			->setFirstResult($current_page)
+			->setMaxResults($page_size)
+			->getQuery()
+			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+
 		$collection = new NostoExportProductCollection();
-		foreach ($product_ids as $product_id) {
+		foreach ($result as $row) {
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($product_id);
+			$model->loadData($row['id']);
 			$collection[] = $model;
 		}
+
 		$this->export($collection);
 	}
 
@@ -95,16 +103,24 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	 * Result can be limited by the `limit` and `offset` GET parameters.
 	 */
 	public function exportOrdersAction() {
-		// todo: implement
-
 		$page_size = (int)$this->Request()->getParam('limit', 100);
 		$current_offset = (int)$this->Request()->getParam('offset', 0);
+		$current_page = (int)($current_offset / $page_size);
 
-		$order_ids = array();
+		$builder = Shopware()->Models()->createQueryBuilder();
+		$result = $builder->select(array('orders.number'))
+			->from('\Shopware\Models\Order\Order', 'orders')
+			->where('orders.status >= 0')
+			->setFirstResult($current_page)
+			->setMaxResults($page_size)
+			->getQuery()
+			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+
 		$collection = new NostoExportOrderCollection();
-		foreach ($order_ids as $order_id) {
+		foreach ($result as $row) {
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-			$model->loadData($order_id);
+			$model->disableSpecialLineItems();
+			$model->loadData($row['number']);
 			$collection[] = $model;
 		}
 		$this->export($collection);
