@@ -2,24 +2,35 @@
 
 class Shopware_Plugins_Frontend_NostoTagging_Components_Customer {
 	/**
-	 * Returns the Nosto customer Id based on Shopware basket.
+	 * @var string the name of the cookie where the Nosto ID can be found.
+	 */
+	const COOKIE_NAME = '2c_cId';
+
+	/**
+	 * @var string the name of the session key where we store Nosto related data.
+	 */
+	const SESSION_KEY = 'Nosto';
+
+	/**
+	 * Persists the Nosto customer ID into the Shopware session if the Nosto cookie is set.
+	 * The customer ID is later used in server-to-server order confirmation API requests.
+	 */
+	public function persistCustomerId() {
+		$customer_id = Shopware()->Front()->Request()->getCookie(self::COOKIE_NAME, null);
+		if (!is_null($customer_id)) {
+			$data = Shopware()->Session()->get(self::SESSION_KEY, array());
+			$data['customerId'] = $customer_id;
+			Shopware()->Session()->offsetSet(self::SESSION_KEY, $data);
+		}
+	}
+
+	/**
+	 * Returns the Nosto customer ID.
 	 *
 	 * @return string|null the Nosto customer ID or null if not found.
 	 */
-	public function getNostoId() {
-		return null;
-
-		// todo: implement
-
-//		$builder = Shopware()->Models()->createQueryBuilder();
-//		$attributes = $builder->select(array('attributes'))
-//			->from('\Shopware\CustomModels\Nosto\Customer\Customer', 'customer')
-//			->where('cartId = :cartId')
-//			->setParameter('cartId', $userId)
-//			->setFirstResult(0)
-//			->setMaxResults(1)
-//			->getQuery()
-//			->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-//		return isset($attributes['customerId']) ? $attributes['customerId'] : null;
+	public function getCustomerId() {
+		$data = Shopware()->Session()->get(self::SESSION_KEY, array());
+		return isset($data['customerId']) ? $data['customerId'] : null;
 	}
 }

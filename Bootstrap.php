@@ -103,8 +103,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
-	public function onPostDispatch(Enlight_Controller_ActionEventArgs $args) {
-		// todo: this is run many times. why?
+	public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args) {
+		if (!$args->getSubject()->Request()->isDispatched()
+			|| $args->getSubject()->Response()->isException()
+			|| $args->getSubject()->Request()->getModuleName() != 'frontend'
+			|| !$this->shopHasConnectedAccount()) {
+			return;
+		}
+
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
+		$helper->persistCustomerId();
+
 		$this->addEmbedScript($args);
 		$this->addCustomerTagging($args);
 		$this->addCartTagging($args);
@@ -261,7 +270,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$schematic_tool->createSchema(
 			array(
 				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
-//				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Customer\Customer'), // todo: uncomment once implemented
 			)
        );
 	}
@@ -280,7 +288,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$schematic_tool->dropSchema(
 			array(
 				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
-//				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Customer\Customer'), // todo: uncomment once implemented
 			)
 		);
 	}
@@ -320,7 +327,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->subscribeEvent('Shopware\Models\Article\Article::postRemove', 'onPostRemoveArticle');
 		// Frontend events.
 		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'onControllerPathFrontend');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch', 'onPostDispatch');
+		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch', 'onPostDispatchFrontend');
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Index', 'onPostDispatchFrontendIndex');
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Detail', 'onPostDispatchFrontendDetail');
 		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Listing', 'onPostDispatchFrontendListing');
@@ -336,7 +343,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatch
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
 	 */
 	protected function addEmbedScript(Enlight_Controller_ActionEventArgs $args) {
 		if(!$args->getSubject()->Request()->isDispatched()
@@ -420,7 +427,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatch
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
 	 */
 	protected function addCustomerTagging(Enlight_Controller_ActionEventArgs $args) {
 		if(!$args->getSubject()->Request()->isDispatched()
@@ -449,7 +456,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatch
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
 	 */
 	protected function addCartTagging(Enlight_Controller_ActionEventArgs $args) {
 		if(!$args->getSubject()->Request()->isDispatched()
@@ -597,6 +604,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	protected function confirmOrder($order_number) {
 		$shop = Shopware()->Shop();
+
 		$account_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$account = $account_helper->findAccount($shop);
 
@@ -604,10 +612,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			$nosto_account = $account_helper->convertToNostoAccount($account);
 			if ($nosto_account->isConnectedToNosto()) {
 				try {
+					$customer_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
+					$customer_id = $customer_helper->getCustomerId();
 					$model= new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 					$model->loadData($order_number);
-					$customer_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
-					NostoOrderConfirmation::send($model, $nosto_account, $customer_helper->getNostoId());
+					NostoOrderConfirmation::send($model, $nosto_account, $customer_id);
 				} catch (NostoException $e) {
 					Shopware()->Pluginlogger()->error($e);
 				}
