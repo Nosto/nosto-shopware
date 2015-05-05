@@ -1,14 +1,52 @@
 Ext.define('Shopware.apps.NostoTagging.view.Main', {
+    /**
+     * Extends the Enlight application window.
+     * @string
+     */
     extend: 'Enlight.app.Window',
+
+    /**
+     * Window title.
+     * @string
+     */
     title: 'Nosto',
+
+    /**
+     * Window layout.
+     * @string
+     */
     layout: 'fit',
 
+    /**
+     * Window width.
+     * @integer
+     */
+    width: 1024,
+
+    /**
+     * Window height.
+     * @integer
+     */
+    height: 768,
+
+    /**
+     * Initializes the component.
+     *
+     * @public
+     * @return void
+     */
     initComponent: function () {
         var me = this;
         me.items = me.tabPanel = me.createTabPanel();
         me.callParent(arguments);
     },
 
+    /**
+     * Creates a tab panel which holds off the account settings per Shop.
+     *
+     * @public
+     * @return Ext.tab.Panel
+     */
     createTabPanel: function () {
         var me = this,
             tabs = [];
@@ -32,6 +70,12 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
         });
     },
 
+    /**
+     * Getter for the active account model.
+     *
+     * @public
+     * @returns Shopware.apps.NostoTagging.model.Account
+     */
     getActiveAccount: function () {
         var me = this,
             activeTab = me.tabPanel.getActiveTab(),
@@ -45,6 +89,12 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
         return activeAccount;
     },
 
+    /**
+     * Reloads the active iframe window with url from account model.
+     *
+     * @public
+     * @param account Shopware.apps.NostoTagging.model.Account
+     */
     reloadIframe: function (account) {
         var me = this,
             elements;

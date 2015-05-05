@@ -82,8 +82,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 		$nosto_account = $helper->convertToNostoAccount($account);
 		Shopware()->Models()->remove($account);
 		Shopware()->Models()->flush();
-		// Notify Nosto that the account was deleted.
-		$nosto_account->delete();
+		try {
+			// Notify Nosto that the account was deleted.
+			$nosto_account->delete();
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
 	}
 
 	/**

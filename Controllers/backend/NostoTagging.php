@@ -57,9 +57,10 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 * This action should only be accessed by the Account model in the client side application.
 	 */
 	public function createAccountAction() {
+		$success = false;
+		$data = array();
 		$shop_id = $this->Request()->getParam('shopId', null);
 		$email = $this->Request()->getParam('email', null);
-
 		/** @var \Shopware\Models\Shop\Shop $shop */
 		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
 
@@ -69,6 +70,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 				$account = $helper->createAccount($shop, $email);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
+				$success = true;
 				$data = array(
 					'id' => $account->getId(),
 					'name' => $account->getName(),
@@ -83,13 +85,12 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 					'shopId' => $shop->getId(),
 					'shopName' => $shop->getName(),
 				);
-				$this->View()->assign(array('success' => true, 'data' => array($data)));
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}
 		}
 
-		$this->View()->assign(array('success' => false));
+		$this->View()->assign(array('success' => $success, 'data' => $data));
 	}
 
 	/**
@@ -98,37 +99,34 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 * This action should only be accessed by the Account model in the client side application.
 	 */
 	public function deleteAccountAction() {
+		$success = false;
+		$data = array();
 		$account_id = $this->Request()->getParam('id', null);
 		$shop_id = $this->Request()->getParam('shopId', null);
-
 		/** @var \Shopware\CustomModels\Nosto\Account\Account $account */
 		$account = Shopware()->Models()->find('\Shopware\CustomModels\Nosto\Account\Account', $account_id);
 		/** @var \Shopware\Models\Shop\Shop $shop */
 		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
 
 		if (!is_null($account) && !is_null($shop)) {
-			try {
-				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-				$helper->removeAccount($account);
-				$data = array(
-					'url' => $helper->buildAccountIframeUrl(
-							$shop,
-							null,
-							array(
-								'message_type' => NostoMessage::TYPE_SUCCESS,
-								'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
-							)
-						),
-					'shopId' => $shop->getId(),
-					'shopName' => $shop->getName(),
-				);
-				$this->View()->assign(array('success' => true, 'data' => array($data)));
-			} catch (NostoException $e) {
-				Shopware()->Pluginlogger()->error($e);
-			}
+			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+			$helper->removeAccount($account);
+			$success = true;
+			$data = array(
+				'url' => $helper->buildAccountIframeUrl(
+						$shop,
+						null,
+						array(
+							'message_type' => NostoMessage::TYPE_SUCCESS,
+							'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
+						)
+					),
+				'shopId' => $shop->getId(),
+				'shopName' => $shop->getName(),
+			);
 		}
 
-		$this->View()->assign(array('success' => false));
+		$this->View()->assign(array('success' => $success, 'data' => $data));
 	}
 
 	/**
@@ -137,8 +135,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 * This action should only be accessed by the Main controller in the client side application.
 	 */
 	public function connectAccountAction() {
+		$success = false;
+		$data = array();
 		$shop_id = $this->Request()->getParam('shopId', null);
-
 		/** @var \Shopware\Models\Shop\Shop $shop */
 		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
 
@@ -146,13 +145,10 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 			$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
 			$meta->loadData($shop);
 			$client = new NostoOAuthClient($meta);
-			$data = array(
-				'redirect_url' => $client->getAuthorizationUrl(),
-			);
-
-			$this->View()->assign(array('success' => true, 'data' => $data));
-		} else {
-			$this->View()->assign(array('success' => false));
+			$success = true;
+			$data = array('redirect_url' => $client->getAuthorizationUrl());
 		}
+
+		$this->View()->assign(array('success' => $success, 'data' => $data));
 	}
 }

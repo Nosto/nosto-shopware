@@ -1,6 +1,17 @@
 Ext.define('Shopware.apps.NostoTagging.controller.Main', {
+    /**
+     * Extends the Enlight controller.
+     * @string
+     */
     extend: 'Enlight.app.Controller',
 
+    /**
+     * Initializes the controller.
+     *
+     * Loads the account model store and create a new window for the account configurations.
+     *
+     * @return void
+     */
     init: function () {
         var me = this;
         me.accountStore = me.getStore('Account');
@@ -21,6 +32,14 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
         window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
     },
 
+    /**
+     * Window.postMessage() event handler.
+     *
+     * Handles the communication between the iframe and the plugin.
+     *
+     * @param event Object
+     * @return void
+     */
     receiveMessage: function(event) {
         var me = this,
             json,
@@ -48,9 +67,14 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             switch (data.type) {
                 case 'newAccount':
                     account.save({
-                        success: function(record) {
-                            // todo: figure out of to get the account data binding to work.
-                            me.mainWindow.reloadIframe(record);
+                        success: function(record, op) {
+                            // todo: figure out how to get the account data binding to work.
+                            if (op.resultSet && op.resultSet.records) {
+                                record.set('url', op.resultSet.records[0].data.url);
+                                me.mainWindow.reloadIframe(record);
+                            } else {
+                                throw new Error('Nosto: failed to create new account.');
+                            }
                         }
                     });
                     break;
@@ -58,8 +82,13 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                 case 'removeAccount':
                     account.destroy({
                         success: function(record) {
-                            // todo: figure out of to get the account data binding to work.
-                            me.mainWindow.reloadIframe(record);
+                            // todo: figure out how to get the account data binding to work.
+                            if (op.resultSet && op.resultSet.records) {
+                                record.set('url', op.resultSet.records[0].data.url);
+                                me.mainWindow.reloadIframe(record);
+                            } else {
+                                throw new Error('Nosto: failed to delete account.');
+                            }
                         }
                     });
                     break;
