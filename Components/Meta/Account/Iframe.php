@@ -81,12 +81,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 		$this->_email = $user->email;
 		$this->_language_iso_code = strtolower(substr($user->locale->getLocale(), 0, 2));
 		$this->_language_iso_code_shop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-//		$this->_unique_id =
-//		$this->_preview_url_product =
-//		$this->_preview_url_category =
-//		$this->_preview_url_search =
-//		$this->_preview_url_cart =
-//		$this->_preview_url_front =
+		// $this->_unique_id = todo
+
+        $helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
+		$this->_preview_url_product = $helper->getProductPagePreviewUrl($shop);
+		$this->_preview_url_category = $helper->getCategoryPagePreviewUrl($shop);
+		$this->_preview_url_search = $helper->getSearchPagePreviewUrl($shop);
+		$this->_preview_url_cart = $helper->getCartPagePreviewUrl($shop);
+		$this->_preview_url_front = $helper->getFrontPagePreviewUrl($shop);
+
 		// todo: get name from "basic information"
 		$this->_shop_name = Shopware()->App() . ' - ' . $shop->getName();
 	}

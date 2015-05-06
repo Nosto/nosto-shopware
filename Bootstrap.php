@@ -300,7 +300,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
 	protected function createMyMenu() {
-		// todo: icon & position
 		$this->createMenuItem(array(
 			'label' => 'Nosto',
 			'controller' => 'NostoTagging',
