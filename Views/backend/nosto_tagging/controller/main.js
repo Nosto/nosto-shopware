@@ -6,13 +6,51 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     extend: 'Enlight.app.Controller',
 
     /**
+     * Settings for the controller.
+     */
+    settings: {
+        postMessageOrigin: null
+    },
+
+    /**
      * Initializes the controller.
-     *
-     * Loads the account model store and create a new window for the account configurations.
      *
      * @return void
      */
     init: function () {
+        var me = this;
+        me.loadControllerSettings();
+        me.registerPostMessageListener();
+        me.loadAccountsAndRenderWindow();
+    },
+
+    /**
+     * Loads controller settings.
+     *
+     * @return void
+     */
+    loadControllerSettings: function () {
+        var me = this;
+        Ext.Ajax.request({
+            method: 'GET',
+            url: '{url controller=NostoTagging action=loadSettings}',
+            success: function(response) {
+                var operation = Ext.decode(response.responseText);
+                if (operation.success && operation.data) {
+                    me.settings = operation.data;
+                } else {
+                    throw new Error('Nosto: failed to load settings.');
+                }
+            }
+        });
+    },
+
+    /**
+     * Loads the account model store and create a new window for the account configurations.
+     *
+     * @return void
+     */
+    loadAccountsAndRenderWindow: function () {
         var me = this;
         me.accountStore = me.getStore('Account');
         me.accountStore.load({
@@ -27,8 +65,16 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                 }
             }
         });
+    },
 
-        // Register event handler for window.postMessage() messages from Nosto.
+    /**
+     * Register event handler for window.postMessage() messages from Nosto through which we handle account creation,
+     * connection and deletion.
+     *
+     * @return void
+     */
+    registerPostMessageListener: function () {
+        var me = this;
         window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
     },
 
@@ -47,11 +93,10 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             account,
             operation;
 
-        // todo: enable security check
         // Check the origin to prevent cross-site scripting.
-//        if (event.origin !== decodeURIComponent(settings.origin)) {
-//            return;
-//        }
+        if (event.origin !== decodeURIComponent(me.settings.postMessageOrigin)) {
+            return;
+        }
         // If the message does not start with '[Nosto]', then it is not for us.
         if ((''+event.data).substr(0, 7) !== '[Nosto]') {
             return;
@@ -68,7 +113,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                 case 'newAccount':
                     account.save({
                         success: function(record, op) {
-                            // todo: figure out how to get the account data binding to work.
+                            // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
                                 record.set('url', op.resultSet.records[0].data.url);
                                 me.mainWindow.reloadIframe(record);
@@ -81,8 +126,8 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
 
                 case 'removeAccount':
                     account.destroy({
-                        success: function(record) {
-                            // todo: figure out how to get the account data binding to work.
+                        success: function(record, op) {
+                            // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
                                 record.set('url', op.resultSet.records[0].data.url);
                                 me.mainWindow.reloadIframe(record);
