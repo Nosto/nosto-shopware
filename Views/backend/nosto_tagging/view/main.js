@@ -27,7 +27,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * Window height.
      * @integer
      */
-    height: 768,
+    height: "90%",
 
     /**
      * Initializes the component.
