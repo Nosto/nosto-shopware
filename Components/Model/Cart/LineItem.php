@@ -27,19 +27,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	protected $currency_code;
 
 	/**
-	 * Loads the line item data.
+	 * Loads the line item data from the basket model.
 	 *
-	 * @param int $product_id the line item product id.
-	 * @param int $quantity the line item quantity.
-	 * @param string $name the line item name.
-	 * @param float|int|string $unit_price the line item unit price.
+	 * @param Shopware\Models\Order\Basket $basket an order basket item.
 	 * @param string $currency_code the line item currency code.
 	 */
-	public function loadData($product_id, $quantity, $name, $unit_price, $currency_code) {
-		$this->product_id = ((int) $product_id > 0) ? (int) $product_id : -1;
-		$this->quantity = (int) $quantity;
-		$this->name = $name;
-		$this->unit_price = Nosto::helper('price')->format($unit_price);
+	public function loadData(Shopware\Models\Order\Basket $basket, $currency_code) {
+		$this->product_id = ((int) $basket->getArticleId() > 0) ? (int) $basket->getArticleId() : -1;
+		$this->quantity = (int) $basket->getQuantity();
+		$this->name = $basket->getArticleName();
+		$this->unit_price = Nosto::helper('price')->format($basket->getPrice());
 		$this->currency_code = strtoupper($currency_code);
 	}
 

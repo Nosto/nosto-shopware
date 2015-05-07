@@ -5,6 +5,8 @@ require_once 'Models/Nosto/Account/Account.php';
 
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
+    const PLATFORM_NAME = 'magento'; // todo: change to "shopware" once is works.
+
 	/**
 	 * @inheritdoc
 	 */
@@ -255,6 +257,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$model = $args->getEntity();
 		$this->reCrawlProduct($model);
 	}
+
+    /**
+     * Returns a unique ID for this Shopware installation.
+     *
+     * The ID is stored in a local file that is recreated if missing. This way we can be sure that it remains even if
+     * the plugin is uninstalled and later re-installed.
+     */
+    public function getUniqueId() {
+        $file = $this->Path() . '/identifier';
+        if (file_exists($file)) {
+            $unique_id = file_get_contents($file);
+            if (!empty($unique_id)) {
+                return $unique_id;
+            }
+        }
+
+        $unique_id = bin2hex(NostoCryptRandom::getRandomString(32));
+        if (file_put_contents($file, $unique_id) === false) {
+            return null;
+        }
+
+        return $unique_id;
+    }
 
 	/**
 	 * Creates needed db tables used by the plugin models.

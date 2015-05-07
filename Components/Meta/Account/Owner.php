@@ -21,10 +21,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	 */
 	public function loadData(\Shopware\Models\Shop\Shop $shop) {
 		$user = Shopware()->Auth()->getIdentity();
-		// todo: improve name handling
-		$names = explode(' ', $user->name);
-		$this->_first_name = $names[0];
-		$this->_last_name = $names[1];
+        list($first_name, $last_name) = explode(' ', $user->name);
+
+		$this->_first_name = $first_name;
+		$this->_last_name = $last_name;
 		$this->_email = $user->email;
 	}
 

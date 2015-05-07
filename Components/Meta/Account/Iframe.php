@@ -2,11 +2,6 @@
 
 class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe implements NostoAccountMetaDataIframeInterface {
 	/**
-	 * @var string the name of the platform the iframe is used on.
-	 */
-	protected $_platform = 'magento'; // todo: change to "shopware" once available.
-
-	/**
 	 * @var string the admin user first name.
 	 */
 	protected $_first_name;
@@ -32,7 +27,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	protected $_language_iso_code_shop;
 
 	/**
-	 * @var string unique ID that identifies the Magento installation.
+	 * @var string unique ID that identifies the Shopware installation.
 	 */
 	protected $_unique_id;
 
@@ -70,26 +65,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 * @param \Shopware\Models\Shop\Shop $shop
 	 */
 	public function loadData(\Shopware\Models\Shop\Shop $shop) {
-		// todo: implement
-
+        $helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
 		$user = Shopware()->Auth()->getIdentity();
-		// todo: improve name handling
-		$names = explode(' ', $user->name);
+        list($first_name, $last_name) = explode(' ', $user->name);
 
-		$this->_first_name = $names[0];
-		$this->_last_name = $names[1];
+		$this->_first_name = $first_name;
+		$this->_last_name = $last_name;
 		$this->_email = $user->email;
 		$this->_language_iso_code = strtolower(substr($user->locale->getLocale(), 0, 2));
 		$this->_language_iso_code_shop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-		// $this->_unique_id = todo
-
-        $helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
+		$this->_unique_id = Shopware()->Plugins()->Frontend()->NostoTagging()->getUniqueId();
 		$this->_preview_url_product = $helper->getProductPagePreviewUrl($shop);
 		$this->_preview_url_category = $helper->getCategoryPagePreviewUrl($shop);
 		$this->_preview_url_search = $helper->getSearchPagePreviewUrl($shop);
 		$this->_preview_url_cart = $helper->getCartPagePreviewUrl($shop);
 		$this->_preview_url_front = $helper->getFrontPagePreviewUrl($shop);
-
 		// todo: get name from "basic information"
 		$this->_shop_name = Shopware()->App() . ' - ' . $shop->getName();
 	}
@@ -101,7 +91,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 * @return string the platform name.
 	 */
 	public function getPlatform() {
-		return $this->_platform;
+		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
 	}
 
 	/**

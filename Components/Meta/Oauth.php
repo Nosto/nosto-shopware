@@ -30,7 +30,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 * @return string the client id.
 	 */
 	public function getClientId() {
-		return 'magento'; // todo: change to "shopware" once implemented
+		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
 	}
 
 	/**
@@ -40,7 +40,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 * @return string the client secret.
 	 */
 	public function getClientSecret() {
-		return 'magento'; // todo: change to "shopware" once implemented
+		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
 	}
 
 	/**
