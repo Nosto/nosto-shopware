@@ -1,7 +1,6 @@
 <?php
 
 require_once 'vendor/nosto/php-sdk/src/config.inc.php';
-require_once 'Models/Nosto/Account/Account.php';
 
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -29,7 +28,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @inheritdoc
 	 */
 	public function getLabel() {
-		return 'Personalization for Shopware'; // todo: translate?
+		return 'Personalization for Shopware';
 	}
 
 	/**
@@ -50,8 +49,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			'author' => 'Nosto Solutions Ltd',
 			'supplier' => 'Nosto Solutions Ltd',
 			'copyright' => 'Copyright (c) 2015, Nosto Solutions Ltd',
-			'description' => 'Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.', // todo: translate?
-			'support' => '-', // todo: what do we want here
+			'description' => 'Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.',
+			'support' => 'support@nosto.com',
 			'link' => 'http://nosto.com'
 		);
 	}
@@ -260,25 +259,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * Returns a unique ID for this Shopware installation.
-     *
-     * The ID is stored in a local file that is recreated if missing. This way we can be sure that it remains even if
-     * the plugin is uninstalled and later re-installed.
      */
     public function getUniqueId() {
-        $file = $this->Path() . '/identifier';
-        if (file_exists($file)) {
-            $unique_id = file_get_contents($file);
-            if (!empty($unique_id)) {
-                return $unique_id;
-            }
+        $setting = Shopware()
+            ->Models()
+            ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+            ->findOneBy(array('name' => 'uniqueId'));
+
+        if (is_null($setting)) {
+            $setting = new \Shopware\CustomModels\Nosto\Setting\Setting();
+            $setting->setName('uniqueId');
+            $setting->setValue(bin2hex(NostoCryptRandom::getRandomString(32)));
+            Shopware()->Models()->persist($setting);
+            Shopware()->Models()->flush($setting);
         }
 
-        $unique_id = bin2hex(NostoCryptRandom::getRandomString(32));
-        if (file_put_contents($file, $unique_id) === false) {
-            return null;
-        }
-
-        return $unique_id;
+        return $setting->getValue();
     }
 
 	/**
@@ -295,6 +291,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$schematic_tool->createSchema(
 			array(
 				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
+				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Setting\Setting'),
 			)
        );
 	}
@@ -313,6 +310,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$schematic_tool->dropSchema(
 			array(
 				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
+				$model_manager->getClassMetadata('Shopware\CustomModels\Nosto\Setting\Setting'),
 			)
 		);
 	}

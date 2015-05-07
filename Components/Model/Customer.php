@@ -16,26 +16,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	 */
 	protected $email;
 
-	/**
-	 * @return string
-	 */
-	public function getFirstName() {
-		return $this->first_name;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getLastName() {
-		return $this->last_name;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getEmail() {
-		return $this->email;
-	}
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            'first_name',
+            'last_name',
+            'email',
+        );
+    }
 
 	/**
 	 * @param $id
@@ -52,4 +44,25 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 			$this->email = $customer->getEmail();
 		}
 	}
+
+    /**
+     * @return string
+     */
+    public function getFirstName() {
+        return $this->first_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastName() {
+        return $this->last_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail() {
+        return $this->email;
+    }
 }

@@ -16,6 +16,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	 */
 	protected $_email;
 
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            '_first_name',
+            '_last_name',
+            '_email',
+        );
+    }
+
 	/**
 	 * Loads the order buyer info from the customer model.
 	 *

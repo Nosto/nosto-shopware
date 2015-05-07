@@ -6,12 +6,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	 */
 	protected $category_path;
 
-	/**
-	 * @return string
-	 */
-	public function getCategoryPath() {
-		return $this->category_path;
-	}
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            'category_path'
+        );
+    }
 
 	/**
 	 * @param int $id
@@ -39,4 +43,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 		}
 		return $path;
 	}
+
+    /**
+     * @return string
+     */
+    public function getCategoryPath() {
+        return $this->category_path;
+    }
 }

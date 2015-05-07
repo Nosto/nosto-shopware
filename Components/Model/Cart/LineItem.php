@@ -26,6 +26,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	 */
 	protected $currency_code;
 
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            'product_id',
+            'quantity',
+            'name',
+            'unit_price',
+            'currency_code',
+        );
+    }
+
 	/**
 	 * Loads the line item data from the basket model.
 	 *

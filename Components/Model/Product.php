@@ -76,6 +76,102 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	protected $date_published;
 
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            'url',
+            'product_id',
+            'name',
+            'price',
+            'list_price',
+            'price_currency_code',
+            'availability',
+        );
+    }
+
+    /**
+     * Loads the model data from an article model.
+     *
+     * @param int $id the article model id.
+     */
+    public function loadData($id)
+    {
+        if (!($id > 0)) {
+            return;
+        }
+        /** @var Shopware\Models\Article\Article $article */
+        $article = Shopware()->Models()->find('Shopware\Models\Article\Article', $id);
+        if (!is_null($article)) {
+            $shop = Shopware()->Shop();
+            $main_detail = $article->getMainDetail();
+
+            $this->assignId($article);
+            $this->assignUrl($article, $shop);
+            $this->name = $article->getName();
+
+            // todo: find the default/preview image
+            /** @var Shopware\Models\Article\Image $image */
+            $image = $article->getImages()->first();
+            $host = rtrim($shop->getHost(), '/');
+            $path = rtrim($shop->getBaseUrl(), '/');
+            $file = '/' . ltrim($image->getMedia()->getPath(), '/');
+            $this->image_url = 'http://' . $host . $path . $file;
+
+            // todo: why is prices an array collection?
+            /** @var Shopware\Models\Article\Price $price */
+            $price = $main_detail->getPrices()->first();
+            $tax = $article->getTax()->getTax();
+            // todo: discounts
+            $this->price = Nosto::helper('price')->format($price->getPrice() * (1 + ($tax / 100)));
+            $this->list_price = Nosto::helper('price')->format($this->price);
+            $this->price_currency_code = $shop->getCurrency()->getCurrency();
+            $this->availability = ($main_detail->getActive() && $main_detail->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
+            // todo: tags
+//			$this->tags = array();
+            foreach ($article->getCategories() as $category) {
+                $this->categories[] = Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category::buildCategoryPath($category);
+            }
+            $this->short_description = $article->getDescription();
+            $this->description = $article->getDescriptionLong();
+            $this->brand = $article->getSupplier()->getName();
+            $this->date_published = $article->getAdded()->format('Y-m-d');
+        }
+    }
+
+    /**
+     * Assigns an ID for the model from an article.
+     *
+     * This method exists in order to expose a public API to change the ID.
+     *
+     * @param \Shopware\Models\Article\Article $article the article to get the id from.
+     */
+    public function assignId(\Shopware\Models\Article\Article $article) {
+        $this->product_id = (int) $article->getId();
+    }
+
+    /**
+     * Assigns a url for the model from an article.
+     *
+     * This method exists in order to expose a public API to change the url.
+     *
+     * @param \Shopware\Models\Article\Article $article the article to create the url for.
+     * @param \Shopware\Models\Shop\Shop $shop the shop for the base url.
+     */
+    public function assignUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop) {
+        $url = Shopware()->Front()->Router()->assemble(array(
+            'module' => 'frontend',
+            'controller' => 'detail',
+            'sArticle' => $article->getId(),
+        ));
+        // todo: can the shop be added in a cleaner way?
+        $url = NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
+        $this->url = $url;
+    }
+
 	/**
 	 * @inheritdoc
 	 */
@@ -186,84 +282,5 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function getDatePublished()
 	{
 		return $this->date_published;
-	}
-
-	/**
-	 * Loads the model data from an article model.
-	 *
-	 * @param int $id the article model id.
-	 */
-	public function loadData($id)
-	{
-		if (!($id > 0)) {
-			return;
-		}
-		/** @var Shopware\Models\Article\Article $article */
-		$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $id);
-		if (!is_null($article)) {
-			$shop = Shopware()->Shop();
-			$main_detail = $article->getMainDetail();
-
-			$this->assignId($article);
-			$this->assignUrl($article, $shop);
-			$this->name = $article->getName();
-
-			// todo: find the default/preview image
-			/** @var Shopware\Models\Article\Image $image */
-			$image = $article->getImages()->first();
-			$host = rtrim($shop->getHost(), '/');
-			$path = rtrim($shop->getBaseUrl(), '/');
-			$file = '/' . ltrim($image->getMedia()->getPath(), '/');
-			$this->image_url = 'http://' . $host . $path . $file;
-
-			// todo: why is prices an array collection?
-			/** @var Shopware\Models\Article\Price $price */
-			$price = $main_detail->getPrices()->first();
-			$tax = $article->getTax()->getTax();
-			// todo: discounts
-			$this->price = Nosto::helper('price')->format($price->getPrice() * (1 + ($tax / 100)));
-			$this->list_price = Nosto::helper('price')->format($this->price);
-			$this->price_currency_code = $shop->getCurrency()->getCurrency();
-			$this->availability = ($main_detail->getActive() && $main_detail->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
-			// todo: tags
-//			$this->tags = array();
-			foreach ($article->getCategories() as $category) {
-				$this->categories[] = Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category::buildCategoryPath($category);
-			}
-			$this->short_description = $article->getDescription();
-			$this->description = $article->getDescriptionLong();
-			$this->brand = $article->getSupplier()->getName();
-			$this->date_published = $article->getAdded()->format('Y-m-d');
-		}
-	}
-
-	/**
-	 * Assigns an ID for the model from an article.
-	 *
-	 * This method exists in order to expose a public API to change the ID.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article to get the id from.
-	 */
-	public function assignId(\Shopware\Models\Article\Article $article) {
-		$this->product_id = (int) $article->getId();
-	}
-
-	/**
-	 * Assigns a url for the model from an article.
-	 *
-	 * This method exists in order to expose a public API to change the url.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article to create the url for.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop for the base url.
-	 */
-	public function assignUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop) {
-		$url = Shopware()->Front()->Router()->assemble(array(
-			'module' => 'frontend',
-			'controller' => 'detail',
-			'sArticle' => $article->getId(),
-		));
-		// todo: can the shop be added in a cleaner way?
-		$url = NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
-		$this->url = $url;
 	}
 }

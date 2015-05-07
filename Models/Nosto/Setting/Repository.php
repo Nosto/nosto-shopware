@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopware\CustomModels\Nosto\Account;
+namespace Shopware\CustomModels\Nosto\Setting;
 
 use Shopware\Components\Model\ModelRepository;
 

@@ -18,6 +18,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	protected $_payment_provider;
 
+    /**
+     * @var string the payment status of the order.
+     */
+    protected $_payment_status;
+
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer The user info of the buyer.
 	 */
@@ -32,6 +37,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 * @var bool if special line items like shipping cost should be included.
 	 */
 	protected $_include_special_line_items = true;
+
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            '_order_number',
+            '_created_date',
+            '_payment_provider',
+            '_payment_status',
+            '_buyer',
+            '_items',
+        );
+    }
 
 	/**
 	 * Loads order details from the order model based on it's order number.
@@ -53,6 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 			if (!is_null($payment_plugin)) {
 				$this->_payment_provider .= sprintf(' [%s]', $payment_plugin->getVersion());
 			}
+            $this->_payment_status = $order->getOrderStatus()->getDescription(); // $order->getPaymentStatus()->getDescription()
 
 			$this->_buyer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
 			$this->_buyer->loadData($order->getCustomer());
@@ -113,6 +135,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	{
 		return $this->_payment_provider;
 	}
+
+    /**
+     * The orders payment status.
+     *
+     * @return string the status.
+     */
+    public function getPaymentStatus() {
+        return $this->_payment_status;
+    }
 
 	/**
 	 * The buyer info of the user who placed the order.

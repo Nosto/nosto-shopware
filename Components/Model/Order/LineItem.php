@@ -27,6 +27,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 */
 	protected $_currency_code;
 
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            '_product_id',
+            '_quantity',
+            '_name',
+            '_unit_price',
+            '_currency_code',
+        );
+    }
+
 	/**
 	 * Populates the order line item with data from the order detail model.
 	 *

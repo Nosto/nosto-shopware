@@ -6,13 +6,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Sho
 	 */
 	protected $search_term;
 
-	/**
-	 * @return string
-	 */
-	public function getSearchTerm()
-	{
-		return $this->search_term;
-	}
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array(
+            'search_term'
+        );
+    }
 
 	/**
 	 * @param string $search_term
@@ -21,4 +24,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Sho
 	{
 		$this->search_term = $search_term;
 	}
+
+    /**
+     * @return string
+     */
+    public function getSearchTerm()
+    {
+        return $this->search_term;
+    }
 }

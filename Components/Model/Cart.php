@@ -6,12 +6,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	 */
 	protected $items = array();
 
-	/**
-	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] the line items in the cart.
-	 */
-	public function getLineItems() {
-		return $this->items;
-	}
+    /**
+     * Returns an array of required items in the model.
+     *
+     * @return array the list of required items.
+     */
+    public function getRequiredAttributes() {
+        return array();
+    }
 
 	/**
      * Loads the cart line items from the order basket.
@@ -38,4 +40,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 			$this->items[] = $item;
 		}
 	}
+
+    /**
+     * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] the line items in the cart.
+     */
+    public function getLineItems() {
+        return $this->items;
+    }
 }
