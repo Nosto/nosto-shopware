@@ -52,7 +52,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	 * @param \Shopware\Models\Shop\Shop $shop the shop view to load the data for.
 	 */
 	public function loadData(\Shopware\Models\Shop\Shop $shop) {
-		// todo: get name from "basic information"
 		$this->_title = Shopware()->App() . ' - ' . $shop->getName();
 		$this->_name = substr(sha1(rand()), 0, 8);
 		$this->_front_page_url = Shopware()->Front()->Router()->assemble(array('module' => 'frontend'));

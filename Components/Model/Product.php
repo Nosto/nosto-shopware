@@ -121,13 +121,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
             $file = '/' . ltrim($image->getMedia()->getPath(), '/');
             $this->image_url = 'http://' . $host . $path . $file;
 
-            // todo: why is prices an array collection?
             /** @var Shopware\Models\Article\Price $price */
             $price = $main_detail->getPrices()->first();
             $tax = $article->getTax()->getTax();
-            // todo: discounts
             $this->price = Nosto::helper('price')->format($price->getPrice() * (1 + ($tax / 100)));
-            $this->list_price = Nosto::helper('price')->format($this->price);
+            $this->list_price = Nosto::helper('price')->format(($price->getPseudoPrice() > 0) ? ($price->getPseudoPrice() * (1 + ($tax / 100))) : $this->price);
             $this->price_currency_code = $shop->getCurrency()->getCurrency();
             $this->availability = ($main_detail->getActive() && $main_detail->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
             // todo: tags
