@@ -113,13 +113,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
             $this->assignUrl($article, $shop);
             $this->name = $article->getName();
 
-            // todo: find the default/preview image
             /** @var Shopware\Models\Article\Image $image */
-            $image = $article->getImages()->first();
-            $host = rtrim($shop->getHost(), '/');
-            $path = rtrim($shop->getBaseUrl(), '/');
-            $file = '/' . ltrim($image->getMedia()->getPath(), '/');
-            $this->image_url = 'http://' . $host . $path . $file;
+            foreach ($article->getImages() as $image) {
+                if ($image->getMain() === 1) {
+                    $host = trim($shop->getHost(), '/');
+                    $path = trim($shop->getBaseUrl(), '/');
+                    $file = trim($image->getMedia()->getPath(), '/');
+                    $this->image_url = 'http://' . $host . '/' . $path . '/' . $file;
+                    break;
+                }
+            }
 
             /** @var Shopware\Models\Article\Price $price */
             $price = $main_detail->getPrices()->first();
