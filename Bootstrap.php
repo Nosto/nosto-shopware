@@ -221,40 +221,52 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	/**
 	 * Event handler for the `Shopware\Models\Article\Article::postPersist` event.
 	 *
-	 * Sends a re-crawl API call to Nosto for the added article.
+	 * Sends a product `create` API call to Nosto for the added article.
 	 *
 	 * @param Enlight_Event_EventArgs $args
 	 */
 	public function onPostPersistArticle(Enlight_Event_EventArgs $args) {
-		/** @var Shopware\Models\Article\Article $model */
-		$model = $args->getEntity();
-		$this->reCrawlProduct($model);
+		/** @var Shopware\Models\Article\Article $article */
+        $article = $args->getEntity();
+        $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+        $model->loadData($article->getId());
+        if ($model->validate()) {
+            $this->sendProduct('create', $model);
+        }
 	}
 
 	/**
 	 * Event handler for the `Shopware\Models\Article\Article::postUpdate` event.
 	 *
-	 * Sends a re-crawl API call to Nosto for the updated article.
+	 * Sends a product `update` API call to Nosto for the updated article.
 	 *
 	 * @param Enlight_Event_EventArgs $args
 	 */
 	public function onPostUpdateArticle(Enlight_Event_EventArgs $args) {
-		/** @var Shopware\Models\Article\Article $model */
-		$model = $args->getEntity();
-		$this->reCrawlProduct($model);
+		/** @var Shopware\Models\Article\Article $article */
+        $article = $args->getEntity();
+        $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+        $model->loadData($article->getId());
+        if ($model->validate()) {
+            $this->sendProduct('update', $model);
+        }
 	}
 
 	/**
 	 * Event handler for the `Shopware\Models\Article\Article::postRemove` event.
 	 *
-	 * Sends a re-crawl API call to Nosto for the removed article.
+	 * Sends a product `delete` API call to Nosto for the removed article.
 	 *
 	 * @param Enlight_Event_EventArgs $args
 	 */
 	public function onPostRemoveArticle(Enlight_Event_EventArgs $args) {
-		/** @var Shopware\Models\Article\Article $model */
-		$model = $args->getEntity();
-		$this->reCrawlProduct($model);
+		/** @var Shopware\Models\Article\Article $article */
+        $article = $args->getEntity();
+        $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+        $model->assignId($article);
+        if ($model->validate(array('product_id'))) {
+            $this->sendProduct('delete', $model);
+        }
 	}
 
     /**
@@ -647,15 +659,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
-	 * Sends a product re-crawl API call to Nosto for an article (product).
+	 * Sends a product operation API call to Nosto for an article (product).
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
+     * @param string $operation the operation, i.e. one of `create`, `update`, `delete`.
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product $product the product model.
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostPersistArticle
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateArticle
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostRemoveArticle
 	 */
-	protected function reCrawlProduct(Shopware\Models\Article\Article $article) {
+	protected function sendProduct($operation, Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product $product) {
 		/** @var \Shopware\Models\Shop\Shop[] $shops */
 		$shops = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop')->findAll();
 		$account_helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
@@ -665,10 +678,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 				$nosto_account = $account_helper->convertToNostoAccount($account);
 				if ($nosto_account->isConnectedToNosto()) {
 					try {
-						$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-						$model->assignId($article);
-						$model->assignUrl($article, $shop);
-						NostoProductReCrawl::send($model, $nosto_account);
+                        $op = new NostoOperationProduct($nosto_account);
+                        $op->addProduct($product);
+                        call_user_func(array($op, $operation));
 					} catch (NostoException $e) {
 						Shopware()->Pluginlogger()->error($e);
 					}
