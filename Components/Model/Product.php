@@ -128,10 +128,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
             $this->list_price = Nosto::helper('price')->format(($price->getPseudoPrice() > 0) ? ($price->getPseudoPrice() * (1 + ($tax / 100))) : $this->price);
             $this->price_currency_code = $shop->getCurrency()->getCurrency();
             $this->availability = ($main_detail->getActive() && $main_detail->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
-            // todo: tags
+            // todo: find product tags & add "add-to-cart" tag if applicable
 //			$this->tags = array();
+            /** @var Shopware\Models\Category\Category $category */
             foreach ($article->getCategories() as $category) {
-                $this->categories[] = Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category::buildCategoryPath($category);
+                // Only include categories that are under the shop's root category.
+                if (strpos($category->getPath(), '|'.$shop->getCategory()->getId().'|') !== false) {
+                    $this->categories[] = Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category::buildCategoryPath($category);
+                }
             }
             $this->short_description = $article->getDescription();
             $this->description = $article->getDescriptionLong();

@@ -37,10 +37,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	 */
 	public static function buildCategoryPath($category)
 	{
-		$path = $category->getName();
-		if ($category->getParent()) {
-			$path = self::buildCategoryPath($category->getParent()) . '/' . $path;
-		}
+        $path = '';
+        if (!is_null($category->getPath())) {
+		    $path .= $category->getName();
+		    if ($category->getParent() && !is_null($category->getParent()->getPath())) {
+			    $path = self::buildCategoryPath($category->getParent()) . '/' . $path;
+		    }
+        }
 		return $path;
 	}
 
