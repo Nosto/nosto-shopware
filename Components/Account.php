@@ -46,7 +46,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account {
 			$data['apiTokens'][$token->name] = $token->value;
 		}
 		$account->setData($data);
-		// todo: validate model.
+        $violations = Shopware()->Models()->validate($account);
+        if ($violations->count() > 0) {
+            foreach ($violations as $violation) {
+                Shopware()->Pluginlogger()->error($violation);
+            }
+        }
 		return $account;
 	}
 
