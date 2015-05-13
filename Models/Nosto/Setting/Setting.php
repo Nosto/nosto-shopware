@@ -68,7 +68,7 @@ class Setting extends ModelEntity {
      */
     public function getValue()
     {
-        return $this->name;
+        return $this->value;
     }
 
     /**
