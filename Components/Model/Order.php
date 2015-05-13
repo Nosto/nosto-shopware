@@ -1,27 +1,23 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderInterface {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order implements NostoOrderInterface
+{
 	/**
 	 * @var string|int the unique order number identifying the order.
 	 */
-	protected $_order_number;
+	protected $_orderNumber;
 
 	/**
 	 * @var string the date when the order was placed.
 	 */
-	protected $_created_date;
+	protected $_createdDate;
 
 	/**
 	 * @var string the payment provider used for order.
 	 *
 	 * Formatted according to "[provider name] [provider version]".
 	 */
-	protected $_payment_provider;
-
-    /**
-     * @var string the payment status of the order.
-     */
-    protected $_payment_status;
+	protected $_paymentProvider;
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer The user info of the buyer.
@@ -34,65 +30,58 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	protected $_items = array();
 
 	/**
+	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status the order status model.
+	 */
+	protected $_orderStatus;
+
+	/**
 	 * @var bool if special line items like shipping cost should be included.
 	 */
-	protected $_include_special_line_items = true;
-
-    /**
-     * Returns an array of required items in the model.
-     *
-     * @return array the list of required items.
-     */
-    public function getRequiredAttributes() {
-        return array(
-            '_order_number',
-            '_created_date',
-            '_payment_provider',
-            '_payment_status',
-            '_buyer',
-            '_items',
-        );
-    }
+	protected $_includeSpecialLineItems = true;
 
 	/**
 	 * Loads order details from the order model based on it's order number.
 	 *
-	 * @param int $order_number the order number of the order model.
+	 * @param int $orderNumber the order number of the order model.
 	 */
-	public function loadData($order_number) {
-		if (!($order_number > 0)) {
+	public function loadData($orderNumber)
+	{
+		if (!($orderNumber > 0)) {
 			return;
 		}
 
 		/** @var Shopware\Models\Order\Order $order */
-		$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(array('number' => $order_number));
+		$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(array('number' => $orderNumber));
 		if (!is_null($order)) {
-			$this->_order_number = $order->getNumber();
-			$this->_created_date = $order->getOrderTime()->format('Y-m-d');
-			$this->_payment_provider = $order->getPayment()->getName();
-			$payment_plugin = $order->getPayment()->getPlugin();
-			if (!is_null($payment_plugin)) {
-				$this->_payment_provider .= sprintf(' [%s]', $payment_plugin->getVersion());
+			$this->_orderNumber = $order->getNumber();
+			$this->_createdDate = $order->getOrderTime()->format('Y-m-d');
+
+			$this->_paymentProvider = $order->getPayment()->getName();
+			$paymentPlugin = $order->getPayment()->getPlugin();
+			if (!is_null($paymentPlugin)) {
+				$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
 			}
-            $this->_payment_status = $order->getOrderStatus()->getDescription(); // $order->getPaymentStatus()->getDescription()
+
+			$this->_orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
+			$this->_orderStatus->loadData($order);
 
 			$this->_buyer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
 			$this->_buyer->loadData($order->getCustomer());
 
 			foreach ($order->getDetails() as $detail) {
 				/** @var Shopware\Models\Order\Detail $detail */
-				if ($this->_include_special_line_items || $detail->getArticleId() > 0) {
+				if ($this->_includeSpecialLineItems || $detail->getArticleId() > 0) {
 					$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
 					$item->loadData($detail);
 					$this->_items[] = $item;
 				}
 			}
 
-			if ($this->_include_special_line_items) {
-				$shipping_cost = $order->getInvoiceShipping();
-				if ($shipping_cost > 0) {
+			if ($this->_includeSpecialLineItems) {
+				$shippingCost = $order->getInvoiceShipping();
+				if ($shippingCost > 0) {
 					$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-					$item->loadSpecialItemData('Shipping cost', $shipping_cost, $order->getCurrency());
+					$item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
 					$this->_items[] = $item;
 				}
 			}
@@ -100,55 +89,40 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	}
 
 	/**
-	 * Disables the special line items so they are not included when calling `loadData()`.
+	 * Disables "special" line items when calling `loadData()`.
+	 * Special items are shipping cost, cart based discounts etc.
 	 */
-	public function disableSpecialLineItems() {
-		$this->_include_special_line_items = false;
+	public function disableSpecialLineItems()
+	{
+		$this->_includeSpecialLineItems = false;
 	}
 
 	/**
-	 * The unique order number identifying the order.
-	 *
-	 * @return string|int the order number.
+	 * @inheritdoc
 	 */
 	public function getOrderNumber()
 	{
-		return $this->_order_number;
+		return $this->_orderNumber;
 	}
 
 	/**
-	 * The date when the order was placed.
-	 *
-	 * @return string the creation date.
+	 * @inheritdoc
 	 */
 	public function getCreatedDate()
 	{
-		return $this->_created_date;
+		return $this->_createdDate;
 	}
 
 	/**
-	 * The payment provider used for placing the order, formatted according to "[provider name] [provider version]".
-	 *
-	 * @return string the payment provider.
+	 * @inheritdoc
 	 */
 	public function getPaymentProvider()
 	{
-		return $this->_payment_provider;
+		return $this->_paymentProvider;
 	}
 
-    /**
-     * The orders payment status.
-     *
-     * @return string the status.
-     */
-    public function getPaymentStatus() {
-        return $this->_payment_status;
-    }
-
 	/**
-	 * The buyer info of the user who placed the order.
-	 *
-	 * @return NostoOrderBuyerInterface the meta data model.
+	 * @inheritdoc
 	 */
 	public function getBuyerInfo()
 	{
@@ -156,12 +130,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	}
 
 	/**
-	 * The purchased items which were included in the order.
-	 *
-	 * @return NostoOrderPurchasedItemInterface[] the meta data models.
+	 * @inheritdoc
 	 */
 	public function getPurchasedItems()
 	{
 		return $this->_items;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getOrderStatus()
+	{
+		return $this->_orderStatus;
 	}
 }

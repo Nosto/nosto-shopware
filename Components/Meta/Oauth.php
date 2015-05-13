@@ -1,26 +1,30 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements NostoOAuthClientMetaDataInterface {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements NostoOAuthClientMetaDataInterface
+{
 	/**
 	 * @var string OAuth2 redirect url to where the OAuth2 server should redirect the user after authorizing.
 	 */
-	protected $_redirect_url;
+	protected $_redirectUrl;
 
 	/**
 	 * @var string 2-letter ISO code (ISO 639-1) for the language the OAuth2 server uses for UI localization.
 	 */
-	protected $_language_code;
+	protected $_languageCode;
 
 	/**
-	 * @param \Shopware\Models\Shop\Shop $shop
+	 * Loads the oauth meta data from the shop model.
+	 *
+	 * @param \Shopware\Models\Shop\Shop $shop the model.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop) {
-		$this->_redirect_url = Shopware()->Front()->Router()->assemble(array(
+	public function loadData(\Shopware\Models\Shop\Shop $shop)
+	{
+		$this->_redirectUrl = Shopware()->Front()->Router()->assemble(array(
 			'module' => 'frontend',
 			'controller' => 'NostoTagging',
 			'action' => 'oauth'
 		));
-		$this->_language_code = strtolower(substr(Shopware()->Auth()->getIdentity()->locale->getLocale(), 0, 2));
+		$this->_languageCode = strtolower(substr(Shopware()->Auth()->getIdentity()->locale->getLocale(), 0, 2));
 	}
 
 	/**
@@ -29,7 +33,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 *
 	 * @return string the client id.
 	 */
-	public function getClientId() {
+	public function getClientId()
+	{
 		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
 	}
 
@@ -39,7 +44,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 *
 	 * @return string the client secret.
 	 */
-	public function getClientSecret() {
+	public function getClientSecret()
+	{
 		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
 	}
 
@@ -50,8 +56,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 *
 	 * @return string the url.
 	 */
-	public function getRedirectUrl() {
-		return $this->_redirect_url;
+	public function getRedirectUrl()
+	{
+		return $this->_redirectUrl;
 	}
 
 	/**
@@ -61,7 +68,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 *
 	 * @return array the scopes.
 	 */
-	public function getScopes() {
+	public function getScopes()
+	{
 		// We want all the available Nosto API tokens.
 		return NostoApiToken::$tokenNames;
 	}
@@ -71,7 +79,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	 *
 	 * @return string the ISO code.
 	 */
-	public function getLanguageIsoCode() {
-		return $this->_language_code;
+	public function getLanguageIsoCode()
+	{
+		return $this->_languageCode;
 	}
 }

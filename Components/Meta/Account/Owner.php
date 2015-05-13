@@ -1,15 +1,16 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner implements NostoAccountMetaDataOwnerInterface {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner implements NostoAccountMetaDataOwnerInterface
+{
 	/**
 	 * @var string the first name of the account owner.
 	 */
-	protected $_first_name;
+	protected $_firstName;
 
 	/**
 	 * @var string the last name of the account owner.
 	 */
-	protected $_last_name;
+	protected $_lastName;
 
 	/**
 	 * @var string the email address of the account owner.
@@ -19,12 +20,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	/**
 	 * @param \Shopware\Models\Shop\Shop $shop
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop) {
+	public function loadData(\Shopware\Models\Shop\Shop $shop)
+	{
 		$user = Shopware()->Auth()->getIdentity();
-        list($first_name, $last_name) = explode(' ', $user->name);
+		list($firstName, $lastName) = explode(' ', $user->name);
 
-		$this->_first_name = $first_name;
-		$this->_last_name = $last_name;
+		$this->_firstName = $firstName;
+		$this->_lastName = $lastName;
 		$this->_email = $user->email;
 	}
 
@@ -33,8 +35,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	 *
 	 * @return string the first name.
 	 */
-	public function getFirstName() {
-		return $this->_first_name;
+	public function getFirstName()
+	{
+		return $this->_firstName;
 	}
 
 	/**
@@ -42,8 +45,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	 *
 	 * @return string the last name.
 	 */
-	public function getLastName() {
-		return $this->_last_name;
+	public function getLastName()
+	{
+		return $this->_lastName;
 	}
 
 	/**
@@ -51,7 +55,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	 *
 	 * @return string the email address.
 	 */
-	public function getEmail() {
+	public function getEmail()
+	{
 		return $this->_email;
 	}
 
@@ -60,7 +65,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	 *
 	 * @param string $email the email address.
 	 */
-	public function setEmail($email) {
+	public function setEmail($email)
+	{
 		$this->_email = $email;
 	}
 }

@@ -1,69 +1,52 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderBuyerInterface {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer implements NostoOrderBuyerInterface
+{
 	/**
 	 * @var string the first name of the user who placed the order.
 	 */
-	protected $_first_name;
+	protected $_firstName;
 
 	/**
 	 * @var string the last name of the user who placed the order.
 	 */
-	protected $_last_name;
+	protected $_lastName;
 
 	/**
 	 * @var string the email address of the user who placed the order.
 	 */
 	protected $_email;
 
-    /**
-     * Returns an array of required items in the model.
-     *
-     * @return array the list of required items.
-     */
-    public function getRequiredAttributes() {
-        return array(
-            '_first_name',
-            '_last_name',
-            '_email',
-        );
-    }
-
 	/**
 	 * Loads the order buyer info from the customer model.
 	 *
 	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
 	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer) {
-		$this->_first_name = $customer->getBilling()->getFirstName();
-		$this->_last_name = $customer->getBilling()->getLastName();
+	public function loadData(\Shopware\Models\Customer\Customer $customer)
+	{
+		$this->_firstName = $customer->getBilling()->getFirstName();
+		$this->_lastName = $customer->getBilling()->getLastName();
 		$this->_email = $customer->getEmail();
 	}
 
 	/**
-	 * Gets the first name of the user who placed the order.
-	 *
-	 * @return string the first name.
+	 * @inheritdoc
 	 */
 	public function getFirstName()
 	{
-		return $this->_first_name;
+		return $this->_firstName;
 	}
 
 	/**
-	 * Gets the last name of the user who placed the order.
-	 *
-	 * @return string the last name.
+	 * @inheritdoc
 	 */
 	public function getLastName()
 	{
-		return $this->_last_name;
+		return $this->_lastName;
 	}
 
 	/**
-	 * Gets the email address of the user who placed the order.
-	 *
-	 * @return string the email address.
+	 * @inheritdoc
 	 */
 	public function getEmail()
 	{

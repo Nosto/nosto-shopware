@@ -1,15 +1,16 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe implements NostoAccountMetaDataIframeInterface {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe implements NostoAccountMetaDataIframeInterface
+{
 	/**
 	 * @var string the admin user first name.
 	 */
-	protected $_first_name;
+	protected $_firstName;
 
 	/**
 	 * @var string the admin user last name.
 	 */
-	protected $_last_name;
+	protected $_lastName;
 
 	/**
 	 * @var string the admin user email address.
@@ -19,68 +20,71 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	/**
 	 * @var string the language ISO (ISO 639-1) code for oauth server locale.
 	 */
-	protected $_language_iso_code;
+	protected $_languageIsoCode;
 
 	/**
 	 * @var string the language ISO (ISO 639-1) for the store view scope.
 	 */
-	protected $_language_iso_code_shop;
+	protected $_languageIsoCodeShop;
 
 	/**
 	 * @var string unique ID that identifies the Shopware installation.
 	 */
-	protected $_unique_id;
+	protected $_uniqueId;
 
 	/**
 	 * @var string preview url for the product page in the active store scope.
 	 */
-	protected $_preview_url_product;
+	protected $_previewUrlProduct;
 
 	/**
 	 * @var string preview url for the category page in the active store scope.
 	 */
-	protected $_preview_url_category;
+	protected $_previewUrlCategory;
 
 	/**
 	 * @var string preview url for the search page in the active store scope.
 	 */
-	protected $_preview_url_search;
+	protected $_previewUrlSearch;
 
 	/**
 	 * @var string preview url for the cart page in the active store scope.
 	 */
-	protected $_preview_url_cart;
+	protected $_previewUrlCart;
 
 	/**
 	 * @var string preview url for the front page in the active store scope.
 	 */
-	protected $_preview_url_front;
+	protected $_previewUrlFront;
 
 	/**
 	 * @var string the name of the store Nosto is installed in or about to be installed.
 	 */
-	protected $_shop_name;
+	protected $_shopName;
 
 	/**
-	 * @param \Shopware\Models\Shop\Shop $shop
+	 * Loads the iframe data from the shop model.
+	 *
+	 * @param \Shopware\Models\Shop\Shop $shop the model.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop) {
-        $helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
+	public function loadData(\Shopware\Models\Shop\Shop $shop)
+	{
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
 		$user = Shopware()->Auth()->getIdentity();
-        list($first_name, $last_name) = explode(' ', $user->name);
+		list($firstName, $lastName) = explode(' ', $user->name);
 
-		$this->_first_name = $first_name;
-		$this->_last_name = $last_name;
+		$this->_firstName = $firstName;
+		$this->_lastName = $lastName;
 		$this->_email = $user->email;
-		$this->_language_iso_code = strtolower(substr($user->locale->getLocale(), 0, 2));
-		$this->_language_iso_code_shop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-		$this->_unique_id = Shopware()->Plugins()->Frontend()->NostoTagging()->getUniqueId();
-		$this->_preview_url_product = $helper->getProductPagePreviewUrl($shop);
-		$this->_preview_url_category = $helper->getCategoryPagePreviewUrl($shop);
-		$this->_preview_url_search = $helper->getSearchPagePreviewUrl($shop);
-		$this->_preview_url_cart = $helper->getCartPagePreviewUrl($shop);
-		$this->_preview_url_front = $helper->getFrontPagePreviewUrl($shop);
-		$this->_shop_name = Shopware()->App() . ' - ' . $shop->getName();
+		$this->_languageIsoCode = strtolower(substr($user->locale->getLocale(), 0, 2));
+		$this->_languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
+		$this->_uniqueId = Shopware()->Plugins()->Frontend()->NostoTagging()->getUniqueId();
+		$this->_previewUrlProduct = $helper->getProductPagePreviewUrl($shop);
+		$this->_previewUrlCategory = $helper->getCategoryPagePreviewUrl($shop);
+		$this->_previewUrlSearch = $helper->getSearchPagePreviewUrl($shop);
+		$this->_previewUrlCart = $helper->getCartPagePreviewUrl($shop);
+		$this->_previewUrlFront = $helper->getFrontPagePreviewUrl($shop);
+		$this->_shopName = Shopware()->App().' - '.$shop->getName();
 	}
 
 	/**
@@ -89,7 +93,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the platform name.
 	 */
-	public function getPlatform() {
+	public function getPlatform()
+	{
 		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
 	}
 
@@ -98,8 +103,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the first name.
 	 */
-	public function getFirstName() {
-		return $this->_first_name;
+	public function getFirstName()
+	{
+		return $this->_firstName;
 	}
 
 	/**
@@ -107,8 +113,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the last name.
 	 */
-	public function getLastName() {
-		return $this->_last_name;
+	public function getLastName()
+	{
+		return $this->_lastName;
 	}
 
 	/**
@@ -116,7 +123,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the email address.
 	 */
-	public function getEmail() {
+	public function getEmail()
+	{
 		return $this->_email;
 	}
 
@@ -125,8 +133,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the language ISO code.
 	 */
-	public function getLanguageIsoCode() {
-		return $this->_language_iso_code;
+	public function getLanguageIsoCode()
+	{
+		return $this->_languageIsoCode;
 	}
 
 	/**
@@ -134,8 +143,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the language ISO code.
 	 */
-	public function getLanguageIsoCodeShop() {
-		return $this->_language_iso_code_shop;
+	public function getLanguageIsoCodeShop()
+	{
+		return $this->_languageIsoCodeShop;
 	}
 
 	/**
@@ -144,8 +154,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the identifier.
 	 */
-	public function getUniqueId() {
-		return $this->_unique_id;
+	public function getUniqueId()
+	{
+		return $this->_uniqueId;
 	}
 
 	/**
@@ -153,7 +164,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the platform version.
 	 */
-	public function getVersionPlatform() {
+	public function getVersionPlatform()
+	{
 		return \Shopware::VERSION;
 	}
 
@@ -162,7 +174,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the module version.
 	 */
-	public function getVersionModule() {
+	public function getVersionModule()
+	{
 		return Shopware()->Plugins()->Frontend()->NostoTagging()->getVersion();
 	}
 
@@ -173,8 +186,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the url.
 	 */
-	public function getPreviewUrlProduct() {
-		return $this->_preview_url_product;
+	public function getPreviewUrlProduct()
+	{
+		return $this->_previewUrlProduct;
 	}
 
 	/**
@@ -184,8 +198,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the url.
 	 */
-	public function getPreviewUrlCategory() {
-		return $this->_preview_url_category;
+	public function getPreviewUrlCategory()
+	{
+		return $this->_previewUrlCategory;
 	}
 
 	/**
@@ -195,8 +210,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the url.
 	 */
-	public function getPreviewUrlSearch() {
-		return $this->_preview_url_search;
+	public function getPreviewUrlSearch()
+	{
+		return $this->_previewUrlSearch;
 	}
 
 	/**
@@ -206,8 +222,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the url.
 	 */
-	public function getPreviewUrlCart() {
-		return $this->_preview_url_cart;
+	public function getPreviewUrlCart()
+	{
+		return $this->_previewUrlCart;
 	}
 
 	/**
@@ -217,8 +234,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the url.
 	 */
-	public function getPreviewUrlFront() {
-		return $this->_preview_url_front;
+	public function getPreviewUrlFront()
+	{
+		return $this->_previewUrlFront;
 	}
 
 	/**
@@ -226,7 +244,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	 *
 	 * @return string the name.
 	 */
-	public function getShopName() {
-		return $this->_shop_name;
+	public function getShopName()
+	{
+		return $this->_shopName;
 	}
 }

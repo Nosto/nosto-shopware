@@ -1,56 +1,58 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
+{
 	/**
 	 * @var string the full category path with categories separated by a `/` sign.
 	 */
-	protected $category_path;
-
-    /**
-     * Returns an array of required items in the model.
-     *
-     * @return array the list of required items.
-     */
-    public function getRequiredAttributes() {
-        return array(
-            'category_path'
-        );
-    }
+	protected $_categoryPath;
 
 	/**
-	 * @param int $id
+	 * Loads the category data from a category model.
+	 *
+	 * @param int $id the category model id.
 	 */
-	public function loadData($id) {
+	public function loadData($id)
+	{
 		if (!($id > 0)) {
 			return;
 		}
 		/** @var Shopware\Models\Category\Category $category */
 		$category = Shopware()->Models()->find('Shopware\Models\Category\Category', $id);
 		if (!is_null($category)) {
-			$this->category_path = self::buildCategoryPath($category);
+			$this->_categoryPath = self::buildCategoryPath($category);
 		}
 	}
 
 	/**
-	 * @param Shopware\Models\Category\Category $category
-	 * @return string
+	 * Builds the category path for the category, including all ancestors.
+	 *
+	 * Example:
+	 *
+	 * "Sports/Winter"
+	 *
+	 * @param Shopware\Models\Category\Category $category the category model.
+	 * @return string the path.
 	 */
 	public static function buildCategoryPath($category)
 	{
-        $path = '';
-        if (!is_null($category->getPath())) {
-		    $path .= $category->getName();
-		    if ($category->getParent() && !is_null($category->getParent()->getPath())) {
-			    $path = self::buildCategoryPath($category->getParent()) . '/' . $path;
-		    }
-        }
+		$path = '';
+		if (!is_null($category->getPath())) {
+			$path .= $category->getName();
+			if ($category->getParent() && !is_null($category->getParent()->getPath())) {
+				$path = self::buildCategoryPath($category->getParent()).'/'.$path;
+			}
+		}
 		return $path;
 	}
 
-    /**
-     * @return string
-     */
-    public function getCategoryPath() {
-        return $this->category_path;
-    }
+	/**
+	 * Returns the category path including all ancestors.
+	 *
+	 * @return string the path.
+	 */
+	public function getCategoryPath()
+	{
+		return $this->_categoryPath;
+	}
 }

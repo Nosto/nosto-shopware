@@ -1,6 +1,6 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements \NostoProductInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product implements \NostoProductInterface, \NostoValidatableModelInterface
 {
 	const IN_STOCK = 'InStock';
 	const OUT_OF_STOCK = 'OutOfStock';
@@ -9,180 +9,177 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var string absolute url to the product page.
 	 */
-	protected $url;
+	protected $_url;
 
 	/**
 	 * @var string product object id.
 	 */
-	protected $product_id;
+	protected $_productId;
 
 	/**
 	 * @var string product name.
 	 */
-	protected $name;
+	protected $_name;
 
 	/**
 	 * @var string absolute url to the product image.
 	 */
-	protected $image_url;
+	protected $_imageUrl;
 
 	/**
 	 * @var string product price, discounted including vat.
 	 */
-	protected $price;
+	protected $_price;
 
 	/**
 	 * @var string product list price, including vat.
 	 */
-	protected $list_price;
+	protected $_listPrice;
 
 	/**
 	 * @var string the currency iso code.
 	 */
-	protected $price_currency_code;
+	protected $_currencyCode;
 
 	/**
 	 * @var string product availability (use constants).
 	 */
-	protected $availability;
+	protected $_availability;
 
 	/**
 	 * @var array list of product tags.
 	 */
-	protected $tags = array();
+	protected $_tags = array();
 
 	/**
 	 * @var array list of product category strings.
 	 */
-	protected $categories = array();
+	protected $_categories = array();
 
 	/**
 	 * @var string the product short description.
 	 */
-	protected $short_description;
+	protected $_shortDescription;
 
 	/**
 	 * @var string the product description.
 	 */
-	protected $description;
+	protected $_description;
 
 	/**
 	 * @var string the product brand name.
 	 */
-	protected $brand;
+	protected $_brand;
 
 	/**
 	 * @var string the product publish date.
 	 */
-	protected $date_published;
+	protected $_datePublished;
 
-    /**
-     * Returns an array of required items in the model.
-     *
-     * @return array the list of required items.
-     */
-    public function getRequiredAttributes() {
-        return array(
-            'url',
-            'product_id',
-            'name',
-            'price',
-            'list_price',
-            'price_currency_code',
-            'availability',
-        );
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function getValidationRules()
+	{
+		return array(
+			array(
+				array(
+					'_url',
+					'_productId',
+					'_name',
+					'_imageUrl',
+					'_price',
+					'_listPrice',
+					'_currencyCode',
+					'_availability',
+				),
+				'required'
+			)
+		);
+	}
 
-    /**
-     * Loads the model data from an article model.
-     *
-     * @param int $id the article model id.
-     */
-    public function loadData($id)
-    {
-        if (!($id > 0)) {
-            return;
-        }
-        /** @var Shopware\Models\Article\Article $article */
-        $article = Shopware()->Models()->find('Shopware\Models\Article\Article', $id);
-        if (!is_null($article)) {
-            $shop = Shopware()->Shop();
-            $main_detail = $article->getMainDetail();
+	/**
+	 * Loads the model data from an article model.
+	 *
+	 * @param int $id the article model id.
+	 */
+	public function loadData($id)
+	{
+		if (!($id > 0)) {
+			return;
+		}
+		/** @var Shopware\Models\Article\Article $article */
+		$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $id);
+		if (!is_null($article)) {
+			$shop = Shopware()->Shop();
+			$mainDetail = $article->getMainDetail();
 
-            $this->assignId($article);
-            $this->assignUrl($article, $shop);
-            $this->name = $article->getName();
+			$this->assignId($article);
 
-            /** @var Shopware\Models\Article\Image $image */
-            foreach ($article->getImages() as $image) {
-                if ($image->getMain() === 1) {
-                    $host = trim($shop->getHost(), '/');
-                    $path = trim($shop->getBaseUrl(), '/');
-                    $file = trim($image->getMedia()->getPath(), '/');
-                    $this->image_url = 'http://' . $host . '/' . $path . '/' . $file;
-                    break;
-                }
-            }
+			$url = Shopware()->Front()->Router()->assemble(array(
+				'module' => 'frontend',
+				'controller' => 'detail',
+				'sArticle' => $article->getId(),
+			));
+			// todo: can the shop be added in a cleaner way?
+			$url = NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
+			$this->_url = $url;
 
-            /** @var Shopware\Models\Article\Price $price */
-            $price = $main_detail->getPrices()->first();
-            $tax = $article->getTax()->getTax();
-            $this->price = Nosto::helper('price')->format($price->getPrice() * (1 + ($tax / 100)));
-            $this->list_price = Nosto::helper('price')->format(($price->getPseudoPrice() > 0) ? ($price->getPseudoPrice() * (1 + ($tax / 100))) : $this->price);
-            $this->price_currency_code = $shop->getCurrency()->getCurrency();
-            $this->availability = ($main_detail->getActive() && $main_detail->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
-            // todo: find product tags & add "add-to-cart" tag if applicable
-//			$this->tags = array();
-            /** @var Shopware\Models\Category\Category $category */
-            foreach ($article->getCategories() as $category) {
-                // Only include categories that are under the shop's root category.
-                if (strpos($category->getPath(), '|'.$shop->getCategory()->getId().'|') !== false) {
-                    $this->categories[] = Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category::buildCategoryPath($category);
-                }
-            }
-            $this->short_description = $article->getDescription();
-            $this->description = $article->getDescriptionLong();
-            $this->brand = $article->getSupplier()->getName();
-            $this->date_published = $article->getAdded()->format('Y-m-d');
-        }
-    }
+			$this->_name = $article->getName();
 
-    /**
-     * Assigns an ID for the model from an article.
-     *
-     * This method exists in order to expose a public API to change the ID.
-     *
-     * @param \Shopware\Models\Article\Article $article the article to get the id from.
-     */
-    public function assignId(\Shopware\Models\Article\Article $article) {
-        $this->product_id = (int) $article->getId();
-    }
+			/** @var Shopware\Models\Article\Image $image */
+			foreach ($article->getImages() as $image) {
+				if ($image->getMain() === 1) {
+					$host = trim($shop->getHost(), '/');
+					$path = trim($shop->getBaseUrl(), '/');
+					$file = trim($image->getMedia()->getPath(), '/');
+					$this->_imageUrl = 'http://'.$host.'/'.$path.'/'.$file;
+					break;
+				}
+			}
 
-    /**
-     * Assigns a url for the model from an article.
-     *
-     * This method exists in order to expose a public API to change the url.
-     *
-     * @param \Shopware\Models\Article\Article $article the article to create the url for.
-     * @param \Shopware\Models\Shop\Shop $shop the shop for the base url.
-     */
-    public function assignUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop) {
-        $url = Shopware()->Front()->Router()->assemble(array(
-            'module' => 'frontend',
-            'controller' => 'detail',
-            'sArticle' => $article->getId(),
-        ));
-        // todo: can the shop be added in a cleaner way?
-        $url = NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
-        $this->url = $url;
-    }
+			/** @var Shopware\Models\Article\Price $price */
+			$price = $mainDetail->getPrices()->first();
+			$tax = $article->getTax()->getTax();
+			$this->_price = Nosto::helper('price')->format($price->getPrice() * (1 + ($tax / 100)));
+			$this->_listPrice = Nosto::helper('price')->format(($price->getPseudoPrice() > 0) ? ($price->getPseudoPrice() * (1 + ($tax / 100))) : $this->price);
+			$this->_currencyCode = $shop->getCurrency()->getCurrency();
+
+			$this->_availability = ($mainDetail->getActive() && $mainDetail->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
+			// todo: find product tags & add "add-to-cart" tag if applicable
+//			$this->_tags = array();
+			/** @var Shopware\Models\Category\Category $category */
+			foreach ($article->getCategories() as $category) {
+				// Only include categories that are under the shop's root category.
+				if (strpos($category->getPath(), '|'.$shop->getCategory()->getId().'|') !== false) {
+					$this->_categories[] = Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category::buildCategoryPath($category);
+				}
+			}
+			$this->_shortDescription = $article->getDescription();
+			$this->_description = $article->getDescriptionLong();
+			$this->_brand = $article->getSupplier()->getName();
+			$this->_datePublished = $article->getAdded()->format('Y-m-d');
+		}
+	}
+
+	/**
+	 * Assigns an ID for the model from an article.
+	 *
+	 * This method exists in order to expose a public API to change the ID.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article to get the id from.
+	 */
+	public function assignId(\Shopware\Models\Article\Article $article)
+	{
+		$this->_productId = (int)$article->getId();
+	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function getUrl()
 	{
-		return $this->url;
+		return $this->_url;
 	}
 
 	/**
@@ -190,7 +187,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getProductId()
 	{
-		return $this->product_id;
+		return $this->_productId;
 	}
 
 	/**
@@ -198,7 +195,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getName()
 	{
-		return $this->name;
+		return $this->_name;
 	}
 
 	/**
@@ -206,7 +203,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getImageUrl()
 	{
-		return $this->image_url;
+		return $this->_imageUrl;
 	}
 
 	/**
@@ -214,7 +211,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getPrice()
 	{
-		return $this->price;
+		return $this->_price;
 	}
 
 	/**
@@ -222,7 +219,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getListPrice()
 	{
-		return $this->list_price;
+		return $this->_listPrice;
 	}
 
 	/**
@@ -230,7 +227,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getCurrencyCode()
 	{
-		return $this->price_currency_code;
+		return $this->_currencyCode;
 	}
 
 	/**
@@ -238,7 +235,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getAvailability()
 	{
-		return $this->availability;
+		return $this->_availability;
 	}
 
 	/**
@@ -246,7 +243,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getTags()
 	{
-		return $this->tags;
+		return $this->_tags;
 	}
 
 	/**
@@ -254,7 +251,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getCategories()
 	{
-		return $this->categories;
+		return $this->_categories;
 	}
 
 	/**
@@ -262,7 +259,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getShortDescription()
 	{
-		return $this->short_description;
+		return $this->_shortDescription;
 	}
 
 	/**
@@ -270,7 +267,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getDescription()
 	{
-		return $this->description;
+		return $this->_description;
 	}
 
 	/**
@@ -278,7 +275,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getBrand()
 	{
-		return $this->brand;
+		return $this->_brand;
 	}
 
 	/**
@@ -286,6 +283,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getDatePublished()
 	{
-		return $this->date_published;
+		return $this->_datePublished;
 	}
 }

@@ -8,7 +8,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	 * authorization cycle, and requires it to be from the same domain that the account is configured for and only
 	 * redirects to that domain.
 	 */
-	public function oauthAction() {
+	public function oauthAction()
+	{
 		$shop = Shopware()->Shop();
 		$code = $this->Request()->getParam('code');
 		$error = $this->Request()->getParam('error');
@@ -23,48 +24,48 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
 				$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
 				$meta->loadData($shop);
-				$nosto_account = NostoAccount::syncFromNosto($meta, $code);
+				$nostoAccount = NostoAccount::syncFromNosto($meta, $code);
 
-				$account = $helper->convertToShopwareAccount($nosto_account, $shop);
+				$account = $helper->convertToShopwareAccount($nostoAccount, $shop);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
 
-				$redirect_params = array(
+				$redirectParams = array(
 					'module' => 'backend',
 					'controller' => 'index',
 					'action' => 'index',
 				);
-				$this->redirect($redirect_params, array('code' => 302));
+				$this->redirect($redirectParams, array('code' => 302));
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 
-				$redirect_params = array(
+				$redirectParams = array(
 					'module' => 'backend',
 					'controller' => 'index',
 					'action' => 'index',
 				);
-				$this->redirect($redirect_params, array('code' => 302));
+				$this->redirect($redirectParams, array('code' => 302));
 			}
 		} elseif (!is_null($error)) {
-			$error_reason = $this->Request()->getParam('error_reason');
-			$error_description = $this->Request()->getParam('error_description');
+			$errorReason = $this->Request()->getParam('error_reason');
+			$errorDescription = $this->Request()->getParam('error_description');
 
-			$log_message = $error;
-			if (!is_null($error_reason)) {
-				$log_message .= ' - ' . $error_reason;
+			$logMessage = $error;
+			if (!is_null($errorReason)) {
+				$logMessage .= ' - '.$errorReason;
 			}
-			if (!is_null($error_description)) {
-				$log_message .= ' - ' . $error_description;
+			if (!is_null($errorDescription)) {
+				$logMessage .= ' - '.$errorDescription;
 			}
 
-			Shopware()->Pluginlogger()->error($log_message);
+			Shopware()->Pluginlogger()->error($logMessage);
 
-			$redirect_params = array(
+			$redirectParams = array(
 				'module' => 'backend',
 				'controller' => 'index',
 				'action' => 'index',
 			);
-			$this->redirect($redirect_params, array('code' => 302));
+			$this->redirect($redirectParams, array('code' => 302));
 		} else {
 			throw new Zend_Controller_Action_Exception('Not Found', 404);
 		}
@@ -74,25 +75,29 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	 * Exports products from the current shop.
 	 * Result can be limited by the `limit` and `offset` GET parameters.
 	 */
-	public function exportProductsAction() {
-		$page_size = (int)$this->Request()->getParam('limit', 100);
-		$current_offset = (int)$this->Request()->getParam('offset', 0);
-		$current_page = (int)($current_offset / $page_size);
+	public function exportProductsAction()
+	{
+		$pageSize = (int)$this->Request()->getParam('limit', 100);
+		$currentOffset = (int)$this->Request()->getParam('offset', 0);
+		$currentPage = (int)($currentOffset / $pageSize);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('articles.id'))
 			->from('\Shopware\Models\Article\Article', 'articles')
 			->where('articles.active = 1')
-			->setFirstResult($current_page)
-			->setMaxResults($page_size)
+			->setFirstResult($currentPage)
+			->setMaxResults($pageSize)
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
+		$validator = new NostoModelValidator();
 		$collection = new NostoExportProductCollection();
 		foreach ($result as $row) {
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($row['id']);
-			$collection[] = $model;
+			if ($validator->validate($model)) {
+				$collection[] = $model;
+			}
 		}
 
 		$this->export($collection);
@@ -102,17 +107,18 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	 * Exports completed orders from the current shop.
 	 * Result can be limited by the `limit` and `offset` GET parameters.
 	 */
-	public function exportOrdersAction() {
-		$page_size = (int)$this->Request()->getParam('limit', 100);
-		$current_offset = (int)$this->Request()->getParam('offset', 0);
-		$current_page = (int)($current_offset / $page_size);
+	public function exportOrdersAction()
+	{
+		$pageSize = (int)$this->Request()->getParam('limit', 100);
+		$currentOffset = (int)$this->Request()->getParam('offset', 0);
+		$currentPage = (int)($currentOffset / $pageSize);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('orders.number'))
 			->from('\Shopware\Models\Order\Order', 'orders')
 			->where('orders.status >= 0')
-			->setFirstResult($current_page)
-			->setMaxResults($page_size)
+			->setFirstResult($currentPage)
+			->setMaxResults($pageSize)
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
@@ -131,13 +137,14 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	 *
 	 * @param NostoExportCollection $collection the data collection to export.
 	 */
-	protected function export(NostoExportCollection $collection) {
+	protected function export(NostoExportCollection $collection)
+	{
 		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$account = $helper->findAccount($shop);
 		if (!is_null($account)) {
-			$cipher_text = NostoExporter::export($helper->convertToNostoAccount($account), $collection);
-			echo $cipher_text;
+			$cipherText = NostoExporter::export($helper->convertToNostoAccount($account), $collection);
+			echo $cipherText;
 		}
 		die();
 	}

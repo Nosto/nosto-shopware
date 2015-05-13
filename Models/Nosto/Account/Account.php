@@ -10,7 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert,
  * @ORM\Entity(repositoryClass="Repository")
  * @ORM\Table(name="s_nostotagging_account")
  */
-class Account extends ModelEntity {
+class Account extends ModelEntity
+{
 	/**
 	 * @var integer $id
 	 *
@@ -56,12 +57,12 @@ class Account extends ModelEntity {
 	}
 
 	/**
-	 * @param int $shop_id
+	 * @param int $shopId
 	 * @return Account
 	 */
-	public function setShopId($shop_id)
+	public function setShopId($shopId)
 	{
-		$this->shop_id = $shop_id;
+		$this->shop_id = $shopId;
 		return $this;
 	}
 

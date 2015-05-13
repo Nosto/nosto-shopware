@@ -1,97 +1,94 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
+{
 	/**
-	 * @var int
+	 * @var int the product id for the line item.
 	 */
-	protected $product_id;
+	protected $_productId;
 
 	/**
-	 * @var int
+	 * @var int the quantity of the product in the cart.
 	 */
-	protected $quantity;
+	protected $_quantity;
 
 	/**
-	 * @var string
+	 * @var string the name of the line item product.
 	 */
-	protected $name;
+	protected $_name;
 
 	/**
-	 * @var string
+	 * @var string the line item unit price.
 	 */
-	protected $unit_price;
+	protected $_unitPrice;
 
 	/**
-	 * @var string
+	 * @var string the the 3-letter ISO code (ISO 4217) for the line item.
 	 */
-	protected $currency_code;
-
-    /**
-     * Returns an array of required items in the model.
-     *
-     * @return array the list of required items.
-     */
-    public function getRequiredAttributes() {
-        return array(
-            'product_id',
-            'quantity',
-            'name',
-            'unit_price',
-            'currency_code',
-        );
-    }
+	protected $_currencyCode;
 
 	/**
 	 * Loads the line item data from the basket model.
 	 *
 	 * @param Shopware\Models\Order\Basket $basket an order basket item.
-	 * @param string $currency_code the line item currency code.
+	 * @param string                       $currencyCode the line item currency code.
 	 */
-	public function loadData(Shopware\Models\Order\Basket $basket, $currency_code) {
-		$this->product_id = ((int) $basket->getArticleId() > 0) ? (int) $basket->getArticleId() : -1;
-		$this->quantity = (int) $basket->getQuantity();
-		$this->name = $basket->getArticleName();
-		$this->unit_price = Nosto::helper('price')->format($basket->getPrice());
-		$this->currency_code = strtoupper($currency_code);
+	public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
+	{
+		$this->_productId = ((int)$basket->getArticleId() > 0) ? (int)$basket->getArticleId() : -1;
+		$this->_quantity = (int)$basket->getQuantity();
+		$this->_name = $basket->getArticleName();
+		$this->_unitPrice = Nosto::helper('price')->format($basket->getPrice());
+		$this->_currencyCode = strtoupper($currencyCode);
 	}
 
 	/**
-	 * @return int
+	 * Returns the product id for the line item.
+	 *
+	 * @return int the product id.
 	 */
 	public function getProductId()
 	{
-		return $this->product_id;
+		return $this->_productId;
 	}
 
 	/**
-	 * @return int
+	 * Returns the quantity of the line item in the cart.
+	 *
+	 * @return int the quantity.
 	 */
 	public function getQuantity()
 	{
-		return $this->quantity;
+		return $this->_quantity;
 	}
 
 	/**
-	 * @return string
+	 * Returns the name of the line item.
+	 *
+	 * @return string the name.
 	 */
 	public function getName()
 	{
-		return $this->name;
+		return $this->_name;
 	}
 
 	/**
-	 * @return string
+	 * Returns the unit price of the line item.
+	 *
+	 * @return string the unit price.
 	 */
 	public function getUnitPrice()
 	{
-		return $this->unit_price;
+		return $this->_unitPrice;
 	}
 
 	/**
-	 * @return string
+	 * Returns the the 3-letter ISO code (ISO 4217) for the line item.
+	 *
+	 * @return string the ISO code.
 	 */
 	public function getCurrencyCode()
 	{
-		return $this->currency_code;
+		return $this->_currencyCode;
 	}
 }

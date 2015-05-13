@@ -1,35 +1,29 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base {
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search
+{
 	/**
-	 * @var string
+	 * @var string the search term used on the search page.
 	 */
-	protected $search_term;
-
-    /**
-     * Returns an array of required items in the model.
-     *
-     * @return array the list of required items.
-     */
-    public function getRequiredAttributes() {
-        return array(
-            'search_term'
-        );
-    }
+	protected $_searchTerm;
 
 	/**
-	 * @param string $search_term
+	 * Setter for the search term.
+	 *
+	 * @param string $term the term.
 	 */
-	public function setSearchTerm($search_term)
+	public function setSearchTerm($term)
 	{
-		$this->search_term = $search_term;
+		$this->_searchTerm = $term;
 	}
 
-    /**
-     * @return string
-     */
-    public function getSearchTerm()
-    {
-        return $this->search_term;
-    }
+	/**
+	 * Returns the search term.
+	 *
+	 * @return string the term.
+	 */
+	public function getSearchTerm()
+	{
+		return $this->_searchTerm;
+	}
 }

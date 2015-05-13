@@ -1,13 +1,15 @@
 <?php
 
-class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs {
+class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs
+{
 	const DEFAULT_IFRAME_ORIGIN = 'https://my.nosto.com';
 
 	/**
 	 * Loads the Nosto ExtJS sub-application for configuring Nosto for the shops.
 	 * Default action.
 	 */
-	public function indexAction() {
+	public function indexAction()
+	{
 		$this->View()->loadTemplate('backend/nosto_tagging/app.js');
 	}
 
@@ -16,7 +18,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 *
 	 * This action should only be accessed by the Main controller in the client side application.
 	 */
-	public function loadSettingsAction() {
+	public function loadSettingsAction()
+	{
 		$this->View()->assign(array(
 			'success' => true,
 			'data' => array(
@@ -45,23 +48,24 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 *   ...
 	 * ]
 	 */
-	public function getAccountsAction() {
+	public function getAccountsAction()
+	{
 		/** @var \Shopware\Models\Shop\Shop[] $result */
 		$result = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop')->findAll();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$data = array();
 		foreach ($result as $shop) {
 			$account = $helper->findAccount($shop);
-			$account_data = array(
+			$accountData = array(
 				'url' => $helper->buildAccountIframeUrl($shop, $account),
 				'shopId' => $shop->getId(),
 				'shopName' => $shop->getName(),
 			);
 			if (!is_null($account)) {
-				$account_data['id'] = $account->getId();
-				$account_data['name'] = $account->getName();
+				$accountData['id'] = $account->getId();
+				$accountData['name'] = $account->getName();
 			}
-			$data[] = $account_data;
+			$data[] = $accountData;
 		}
 
 		$this->View()->assign(array('success' => true, 'data' => $data, 'total' => count($data)));
@@ -72,13 +76,14 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 *
 	 * This action should only be accessed by the Account model in the client side application.
 	 */
-	public function createAccountAction() {
+	public function createAccountAction()
+	{
 		$success = false;
 		$data = array();
-		$shop_id = $this->Request()->getParam('shopId', null);
+		$shopId = $this->Request()->getParam('shopId', null);
 		$email = $this->Request()->getParam('email', null);
 		/** @var \Shopware\Models\Shop\Shop $shop */
-		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
+		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shopId);
 
 		if (!is_null($shop)) {
 			try {
@@ -114,15 +119,16 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 *
 	 * This action should only be accessed by the Account model in the client side application.
 	 */
-	public function deleteAccountAction() {
+	public function deleteAccountAction()
+	{
 		$success = false;
 		$data = array();
-		$account_id = $this->Request()->getParam('id', null);
-		$shop_id = $this->Request()->getParam('shopId', null);
+		$accountId = $this->Request()->getParam('id', null);
+		$shopId = $this->Request()->getParam('shopId', null);
 		/** @var \Shopware\CustomModels\Nosto\Account\Account $account */
-		$account = Shopware()->Models()->find('\Shopware\CustomModels\Nosto\Account\Account', $account_id);
+		$account = Shopware()->Models()->find('\Shopware\CustomModels\Nosto\Account\Account', $accountId);
 		/** @var \Shopware\Models\Shop\Shop $shop */
-		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
+		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shopId);
 
 		if (!is_null($account) && !is_null($shop)) {
 			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
@@ -150,12 +156,13 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 *
 	 * This action should only be accessed by the Main controller in the client side application.
 	 */
-	public function connectAccountAction() {
+	public function connectAccountAction()
+	{
 		$success = false;
 		$data = array();
-		$shop_id = $this->Request()->getParam('shopId', null);
+		$shopId = $this->Request()->getParam('shopId', null);
 		/** @var \Shopware\Models\Shop\Shop $shop */
-		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shop_id);
+		$shop = Shopware()->Models()->find('\Shopware\Models\Shop\Shop', $shopId);
 
 		if (!is_null($shop)) {
 			$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
