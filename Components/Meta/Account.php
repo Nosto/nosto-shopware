@@ -44,7 +44,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	/**
 	 * @var string the API token used to identify an account creation.
 	 */
-	protected $_sign_up_api_token = 'YBDKYwSqTCzSsU8Bwbg4im2pkHMcgTy9cCX7vevjJwON1UISJIwXOLMM0a8nZY7h'; // todo: update once one exists for shopware (this is magento)
+	protected $_sign_up_api_token = 'kIqtTZOTRTNJ1zPZgjkI4Ft572sfLrqjD4XewXqYrdGrqsgnYbWqGXR3Evxqmii1';
 
 	/**
 	 * Loads the meta data for the given shop.

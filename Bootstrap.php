@@ -4,7 +4,7 @@ require_once 'vendor/nosto/php-sdk/src/config.inc.php';
 
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-    const PLATFORM_NAME = 'magento'; // todo: change to "shopware" once is works.
+    const PLATFORM_NAME = 'shopware';
 
 	/**
 	 * @inheritdoc
