@@ -93,8 +93,13 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		$validator = new NostoModelValidator();
 		$collection = new NostoExportProductCollection();
 		foreach ($result as $row) {
+			/** @var Shopware\Models\Article\Article $article */
+			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', (int)$row['id']);
+			if (is_null($article)) {
+				continue;
+			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($row['id']);
+			$model->loadData($article);
 			if ($validator->validate($model)) {
 				$collection[] = $model;
 			}
@@ -122,12 +127,21 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
+		$validator = new NostoModelValidator();
 		$collection = new NostoExportOrderCollection();
 		foreach ($result as $row) {
+			/** @var Shopware\Models\Order\Order $order */
+			$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
+				->findOneBy(array('number' => $row['number']));
+			if (is_null($order)) {
+				continue;
+			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 			$model->disableSpecialLineItems();
-			$model->loadData($row['number']);
-			$collection[] = $model;
+			$model->loadData($order);
+			if ($validator->validate($model)) {
+				$collection[] = $model;
+			}
 		}
 		$this->export($collection);
 	}
@@ -135,9 +149,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	/**
 	 * Encrypts the export collection and outputs it to the browser.
 	 *
-	 * @param NostoExportCollection $collection the data collection to export.
+	 * @param NostoExportCollectionInterface $collection the data collection to export.
 	 */
-	protected function export(NostoExportCollection $collection)
+	protected function export(NostoExportCollectionInterface $collection)
 	{
 		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();

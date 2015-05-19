@@ -1,6 +1,6 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem implements NostoOrderPurchasedItemInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderPurchasedItemInterface
 {
 	/**
 	 * @var string|int the unique identifier of the purchased item.

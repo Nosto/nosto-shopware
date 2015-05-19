@@ -248,12 +248,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-		$model->loadData($article->getId());
-		$validator = new NostoModelValidator();
-		if ($validator->validate($model)) {
-			$this->sendProduct('create', $model);
-		}
+		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
+		$op->create($article);
 	}
 
 	/**
@@ -267,12 +263,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-		$model->loadData($article->getId());
-		$validator = new NostoModelValidator();
-		if ($validator->validate($model)) {
-			$this->sendProduct('update', $model);
-		}
+		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
+		$op->update($article);
 	}
 
 	/**
@@ -286,9 +278,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-		$model->assignId($article);
-		$this->sendProduct('delete', $model);
+		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
+		$op->delete($article);
 	}
 
 	/**
@@ -381,20 +372,59 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	protected function registerMyEvents()
 	{
 		// Backend events.
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Backend_Index', 'onPostDispatchBackendIndex');
-		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging', 'onControllerPathBackend');
-		$this->subscribeEvent('Shopware\Models\Article\Article::postPersist', 'onPostPersistArticle');
-		$this->subscribeEvent('Shopware\Models\Article\Article::postUpdate', 'onPostUpdateArticle');
-		$this->subscribeEvent('Shopware\Models\Article\Article::postRemove', 'onPostRemoveArticle');
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_PostDispatch_Backend_Index',
+			'onPostDispatchBackendIndex'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Dispatcher_ControllerPath_Backend_NostoTagging',
+			'onControllerPathBackend'
+		);
+		$this->subscribeEvent(
+			'Shopware\Models\Article\Article::postPersist',
+			'onPostPersistArticle'
+		);
+		$this->subscribeEvent(
+			'Shopware\Models\Article\Article::postUpdate',
+			'onPostUpdateArticle'
+		);
+		$this->subscribeEvent(
+			'Shopware\Models\Article\Article::postRemove',
+			'onPostRemoveArticle'
+		);
 		// Frontend events.
-		$this->subscribeEvent('Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging', 'onControllerPathFrontend');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch', 'onPostDispatchFrontend');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Index', 'onPostDispatchFrontendIndex');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Detail', 'onPostDispatchFrontendDetail');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Listing', 'onPostDispatchFrontendListing');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Checkout', 'onPostDispatchFrontendCheckout');
-		$this->subscribeEvent('Enlight_Controller_Action_PostDispatch_Frontend_Search', 'onPostDispatchFrontendSearch');
-		$this->subscribeEvent('sOrder::sSaveOrder::after', 'onOrderSSaveOrderAfter');
+		$this->subscribeEvent(
+			'Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging',
+			'onControllerPathFrontend'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_PostDispatch',
+			'onPostDispatchFrontend'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_PostDispatch_Frontend_Index',
+			'onPostDispatchFrontendIndex'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_PostDispatch_Frontend_Detail',
+			'onPostDispatchFrontendDetail'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_PostDispatch_Frontend_Listing',
+			'onPostDispatchFrontendListing'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_PostDispatch_Frontend_Checkout',
+			'onPostDispatchFrontendCheckout'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_PostDispatch_Frontend_Search',
+			'onPostDispatchFrontendSearch'
+		);
+		$this->subscribeEvent(
+			'sOrder::sSaveOrder::after',
+			'onOrderSSaveOrderAfter'
+		);
 	}
 
 	/**
@@ -422,8 +452,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/embed.tpl');
-		$view->assign('nosto_account_name', $nostoAccount->getName());
-		$view->assign('nosto_server_url', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
+		$view->assign('nostoAccountName', $nostoAccount->getName());
+		$view->assign('nostoServerUrl', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
 	}
 
 	/**
@@ -502,8 +532,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
+		/** @var Shopware\Models\Customer\Customer $customer */
+		$customerId = (int)Shopware()->Session()->sUserId;
+		$customer = Shopware()->Models()->find('Shopware\Models\Customer\Customer', $customerId);
+		if (is_null($customer)) {
+			return;
+		}
+
 		$nostoCustomer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer();
-		$nostoCustomer->loadData((int)Shopware()->Session()->sUserId);
+		$nostoCustomer->loadData($customer);
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
@@ -530,8 +567,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
+		/** @var Shopware\Models\Order\Basket[] $baskets */
+		$baskets = Shopware()->Models()->getRepository('Shopware\Models\Order\Basket')->findBy(array(
+			'sessionId' => Shopware()->Session()->sessionId
+		));
+
 		$nostoCart = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart();
-		$nostoCart->loadData(Shopware()->Session()->sessionId);
+		$nostoCart->loadData($baskets);
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
@@ -555,18 +597,30 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
+		/** @var Shopware\Models\Article\Article $article */
+		$articleId = (int)$args->getSubject()->Request()->sArticle;
+		$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $articleId);
+		if (is_null($article)) {
+			return;
+		}
+
 		$nostoProduct = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-		$nostoProduct->loadData((int)$args->getSubject()->Request()->sArticle);
+		$nostoProduct->loadData($article);
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/product.tpl');
 		$view->assign('nostoProduct', $nostoProduct);
 
-		$nostoCategory = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
-		$nostoCategory->loadData((int)$args->getSubject()->Request()->sCategory);
+		/** @var Shopware\Models\Category\Category $category */
+		$categoryId = (int)$args->getSubject()->Request()->sCategory;
+		$category = Shopware()->Models()->find('Shopware\Models\Category\Category', $categoryId);
+		if (!is_null($category)) {
+			$nostoCategory = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
+			$nostoCategory->loadData($category);
 
-		$view->assign('nostoCategory', $nostoCategory);
+			$view->assign('nostoCategory', $nostoCategory);
+		}
 	}
 
 	/**
@@ -585,8 +639,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
+		/** @var Shopware\Models\Category\Category $category */
+		$categoryId = (int)$args->getSubject()->Request()->sCategory;
+		$category = Shopware()->Models()->find('Shopware\Models\Category\Category', $categoryId);
+		if (is_null($category)) {
+			return;
+		}
+
 		$nostoCategory = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
-		$nostoCategory->loadData((int)$args->getSubject()->Request()->sCategory);
+		$nostoCategory->loadData($category);
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
@@ -637,8 +698,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			return;
 		}
 
+		/** @var Shopware\Models\Order\Order $order */
+		$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
+			->findOneBy(array('number' => $session->sOrderVariables->sOrderNumber));
+		if (is_null($order)) {
+			return;
+		}
+
 		$nostoOrder = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-		$nostoOrder->loadData($session->sOrderVariables->sOrderNumber);
+		$nostoOrder->loadData($order);
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
@@ -655,7 +723,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	protected function confirmOrder($orderNumber)
 	{
+		// todo: incorrect from backend
 		$shop = Shopware()->Shop();
+
+		/** @var Shopware\Models\Order\Order $order */
+		$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
+			->findOneBy(array('number' => $orderNumber));
+		if (is_null($order)) {
+			return;
+		}
 
 		$accountHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$account = $accountHelper->findAccount($shop);
@@ -667,42 +743,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 					$customerHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
 					$customerId = $customerHelper->getCustomerId();
 					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-					$model->loadData($orderNumber);
+					$model->loadData($order);
 					NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
 				} catch (NostoException $e) {
 					Shopware()->Pluginlogger()->error($e);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Sends a product operation API call to Nosto for an article (product).
-	 *
-	 * @param string $operation the operation, i.e. one of `create`, `update`, `delete`.
-	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product $product the product model.
-	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostPersistArticle
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateArticle
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostRemoveArticle
-	 */
-	protected function sendProduct($operation, Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product $product)
-	{
-		/** @var \Shopware\Models\Shop\Shop[] $shops */
-		$shops = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop')->findAll();
-		$accountHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		foreach ($shops as $shop) {
-			$account = $accountHelper->findAccount($shop);
-			if (!is_null($account)) {
-				$nostoAccount = $accountHelper->convertToNostoAccount($account);
-				if ($nostoAccount->isConnectedToNosto()) {
-					try {
-						$op = new NostoOperationProduct($nostoAccount);
-						$op->addProduct($product);
-						call_user_func(array($op, $operation));
-					} catch (NostoException $e) {
-						Shopware()->Pluginlogger()->error($e);
-					}
 				}
 			}
 		}

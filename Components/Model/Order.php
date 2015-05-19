@@ -1,6 +1,6 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order implements NostoOrderInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderInterface, NostoValidatableModelInterface
 {
 	/**
 	 * @var string|int the unique order number identifying the order.
@@ -22,12 +22,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order implements N
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer The user info of the buyer.
 	 */
-	protected $_buyer;
+	protected $_buyerInfo;
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] the items in the order.
 	 */
-	protected $_items = array();
+	protected $_purchasedItems = array();
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status the order status model.
@@ -40,50 +40,60 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order implements N
 	protected $_includeSpecialLineItems = true;
 
 	/**
-	 * Loads order details from the order model based on it's order number.
-	 *
-	 * @param int $orderNumber the order number of the order model.
+	 * @inheritdoc
 	 */
-	public function loadData($orderNumber)
+	public function getValidationRules()
 	{
-		if (!($orderNumber > 0)) {
-			return;
+		return array(
+			array(
+				array(
+					'_orderNumber',
+					'_createdDate',
+					'_buyerInfo',
+					'_purchasedItems',
+				),
+				'required'
+			)
+		);
+	}
+
+	/**
+	 * Loads order details from the order model.
+	 *
+	 * @param \Shopware\Models\Order\Order $order the order model.
+	 */
+	public function loadData(\Shopware\Models\Order\Order $order)
+	{
+		$this->_orderNumber = $order->getNumber();
+		$this->_createdDate = $order->getOrderTime()->format('Y-m-d');
+
+		$this->_paymentProvider = $order->getPayment()->getName();
+		$paymentPlugin = $order->getPayment()->getPlugin();
+		if (!is_null($paymentPlugin)) {
+			$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
 		}
 
-		/** @var Shopware\Models\Order\Order $order */
-		$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')->findOneBy(array('number' => $orderNumber));
-		if (!is_null($order)) {
-			$this->_orderNumber = $order->getNumber();
-			$this->_createdDate = $order->getOrderTime()->format('Y-m-d');
+		$this->_orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
+		$this->_orderStatus->loadData($order);
 
-			$this->_paymentProvider = $order->getPayment()->getName();
-			$paymentPlugin = $order->getPayment()->getPlugin();
-			if (!is_null($paymentPlugin)) {
-				$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+		$this->_buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
+		$this->_buyerInfo->loadData($order->getCustomer());
+
+		foreach ($order->getDetails() as $detail) {
+			/** @var Shopware\Models\Order\Detail $detail */
+			if ($this->_includeSpecialLineItems || $detail->getArticleId() > 0) {
+				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+				$item->loadData($detail);
+				$this->_purchasedItems[] = $item;
 			}
+		}
 
-			$this->_orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
-			$this->_orderStatus->loadData($order);
-
-			$this->_buyer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
-			$this->_buyer->loadData($order->getCustomer());
-
-			foreach ($order->getDetails() as $detail) {
-				/** @var Shopware\Models\Order\Detail $detail */
-				if ($this->_includeSpecialLineItems || $detail->getArticleId() > 0) {
-					$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-					$item->loadData($detail);
-					$this->_items[] = $item;
-				}
-			}
-
-			if ($this->_includeSpecialLineItems) {
-				$shippingCost = $order->getInvoiceShipping();
-				if ($shippingCost > 0) {
-					$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-					$item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
-					$this->_items[] = $item;
-				}
+		if ($this->_includeSpecialLineItems) {
+			$shippingCost = $order->getInvoiceShipping();
+			if ($shippingCost > 0) {
+				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+				$item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
+				$this->_purchasedItems[] = $item;
 			}
 		}
 	}
@@ -126,7 +136,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order implements N
 	 */
 	public function getBuyerInfo()
 	{
-		return $this->_buyer;
+		return $this->_buyerInfo;
 	}
 
 	/**
@@ -134,7 +144,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order implements N
 	 */
 	public function getPurchasedItems()
 	{
-		return $this->_items;
+		return $this->_purchasedItems;
 	}
 
 	/**

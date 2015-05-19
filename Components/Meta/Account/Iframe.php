@@ -20,12 +20,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	/**
 	 * @var string the language ISO (ISO 639-1) code for oauth server locale.
 	 */
-	protected $_languageIsoCode;
+	protected $_languageIsoCode = 'en';
 
 	/**
 	 * @var string the language ISO (ISO 639-1) for the store view scope.
 	 */
-	protected $_languageIsoCodeShop;
+	protected $_languageIsoCodeShop = 'en';
 
 	/**
 	 * @var string unique ID that identifies the Shopware installation.
@@ -70,13 +70,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	public function loadData(\Shopware\Models\Shop\Shop $shop)
 	{
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
-		$user = Shopware()->Auth()->getIdentity();
-		list($firstName, $lastName) = explode(' ', $user->name);
+		$identity = Shopware()->Auth()->getIdentity();
 
-		$this->_firstName = $firstName;
-		$this->_lastName = $lastName;
-		$this->_email = $user->email;
-		$this->_languageIsoCode = strtolower(substr($user->locale->getLocale(), 0, 2));
+		if (!is_null($identity)) {
+			list($firstName, $lastName) = explode(' ', $identity->name);
+			$this->_firstName = $firstName;
+			$this->_lastName = $lastName;
+			$this->_email = $identity->email;
+			$this->_languageIsoCode = strtolower(substr($identity->locale->getLocale(), 0, 2));
+		}
 		$this->_languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
 		$this->_uniqueId = Shopware()->Plugins()->Frontend()->NostoTagging()->getUniqueId();
 		$this->_previewUrlProduct = $helper->getProductPagePreviewUrl($shop);

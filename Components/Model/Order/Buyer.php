@@ -1,6 +1,6 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer implements NostoOrderBuyerInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderBuyerInterface
 {
 	/**
 	 * @var string the first name of the user who placed the order.

@@ -10,7 +10,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	/**
 	 * @var string 2-letter ISO code (ISO 639-1) for the language the OAuth2 server uses for UI localization.
 	 */
-	protected $_languageCode;
+	protected $_languageCode = 'en';
 
 	/**
 	 * Loads the oauth meta data from the shop model.
@@ -21,10 +21,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	{
 		$this->_redirectUrl = Shopware()->Front()->Router()->assemble(array(
 			'module' => 'frontend',
-			'controller' => 'NostoTagging',
+			'controller' => 'nostotagging',
 			'action' => 'oauth'
 		));
-		$this->_languageCode = strtolower(substr(Shopware()->Auth()->getIdentity()->locale->getLocale(), 0, 2));
+		$identity = Shopware()->Auth()->getIdentity();
+		if (!is_null($identity)) {
+			$this->_languageCode = strtolower(substr($identity->locale->getLocale(), 0, 2));
+		}
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
 	/**
 	 * @var string the full category path with categories separated by a `/` sign.
@@ -10,18 +10,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
 	/**
 	 * Loads the category data from a category model.
 	 *
-	 * @param int $id the category model id.
+	 * @param \Shopware\Models\Category\Category $category the model.
 	 */
-	public function loadData($id)
+	public function loadData(\Shopware\Models\Category\Category $category)
 	{
-		if (!($id > 0)) {
-			return;
-		}
-		/** @var Shopware\Models\Category\Category $category */
-		$category = Shopware()->Models()->find('Shopware\Models\Category\Category', $id);
-		if (!is_null($category)) {
-			$this->_categoryPath = self::buildCategoryPath($category);
-		}
+		$this->_categoryPath = $this->buildCategoryPath($category);
 	}
 
 	/**
@@ -34,7 +27,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
 	 * @param Shopware\Models\Category\Category $category the category model.
 	 * @return string the path.
 	 */
-	public static function buildCategoryPath($category)
+	public function buildCategoryPath($category)
 	{
 		$path = '';
 		if (!is_null($category->getPath())) {

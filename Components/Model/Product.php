@@ -1,6 +1,6 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product implements \NostoProductInterface, \NostoValidatableModelInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements \NostoProductInterface, \NostoValidatableModelInterface
 {
 	const IN_STOCK = 'InStock';
 	const OUT_OF_STOCK = 'OutOfStock';
@@ -99,67 +99,135 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product implements
 	}
 
 	/**
-	 * Loads the model data from an article model.
+	 * Loads the model data from an article and shop.
 	 *
-	 * @param int $id the article model id.
+	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the product is in.
 	 */
-	public function loadData($id)
+	public function loadData(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop = null)
 	{
-		if (!($id > 0)) {
-			return;
-		}
-		/** @var Shopware\Models\Article\Article $article */
-		$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $id);
-		if (!is_null($article)) {
+		if (is_null($shop)) {
 			$shop = Shopware()->Shop();
-			$mainDetail = $article->getMainDetail();
-
-			$this->assignId($article);
-
-			$url = Shopware()->Front()->Router()->assemble(array(
-				'module' => 'frontend',
-				'controller' => 'detail',
-				'sArticle' => $article->getId(),
-			));
-			// todo: can the shop be added in a cleaner way?
-			$url = NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
-			$this->_url = $url;
-
-			$this->_name = $article->getName();
-
-			/** @var Shopware\Models\Article\Image $image */
-			foreach ($article->getImages() as $image) {
-				if ($image->getMain() === 1) {
-					$host = trim($shop->getHost(), '/');
-					$path = trim($shop->getBaseUrl(), '/');
-					$file = trim($image->getMedia()->getPath(), '/');
-					$this->_imageUrl = 'http://'.$host.'/'.$path.'/'.$file;
-					break;
-				}
-			}
-
-			/** @var Shopware\Models\Article\Price $price */
-			$price = $mainDetail->getPrices()->first();
-			$tax = $article->getTax()->getTax();
-			$this->_price = Nosto::helper('price')->format($price->getPrice() * (1 + ($tax / 100)));
-			$this->_listPrice = Nosto::helper('price')->format(($price->getPseudoPrice() > 0) ? ($price->getPseudoPrice() * (1 + ($tax / 100))) : $this->price);
-			$this->_currencyCode = $shop->getCurrency()->getCurrency();
-
-			$this->_availability = ($mainDetail->getActive() && $mainDetail->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
-			// todo: find product tags & add "add-to-cart" tag if applicable
-//			$this->_tags = array();
-			/** @var Shopware\Models\Category\Category $category */
-			foreach ($article->getCategories() as $category) {
-				// Only include categories that are under the shop's root category.
-				if (strpos($category->getPath(), '|'.$shop->getCategory()->getId().'|') !== false) {
-					$this->_categories[] = Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category::buildCategoryPath($category);
-				}
-			}
-			$this->_shortDescription = $article->getDescription();
-			$this->_description = $article->getDescriptionLong();
-			$this->_brand = $article->getSupplier()->getName();
-			$this->_datePublished = $article->getAdded()->format('Y-m-d');
 		}
+
+		$this->assignId($article);
+		$this->_url = $this->assembleProductUrl($article, $shop);
+		$this->_name = $article->getName();
+		$this->_imageUrl = $this->assembleImageUrl($article, $shop);
+		$this->_price = $this->calcPriceInclTax($article, 'price');
+		$this->_listPrice = $this->calcPriceInclTax($article, 'listPrice');
+		$this->_currencyCode = $shop->getCurrency()->getCurrency();
+		$this->_availability = ($article->getMainDetail()->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
+		$this->_tags = $this->buildTags($article);
+		$this->_categories = $this->buildCategoryPaths($article, $shop);
+		$this->_shortDescription = $article->getDescription();
+		$this->_description = $article->getDescriptionLong();
+		$this->_brand = $article->getSupplier()->getName();
+		$this->_datePublished = $article->getAdded()->format('Y-m-d');
+	}
+
+	/**
+	 * Assembles the product url based on article and shop.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article to assemble the url for.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the url for the product is for.
+	 * @return string the url.
+	 */
+	protected function assembleProductUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	{
+		$url = Shopware()->Front()->Router()->assemble(array(
+			'module' => 'frontend',
+			'controller' => 'detail',
+			'sArticle' => $article->getId(),
+		));
+		// Always add the "__shop" parameter so that the crawler can distinguish between products in different shops
+		// even if the host and path of the shops match.
+		return NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
+	}
+
+	/**
+	 * Assembles the product image url based on article and shop.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article to assemble the image url for.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the url for the image is in.
+	 * @return string|null the url or null if image not found.
+	 */
+	protected function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	{
+		/** @var Shopware\Models\Article\Image $image */
+		foreach ($article->getImages() as $image) {
+			if ($image->getMain() === 1) {
+				$base = trim(Shopware()->Config()->get('basePath'));
+				$file = trim($image->getMedia()->getPath(), '/');
+				return 'http://'.$base.'/'.$file;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Calculates the price including tax and returns it.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article to get the price for.
+	 * @param string $type the type of price, i.e. "price" or "listPrice".
+	 * @return string the calculated price formatted according to Nosto standards.
+	 */
+	protected function calcPriceInclTax(\Shopware\Models\Article\Article $article, $type = 'price')
+	{
+		/** @var Shopware\Models\Article\Price $price */
+		$price = $article->getMainDetail()->getPrices()->first();
+		// If the list price is not set, fall back on the normal price.
+		if ($type === 'listPrice' && $price->getPseudoPrice() > 0) {
+			$value = $price->getPseudoPrice();
+		} else {
+			$value = $price->getPrice();
+		}
+		/** @var NostoHelperPrice $helper */
+		$helper = Nosto::helper('price');
+		return $helper->format($value * (1 + ($article->getTax()->getTax() / 100)));
+	}
+
+	/**
+	 * Builds the tag list for the product.
+	 *
+	 * Also includes the custom "add-to-cart" tag if the product can be added to the shopping cart directly without
+	 * any action from the user, e.g. the product cannot have any variations or choices. This tag is then used in the
+	 * recommendations to render the "Add to cart" button for the product when it is recommended to a user.
+	 *
+	 * @param \Shopware\Models\Article\Article $article
+	 * @return array
+	 */
+	protected function buildTags(\Shopware\Models\Article\Article $article)
+	{
+		$tags = array();
+
+		// todo: implement
+
+		return $tags;
+	}
+
+	/**
+	 * Builds the category paths the product belongs to and returns them.
+	 *
+	 * By "path" we mean the full tree path of the products categories and sub-categories.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article to get the category paths for.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the article is in.
+	 * @return array the built paths or empty array if no categories where found.
+	 */
+	protected function buildCategoryPaths(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	{
+		$paths = array();
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
+		$shopCategoryId = $shop->getCategory()->getId();
+		/** @var Shopware\Models\Category\Category $category */
+		foreach ($article->getCategories() as $category) {
+			// Only include categories that are under the shop's root category.
+			if (strpos($category->getPath(), '|'.$shopCategoryId.'|') !== false) {
+				$paths[] = $helper->buildCategoryPath($category);
+			}
+		}
+		return $paths;
 	}
 
 	/**

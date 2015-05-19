@@ -1,12 +1,6 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: lindqvic
- * Date: 13/05/15
- * Time: 09:06
- */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status implements NostoOrderStatusInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderStatusInterface
 {
 	/**
 	 * @var string the order status code.

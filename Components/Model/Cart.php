@@ -1,36 +1,24 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] line items in the cart.
 	 */
-	protected $_items = array();
+	protected $_lineItems = array();
 
 	/**
-	 * Loads the cart line items from the order basket.
+	 * Loads the cart line items from the order baskets.
 	 *
-	 * @param string $sessionId the users session id which the baskets are mapped on.
+	 * @param \Shopware\Models\Order\Basket[] $baskets the users basket items.
 	 */
-	public function loadData($sessionId)
+	public function loadData(array $baskets)
 	{
-		if (empty($sessionId)) {
-			return;
-		}
-
-		/** @var Shopware\Models\Order\Basket[] $baskets */
-		$baskets = Shopware()->Models()->getRepository('Shopware\Models\Order\Basket')->findBy(array(
-			'sessionId' => $sessionId
-		));
-		if (empty($baskets)) {
-			return;
-		}
-
 		$currency = Shopware()->Shop()->getCurrency()->getCurrency();
 		foreach ($baskets as $basket) {
 			$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
 			$item->loadData($basket, $currency);
-			$this->_items[] = $item;
+			$this->_lineItems[] = $item;
 		}
 	}
 
@@ -39,6 +27,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
 	 */
 	public function getLineItems()
 	{
-		return $this->_items;
+		return $this->_lineItems;
 	}
 }
