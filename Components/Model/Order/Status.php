@@ -19,8 +19,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	 */
 	public function loadData(Shopware\Models\Order\Order $order)
 	{
-		// todo: implement
-		// $this->_payment_status = $order->getOrderStatus()->getDescription(); // $order->getPaymentStatus()->getDescription()
+		$description = $order->getOrderStatus()->getDescription();
+		$this->_code = $this->convertDescriptionToCode($description);
+		$this->_label = $description;
+	}
+
+	/**
+	 * Converts a human readable status description to a machine readable code,
+	 * i.e. converts the description to a lower case alphanumeric string.
+	 *
+	 * @param string $description the description to convert.
+	 * @return string the status code.
+	 */
+	protected function convertDescriptionToCode($description)
+	{
+		$pattern = array('/[^a-zA-Z0-9]+/', '/_+/', '/^_+/', '/_+$/');
+		$replacement = array('_', '_', '', '');
+		return strtolower(preg_replace($pattern, $replacement, $description));
 	}
 
 	/**

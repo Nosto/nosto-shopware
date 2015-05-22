@@ -234,7 +234,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var sOrder $sOrder */
 		$sOrder = $args->getSubject();
-		$this->confirmOrder($sOrder->sOrderNumber);
+		$orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
+		$orderConfirmation->sendOrderByNumber($sOrder->sOrderNumber);
+	}
+
+	/**
+	 * Event handler for `Shopware\Models\Order\Order::postUpdate`.
+	 *
+	 * Sends an API order confirmation to Nosto.
+	 *
+	 * @param Enlight_Event_EventArgs $args
+	 */
+	public function onPostUpdateOrder(Enlight_Event_EventArgs $args)
+	{
+		/** @var Shopware\Models\Order\Order $order */
+		$order = $args->getEntity();
+		$orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
+		$orderConfirmation->sendOrder($order);
 	}
 
 	/**
@@ -391,6 +407,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->subscribeEvent(
 			'Shopware\Models\Article\Article::postRemove',
 			'onPostRemoveArticle'
+		);
+		$this->subscribeEvent(
+			'Shopware\Models\Order\Order::postUpdate',
+			'onPostUpdateOrder'
 		);
 		// Frontend events.
 		$this->subscribeEvent(
@@ -712,44 +732,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/tagging/order.tpl');
 		$view->assign('nostoOrder', $nostoOrder);
-	}
-
-	/**
-	 * Sends an order confirmation API call to Nosto for an order.
-	 *
-	 * @param int $orderNumber the order number to find the order model on.
-	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onOrderSSaveOrderAfter
-	 */
-	protected function confirmOrder($orderNumber)
-	{
-		// todo: incorrect from backend
-		$shop = Shopware()->Shop();
-
-		/** @var Shopware\Models\Order\Order $order */
-		$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
-			->findOneBy(array('number' => $orderNumber));
-		if (is_null($order)) {
-			return;
-		}
-
-		$accountHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$account = $accountHelper->findAccount($shop);
-
-		if (!is_null($account)) {
-			$nostoAccount = $accountHelper->convertToNostoAccount($account);
-			if ($nostoAccount->isConnectedToNosto()) {
-				try {
-					$customerHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
-					$customerId = $customerHelper->getCustomerId();
-					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-					$model->loadData($order);
-					NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
-				} catch (NostoException $e) {
-					Shopware()->Pluginlogger()->error($e);
-				}
-			}
-		}
 	}
 
 	/**
