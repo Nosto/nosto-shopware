@@ -114,7 +114,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 */
 	protected function addPreviewUrlQueryParams(\Shopware\Models\Shop\Shop $shop, $url, $params = array())
 	{
-		$params = array_merge($params, array('__shop' => $shop->getId(), 'nostodebug' => 'true'));
+		$defaults = array(
+			'__shop' => $shop->getId(),
+			'nostodebug' => 'true'
+		);
+		$params = array_merge($defaults, $params);
 		return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
 	}
 }
