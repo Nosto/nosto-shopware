@@ -83,6 +83,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	 */
 	protected function getAccounts()
 	{
+		// todo: this is all account, can the product be saved/deleted for just one shop?
 		$data = array();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$accounts = Shopware()->Models()->getRepository('\Shopware\CustomModels\Nosto\Account\Account')->findAll();

@@ -1,5 +1,6 @@
 <?php
 
+// todo: this cannot use the session.
 class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 {
 	/**
@@ -18,11 +19,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 */
 	public function persistCustomerId()
 	{
+		// todo: implement storage
 		$customerId = Shopware()->Front()->Request()->getCookie(self::COOKIE_NAME, null);
 		if (!is_null($customerId)) {
-			$data = Shopware()->Session()->get(self::SESSION_KEY, array());
-			$data['customerId'] = $customerId;
-			Shopware()->Session()->offsetSet(self::SESSION_KEY, $data);
+			//$data = Shopware()->Session()->get(self::SESSION_KEY, array());
+			//$data['customerId'] = $customerId;
+			//Shopware()->Session()->offsetSet(self::SESSION_KEY, $data);
 		}
 	}
 
@@ -33,7 +35,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 */
 	public function getCustomerId()
 	{
-		$data = Shopware()->Session()->get(self::SESSION_KEY, array());
-		return isset($data['customerId']) ? $data['customerId'] : null;
+		// todo: read storage
+		return null;
+		//$data = Shopware()->Session()->get(self::SESSION_KEY, array());
+		//return isset($data['customerId']) ? $data['customerId'] : null;
 	}
 }
