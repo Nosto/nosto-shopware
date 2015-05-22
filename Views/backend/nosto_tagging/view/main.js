@@ -21,7 +21,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * Window width.
      * @integer
      */
-    width: 1024,
+    width: "70%",
 
     /**
      * Window height.
@@ -37,22 +37,27 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      */
     initComponent: function () {
         var me = this;
-        me.items = me.tabPanel = me.createTabPanel();
+        me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
+            layout: 'fit',
+            items: []
+        });
         me.callParent(arguments);
     },
 
     /**
-     * Creates a tab panel which holds off the account settings per Shop.
+     * Creates tabs for each account in the account store
+     * and adds them to the tab panel.
      *
      * @public
-     * @return Ext.tab.Panel
+     * @return void
      */
-    createTabPanel: function () {
+    initAccountTabs: function () {
         var me = this,
-            tabs = [];
+            i = 0,
+            tab;
 
         me.accountStore.each(function(account) {
-            tabs.push({
+            tab = me.tabPanel.add({
                 title: account.get('shopName'),
                 xtype: 'component',
                 autoEl: {
@@ -62,11 +67,9 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
                 },
                 shopId: account.get('shopId')
             });
-        });
-
-        return Ext.create('Ext.tab.Panel', {
-            layout: 'fit',
-            items: tabs
+            if (++i === 1) {
+                me.tabPanel.setActiveTab(tab);
+            }
         });
     },
 
@@ -74,7 +77,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * Getter for the active account model.
      *
      * @public
-     * @returns Shopware.apps.NostoTagging.model.Account
+     * @return Shopware.apps.NostoTagging.model.Account
      */
     getActiveAccount: function () {
         var me = this,

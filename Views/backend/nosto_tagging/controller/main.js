@@ -19,9 +19,34 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      */
     init: function () {
         var me = this;
-        me.loadControllerSettings();
-        me.registerPostMessageListener();
-        me.loadAccountsAndRenderWindow();
+        me.showWindow();
+        me.loadSettings();
+        me.postMessageListener();
+    },
+
+    /**
+     * Shows the main window.
+     *
+     * @return void
+     */
+    showWindow: function () {
+        var me = this;
+        me.accountStore = me.getStore('Account');
+        me.mainWindow = me.getView('Main').create({
+            accountStore: me.accountStore
+        });
+        me.mainWindow.show();
+        me.mainWindow.setLoading(true);
+        me.accountStore.load({
+            callback: function(records, operation, success) {
+                me.mainWindow.setLoading(false);
+                if (success) {
+                    me.mainWindow.initAccountTabs();
+                } else {
+                    throw new Error('Nosto: failed to load accounts.');
+                }
+            }
+        });
     },
 
     /**
@@ -29,7 +54,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      *
      * @return void
      */
-    loadControllerSettings: function () {
+    loadSettings: function () {
         var me = this;
         Ext.Ajax.request({
             method: 'GET',
@@ -46,34 +71,12 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     },
 
     /**
-     * Loads the account model store and create a new window for the account configurations.
-     *
-     * @return void
-     */
-    loadAccountsAndRenderWindow: function () {
-        var me = this;
-        me.accountStore = me.getStore('Account');
-        me.accountStore.load({
-            callback: function(records, operation, success) {
-                if (success) {
-                    me.mainWindow = me.getView('Main').create({
-                        accountStore: me.accountStore
-                    });
-                    me.mainWindow.show();
-                } else {
-                    throw new Error('Nosto: failed to load accounts.');
-                }
-            }
-        });
-    },
-
-    /**
      * Register event handler for window.postMessage() messages from Nosto through which we handle account creation,
      * connection and deletion.
      *
      * @return void
      */
-    registerPostMessageListener: function () {
+    postMessageListener: function () {
         var me = this;
         window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
     },
