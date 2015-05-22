@@ -34,6 +34,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 					'module' => 'backend',
 					'controller' => 'index',
 					'action' => 'index',
+					'openNosto' => 1
 				);
 				$this->redirect($redirectParams, array('code' => 302));
 			} catch (NostoException $e) {
@@ -43,6 +44,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 					'module' => 'backend',
 					'controller' => 'index',
 					'action' => 'index',
+					'openNosto' => 1
 				);
 				$this->redirect($redirectParams, array('code' => 302));
 			}
@@ -64,6 +66,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				'module' => 'backend',
 				'controller' => 'index',
 				'action' => 'index',
+				'openNosto' => 1
 			);
 			$this->redirect($redirectParams, array('code' => 302));
 		} else {

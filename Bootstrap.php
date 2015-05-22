@@ -66,6 +66,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function install()
 	{
 		$this->createMyTables();
+		$this->createMyAttributes();
 		$this->createMyMenu();
 		$this->registerMyEvents();
 		return true;
@@ -77,6 +78,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function uninstall()
 	{
 		$this->dropMyTables();
+		$this->dropMyAttributes();
 		return true;
 	}
 
@@ -92,6 +94,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * Event handler for the `Enlight_Controller_Action_PostDispatch_Backend_Index` event.
 	 *
 	 * Adds Nosto CSS to the backend <head>.
+	 * Check if we should open the Nosto configuration window automatically,
+	 * e.g. if the backend is loaded as a part of the OAuth cycle.
 	 *
 	 * @param Enlight_Controller_ActionEventArgs $args the event arguments.
 	 */
@@ -104,6 +108,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('backend/plugins/nosto_tagging/index/header.tpl');
+		// todo: Figure out how to open the ExtJS app.
+		/*if ($args->getSubject()->Request()->getParam('openNosto')) {
+			$view->extendsTemplate('backend/plugins/nosto_tagging/index/controller/main.js');
+		}*/
 	}
 
 	/**
@@ -117,17 +125,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
 	{
-		// todo: simplify this check to use `$this->validateEvent`.
-		if (!$args->getSubject()->Request()->isDispatched()
-			|| $args->getSubject()->Response()->isException()
-			|| $args->getSubject()->Request()->getModuleName() != 'frontend'
-			|| !$this->shopHasConnectedAccount()
-		) {
+		if (!$this->validateEvent($args->getSubject(), 'frontend')
+			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
 
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
-		$helper->persistCustomerId();
+		$helper->persistSession();
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
@@ -288,8 +292,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var sOrder $sOrder */
 		$sOrder = $args->getSubject();
-		$orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
-		$orderConfirmation->sendOrderByNumber($sOrder->sOrderNumber);
+		$order = Shopware()
+			->Models()
+			->getRepository('Shopware\Models\Order\Order')
+			->findOneBy(array('number' => $sOrder->sOrderNumber));
+		if (is_object($order)) {
+			// Store the Nosto customer ID in the order attribute if found.
+			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
+			$nostoId = $helper->getNostoId();
+			if (!empty($nostoId)) {
+				$attribute = Shopware()
+					->Models()
+					->getRepository('Shopware\Models\Attribute\Order')
+					->findOneBy(array('orderId' => $order->getId()));
+				if (is_object($attribute)) {
+					$attribute->setNostoCustomerID($nostoId);
+					Shopware()->Models()->persist($attribute);
+					Shopware()->Models()->flush($attribute);
+				}
+			}
+
+			$orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
+			$orderConfirmation->sendOrder($order);
+		}
 	}
 
 	/**
@@ -388,8 +413,30 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$schematicTool->createSchema(
 			array(
 				$modelManager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
+				$modelManager->getClassMetadata('Shopware\CustomModels\Nosto\Customer\Customer'),
 				$modelManager->getClassMetadata('Shopware\CustomModels\Nosto\Setting\Setting'),
 			)
+		);
+	}
+
+	/**
+	 * Adds needed attributes to core models.
+	 *
+	 * Run on install.
+	 * Adds `nosto_customerID` to Shopware\Models\Attribute\Order.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
+	 */
+	protected function createMyAttributes()
+	{
+		Shopware()->Models()->addAttribute(
+			's_order_attributes',
+			'nosto',
+			'customerID',
+			'VARCHAR(255)'
+		);
+		Shopware()->Models()->generateAttributeModels(
+			array('s_order_attributes')
 		);
 	}
 
@@ -408,8 +455,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$schematicTool->dropSchema(
 			array(
 				$modelManager->getClassMetadata('Shopware\CustomModels\Nosto\Account\Account'),
+				$modelManager->getClassMetadata('Shopware\CustomModels\Nosto\Customer\Customer'),
 				$modelManager->getClassMetadata('Shopware\CustomModels\Nosto\Setting\Setting'),
 			)
+		);
+	}
+
+	/**
+	 * Removes created attributes from core models
+	 *
+	 * Run on uninstall.
+	 * Removes `nosto_customerID` from Shopware\Models\Attribute\Order.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::uninstall
+	 */
+	protected function dropMyAttributes()
+	{
+		Shopware()->Models()->removeAttribute(
+			's_order_attributes',
+			'nosto',
+			'customerID'
+		);
+		Shopware()->Models()->generateAttributeModels(
+			array('s_order_attributes')
 		);
 	}
 
@@ -521,21 +589,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
-	 * Validates that current request is for e specific controller/action combo.
+	 * Validates that current request is for a specific module, controller and
+	 * action combo.
 	 *
 	 * @param Enlight_Controller_Action $controller the controller event.
 	 * @param string $module the module name, e.g. "frontend".
-	 * @param string $ctrl the controller name.
-	 * @param string $action the action name.
+	 * @param string|null $ctrl the controller name (optional).
+	 * @param string|null $action the action name (optional).
 	 * @return bool true if the event is valid, false otherwise.
 	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendIndex
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendDetail
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendListing
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendCheckout
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendSearch
 	 */
-	protected function validateEvent($controller, $module, $ctrl, $action)
+	protected function validateEvent($controller, $module, $ctrl = null, $action = null)
 	{
 		$request = $controller->Request();
 		$response = $controller->Response();
@@ -544,8 +614,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		if (!$request->isDispatched()
 			|| $response->isException()
 			|| $request->getModuleName() != $module
-			|| $request->getControllerName() != $ctrl
-			|| $request->getActionName() != $action
+			|| (!is_null($ctrl) && $request->getControllerName() != $ctrl)
+			|| (!is_null($action) && $request->getActionName() != $action)
 			|| !$view->hasTemplate()) {
 			return false;
 		}
