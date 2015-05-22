@@ -103,7 +103,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
-		$view->extendsTemplate('backend/plugins/nosto_tagging/header.tpl');
+		$view->extendsTemplate('backend/plugins/nosto_tagging/index/header.tpl');
 	}
 
 	/**
