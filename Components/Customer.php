@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Customer component. Used as a helper to manage the Nosto user session inside
+ * Shopware.
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 {
 	/**
@@ -31,7 +40,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 			$customer = Shopware()
 				->Models()
 				->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
-				->findOneBy(array('session_id' => $sessionId));
+				->findOneBy(array('sessionId' => $sessionId));
 			if (empty($customer)) {
 				$customer = new \Shopware\CustomModels\Nosto\Customer\Customer();
 				$customer->setSessionId($sessionId);
@@ -58,7 +67,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 		$customer = Shopware()
 			->Models()
 			->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
-			->findOneBy(array('session_id' => $sessionId));
+			->findOneBy(array('sessionId' => $sessionId));
 		return !is_null($customer) ? $customer->getNostoId() : null;
 	}
 }

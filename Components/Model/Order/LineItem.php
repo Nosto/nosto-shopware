@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * Model for order line item information. This is used when compiling the info
+ * about an order that is sent to Nosto.
+ *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Implements NostoOrderPurchasedItemInterface.
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderPurchasedItemInterface
 {
 	/**

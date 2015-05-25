@@ -23,22 +23,22 @@ class Customer extends ModelEntity
 	private $id;
 
 	/**
-	 * @var string $name
+	 * @var string $sessionId
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="session_id", type="string", length=255, nullable=false)
 	 */
-	private $session_id;
+	private $sessionId;
 
 	/**
-	 * @var string $name
+	 * @var string $nostoId
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="nosto_id", type="string", length=255, nullable=false)
 	 */
-	private $nosto_id;
+	private $nostoId;
 
 	/**
 	 * @return int
@@ -53,7 +53,7 @@ class Customer extends ModelEntity
 	 */
 	public function getSessionId()
 	{
-		return $this->session_id;
+		return $this->sessionId;
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Customer extends ModelEntity
 	 */
 	public function setSessionId($id)
 	{
-		$this->session_id = $id;
+		$this->sessionId = $id;
 		return $this;
 	}
 
@@ -71,7 +71,7 @@ class Customer extends ModelEntity
 	 */
 	public function getNostoId()
 	{
-		return $this->nosto_id;
+		return $this->nostoId;
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Customer extends ModelEntity
 	 */
 	public function setNostoId($id)
 	{
-		$this->nosto_id = $id;
+		$this->nostoId = $id;
 		return $this;
 	}
 }

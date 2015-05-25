@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Main backend controller. Handles account create/connect/delete requests
+ * from the account configuration iframe.
+ *
+ * Extends Shopware_Controllers_Backend_ExtJs.
+ *
+ * @package Shopware
+ * @subpackage Controllers_Backend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
 class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs
 {
 	const DEFAULT_IFRAME_ORIGIN = 'https://my.nosto.com';

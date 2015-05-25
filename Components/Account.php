@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Account component. Used as a helper to manage Nosto account inside Shopware.
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 {
 	/**
@@ -8,7 +16,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * Note that the account is not saved anywhere and it is up to the caller to handle it.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to create the account for.
-	 * @param string|null                $email (optional) the account owner email if different than the active admin user.
+	 * @param string|null $email (optional) the account owner email if different than the active admin user.
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
 	 * @throws NostoException if the account cannot be created for any reason.
 	 */
@@ -35,7 +43,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	/**
 	 * Converts a `NostoAccount` into a `\Shopware\CustomModels\Nosto\Account\Account` model.
 	 *
-	 * @param NostoAccount               $nostoAccount the account to convert.
+	 * @param NostoAccount $nostoAccount the account to convert.
 	 * @param \Shopware\Models\Shop\Shop $shop the shop the account belongs to.
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the account model.
 	 */
@@ -105,7 +113,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		return Shopware()
 			->Models()
 			->getRepository('\Shopware\CustomModels\Nosto\Account\Account')
-			->findOneBy(array('shop_id' => $shop->getId()));
+			->findOneBy(array('shopId' => $shop->getId()));
 	}
 
 	/**
@@ -129,9 +137,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	/**
 	 * Builds the Nosto account administration iframe url and returns it.
 	 *
-	 * @param \Shopware\Models\Shop\Shop                        $shop the shop to get the url for.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
 	 * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url for or null if account does not exist.
-	 * @param array                                             $params (optional) parameters for the url.
+	 * @param array $params (optional) parameters for the url.
 	 * @return string the url.
 	 */
 	public function buildAccountIframeUrl(\Shopware\Models\Shop\Shop $shop, \Shopware\CustomModels\Nosto\Account\Account $account = null, array $params = array())

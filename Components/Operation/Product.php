@@ -1,9 +1,20 @@
 <?php
 
+/**
+ * Product operation component. Used for communicating create/update/delete
+ * events for products to Nosto.
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 {
 	/**
-	 * @param \Shopware\Models\Article\Article $article the article to create.
+	 * Sends info to Nosto about a newly created product.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the product.
 	 */
 	public function create(\Shopware\Models\Article\Article $article)
 	{
@@ -32,7 +43,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	}
 
 	/**
-	 * @param \Shopware\Models\Article\Article $article the article to update.
+	 * Sends info to Nosto about a newly updated product.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the product.
 	 */
 	public function update(\Shopware\Models\Article\Article $article)
 	{
@@ -61,7 +74,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	}
 
 	/**
-	 * @param \Shopware\Models\Article\Article $article the article to delete.
+	 * Sends info to Nosto about a deleted product.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the product.
 	 */
 	public function delete(\Shopware\Models\Article\Article $article)
 	{
@@ -79,6 +94,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	}
 
 	/**
+	 * Returns the available Nosto accounts mapped on the shop ID to which they
+	 * belong.
+	 *
 	 * @return NostoAccount[] the accounts mapped in the shop IDs.
 	 */
 	protected function getAccounts()

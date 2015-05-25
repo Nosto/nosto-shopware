@@ -24,13 +24,13 @@ class Account extends ModelEntity
 	private $id;
 
 	/**
-	 * @var integer $shop_id
+	 * @var integer $shopId
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="shop_id", type="integer", nullable=false)
 	 */
-	private $shop_id;
+	private $shopId;
 
 	/**
 	 * @var string $name
@@ -62,7 +62,7 @@ class Account extends ModelEntity
 	 */
 	public function setShopId($shopId)
 	{
-		$this->shop_id = $shopId;
+		$this->shopId = $shopId;
 		return $this;
 	}
 
@@ -71,7 +71,7 @@ class Account extends ModelEntity
 	 */
 	public function getShopId()
 	{
-		return $this->shop_id;
+		return $this->shopId;
 	}
 
 	/**

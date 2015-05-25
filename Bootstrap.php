@@ -2,6 +2,16 @@
 
 require_once 'vendor/nosto/php-sdk/src/config.inc.php';
 
+/**
+ * The plugin bootstrap class.
+ *
+ * Extends Shopware_Components_Plugin_Bootstrap.
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 	const PLATFORM_NAME = 'shopware';

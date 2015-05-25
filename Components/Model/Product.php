@@ -1,6 +1,19 @@
 <?php
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements \NostoProductInterface, \NostoValidatableModelInterface
+/**
+ * Model for product information. This is used when compiling the info about a
+ * product that is sent to Nosto.
+ *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Implements NostoProductInterface.
+ * Implements NostoValidatableModelInterface.
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface, NostoValidatableModelInterface
 {
 	const IN_STOCK = 'InStock';
 	const OUT_OF_STOCK = 'OutOfStock';
