@@ -8,7 +8,7 @@
 	</script>
 {/block}
 {/if}
-{block name="frontend_index_footer" append}
+{block name="frontend_index_content" append}
 	{if isset($nostoCustomer) && is_object($nostoCustomer)}
 		<div class="nosto_customer" style="display:none">
 			<span class="first_name">{$nostoCustomer->getFirstName()|escape:'htmlall':'UTF-8'}</span>

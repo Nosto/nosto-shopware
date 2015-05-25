@@ -1,4 +1,4 @@
-{block name="frontend_index_footer" prepend}
+{block name="frontend_index_content" append}
     <div class="nosto_element" id="nosto-page-product1"></div>
     <div class="nosto_element" id="nosto-page-product2"></div>
     <div class="nosto_element" id="nosto-page-product3"></div>

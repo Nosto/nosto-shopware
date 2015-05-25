@@ -1,4 +1,4 @@
-{block name="frontend_index_footer" prepend}
+{block name="frontend_index_content" append}
     <div class="nosto_element" id="nosto-page-category1"></div>
     <div class="nosto_element" id="nosto-page-category2"></div>
 	{if isset($nostoCategory) && is_object($nostoCategory)}

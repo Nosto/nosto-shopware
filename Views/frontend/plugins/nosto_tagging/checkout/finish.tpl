@@ -1,5 +1,5 @@
 {if isset($nostoOrder) && is_object($nostoOrder)}
-{block name="frontend_index_footer" append}
+{block name="frontend_index_content" append}
 	<div class="nosto_purchase_order" style="display:none">
 		<span class="order_number">{$nostoOrder->getOrderNumber()|escape:'htmlall':'UTF-8'}</span>
 		<div class="buyer">
