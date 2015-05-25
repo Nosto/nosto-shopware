@@ -27,24 +27,30 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	/**
 	 * Ajax action for getting any settings for the backend app.
 	 *
-	 * This action should only be accessed by the Main controller in the client side application.
+	 * This action should only be accessed by the Main controller in the client
+	 * side application.
 	 */
 	public function loadSettingsAction()
 	{
 		$this->View()->assign(array(
 			'success' => true,
 			'data' => array(
-				'postMessageOrigin' => Nosto::getEnvVariable('NOSTO_IFRAME_ORIGIN', self::DEFAULT_IFRAME_ORIGIN)
+				'postMessageOrigin' => Nosto::getEnvVariable(
+					'NOSTO_IFRAME_ORIGIN',
+					self::DEFAULT_IFRAME_ORIGIN
+				)
 			)
 		));
 	}
 
 	/**
 	 * Gets a list of accounts to populate client side Account models form.
-	 * These are created for every shop, even if there is no Nosto account configured for it yet.
-	 * This is done in order to streamline the functionality client side.
+	 * These are created for every shop, even if there is no Nosto account
+	 * configured for it yet. This is done in order to streamline the
+	 * functionality client side.
 	 *
-	 * This action should only be accessed by the Account store proxy in the client side application.
+	 * This action should only be accessed by the Account store proxy in the
+	 * client side application.
 	 *
 	 * The Account models are formatted as follows:
 	 *
@@ -91,7 +97,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	/**
 	 * Ajax action for creating a new Nosto account and linking it to a Shop.
 	 *
-	 * This action should only be accessed by the Account model in the client side application.
+	 * This action should only be accessed by the Account model in the client
+	 * side application.
 	 */
 	public function createAccountAction()
 	{
@@ -136,7 +143,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	/**
 	 * Ajax action for deleting a Nosto account for a Shop.
 	 *
-	 * This action should only be accessed by the Account model in the client side application.
+	 * This action should only be accessed by the Account model in the client
+	 * side application.
 	 */
 	public function deleteAccountAction()
 	{
@@ -175,7 +183,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	/**
 	 * Ajax action for connecting an account via OAuth and linking it to a shop.
 	 *
-	 * This action should only be accessed by the Main controller in the client side application.
+	 * This action should only be accessed by the Main controller in the client
+	 * side application.
 	 */
 	public function connectAccountAction()
 	{

@@ -90,8 +90,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 */
 	public function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account)
 	{
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$nostoAccount = $helper->convertToNostoAccount($account);
+		$nostoAccount = $this->convertToNostoAccount($account);
 		Shopware()->Models()->remove($account);
 		Shopware()->Models()->flush();
 		try {
@@ -147,8 +146,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
 		$meta->loadData($shop);
 		if (!is_null($account)) {
-			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-			$nostoAccount = $helper->convertToNostoAccount($account);
+			$nostoAccount = $this->convertToNostoAccount($account);
 		} else {
 			$nostoAccount = null;
 		}
