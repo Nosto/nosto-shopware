@@ -16,11 +16,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * Note that the account is not saved anywhere and it is up to the caller to handle it.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to create the account for.
+	 * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+	 * @param stdClass|null $identity the user identity.
 	 * @param string|null $email (optional) the account owner email if different than the active admin user.
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
 	 * @throws NostoException if the account cannot be created for any reason.
 	 */
-	public function createAccount(\Shopware\Models\Shop\Shop $shop, $email = null)
+	public function createAccount(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null, $email = null)
 	{
 		$account = $this->findAccount($shop);
 		if (!is_null($account)) {
@@ -28,7 +30,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		}
 
 		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account();
-		$meta->loadData($shop);
+		$meta->loadData($shop, $locale, $identity);
 		$validator = new Zend_Validate_EmailAddress();
 		if ($validator->isValid($email)) {
 			$meta->getOwner()->setEmail($email);
@@ -137,14 +139,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * Builds the Nosto account administration iframe url and returns it.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
+	 * @param \Shopware\Models\Shop\Locale $locale the locale or null.
 	 * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url for or null if account does not exist.
+	 * @param stdClass|null $identity (optional) user identity.
 	 * @param array $params (optional) parameters for the url.
 	 * @return string the url.
 	 */
-	public function buildAccountIframeUrl(\Shopware\Models\Shop\Shop $shop, \Shopware\CustomModels\Nosto\Account\Account $account = null, array $params = array())
+	public function buildAccountIframeUrl(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, \Shopware\CustomModels\Nosto\Account\Account $account = null, $identity = null, array $params = array())
 	{
 		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
-		$meta->loadData($shop);
+		$meta->loadData($shop, $locale, $identity);
 		if (!is_null($account)) {
 			$nostoAccount = $this->convertToNostoAccount($account);
 		} else {

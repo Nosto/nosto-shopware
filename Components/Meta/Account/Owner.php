@@ -29,16 +29,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	protected $_email;
 
 	/**
-	 * @param \Shopware\Models\Shop\Shop $shop
+	 * Loads the data for the account owner.
+	 *
+	 * @param stdClass|null the user identity.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop)
+	public function loadData($identity = null)
 	{
-		$user = Shopware()->Auth()->getIdentity();
-		list($firstName, $lastName) = explode(' ', $user->name);
-
-		$this->_firstName = $firstName;
-		$this->_lastName = $lastName;
-		$this->_email = $user->email;
+		if (!is_null($identity))
+		{
+			list($firstName, $lastName) = explode(' ', $identity->name);
+			$this->_firstName = $firstName;
+			$this->_lastName = $lastName;
+			$this->_email = $identity->email;
+		}
 	}
 
 	/**

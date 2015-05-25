@@ -71,7 +71,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
 		$result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		$identity = Shopware()->Auth()->getIdentity();
 		$data = array();
+
 		foreach ($result as $row) {
 			$shop = $repository->getActiveById($row['id']);
 			if (is_null($shop)) {
@@ -80,7 +82,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 			$shop->registerResources(Shopware()->Bootstrap());
 			$account = $helper->findAccount($shop);
 			$accountData = array(
-				'url' => $helper->buildAccountIframeUrl($shop, $account),
+				'url' => $helper->buildAccountIframeUrl($shop, $identity->locale, $account, $identity),
 				'shopId' => $shop->getId(),
 				'shopName' => $shop->getName(),
 			);
@@ -109,12 +111,13 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
 		$shop = $repository->getActiveById($shopId);
+		$identity = Shopware()->Auth()->getIdentity();
 
 		if (!is_null($shop)) {
 			$shop->registerResources(Shopware()->Bootstrap());
 			try {
 				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-				$account = $helper->createAccount($shop, $email);
+				$account = $helper->createAccount($shop, $identity->locale, $identity, $email);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
 				$success = true;
@@ -123,7 +126,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 					'name' => $account->getName(),
 					'url' => $helper->buildAccountIframeUrl(
 							$shop,
+							$identity->locale,
 							$account,
+							$identity,
 							array(
 								'message_type' => NostoMessage::TYPE_SUCCESS,
 								'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
@@ -157,6 +162,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
 		$shop = $repository->getActiveById($shopId);
+		$identity = Shopware()->Auth()->getIdentity();
 
 		if (!is_null($account) && !is_null($shop)) {
 			$shop->registerResources(Shopware()->Bootstrap());
@@ -166,7 +172,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 			$data = array(
 				'url' => $helper->buildAccountIframeUrl(
 						$shop,
+						$identity->locale,
 						null,
+						$identity,
 						array(
 							'message_type' => NostoMessage::TYPE_SUCCESS,
 							'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
@@ -194,11 +202,12 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
 		$shop = $repository->getActiveById($shopId);
+		$locale = Shopware()->Auth()->getIdentity()->locale;
 
 		if (!is_null($shop)) {
 			$shop->registerResources(Shopware()->Bootstrap());
 			$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
-			$meta->loadData($shop);
+			$meta->loadData($shop, $locale);
 			$client = new NostoOAuthClient($meta);
 			$success = true;
 			$data = array('redirect_url' => $client->getAuthorizationUrl());

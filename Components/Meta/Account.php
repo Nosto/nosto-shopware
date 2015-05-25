@@ -60,19 +60,25 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	/**
 	 * Loads the meta data for the given shop.
 	 *
-	 * @param \Shopware\Models\Shop\Shop $shop the shop view to load the data for.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
+	 * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+	 * @param stdClass|null $identity the user identity.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop)
+	public function loadData(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null)
 	{
+		if (is_null($locale)) {
+			$locale = $shop->getLocale();
+		}
+
 		$this->_title = Shopware()->App().' - '.$shop->getName();
 		$this->_name = substr(sha1(rand()), 0, 8);
 		$this->_frontPageUrl = Shopware()->Front()->Router()->assemble(array('module' => 'frontend'));
 		$this->_currencyCode = strtoupper($shop->getCurrency()->getCurrency());
 		$this->_languageCode = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-		$this->_ownerLanguageCode = strtolower(substr(Shopware()->Auth()->getIdentity()->locale->getLocale(), 0, 2));
+		$this->_ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
 
 		$this->_owner = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner();
-		$this->_owner->loadData($shop);
+		$this->_owner->loadData($identity);
 
 		$this->_billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
 		$this->_billing->loadData($shop);

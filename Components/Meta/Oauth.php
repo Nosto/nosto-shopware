@@ -25,19 +25,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	/**
 	 * Loads the oauth meta data from the shop model.
 	 *
-	 * @param \Shopware\Models\Shop\Shop $shop the model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
+	 * @param \Shopware\Models\Shop\Locale $locale the locale model or null.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop)
+	public function loadData(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null)
 	{
+		if (is_null($locale)) {
+			$locale = $shop->getLocale();
+		}
+
 		$this->_redirectUrl = Shopware()->Front()->Router()->assemble(array(
 			'module' => 'frontend',
 			'controller' => 'nostotagging',
 			'action' => 'oauth'
 		));
-		$identity = Shopware()->Auth()->getIdentity();
-		if (!is_null($identity)) {
-			$this->_languageCode = strtolower(substr($identity->locale->getLocale(), 0, 2));
-		}
+		$this->_languageCode = strtolower(substr($locale->getLocale(), 0, 2));
 	}
 
 	/**

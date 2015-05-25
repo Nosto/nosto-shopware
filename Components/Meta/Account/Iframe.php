@@ -75,22 +75,28 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 	/**
 	 * Loads the iframe data from the shop model.
 	 *
-	 * @param \Shopware\Models\Shop\Shop $shop the model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
+	 * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+	 * @param stdClass|null $identity the user identity.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop)
+	public function loadData(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null)
 	{
+		if (is_null($locale)) {
+			$locale = $shop->getLocale();
+		}
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
-		$identity = Shopware()->Auth()->getIdentity();
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
+		$plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
 
 		if (!is_null($identity)) {
 			list($firstName, $lastName) = explode(' ', $identity->name);
 			$this->_firstName = $firstName;
 			$this->_lastName = $lastName;
 			$this->_email = $identity->email;
-			$this->_languageIsoCode = strtolower(substr($identity->locale->getLocale(), 0, 2));
 		}
+		$this->_languageIsoCode = strtolower(substr($locale->getLocale(), 0, 2));
 		$this->_languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-		$this->_uniqueId = Shopware()->Plugins()->Frontend()->NostoTagging()->getUniqueId();
+		$this->_uniqueId = $plugin->getUniqueId();
 		$this->_previewUrlProduct = $helper->getProductPagePreviewUrl($shop);
 		$this->_previewUrlCategory = $helper->getCategoryPagePreviewUrl($shop);
 		$this->_previewUrlSearch = $helper->getSearchPagePreviewUrl($shop);
