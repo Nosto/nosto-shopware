@@ -34,5 +34,9 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 0.2.0
+* Add "add-to-cart" feature to enable adding products to cart directly from the
+recommendations
+
 ### 0.1.0
 * Initial beta-release
