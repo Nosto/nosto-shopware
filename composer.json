@@ -1,7 +1,7 @@
 {
     "name": "nosto/nosto-shopware-plugin",
-    "description": "Nosto Shopware plugin",
-    "license": "LGPL",
+    "description": "Personalization for Shopware",
+    "license": "BSD-3-Clause",
     "repositories": [
         {
             "type": "vcs",
