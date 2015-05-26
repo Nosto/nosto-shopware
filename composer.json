@@ -1,0 +1,14 @@
+{
+    "name": "nosto/nosto-shopware-plugin",
+    "description": "Personalization for Shopware",
+    "license": "BSD-3-Clause",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Nosto/php-sdk.git"
+        }
+    ],
+    "require": {
+        "nosto/php-sdk": "1.10.*"
+    }
+}

@@ -1,1 +1,1 @@
-# nosto-shopware-plugin
+# Personalization for Shopware
