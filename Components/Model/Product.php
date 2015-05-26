@@ -176,8 +176,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Assembles the product url based on article and shop.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article to assemble the url for.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop the url for the product is for.
+	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string the url.
 	 */
 	protected function assembleProductUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
@@ -187,16 +187,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			'controller' => 'detail',
 			'sArticle' => $article->getId(),
 		));
-		// Always add the "__shop" parameter so that the crawler can distinguish between products in different shops
-		// even if the host and path of the shops match.
+		// Always add the "__shop" parameter so that the crawler can distinguish
+		// between products in different shops even if the host and path of the
+		// shops match.
 		return NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
 	}
 
 	/**
 	 * Assembles the product image url based on article and shop.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article to assemble the image url for.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop the url for the image is in.
+	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string|null the url or null if image not found.
 	 */
 	protected function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
@@ -215,9 +216,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Calculates the price including tax and returns it.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article to get the price for.
+	 * @param \Shopware\Models\Article\Article $article the article model.
 	 * @param string $type the type of price, i.e. "price" or "listPrice".
-	 * @return string the calculated price formatted according to Nosto standards.
+	 * @return string the price formatted according to Nosto standards.
 	 */
 	protected function calcPriceInclTax(\Shopware\Models\Article\Article $article, $type = 'price')
 	{
@@ -231,15 +232,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		}
 		/** @var NostoHelperPrice $helper */
 		$helper = Nosto::helper('price');
-		return $helper->format($value * (1 + ($article->getTax()->getTax() / 100)));
+		$tax = $article->getTax()->getTax();
+		return $helper->format($value * (1 + ($tax / 100)));
 	}
 
 	/**
 	 * Builds the tag list for the product.
 	 *
-	 * Also includes the custom "add-to-cart" tag if the product can be added to the shopping cart directly without
-	 * any action from the user, e.g. the product cannot have any variations or choices. This tag is then used in the
-	 * recommendations to render the "Add to cart" button for the product when it is recommended to a user.
+	 * Also includes the custom "add-to-cart" tag if the product can be added to
+	 * the shopping cart directly without any action from the user, e.g. the
+	 * product cannot have any variations or  choices. This tag is then used in
+	 * the recommendations to render the "Add to cart" button for the product
+	 * when it is recommended to a user.
 	 *
 	 * @param \Shopware\Models\Article\Article $article
 	 * @return array
@@ -248,7 +252,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	{
 		$tags = array();
 
-		// todo: implement
+		// If the product does not have any variants, then it can be added to
+		// the shopping cart directly from the recommendations.
+		$configuratorSet = $article->getConfiguratorSet();
+		if (empty($configuratorSet)) {
+			$tags[] = self::ADD_TO_CART;
+		}
 
 		return $tags;
 	}
@@ -256,21 +265,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Builds the category paths the product belongs to and returns them.
 	 *
-	 * By "path" we mean the full tree path of the products categories and sub-categories.
+	 * By "path" we mean the full tree path of the products categories and
+	 * sub-categories.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article to get the category paths for.
+	 * @param \Shopware\Models\Article\Article $article the article model.
 	 * @param \Shopware\Models\Shop\Shop $shop the shop the article is in.
-	 * @return array the built paths or empty array if no categories where found.
+	 * @return array the paths or empty array if no categories where found.
 	 */
 	protected function buildCategoryPaths(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
 	{
 		$paths = array();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
-		$shopCategoryId = $shop->getCategory()->getId();
+		$shopCatId = $shop->getCategory()->getId();
 		/** @var Shopware\Models\Category\Category $category */
 		foreach ($article->getCategories() as $category) {
 			// Only include categories that are under the shop's root category.
-			if (strpos($category->getPath(), '|'.$shopCategoryId.'|') !== false) {
+			if (strpos($category->getPath(), '|'.$shopCatId.'|') !== false) {
 				$paths[] = $helper->buildCategoryPath($category);
 			}
 		}
@@ -282,11 +292,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 *
 	 * This method exists in order to expose a public API to change the ID.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article to get the id from.
+	 * @param \Shopware\Models\Article\Article $article the article model.
 	 */
 	public function assignId(\Shopware\Models\Article\Article $article)
 	{
-		$this->_productId = (int)$article->getId();
+		$this->_productId = $article->getMainDetail()->getNumber();
 	}
 
 	/**

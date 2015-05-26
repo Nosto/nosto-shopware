@@ -41,6 +41,39 @@
 		nostojs.init("{$nostoAccountName|escape:"javascript":"UTF-8"}", {literal}{host:{/literal} "{$nostoServerUrl|escape:"javascript":"UTF-8"}"{literal}}{/literal});
 		//]]>
 	</script>
+	<script type="text/javascript">
+		//<![CDATA[
+		{literal}
+		if (typeof Nosto === "undefined") {
+			var Nosto = {};
+		}
+		{/literal}
+		Nosto.addProductToCart = function (productNumber) {
+			var form = document.createElement("form");
+			form.setAttribute("method", "post");
+			form.setAttribute("action", "{url controller=checkout action=addArticle}");
+
+			var hiddenFields = {
+				"sActionIdentifier": "{$sUniqueRand}",
+				"sAdd": productNumber,
+				"sQuantity": 1
+			};
+
+			for(var key in hiddenFields) {
+				if(hiddenFields.hasOwnProperty(key)) {
+					var hiddenField = document.createElement("input");
+					hiddenField.setAttribute("type", "hidden");
+					hiddenField.setAttribute("name", key);
+					hiddenField.setAttribute("value", hiddenFields[key]);
+					form.appendChild(hiddenField);
+				}
+			}
+
+			document.body.appendChild(form);
+			form.submit();
+		};
+		//]]>
+	</script>
 {/block}
 {/if}
 {block name="frontend_index_content" append}
