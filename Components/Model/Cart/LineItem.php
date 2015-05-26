@@ -80,9 +80,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	 */
 	public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
 	{
-		$this->_productId = ($basket->getArticleId() > 0) ? $basket->getOrderNumber() : -1;
-		$this->_quantity = (int)$basket->getQuantity();
+		$this->_productId = -1;
 		$this->_name = $basket->getArticleName();
+
+		if ($basket->getArticleId() > 0) {
+			// If this is a product variation, we need to load the parent
+			// article to fetch it's number and name.
+			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $basket->getArticleId());
+			if (!empty($article)) {
+				$this->_productId = $article->getMainDetail()->getNumber();
+				$this->_name = $article->getName();
+			}
+		}
+
+		$this->_quantity = (int)$basket->getQuantity();
 		$this->_unitPrice = Nosto::helper('price')->format($basket->getPrice());
 		$this->_currencyCode = strtoupper($currencyCode);
 	}
