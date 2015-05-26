@@ -49,7 +49,7 @@
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderPurchasedItemInterface
 {
 	/**
-	 * @var string|int the unique identifier of the purchased item.
+	 * @var string the unique identifier of the purchased item.
 	 * If this item is for discounts or shipping cost, the id can be 0.
 	 */
 	protected $_productId;
@@ -81,7 +81,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 */
 	public function loadData(\Shopware\Models\Order\Detail $detail)
 	{
-		$this->_productId = ($detail->getArticleId() > 0) ? (int)$detail->getArticleId() : -1;
+		$this->_productId = ($detail->getArticleId() > 0) ? $detail->getArticleNumber() : -1;
 		$this->_quantity = (int)$detail->getQuantity();
 		$this->_name = $detail->getArticleName();
 		$this->_unitPrice = Nosto::helper('price')->format($detail->getPrice());

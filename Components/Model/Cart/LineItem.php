@@ -48,7 +48,7 @@
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
 	/**
-	 * @var int the product id for the line item.
+	 * @var string the product id for the line item.
 	 */
 	protected $_productId;
 
@@ -80,7 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	 */
 	public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
 	{
-		$this->_productId = ((int)$basket->getArticleId() > 0) ? (int)$basket->getArticleId() : -1;
+		$this->_productId = ($basket->getArticleId() > 0) ? $basket->getOrderNumber() : -1;
 		$this->_quantity = (int)$basket->getQuantity();
 		$this->_name = $basket->getArticleName();
 		$this->_unitPrice = Nosto::helper('price')->format($basket->getPrice());
