@@ -33,8 +33,8 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{if isset($nostoOrder) && is_object($nostoOrder)}
 {block name="frontend_index_content" append}
+{if isset($nostoOrder) && is_object($nostoOrder)}
 	<div class="nosto_purchase_order" style="display:none">
 		<span class="order_number">{$nostoOrder->getOrderNumber()|escape:'htmlall':'UTF-8'}</span>
 		<div class="buyer">
@@ -54,5 +54,5 @@
 			{/foreach}
 		</div>
 	</div>
-{/block}
 {/if}
+{/block}
