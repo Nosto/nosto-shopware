@@ -55,7 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 		$validator = new NostoModelValidator();
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
-		foreach ($this->getAccounts() as $shopId => $account) {
+		foreach ($this->getAccounts($article) as $shopId => $account) {
 			$shop = $repository->getActiveById($shopId);
 			if (is_null($shop)) {
 				continue;
@@ -86,7 +86,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 		$validator = new NostoModelValidator();
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
-		foreach ($this->getAccounts() as $shopId => $account) {
+		foreach ($this->getAccounts($article) as $shopId => $account) {
 			$shop = $repository->getActiveById($shopId);
 			if (is_null($shop)) {
 				continue;
@@ -114,7 +114,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	 */
 	public function delete(\Shopware\Models\Article\Article $article)
 	{
-		foreach ($this->getAccounts() as $account) {
+		foreach ($this->getAccounts($article) as $account) {
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->assignId($article);
 			try {
@@ -128,23 +128,50 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	}
 
 	/**
-	 * Returns the available Nosto accounts mapped on the shop ID to which they
-	 * belong.
+	 * Returns the Nosto accounts for the product mapped on the shop ID to which
+	 * they belong.
 	 *
+	 * The shops the product belongs to is determined by analyzing the products
+	 * categories and checking if the shop root category is present.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article model.
 	 * @return NostoAccount[] the accounts mapped in the shop IDs.
 	 */
-	protected function getAccounts()
+	protected function getAccounts(\Shopware\Models\Article\Article $article)
 	{
-		// todo: this is all account, can the product be saved/deleted for just one shop?
 		$data = array();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$accounts = Shopware()->Models()->getRepository('\Shopware\CustomModels\Nosto\Account\Account')->findAll();
-		foreach ($accounts as $account) {
-			$nostoAccount = $helper->convertToNostoAccount($account);
-			if ($nostoAccount->isConnectedToNosto()) {
-				$data[$account->getShopId()] = $nostoAccount;
+
+		/** @var \Shopware\Models\Shop\Shop[] $inShops */
+		$inShops = array();
+		$allShops = Shopware()
+			->Models()
+			->getRepository('\Shopware\Models\Shop\Shop')
+			->findAll();
+		/** @var Shopware\Models\Category\Category $cat */
+		foreach ($article->getCategories() as $cat) {
+			foreach ($allShops as $shop) {
+				if (isset($inShops[$shop->getId()])) {
+					continue;
+				}
+				$shopCatId = $shop->getCategory()->getId();
+				if ($cat->getId() === $shopCatId
+					|| strpos($cat->getPath(), '|'.$shopCatId.'|') !== false) {
+					$inShops[$shop->getId()] = $shop;
+				}
 			}
 		}
+
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		foreach ($inShops as $shop) {
+			$account = $helper->findAccount($shop);
+			if (!is_null($account)) {
+				$nostoAccount = $helper->convertToNostoAccount($account);
+				if ($nostoAccount->isConnectedToNosto()) {
+					$data[$shop->getId()] = $nostoAccount;
+				}
+			}
+		}
+
 		return $data;
 	}
 }
