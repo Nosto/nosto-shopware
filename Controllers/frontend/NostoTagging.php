@@ -138,7 +138,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$validator = new NostoModelValidator();
 		$collection = new NostoExportProductCollection();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Article\Article $article */
@@ -148,7 +147,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article);
-			if ($validator->validate($model)) {
+			$validator = new NostoValidator($model);
+			if ($validator->validate()) {
 				$collection[] = $model;
 			}
 		}
@@ -175,7 +175,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$validator = new NostoModelValidator();
 		$collection = new NostoExportOrderCollection();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Order\Order $order */
@@ -187,10 +186,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 			$model->disableSpecialLineItems();
 			$model->loadData($order);
-			if ($validator->validate($model)) {
+			$validator = new NostoValidator($model);
+			if ($validator->validate()) {
 				$collection[] = $model;
 			}
 		}
+
 		$this->export($collection);
 	}
 

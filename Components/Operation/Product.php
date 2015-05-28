@@ -52,7 +52,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	 */
 	public function create(\Shopware\Models\Article\Article $article)
 	{
-		$validator = new NostoModelValidator();
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
 		foreach ($this->getAccounts($article) as $shopId => $account) {
@@ -63,7 +62,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article, $shop);
-			if (!$validator->validate($model)) {
+			$validator = new NostoValidator($model);
+			if (!$validator->validate()) {
 				continue;
 			}
 			try {
@@ -83,7 +83,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	 */
 	public function update(\Shopware\Models\Article\Article $article)
 	{
-		$validator = new NostoModelValidator();
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
 		foreach ($this->getAccounts($article) as $shopId => $account) {
@@ -94,7 +93,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article, $shop);
-			if (!$validator->validate($model)) {
+			$validator = new NostoValidator($model);
+			if (!$validator->validate()) {
 				continue;
 			}
 			try {
