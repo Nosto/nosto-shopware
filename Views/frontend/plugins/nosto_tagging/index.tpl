@@ -33,6 +33,11 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
+{block name='frontend_index_header_meta_tags' append}
+	<meta name="nosto-version" content="{$nostoVersion|escape:'htmlall':'UTF-8'}">
+	<meta name="nosto-unique-id" content="{$nostoUniqueId|escape:'htmlall':'UTF-8'}">
+	<meta name="nosto-language" content="{$nostoLanguage|escape:'htmlall':'UTF-8'}">
+{/block}
 {block name="frontend_index_header_javascript" append}
 {if isset($nostoAccountName) && isset($nostoAccountName)}
 	<script type="text/javascript">

@@ -184,6 +184,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->addEmbedScript($view);
 		$this->addCustomerTagging($view);
 		$this->addCartTagging($view);
+
+		$locale = Shopware()->Shop()->getLocale()->getLocale();
+		$view->assign('nostoVersion', $this->getVersion());
+		$view->assign('nostoUniqueId', $this->getUniqueId());
+		$view->assign('nostoLanguage', strtolower(substr($locale, 0, 2)));
 	}
 
 	/**
