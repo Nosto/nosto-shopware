@@ -70,7 +70,7 @@ GitHub.
 
 For development purposes the plugin can be installed directly from the GitHub
 repository by cloning the project into the
-/engine/Shopware/Plugins/Local/Frontend/NostoTagging` directory of the Shopware
+`/engine/Shopware/Plugins/Local/Frontend/NostoTagging` directory of the Shopware
 installation. For the plugin to work, it's dependencies need to be installed.
 For this we recommend using [composer](https://getcomposer.org/), which is a
 dependency manager for PHP. By executing `composer install` in the plugins root
