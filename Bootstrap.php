@@ -83,7 +83,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function getVersion()
 	{
-		return '0.2.0';
+		return '0.3.0';
 	}
 
 	/**
@@ -801,14 +801,33 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	protected function addOrderTagging(Enlight_View_Default $view)
 	{
-		$session = Shopware()->Session();
-		if (!isset($session->sOrderVariables, $session->sOrderVariables->sOrderNumber)) {
+		if (!Shopware()->Session()->offsetExists('sOrderVariables')) {
 			return;
 		}
 
-		/** @var Shopware\Models\Order\Order $order */
-		$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
-			->findOneBy(array('number' => $session->sOrderVariables->sOrderNumber));
+		$orderVariables = Shopware()->Session()->offsetGet('sOrderVariables');
+		if (!empty($orderVariables->sOrderNumber)) {
+			$orderNumber = $orderVariables->sOrderNumber;
+			$order = Shopware()
+				->Models()
+				->getRepository('Shopware\Models\Order\Order')
+				->findOneBy(array('number' => $orderNumber));
+		} elseif (Shopware()->Session()->offsetExists('sUserId')) {
+			// Fall back on loading the last order by customer ID if the order
+			// number was not present in the order variables.
+			// This will be the case for Shopware <= 4.2.
+			$customerId = Shopware()->Session()->offsetGet('sUserId');
+			$order = Shopware()
+				->Models()
+				->getRepository('Shopware\Models\Order\Order')
+				->findOneBy(
+					array('customerId' => $customerId),
+					array('number' => 'DESC') // Last order by customer
+				);
+		} else {
+			return;
+		}
+
 		if (is_null($order)) {
 			return;
 		}

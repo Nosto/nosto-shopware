@@ -34,6 +34,9 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 0.3.0
+* Bug fixes for older SW 4 versions
+
 ### 0.2.0
 * Add "add-to-cart" feature to enable adding products to cart directly from the
 recommendations

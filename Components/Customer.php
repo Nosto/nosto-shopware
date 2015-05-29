@@ -65,7 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 */
 	public function persistSession()
 	{
-		$sessionId = Shopware()->Session()->get('sessionId');
+		$sessionId = Shopware()->Session()->offsetGet('sessionId');
 		$nostoId = Shopware()
 			->Front()
 			->Request()
@@ -94,7 +94,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 */
 	public function getNostoId()
 	{
-		$sessionId = Shopware()->Session()->get('sessionId');
+		$sessionId = Shopware()->Session()->offsetGet('sessionId');
 		if (empty($sessionId)) {
 			return null;
 		}

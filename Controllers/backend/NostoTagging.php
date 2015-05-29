@@ -103,7 +103,16 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	{
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
-		$result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+		if (method_exists($repository, 'getActiveShops')) {
+			$result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+		} else {
+			// SW 4.0 does not have the `getActiveShops` method, so we fall back
+			// on manually building the query.
+			$result = $repository->createQueryBuilder('shop')
+				->where('shop.active = 1')
+				->getQuery()
+				->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+		}
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$identity = Shopware()->Auth()->getIdentity();
 		$data = array();

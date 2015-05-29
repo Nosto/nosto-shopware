@@ -89,8 +89,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		$account->setShopId($shop->getId());
 		$account->setName($nostoAccount->getName());
 		$data = array('apiTokens' => array());
-		foreach ($nostoAccount->tokens as $token) {
-			$data['apiTokens'][$token->name] = $token->value;
+		foreach ($nostoAccount->getTokens() as $token) {
+			$data['apiTokens'][$token->getName()] = $token->getValue();
 		}
 		$account->setData($data);
 		return $account;
@@ -104,15 +104,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 */
 	public function convertToNostoAccount(\Shopware\CustomModels\Nosto\Account\Account $account)
 	{
-		$nostoAccount = new NostoAccount();
-		$nostoAccount->name = $account->getName();
+		$nostoAccount = new NostoAccount($account->getName());
 		foreach ($account->getData() as $key => $items) {
 			if ($key === 'apiTokens') {
-				foreach ($items as $token_name => $token_value) {
-					$token = new NostoApiToken();
-					$token->name = $token_name;
-					$token->value = $token_value;
-					$nostoAccount->tokens[] = $token;
+				foreach ($items as $name => $value) {
+					$nostoAccount->addApiToken(new NostoApiToken($name, $value));
 				}
 			}
 		}
