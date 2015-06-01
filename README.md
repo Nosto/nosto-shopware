@@ -15,15 +15,15 @@ conversion, average order value and customer retention as a result.
 ### How it works
 
 The plugin automatically adds product recommendation elements to the shop when
-installed. Basically, empty <div> placeholder elements. These elements will
+installed. Basically, empty "div" placeholder elements. These elements will
 appear on the home page, product pages, category pages, search result pages and
 the shopping cart page. These elements are automatically populated with product
 recommendations from your shop.
 
 This is possible by mining data from the shop when the user visits the pages.
-For example, then the user looks at a product page, the product information is
-asynchronously sent to Nosto, that in turn delivers product recommendations
-based on the product to the shop and displays them to the user.
+For example, when the user is browsing a product page, the product information
+is asynchronously sent to Nosto, that in turn delivers product recommendations
+based on that product to the shop and displays them to the user.
 
 The more users that are visiting the site, and the more page views they create,
 the better and more accurate the recommendations become.
@@ -96,14 +96,14 @@ the account configuration.
 
 You can also connect and existing Nosto account to a shop, by using the link
 below the install button. This will take you to Nosto where you choose the
-account to connect, and will then redirect you back where you will see the same
-configuration screen as when having created a new account.
+account to connect, and you will then be redirected back where you will see the
+same configuration screen as when having created a new account.
 
 This concludes the needed configurations in shopware. Now you should be able to
 view the default recommendations in your shops frontend by clicking the preview
 button on the page.
 
-You can read more about how to modify Nosto to suit your needs in the
+You can read more about how to modify Nosto to suit your needs in our
 [support center](https://support.nosto.com/), where you will find Shopware
 related documentation and guides.
 
