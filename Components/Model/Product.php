@@ -164,7 +164,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->_price = $this->calcPriceInclTax($article, 'price');
 		$this->_listPrice = $this->calcPriceInclTax($article, 'listPrice');
 		$this->_currencyCode = $shop->getCurrency()->getCurrency();
-		$this->_availability = ($article->getMainDetail()->getInStock() > 0) ? self::IN_STOCK : self::OUT_OF_STOCK;
+		$this->_availability = $this->checkAvailability($article);
 		$this->_tags = $this->buildTags($article);
 		$this->_categories = $this->buildCategoryPaths($article, $shop);
 		$this->_shortDescription = $article->getDescription();
@@ -237,6 +237,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
+	 * Checks if the product is in stock and return the availability.
+	 * The product is considered in stock if any of it's variations has a stock
+	 * value larger than zero.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @return string either "InStock" or "OutOfStock".
+	 */
+	protected function checkAvailability(\Shopware\Models\Article\Article $article)
+	{
+		/** @var \Shopware\Models\Article\Detail[] $details */
+		$details = Shopware()
+			->Models()
+			->getRepository('\Shopware\Models\Article\Detail')
+			->findBy(array('articleId' => $article->getId()));
+		foreach ($details as $detail) {
+			if ($detail->getInStock() > 0) {
+				return self::IN_STOCK;
+			}
+		}
+		return self::OUT_OF_STOCK;
+	}
+
+	/**
 	 * Builds the tag list for the product.
 	 *
 	 * Also includes the custom "add-to-cart" tag if the product can be added to
@@ -245,7 +268,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * the recommendations to render the "Add to cart" button for the product
 	 * when it is recommended to a user.
 	 *
-	 * @param \Shopware\Models\Article\Article $article
+	 * @param \Shopware\Models\Article\Article $article the article model.
 	 * @return array
 	 */
 	protected function buildTags(\Shopware\Models\Article\Article $article)

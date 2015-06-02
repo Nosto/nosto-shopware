@@ -42,7 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert,
 
 /**
  * @ORM\Entity(repositoryClass="Repository")
- * @ORM\Table(name="s_nostotagging_customer")
+ * @ORM\Table(name="s_nostotagging_customer",uniqueConstraints={@ORM\UniqueConstraint(name="session", columns={"session_id"})})
  */
 class Customer extends ModelEntity
 {

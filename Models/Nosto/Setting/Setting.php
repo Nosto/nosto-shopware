@@ -42,7 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert,
 
 /**
  * @ORM\Entity(repositoryClass="Repository")
- * @ORM\Table(name="s_nostotagging_setting")
+ * @ORM\Table(name="s_nostotagging_setting",uniqueConstraints={@ORM\UniqueConstraint(name="name", columns={"name"})})
  */
 class Setting extends ModelEntity
 {

@@ -83,7 +83,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function getVersion()
 	{
-		return '0.3.0';
+		return '0.4.0';
 	}
 
 	/**
@@ -145,17 +145,42 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function onPostDispatchBackendIndex(Enlight_Controller_ActionEventArgs $args)
 	{
-		if (!$this->validateEvent($args->getSubject(), 'backend', 'index', 'index')) {
-			return;
-		}
+		$ctrl = $args->getSubject();
+		$view = $ctrl->View();
+		$request = $ctrl->Request();
 
-		$view = $args->getSubject()->View();
-		$view->addTemplateDir($this->Path().'Views/');
-		$view->extendsTemplate('backend/plugins/nosto_tagging/index/header.tpl');
-		// todo: Figure out how to open the ExtJS app.
-		/*if ($args->getSubject()->Request()->getParam('openNosto')) {
-			$view->extendsTemplate('backend/plugins/nosto_tagging/index/controller/main.js');
-		}*/
+		if ($this->validateEvent($ctrl, 'backend', 'index', 'index')) {
+			$view->addTemplateDir($this->Path().'Views/');
+			$view->extendsTemplate('backend/plugins/nosto_tagging/index/header.tpl');
+			if (($shopId = $request->getParam('openNosto')) !== null) {
+				// Store any OAuth related params as a Nosto setting, so we can
+				// use them later when building the account config urls.
+				$code = $request->getParam('messageCode');
+				$type = $request->getParam('messageType');
+				if (!empty($code) && !empty($type)) {
+					$data = array(
+						$shopId => array(
+							'message_code' => $code,
+							'message_type' => $type,
+						)
+					);
+					$setting = Shopware()
+						->Models()
+						->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+						->findOneBy(array('name' => 'oauthParams'));
+					if (is_null($setting)) {
+						$setting = new \Shopware\CustomModels\Nosto\Setting\Setting();
+						$setting->setName('oauthParams');
+					}
+					$setting->setValue(json_encode($data));
+					Shopware()->Models()->persist($setting);
+					Shopware()->Models()->flush($setting);
+				}
+			}
+		} elseif ($request->getActionName() === 'load') {
+			$view->addTemplateDir($this->Path().'Views/');
+			$view->extendsTemplate('backend/nosto_start_app/menu.js');
+		}
 	}
 
 	/**
@@ -184,6 +209,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->addEmbedScript($view);
 		$this->addCustomerTagging($view);
 		$this->addCartTagging($view);
+
+		$locale = Shopware()->Shop()->getLocale()->getLocale();
+		$view->assign('nostoVersion', $this->getVersion());
+		$view->assign('nostoUniqueId', $this->getUniqueId());
+		$view->assign('nostoLanguage', strtolower(substr($locale, 0, 2)));
 	}
 
 	/**
