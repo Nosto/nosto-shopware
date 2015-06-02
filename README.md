@@ -121,6 +121,9 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 0.4.1
+* Fix product image tagging to check if image exists
+
 ### 0.4.0
 * Add unique indexes to db tables
 * Add Nosto meta tags to the frontend pages
