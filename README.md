@@ -121,6 +121,13 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 0.4.0
+* Add unique indexes to db tables
+* Add Nosto meta tags to the frontend pages
+* Fix product availability value to take product variations into consideration
+* Fix account connection OAuth flow to open the Nosto configuration after being
+redirected back from Nosto
+
 ### 0.3.0
 * Bug fixes for older SW 4 versions
 
