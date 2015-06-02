@@ -160,7 +160,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->assignId($article);
 		$this->_url = $this->assembleProductUrl($article, $shop);
 		$this->_name = $article->getName();
-		$this->_imageUrl = $this->assembleImageUrl($article, $shop);
+		$this->_imageUrl = $this->assembleImageUrl($article);
 		$this->_price = $this->calcPriceInclTax($article, 'price');
 		$this->_listPrice = $this->calcPriceInclTax($article, 'listPrice');
 		$this->_currencyCode = $shop->getCurrency()->getCurrency();
@@ -194,23 +194,42 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * Assembles the product image url based on article and shop.
+	 * Assembles the product image url based on article.
+	 *
+	 * Validates that the image can be found in the file system before returning
+	 * the url. This will not guarantee that the url works, but we should be
+	 * able to assume that if the image is in the correct place, the url works.
+	 *
+	 * The url will always be for the original image, not the thumbnails.
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string|null the url or null if image not found.
 	 */
-	protected function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	protected function assembleImageUrl(\Shopware\Models\Article\Article $article)
 	{
+		$url = null;
+
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {
-			if ($image->getMain() === 1) {
-				$base = trim(Shopware()->Config()->get('basePath'));
-				$file = trim($image->getMedia()->getPath(), '/');
-				return 'http://'.$base.'/'.$file;
+			$media = $image->getMedia();
+			$type = strtolower($media->getType());
+			$dirPath = rtrim(Shopware()->DocPath('media_'.$type), DIRECTORY_SEPARATOR);
+			$fileName = ltrim($media->getFileName(), DIRECTORY_SEPARATOR);
+			$file = $dirPath.DIRECTORY_SEPARATOR.$fileName;
+			if (!file_exists($file)) {
+				continue;
+			}
+			if (is_null($url) || $image->getMain() === 1) {
+				$baseUrl = trim(Shopware()->Config()->get('basePath'));
+				$filePath = ltrim($media->getPath(), '/');
+				$url = 'http://'.$baseUrl.'/'.$filePath;
+				if ($image->getMain() === 1) {
+					break;
+				}
 			}
 		}
-		return null;
+
+		return $url;
 	}
 
 	/**
