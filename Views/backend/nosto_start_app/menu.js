@@ -33,19 +33,22 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//{namespace name=backend/nosto_tagging/controller/main}
-//{block name="backend/index/controller/main"}
-Ext.define('Shopware.apps.Index.controller.NostoTaggingMain', {
-    override: 'Shopware.apps.Index.controller.Main',
+//{block name="backend/index/view/menu" append}
+Ext.define('Shopware.apps.NostoStartApp.Menu', {
+    override: 'Shopware.apps.Index.view.Menu',
 
     /**
      * @Override
      */
-    init: function() {
+    afterRender: function () {
         var me = this,
             result = me.callParent(arguments);
 
-        Shopware.app.Application.addSubApplication({ name: 'Shopware.apps.NostoTagging' });
+        if (location.href.search("openNosto") !== -1) {
+            Shopware.app.Application.addSubApplication({
+                name: 'Shopware.apps.NostoTagging'
+            });
+        }
 
         return result;
     }

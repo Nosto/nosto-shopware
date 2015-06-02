@@ -79,7 +79,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 					'module' => 'backend',
 					'controller' => 'index',
 					'action' => 'index',
-					'openNosto' => 1
+					'openNosto' => $shop->getId(),
+					'messageType' => NostoMessage::TYPE_SUCCESS,
+					'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
 				);
 				$this->redirect($redirectParams, array('code' => 302));
 			} catch (NostoException $e) {
@@ -89,7 +91,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 					'module' => 'backend',
 					'controller' => 'index',
 					'action' => 'index',
-					'openNosto' => 1
+					'openNosto' => $shop->getId(),
+					'messageType' => NostoMessage::TYPE_ERROR,
+					'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
 				);
 				$this->redirect($redirectParams, array('code' => 302));
 			}
@@ -111,7 +115,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				'module' => 'backend',
 				'controller' => 'index',
 				'action' => 'index',
-				'openNosto' => 1
+				'openNosto' => $shop->getId(),
+				'messageType' => NostoMessage::TYPE_ERROR,
+				'messageCode' => !empty($errorReason) ? $errorReason : NostoMessage::CODE_ACCOUNT_CONNECT,
 			);
 			$this->redirect($redirectParams, array('code' => 302));
 		} else {

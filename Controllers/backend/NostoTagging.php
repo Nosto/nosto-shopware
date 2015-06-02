@@ -115,17 +115,30 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		}
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$identity = Shopware()->Auth()->getIdentity();
-		$data = array();
+		$setting = Shopware()
+			->Models()
+			->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+			->findOneBy(array('name' => 'oauthParams'));
+		if (!is_null($setting)) {
+			$oauthParams = json_decode($setting->getValue(), true);
+			Shopware()->Models()->remove($setting);
+			Shopware()->Models()->flush();
+		}
 
+		$data = array();
 		foreach ($result as $row) {
+			$params = array();
 			$shop = $repository->getActiveById($row['id']);
 			if (is_null($shop)) {
 				continue;
 			}
 			$shop->registerResources(Shopware()->Bootstrap());
 			$account = $helper->findAccount($shop);
+			if (isset($oauthParams[$shop->getId()])) {
+				$params = $oauthParams[$shop->getId()];
+			}
 			$accountData = array(
-				'url' => $helper->buildAccountIframeUrl($shop, $identity->locale, $account, $identity),
+				'url' => $helper->buildAccountIframeUrl($shop, $identity->locale, $account, $identity, $params),
 				'shopId' => $shop->getId(),
 				'shopName' => $shop->getName(),
 			);
