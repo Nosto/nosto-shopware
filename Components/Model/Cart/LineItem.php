@@ -91,7 +91,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 			}
 		}
 
-        $this->_name = $basket->getArticleName();
+		$this->_name = $basket->getArticleName();
 		$this->_quantity = (int)$basket->getQuantity();
 		$this->_unitPrice = Nosto::helper('price')->format($basket->getPrice());
 		$this->_currencyCode = strtoupper($currencyCode);
