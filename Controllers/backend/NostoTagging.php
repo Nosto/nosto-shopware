@@ -47,7 +47,7 @@
  */
 class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs
 {
-	const DEFAULT_IFRAME_ORIGIN = 'https://my.nosto.com';
+	const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/shopware-([a-z0-9]+)\.hub\.nosto\.com)';
 
 	/**
 	 * Loads the Nosto ExtJS sub-application for configuring Nosto for the shops.
@@ -70,8 +70,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 			'success' => true,
 			'data' => array(
 				'postMessageOrigin' => Nosto::getEnvVariable(
-					'NOSTO_IFRAME_ORIGIN',
-					self::DEFAULT_IFRAME_ORIGIN
+					'NOSTO_IFRAME_ORIGIN_REGEXP',
+					self::DEFAULT_IFRAME_ORIGIN_REGEXP
 				)
 			)
 		));
