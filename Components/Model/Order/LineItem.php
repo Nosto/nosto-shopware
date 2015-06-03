@@ -92,7 +92,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 			}
 		}
 
-        $this->_name = $detail->getArticleName();
+		$this->_name = $detail->getArticleName();
 		$this->_quantity = (int)$detail->getQuantity();
 		$this->_unitPrice = Nosto::helper('price')->format($detail->getPrice());
 		$this->_currencyCode = strtoupper($detail->getOrder()->getCurrency());
