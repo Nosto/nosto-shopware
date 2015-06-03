@@ -121,6 +121,12 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 0.5.0
+* Change the Nosto account configuration iframe to use merchant specific
+sub-domains in the urls to allow editing multiple accounts simultaneously
+* Fix cart/order tagging to use correct product id and name for line items, so
+that the different product variations can be recognized in emails
+
 ### 0.4.1
 * Fix product image tagging to check if image exists
 
