@@ -47,7 +47,7 @@
  */
 class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs
 {
-	const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/shopware-([a-z0-9]+)\.hub\.nosto\.com)';
+	const DEFAULT_IFRAME_ORIGIN_REGEXP = '(https:\/\/shopware-([a-z0-9]+)\.hub\.nosto\.com)|(https:\/\/my\.nosto\.com)';
 
 	/**
 	 * Loads the Nosto ExtJS sub-application for configuring Nosto for the shops.

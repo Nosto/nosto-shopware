@@ -73,7 +73,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
         me.mainWindow.show();
         me.mainWindow.setLoading(true);
         me.accountStore.load({
-            callback: function(records, operation, success) {
+            callback: function(records, op, success) {
                 me.mainWindow.setLoading(false);
                 if (success) {
                     me.mainWindow.initAccountTabs();
@@ -95,9 +95,9 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             method: 'GET',
             url: '{url controller=NostoTagging action=loadSettings}',
             success: function(response) {
-                var operation = Ext.decode(response.responseText);
-                if (operation.success && operation.data) {
-                    me.settings = operation.data;
+                var op = Ext.decode(response.responseText);
+                if (op.success && op.data) {
+                    me.settings = op.data;
                 } else {
                     throw new Error('Nosto: failed to load settings.');
                 }
@@ -130,7 +130,8 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             json,
             data,
             account,
-            operation;
+            op,
+            accountData;
 
         // Check the origin to prevent cross-site scripting.
         if (!originRegexp.test(event.origin)) {
@@ -154,7 +155,10 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         success: function(record, op) {
                             // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
-                                record.set('url', op.resultSet.records[0].data.url);
+                                accountData = op.resultSet.records[0].data;
+                                record.set('id', accountData.id);
+                                record.set('name', accountData.name);
+                                record.set('url', accountData.url);
                                 me.mainWindow.reloadIframe(record);
                             } else {
                                 throw new Error('Nosto: failed to create new account.');
@@ -168,7 +172,10 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         success: function(record, op) {
                             // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
-                                record.set('url', op.resultSet.records[0].data.url);
+                                accountData = op.resultSet.records[0].data;
+                                record.set('id', 0);
+                                record.set('name', '');
+                                record.set('url', accountData.url);
                                 me.mainWindow.reloadIframe(record);
                             } else {
                                 throw new Error('Nosto: failed to delete account.');
@@ -185,9 +192,9 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                             shopId: account.get('shopId')
                         },
                         success: function(response) {
-                            operation = Ext.decode(response.responseText);
-                            if (operation.success && operation.data.redirect_url) {
-                                window.location.href = operation.data.redirect_url;
+                            op = Ext.decode(response.responseText);
+                            if (op.success && op.data.redirect_url) {
+                                window.location.href = op.data.redirect_url;
                             } else {
                                 throw new Error('Nosto: failed to handle account connection.');
                             }
