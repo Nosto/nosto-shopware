@@ -37,6 +37,9 @@
 {if isset($nostoOrder) && is_object($nostoOrder)}
 	<div class="nosto_purchase_order" style="display:none">
 		<span class="order_number">{$nostoOrder->getOrderNumber()|escape:'htmlall':'UTF-8'}</span>
+        <span class="order_status_code">{$nostoOrder->getOrderStatus()->getCode()|escape:'htmlall':'UTF-8'}</span>
+        <span class="order_status_label">{$nostoOrder->getOrderStatus()->getLabel()|escape:'htmlall':'UTF-8'}</span>
+        <span class="payment_provider">{$nostoOrder->getPaymentProvider()|escape:'htmlall':'UTF-8'}</span>
 		<div class="buyer">
 			<span class="first_name">{$nostoOrder->getBuyerInfo()->getFirstName()|escape:'htmlall':'UTF-8'}</span>
 			<span class="last_name">{$nostoOrder->getBuyerInfo()->getLastName()|escape:'htmlall':'UTF-8'}</span>
