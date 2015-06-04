@@ -126,13 +126,14 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      */
     receiveMessage: function(event) {
         var me = this,
+            originRegexp = new RegExp(me.settings.postMessageOrigin),
             json,
             data,
             account,
             operation;
 
         // Check the origin to prevent cross-site scripting.
-        if (event.origin !== decodeURIComponent(me.settings.postMessageOrigin)) {
+        if (!originRegexp.test(event.origin)) {
             return;
         }
         // If the message does not start with '[Nosto]', then it is not for us.
