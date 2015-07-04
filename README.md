@@ -121,6 +121,9 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 1.0.0
+* First public release
+
 ### 0.6.0
 * Add order status and payment provider to order tagging
 * Fix window.postMessage event origin validation to work with new sub-domains
