@@ -157,6 +157,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 				// use them later when building the account config urls.
 				$code = $request->getParam('messageCode');
 				$type = $request->getParam('messageType');
+				$text = $request->getParam('messageText');
 				if (!empty($code) && !empty($type)) {
 					$data = array(
 						$shopId => array(
@@ -164,6 +165,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 							'message_type' => $type,
 						)
 					);
+					if (!empty($text)) {
+						$data[$shopId]['message_text'] = $text;
+					}
 					$setting = Shopware()
 						->Models()
 						->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')

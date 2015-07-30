@@ -117,7 +117,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				'action' => 'index',
 				'openNosto' => $shop->getId(),
 				'messageType' => NostoMessage::TYPE_ERROR,
-				'messageCode' => !empty($errorReason) ? $errorReason : NostoMessage::CODE_ACCOUNT_CONNECT,
+				'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+				'messageText' => $errorDescription,
 			);
 			$this->redirect($redirectParams, array('code' => 302));
 		} else {
