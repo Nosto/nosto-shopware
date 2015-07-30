@@ -285,4 +285,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	{
 		return $this->_signUpApiToken;
 	}
+
+	/**
+	 * Optional partner code for Nosto partners.
+	 * The code is issued by Nosto to partners only.
+	 *
+	 * @return string|null the partner code or null if none exist.
+	 */
+	public function getPartnerCode()
+	{
+		// todo: implement storage for partner code
+		return null;
+	}
 }
