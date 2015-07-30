@@ -96,7 +96,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var array list of product tags.
 	 */
-	protected $_tags = array();
+	protected $_tags = array(
+		'tag1' => array(),
+		'tag2' => array(),
+		'tag3' => array(),
+	);
 
 	/**
 	 * @var array list of product category strings.
@@ -165,7 +169,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->_listPrice = $this->calcPriceInclTax($article, 'listPrice');
 		$this->_currencyCode = $shop->getCurrency()->getCurrency();
 		$this->_availability = $this->checkAvailability($article);
-		$this->_tags = $this->buildTags($article);
+		$this->_tags['tag1'] = $this->buildTags($article);
 		$this->_categories = $this->buildCategoryPaths($article, $shop);
 		$this->_shortDescription = $article->getDescription();
 		$this->_description = $article->getDescriptionLong();
@@ -435,6 +439,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function getDescription()
 	{
 		return $this->_description;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getFullDescription()
+	{
+		$descriptions = array();
+		if (!empty($this->_shortDescription)) {
+			$descriptions[] = $this->_shortDescription;
+		}
+		if (!empty($this->_description)) {
+			$descriptions[] = $this->_description;
+		}
+		return implode(' ', $descriptions);
 	}
 
 	/**
