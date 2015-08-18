@@ -35,14 +35,14 @@
  */
 
 /**
- * Order confirmation component. Used to send order information to Nosto.
+ * Order confirmation service. Used to send order information to Nosto.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
+class Shopware_Plugins_Frontend_NostoTagging_Components_Service_Order
 {
 	/**
 	 * Sends an order confirmation API call to Nosto for an order.
@@ -51,7 +51,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
 	 */
-	public function sendOrder(Shopware\Models\Order\Order $order)
+	public function confirm(Shopware\Models\Order\Order $order)
 	{
 		$shop = $order->getShop();
 		if (is_null($shop)) {
@@ -74,7 +74,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
 					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 					$model->loadData($order);
 
-					NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
+					$service = new NostoServiceOrder($nostoAccount);
+					$service->confirm($model, $customerId);
 				} catch (NostoException $e) {
 					Shopware()->Pluginlogger()->error($e);
 				}

@@ -50,17 +50,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	/**
 	 * @var string the customer first name.
 	 */
-	protected $_firstName;
+	protected $firstName;
 
 	/**
 	 * @var string the customer last name.
 	 */
-	protected $_lastName;
+	protected $lastName;
 
 	/**
 	 * @var string the customer email address.
 	 */
-	protected $_email;
+	protected $email;
 
 	/**
 	 * Loads customer data from the logged in customer.
@@ -69,32 +69,38 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	 */
 	public function loadData(\Shopware\Models\Customer\Customer $customer )
 	{
-		$this->_firstName = $customer->getBilling()->getFirstName();
-		$this->_lastName = $customer->getBilling()->getLastName();
-		$this->_email = $customer->getEmail();
+		$this->firstName = $customer->getBilling()->getFirstName();
+		$this->lastName = $customer->getBilling()->getLastName();
+		$this->email = $customer->getEmail();
 	}
 
 	/**
-	 * @return string
+	 * Returns the customer first name.
+	 *
+	 * @return string the first name.
 	 */
 	public function getFirstName()
 	{
-		return $this->_firstName;
+		return $this->firstName;
 	}
 
 	/**
-	 * @return string
+	 * Returns the customer last name.
+	 *
+	 * @return string the last name.
 	 */
 	public function getLastName()
 	{
-		return $this->_lastName;
+		return $this->lastName;
 	}
 
 	/**
-	 * @return string
+	 * Returns the customer email address.
+	 *
+	 * @return string the email address.
 	 */
 	public function getEmail()
 	{
-		return $this->_email;
+		return $this->email;
 	}
 }

@@ -69,7 +69,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
 				$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
 				$meta->loadData($shop);
-				$nostoAccount = NostoAccount::syncFromNosto($meta, $code);
+
+                $service = new NostoServiceAccount();
+                $nostoAccount = $service->sync($meta, $code);
 
 				$account = $helper->convertToShopwareAccount($nostoAccount, $shop);
 				Shopware()->Models()->persist($account);
@@ -145,7 +147,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$collection = new NostoExportProductCollection();
+		$collection = new NostoExportCollectionProduct();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Article\Article $article */
 			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', (int)$row['id']);
@@ -153,10 +155,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				continue;
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($article);
-			$validator = new NostoValidator($model);
-			if ($validator->validate()) {
+			try {
+				$model->loadData($article);
 				$collection[] = $model;
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
 			}
 		}
 
@@ -182,7 +185,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$collection = new NostoExportOrderCollection();
+		$collection = new NostoExportCollectionOrder();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Order\Order $order */
 			$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
@@ -192,10 +195,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 			$model->disableSpecialLineItems();
-			$model->loadData($order);
-			$validator = new NostoValidator($model);
-			if ($validator->validate()) {
+			try {
+				$model->loadData($order);
 				$collection[] = $model;
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
 			}
 		}
 

@@ -35,7 +35,7 @@
  */
 
 /**
- * Product operation component. Used for communicating create/update/delete
+ * Product update service. Used for communicating create/update/delete
  * events for products to Nosto.
  *
  * @package Shopware
@@ -43,7 +43,7 @@
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
+class Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product
 {
 	/**
 	 * Sends info to Nosto about a newly created product.
@@ -61,15 +61,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			}
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($article, $shop);
-			$validator = new NostoValidator($model);
-			if (!$validator->validate()) {
-				continue;
-			}
 			try {
-				$op = new NostoOperationProduct($account);
-				$op->addProduct($model);
-				$op->create();
+				$model->loadData($article, $shop);
+				$service = new NostoServiceProduct($account);
+				$service->addProduct($model);
+				$service->create();
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}
@@ -92,15 +88,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			}
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($article, $shop);
-			$validator = new NostoValidator($model);
-			if (!$validator->validate()) {
-				continue;
-			}
 			try {
-				$op = new NostoOperationProduct($account);
-				$op->addProduct($model);
-				$op->update();
+				$model->loadData($article, $shop);
+				$service = new NostoServiceProduct($account);
+				$service->addProduct($model);
+				$service->update();
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}
@@ -118,9 +110,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->assignId($article);
 			try {
-				$op = new NostoOperationProduct($account);
-				$op->addProduct($model);
-				$op->delete();
+				$service = new NostoServiceProduct($account);
+				$service->addProduct($model);
+				$service->delete();
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}

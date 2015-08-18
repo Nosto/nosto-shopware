@@ -34,9 +34,9 @@
 *}
 
 {block name='frontend_index_header_meta_tags' append}
-	<meta name="nosto-version" content="{$nostoVersion|escape:'htmlall':'UTF-8'}">
-	<meta name="nosto-unique-id" content="{$nostoUniqueId|escape:'htmlall':'UTF-8'}">
-	<meta name="nosto-language" content="{$nostoLanguage|escape:'htmlall':'UTF-8'}">
+	<meta name="nosto-version" content="{$nostoVersion|escape:'quotes'}">
+	<meta name="nosto-unique-id" content="{$nostoUniqueId|escape:'quotes'}">
+	<meta name="nosto-language" content="{$nostoLanguage|escape:'quotes'}">
 {/block}
 {block name="frontend_index_header_javascript" append}
 {if isset($nostoAccountName) && isset($nostoAccountName)}
@@ -96,8 +96,8 @@
 				<span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
 				<span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
 				<span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
-				<span class="unit_price">{$lineItem->getUnitPrice()|escape:'htmlall':'UTF-8'}</span>
-				<span class="price_currency_code">{$lineItem->getCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
+				<span class="unit_price">{$lineItem->getUnitPrice()->getPrice()|number_format:2}</span>
+				<span class="price_currency_code">{$lineItem->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
 			</div>
 		{/foreach}
 		{/if}

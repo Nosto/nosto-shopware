@@ -50,7 +50,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	/**
 	 * @var string the full category path with categories separated by a `/` sign.
 	 */
-	protected $_categoryPath;
+	protected $categoryPath;
 
 	/**
 	 * Loads the category data from a category model.
@@ -59,7 +59,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	 */
 	public function loadData(\Shopware\Models\Category\Category $category)
 	{
-		$this->_categoryPath = $this->buildCategoryPath($category);
+		$this->categoryPath = $this->buildCategoryPath($category);
 	}
 
 	/**
@@ -91,6 +91,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	 */
 	public function getCategoryPath()
 	{
-		return $this->_categoryPath;
+		return $this->categoryPath;
 	}
 }

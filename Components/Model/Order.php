@@ -40,69 +40,50 @@
  *
  * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
  * Implements NostoOrderInterface.
- * Implements NostoValidatableModelInterface.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderInterface, NostoValidatableInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderInterface
 {
 	/**
 	 * @var string|int the unique order number identifying the order.
 	 */
-	protected $_orderNumber;
+	protected $orderNumber;
 
 	/**
-	 * @var string the date when the order was placed.
+	 * @var NostoDate the date when the order was placed.
 	 */
-	protected $_createdDate;
+	protected $createdDate;
 
 	/**
 	 * @var string the payment provider used for order.
 	 *
 	 * Formatted according to "[provider name] [provider version]".
 	 */
-	protected $_paymentProvider;
+	protected $paymentProvider;
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer The user info of the buyer.
 	 */
-	protected $_buyerInfo;
+	protected $buyerInfo;
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] the items in the order.
 	 */
-	protected $_purchasedItems = array();
+	protected $purchasedItems = array();
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status the order status model.
 	 */
-	protected $_orderStatus;
+	protected $orderStatus;
 
 	/**
 	 * @var bool if special line items like shipping cost should be included.
 	 */
-	protected $_includeSpecialLineItems = true;
-
-	/**
-	 * @inheritdoc
-	 */
-	public function getValidationRules()
-	{
-		return array(
-			array(
-				array(
-					'_orderNumber',
-					'_createdDate',
-					'_buyerInfo',
-					'_purchasedItems',
-				),
-				'required'
-			)
-		);
-	}
+	protected $includeSpecialLineItems = true;
 
 	/**
 	 * Loads order details from the order model.
@@ -111,36 +92,37 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function loadData(\Shopware\Models\Order\Order $order)
 	{
-		$this->_orderNumber = $order->getNumber();
-		$this->_createdDate = $order->getOrderTime()->format('Y-m-d');
+		$this->orderNumber = $order->getNumber();
+		$this->createdDate = new NostoDate($order->getOrderTime()->getTimestamp());
 
-		$this->_paymentProvider = $order->getPayment()->getName();
+		$this->paymentProvider = $order->getPayment()->getName();
 		$paymentPlugin = $order->getPayment()->getPlugin();
 		if (!is_null($paymentPlugin)) {
-			$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+			$this->paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
 		}
 
-		$this->_orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
-		$this->_orderStatus->loadData($order);
+		$this->orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
+		$this->orderStatus->loadData($order);
 
-		$this->_buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
-		$this->_buyerInfo->loadData($order->getCustomer());
+		$this->buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
+		$this->buyerInfo->loadData($order->getCustomer());
 
 		foreach ($order->getDetails() as $detail) {
 			/** @var Shopware\Models\Order\Detail $detail */
-			if ($this->_includeSpecialLineItems || $detail->getArticleId() > 0) {
+			if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
 				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
 				$item->loadData($detail);
-				$this->_purchasedItems[] = $item;
+				$this->purchasedItems[] = $item;
 			}
 		}
 
-		if ($this->_includeSpecialLineItems) {
+		if ($this->includeSpecialLineItems) {
+			$currency = new NostoCurrencyCode($order->getCurrency());
 			$shippingCost = $order->getInvoiceShipping();
 			if ($shippingCost > 0) {
 				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
-				$this->_purchasedItems[] = $item;
+				$item->loadSpecialItemData('Shipping cost', new NostoPrice($shippingCost), $currency);
+				$this->purchasedItems[] = $item;
 			}
 		}
 	}
@@ -151,7 +133,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function disableSpecialLineItems()
 	{
-		$this->_includeSpecialLineItems = false;
+		$this->includeSpecialLineItems = false;
 	}
 
 	/**
@@ -159,7 +141,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getOrderNumber()
 	{
-		return $this->_orderNumber;
+		return $this->orderNumber;
 	}
 
 	/**
@@ -167,7 +149,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getCreatedDate()
 	{
-		return $this->_createdDate;
+		return $this->createdDate;
 	}
 
 	/**
@@ -175,7 +157,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getPaymentProvider()
 	{
-		return $this->_paymentProvider;
+		return $this->paymentProvider;
 	}
 
 	/**
@@ -183,7 +165,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getBuyerInfo()
 	{
-		return $this->_buyerInfo;
+		return $this->buyerInfo;
 	}
 
 	/**
@@ -191,7 +173,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getPurchasedItems()
 	{
-		return $this->_purchasedItems;
+		return $this->purchasedItems;
 	}
 
 	/**
@@ -199,6 +181,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getOrderStatus()
 	{
-		return $this->_orderStatus;
+		return $this->orderStatus;
 	}
 }

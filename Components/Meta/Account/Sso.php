@@ -35,60 +35,51 @@
  */
 
 /**
- * Meta-data class for handling OAuth 2 requests during account connect.
+ * Meta-data class for information included in SSO requests.
  *
- * Implements NostoOAuthClientMetaInterface.
+ * Implements NostoAccountMetaSingleSignOnInterface.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements NostoOAuthClientMetaInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Sso implements NostoAccountMetaSingleSignOnInterface
 {
 	/**
-	 * @var string OAuth2 redirect url to where the OAuth2 server should redirect the user after authorizing.
+	 * @var string the admin user first name.
 	 */
-	protected $redirectUrl;
+	protected $firstName;
 
 	/**
-	 * @var NostoLanguageCode 2-letter ISO code (ISO 639-1) for the language the OAuth2 server uses for UI localization.
+	 * @var string the admin user last name.
 	 */
-	protected $language = 'en';
+	protected $lastName;
 
 	/**
-	 * @var NostoAccount optional account to do the OAuth for.
+	 * @var string the admin user email address.
 	 */
-	protected $account;
+	protected $email;
 
 	/**
 	 * Loads the Data Transfer Object.
 	 *
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
-	 * @param \Shopware\Models\Shop\Locale $locale the locale model or null.
-	 * @param NostoAccount $account optional account to do the OAuth for.
+	 * @param stdClass|null $identity the user identity.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, NostoAccount $account = null)
+	public function loadData($identity = null)
 	{
-		if (is_null($locale)) {
-			$locale = $shop->getLocale();
+		if (!is_null($identity)) {
+			list($firstName, $lastName) = explode(' ', $identity->name);
+			$this->firstName = $firstName;
+			$this->lastName = $lastName;
+			$this->email = $identity->email;
 		}
-
-		$this->redirectUrl = Shopware()->Front()->Router()->assemble(array(
-			'module' => 'frontend',
-			'controller' => 'nostotagging',
-			'action' => 'oauth'
-		));
-		$this->language = new NostoLanguageCode(
-			substr($locale->getLocale(), 0, 2)
-		);
-		$this->account = $account;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getClientId()
+	public function getPlatform()
 	{
 		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
 	}
@@ -96,41 +87,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	/**
 	 * @inheritdoc
 	 */
-	public function getClientSecret()
+	public function getFirstName()
 	{
-		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
+		return $this->firstName;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getRedirectUrl()
+	public function getLastName()
 	{
-		return $this->redirectUrl;
+		return $this->lastName;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getScopes()
+	public function getEmail()
 	{
-		// We want all the available Nosto API tokens.
-		return NostoApiToken::$tokenNames;
+		return $this->email;
 	}
-
-	/**
-	 * @inheritdoc
-	 */
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
-	/**
-	 * @inheritdoc
-	 */
-    public function getAccount()
-    {
-        return $this->account;
-    }
 }

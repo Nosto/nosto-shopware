@@ -70,7 +70,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 			$meta->getOwner()->setEmail($email);
 		}
 
-		$nostoAccount = NostoAccount::create($meta);
+		$service = new NostoServiceAccount();
+		$nostoAccount = $service->create($meta);
 		$account = $this->convertToShopwareAccount($nostoAccount, $shop);
 
 		return $account;
@@ -127,7 +128,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		Shopware()->Models()->flush();
 		try {
 			// Notify Nosto that the account was deleted.
-			$nostoAccount->delete();
+			$service = new NostoServiceAccount();
+			$service->delete($nostoAccount);
 		} catch (NostoException $e) {
 			Shopware()->Pluginlogger()->error($e);
 		}
@@ -148,21 +150,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	}
 
 	/**
-	 * Checks if a Nosto account exists for a Shop and that it is connected to Nosto.
-	 *
-	 * Connected here means that we have the API tokens exchanged during account creation or OAuth.
+	 * Checks if a Nosto account exists for a Shop.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to check the account for.
-	 * @return bool true if account exists and is connected to Nosto, false otherwise.
+	 * @return bool true if account exists, false otherwise.
 	 */
-	public function accountExistsAndIsConnected(\Shopware\Models\Shop\Shop $shop)
+	public function accountExists(\Shopware\Models\Shop\Shop $shop)
 	{
 		$account = $this->findAccount($shop);
-		if (is_null($account)) {
-			return false;
-		}
-		$nostoAccount = $this->convertToNostoAccount($account);
-		return $nostoAccount->isConnectedToNosto();
+		return !is_null($account);
 	}
 
 	/**
@@ -177,13 +173,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 */
 	public function buildAccountIframeUrl(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, \Shopware\CustomModels\Nosto\Account\Account $account = null, $identity = null, array $params = array())
 	{
-		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
-		$meta->loadData($shop, $locale, $identity);
+		$metaSso = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Sso();
+		$metaSso->loadData($identity);
+		$metaIframe = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
+		$metaIframe->loadData($shop, $locale);
+
 		if (!is_null($account)) {
 			$nostoAccount = $this->convertToNostoAccount($account);
 		} else {
 			$nostoAccount = null;
 		}
-		return Nosto::helper('iframe')->getUrl($meta, $nostoAccount, $params);
+
+		return Nosto::helper('iframe')->getUrl($metaSso, $metaIframe, $nostoAccount, $params);
 	}
 }

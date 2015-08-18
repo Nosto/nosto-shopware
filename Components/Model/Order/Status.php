@@ -51,12 +51,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	/**
 	 * @var string the order status code.
 	 */
-	protected $_code;
+	protected $code;
 
 	/**
 	 * @var string the order status label.
 	 */
-	protected $_label;
+	protected $label;
 
 	/**
 	 * Populates the order status with data from the order model.
@@ -66,8 +66,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	public function loadData(Shopware\Models\Order\Order $order)
 	{
 		$description = $order->getOrderStatus()->getDescription();
-		$this->_code = $this->convertDescriptionToCode($description);
-		$this->_label = $description;
+		$this->code = $this->convertDescriptionToCode($description);
+		$this->label = $description;
 	}
 
 	/**
@@ -89,7 +89,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	 */
 	public function getCode()
 	{
-		return $this->_code;
+		return $this->code;
 	}
 
 	/**
@@ -97,6 +97,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	 */
 	public function getLabel()
 	{
-		return $this->_label;
+		return $this->label;
 	}
 } 

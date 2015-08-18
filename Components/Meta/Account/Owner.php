@@ -38,74 +38,67 @@
  * Meta-data class for account owner information sent to Nosto during account
  * create.
  *
- * Implements NostoAccountMetaDataOwnerInterface.
+ * Implements NostoAccountMetaOwnerInterface.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner implements NostoAccountMetaDataOwnerInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner implements NostoAccountMetaOwnerInterface
 {
 	/**
 	 * @var string the first name of the account owner.
 	 */
-	protected $_firstName;
+	protected $firstName;
 
 	/**
 	 * @var string the last name of the account owner.
 	 */
-	protected $_lastName;
+	protected $lastName;
 
 	/**
 	 * @var string the email address of the account owner.
 	 */
-	protected $_email;
+	protected $email;
 
 	/**
-	 * Loads the data for the account owner.
+	 * Loads the Data Transfer Object.
 	 *
 	 * @param stdClass|null the user identity.
 	 */
 	public function loadData($identity = null)
 	{
-		if (!is_null($identity))
-		{
+		if (!is_null($identity)) {
 			list($firstName, $lastName) = explode(' ', $identity->name);
-			$this->_firstName = $firstName;
-			$this->_lastName = $lastName;
-			$this->_email = $identity->email;
+			$this->firstName = $firstName;
+			$this->lastName = $lastName;
+			$this->email = $identity->email;
 		}
 	}
 
 	/**
-	 * The first name of the account owner.
-	 *
-	 * @return string the first name.
+	 * @inheritdoc
 	 */
 	public function getFirstName()
 	{
-		return $this->_firstName;
+		return $this->firstName;
 	}
 
 	/**
-	 * The last name of the account owner.
-	 *
-	 * @return string the last name.
+	 * @inheritdoc
 	 */
 	public function getLastName()
 	{
-		return $this->_lastName;
+		return $this->lastName;
 	}
 
 	/**
-	 * The email address of the account owner.
-	 *
-	 * @return string the email address.
+	 * @inheritdoc
 	 */
 	public function getEmail()
 	{
-		return $this->_email;
+		return $this->email;
 	}
 
 	/**
@@ -115,6 +108,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	 */
 	public function setEmail($email)
 	{
-		$this->_email = $email;
+		$this->email = $email;
 	}
 }

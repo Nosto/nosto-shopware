@@ -43,17 +43,23 @@
 			<span class="product_id">{$nostoProduct->getProductId()|escape:'htmlall':'UTF-8'}</span>
 			<span class="name">{$nostoProduct->getName()|escape:'htmlall':'UTF-8'}</span>
 			<span class="image_url">{$nostoProduct->getImageUrl()|escape:'htmlall':'UTF-8'}</span>
-			<span class="price">{$nostoProduct->getPrice()|escape:'htmlall':'UTF-8'}</span>
-			<span class="price_currency_code">{$nostoProduct->getCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
-			<span class="availability">{$nostoProduct->getAvailability()|escape:'htmlall':'UTF-8'}</span>
+			{if $nostoProduct->getPrice()}
+				<span class="price">{$nostoProduct->getPrice()->getPrice()|number_format:2}</span>
+			{/if}
+			{if $nostoProduct->getCurrency()}
+				<span class="price_currency_code">{$nostoProduct->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
+			{/if}
+			{if $nostoProduct->getAvailability()}
+				<span class="availability">{$nostoProduct->getAvailability()->getAvailability()|escape:'htmlall':'UTF-8'}</span>
+			{/if}
 			{foreach from=$nostoProduct->getCategories() item=category}
 				<span class="category">{$category|escape:'htmlall':'UTF-8'}</span>
 			{/foreach}
-			{if $nostoProduct->getDescription()}
-				<span class="description">{$nostoProduct->getDescription()|escape:'htmlall':'UTF-8'}</span>
+			{if $nostoProduct->getFullDescription()}
+				<span class="description">{$nostoProduct->getFullDescription()|escape:'htmlall':'UTF-8'}</span>
 			{/if}
 			{if $nostoProduct->getListPrice()}
-				<span class="list_price">{$nostoProduct->getListPrice()|escape:'htmlall':'UTF-8'}</span>
+				<span class="list_price">{$nostoProduct->getListPrice()->getPrice()|number_format:2}</span>
 			{/if}
 			{if $nostoProduct->getBrand()}
 				<span class="brand">{$nostoProduct->getBrand()|escape:'htmlall':'UTF-8'}</span>
@@ -64,7 +70,7 @@
 				{/foreach}
 			{/foreach}
 			{if $nostoProduct->getDatePublished()}
-				<span class="date_published">{$nostoProduct->getDatePublished()|escape:'htmlall':'UTF-8'}</span>
+				<span class="date_published">{$nostoProduct->getDatePublished()|date_format:'%Y-%m-%d'}</span>
 			{/if}
 		</div>
 	{/if}

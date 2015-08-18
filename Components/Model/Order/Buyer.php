@@ -51,17 +51,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	/**
 	 * @var string the first name of the user who placed the order.
 	 */
-	protected $_firstName;
+	protected $firstName;
 
 	/**
 	 * @var string the last name of the user who placed the order.
 	 */
-	protected $_lastName;
+	protected $lastName;
 
 	/**
 	 * @var string the email address of the user who placed the order.
 	 */
-	protected $_email;
+	protected $email;
 
 	/**
 	 * Loads the order buyer info from the customer model.
@@ -70,9 +70,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	 */
 	public function loadData(\Shopware\Models\Customer\Customer $customer)
 	{
-		$this->_firstName = $customer->getBilling()->getFirstName();
-		$this->_lastName = $customer->getBilling()->getLastName();
-		$this->_email = $customer->getEmail();
+		$this->firstName = $customer->getBilling()->getFirstName();
+		$this->lastName = $customer->getBilling()->getLastName();
+		$this->email = $customer->getEmail();
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	 */
 	public function getFirstName()
 	{
-		return $this->_firstName;
+		return $this->firstName;
 	}
 
 	/**
@@ -88,7 +88,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	 */
 	public function getLastName()
 	{
-		return $this->_lastName;
+		return $this->lastName;
 	}
 
 	/**
@@ -96,6 +96,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	 */
 	public function getEmail()
 	{
-		return $this->_email;
+		return $this->email;
 	}
 }

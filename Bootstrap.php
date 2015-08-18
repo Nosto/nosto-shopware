@@ -34,7 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-require_once 'vendor/nosto/php-sdk/src/config.inc.php';
+require_once 'vendor/nosto/php-sdk/autoload.php';
 
 /**
  * The plugin bootstrap class.
@@ -199,7 +199,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
 	{
 		if (!$this->validateEvent($args->getSubject(), 'frontend')
-			|| !$this->shopHasConnectedAccount()) {
+			|| !$this->shopHasAccount()) {
 			return;
 		}
 
@@ -230,7 +230,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function onPostDispatchFrontendIndex(Enlight_Controller_ActionEventArgs $args)
 	{
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'index', 'index')
-			|| !$this->shopHasConnectedAccount()) {
+			|| !$this->shopHasAccount()) {
 			return;
 		}
 
@@ -250,7 +250,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function onPostDispatchFrontendDetail(Enlight_Controller_ActionEventArgs $args)
 	{
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'detail', 'index')
-			|| !$this->shopHasConnectedAccount()) {
+			|| !$this->shopHasAccount()) {
 			return;
 		}
 
@@ -272,7 +272,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function onPostDispatchFrontendListing(Enlight_Controller_ActionEventArgs $args)
 	{
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'listing', 'index')
-			|| !$this->shopHasConnectedAccount()) {
+			|| !$this->shopHasAccount()) {
 			return;
 		}
 
@@ -293,7 +293,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
 	{
-		if (!$this->shopHasConnectedAccount()) {
+		if (!$this->shopHasAccount()) {
 			return;
 		}
 
@@ -320,7 +320,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function onPostDispatchFrontendSearch(Enlight_Controller_ActionEventArgs $args)
 	{
 		if (!$this->validateEvent($args->getSubject(), 'frontend', 'search', 'defaultSearch')
-			|| !$this->shopHasConnectedAccount()) {
+			|| !$this->shopHasAccount()) {
 			return;
 		}
 
@@ -390,8 +390,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 				}
 			}
 
-			$orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
-			$orderConfirmation->sendOrder($order);
+			$service = new Shopware_Plugins_Frontend_NostoTagging_Components_Service_Order();
+			$service->confirm($order);
 		}
 	}
 
@@ -406,8 +406,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Order\Order $order */
 		$order = $args->getEntity();
-		$orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
-		$orderConfirmation->sendOrder($order);
+		$service = new Shopware_Plugins_Frontend_NostoTagging_Components_Service_Order();
+		$service->confirm($order);
 	}
 
 	/**
@@ -421,8 +421,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
-		$op->create($article);
+		$service = new Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product();
+		$service->create($article);
 	}
 
 	/**
@@ -436,8 +436,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
-		$op->update($article);
+		$service = new Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product();
+		$service->update($article);
 	}
 
 	/**
@@ -451,8 +451,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
-		$op->delete($article);
+		$service = new Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product();
+		$service->delete($article);
 	}
 
 	/**
@@ -468,7 +468,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		if (is_null($setting)) {
 			$setting = new \Shopware\CustomModels\Nosto\Setting\Setting();
 			$setting->setName('uniqueId');
-			$setting->setValue(bin2hex(NostoCryptRandom::getRandomString(32)));
+			$setting->setValue(bin2hex(phpseclib_Crypt_Random::string(32)));
 			Shopware()->Models()->persist($setting);
 			Shopware()->Models()->flush($setting);
 		}
@@ -721,7 +721,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		}
 
 		$nostoCustomer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer();
-		$nostoCustomer->loadData($customer);
+		try {
+			$nostoCustomer->loadData($customer);
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
 
 		$view->assign('nostoCustomer', $nostoCustomer);
 	}
@@ -744,7 +748,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		));
 
 		$nostoCart = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart();
-		$nostoCart->loadData($baskets);
+		try {
+			$nostoCart->loadData($baskets);
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
 
 		$view->assign('nostoCart', $nostoCart);
 	}
@@ -768,7 +776,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		}
 
 		$nostoProduct = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-		$nostoProduct->loadData($article);
+		try {
+			$nostoProduct->loadData($article);
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
 
 		$view->assign('nostoProduct', $nostoProduct);
 
@@ -777,7 +789,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$category = Shopware()->Models()->find('Shopware\Models\Category\Category', $categoryId);
 		if (!is_null($category)) {
 			$nostoCategory = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
-			$nostoCategory->loadData($category);
+			try {
+				$nostoCategory->loadData($category);
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
+			}
 
 			$view->assign('nostoCategory', $nostoCategory);
 		}
@@ -802,7 +818,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		}
 
 		$nostoCategory = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
-		$nostoCategory->loadData($category);
+		try {
+			$nostoCategory->loadData($category);
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
 
 		$view->assign('nostoCategory', $nostoCategory);
 	}
@@ -867,20 +887,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		}
 
 		$nostoOrder = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-		$nostoOrder->loadData($order);
+		try {
+			$nostoOrder->loadData($order);
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
 
 		$view->assign('nostoOrder', $nostoOrder);
 	}
 
 	/**
-	 * Checks if the current active Shop has an Nosto account that is connected to Nosto.
+	 * Checks if the current active Shop has a Nosto account.
 	 *
-	 * @return bool true if a account exists that is connected to Nosto, false otherwise.
+	 * @return bool true if a account exists, false otherwise.
 	 */
-	protected function shopHasConnectedAccount()
+	protected function shopHasAccount()
 	{
 		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		return $helper->accountExistsAndIsConnected($shop);
+		return $helper->accountExists($shop);
 	}
 }

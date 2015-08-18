@@ -39,40 +39,40 @@
  * about an order that is sent to Nosto.
  *
  * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
- * Implements NostoOrderPurchasedItemInterface.
+ * Implements NostoOrderItemInterface.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderPurchasedItemInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderItemInterface
 {
 	/**
 	 * @var string the unique identifier of the purchased item.
 	 * If this item is for discounts or shipping cost, the id can be 0.
 	 */
-	protected $_productId;
+	protected $productId;
 
 	/**
 	 * @var int the quantity of the item included in the order.
 	 */
-	protected $_quantity;
+	protected $quantity;
 
 	/**
 	 * @var string the name of the item included in the order.
 	 */
-	protected $_name;
+	protected $name;
 
 	/**
-	 * @var float The unit price of the item included in the order.
+	 * @var NostoPrice The unit price of the item included in the order.
 	 */
-	protected $_unitPrice;
+	protected $unitPrice;
 
 	/**
-	 * @var string the 3-letter ISO code (ISO 4217) for the item currency.
+	 * @var NostoCurrencyCode the 3-letter ISO code (ISO 4217) for the item currency.
 	 */
-	protected $_currencyCode;
+	protected $currency;
 
 	/**
 	 * Populates the order line item with data from the order detail model.
@@ -81,37 +81,37 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 */
 	public function loadData(\Shopware\Models\Order\Detail $detail)
 	{
-		$this->_productId = -1;
+		$this->productId = -1;
 
 		if ($detail->getArticleId() > 0) {
 			// If this is a product variation, we need to load the parent
 			// article to fetch it's number and name.
 			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $detail->getArticleId());
 			if (!empty($article)) {
-				$this->_productId = $article->getMainDetail()->getNumber();
+				$this->productId = $article->getMainDetail()->getNumber();
 			}
 		}
 
-		$this->_name = $detail->getArticleName();
-		$this->_quantity = (int)$detail->getQuantity();
-		$this->_unitPrice = Nosto::helper('price')->format($detail->getPrice());
-		$this->_currencyCode = strtoupper($detail->getOrder()->getCurrency());
+		$this->name = $detail->getArticleName();
+		$this->quantity = (int)$detail->getQuantity();
+		$this->unitPrice = new NostoPrice($detail->getPrice());
+		$this->currency = new NostoCurrencyCode($detail->getOrder()->getCurrency());
 	}
 
 	/**
 	 * Loads a special item, e.g. shipping cost.
 	 *
-	 * @param string           $name the name of the item.
-	 * @param float|int|string $price the unit price of the item.
-	 * @param string           $currency the 3-letter ISO code (ISO 4217) for the item currency.
+	 * @param string           	$name the name of the item.
+	 * @param NostoPrice 		$price the unit price of the item.
+	 * @param NostoCurrencyCode	$currency the 3-letter ISO code (ISO 4217) for the item currency.
 	 */
-	public function loadSpecialItemData($name, $price, $currency)
+	public function loadSpecialItemData($name, NostoPrice $price, NostoCurrencyCode $currency)
 	{
-		$this->_productId = -1;
-		$this->_quantity = 1;
-		$this->_name = $name;
-		$this->_unitPrice = Nosto::helper('price')->format($price);
-		$this->_currencyCode = strtoupper($currency);
+		$this->productId = -1;
+		$this->quantity = 1;
+		$this->name = (string)$name;
+		$this->unitPrice = $price;
+		$this->currency = $currency;
 	}
 
 	/**
@@ -119,7 +119,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 */
 	public function getProductId()
 	{
-		return $this->_productId;
+		return $this->productId;
 	}
 
 	/**
@@ -127,7 +127,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 */
 	public function getQuantity()
 	{
-		return $this->_quantity;
+		return $this->quantity;
 	}
 
 	/**
@@ -135,7 +135,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 */
 	public function getName()
 	{
-		return $this->_name;
+		return $this->name;
 	}
 
 	/**
@@ -143,14 +143,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 */
 	public function getUnitPrice()
 	{
-		return $this->_unitPrice;
+		return $this->unitPrice;
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	public function getCurrencyCode()
+	public function getCurrency()
 	{
-		return $this->_currencyCode;
+		return $this->currency;
 	}
 }

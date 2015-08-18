@@ -50,7 +50,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Sho
 	/**
 	 * @var string the search term used on the search page.
 	 */
-	protected $_searchTerm;
+	protected $searchTerm;
 
 	/**
 	 * Setter for the search term.
@@ -59,7 +59,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Sho
 	 */
 	public function setSearchTerm($term)
 	{
-		$this->_searchTerm = $term;
+		$this->searchTerm = $term;
 	}
 
 	/**
@@ -69,6 +69,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Sho
 	 */
 	public function getSearchTerm()
 	{
-		return $this->_searchTerm;
+		return $this->searchTerm;
 	}
 }
