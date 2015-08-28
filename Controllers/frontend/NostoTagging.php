@@ -62,20 +62,30 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		if (!is_null($code)) {
 			try {
 				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-				$account = $helper->findAccount($shop);
-				if (!is_null($account)) {
-					throw new NostoException(sprintf('Nosto account already exists for shop #%d.', $shop->getId()));
+				$oldAccount = $helper->findAccount($shop);
+				if (!is_null($oldAccount)) {
+					$oldNostoAccount = $helper->convertToNostoAccount($oldAccount);
+				} else {
+					$oldNostoAccount = null;
 				}
 
 				$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
-				$meta->loadData($shop);
+				$meta->loadData($shop, null, $oldNostoAccount);
 
                 $service = new NostoServiceAccount();
-                $nostoAccount = $service->sync($meta, $code);
+				$newNostoAccount = $service->sync($meta, $code);
 
-				$account = $helper->convertToShopwareAccount($nostoAccount, $shop);
+				// If we are updating an existing account, double check that we
+				// got the same account back from Nosto.
+				if (!is_null($oldNostoAccount) && !$newNostoAccount->equals($oldNostoAccount)) {
+					throw new NostoException('Failed to sync account details, account mismatch.');
+				}
+
+				$account = $helper->convertToShopwareAccount($newNostoAccount, $shop);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
+				$helper->updateCurrencyExchangeRates($account, $shop);
+				$helper->updateAccount($account, $shop);
 
 				$redirectParams = array(
 					'module' => 'backend',

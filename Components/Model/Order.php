@@ -38,15 +38,15 @@
  * Model for order information. This is used when compiling the info about an
  * order that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
- * Implements NostoOrderInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoOrderInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoOrderInterface
 {
 	/**
 	 * @var string|int the unique order number identifying the order.
@@ -111,17 +111,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 			/** @var Shopware\Models\Order\Detail $detail */
 			if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
 				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadData($detail);
+				$item->loadData($detail, $order->getShop());
 				$this->purchasedItems[] = $item;
 			}
 		}
 
 		if ($this->includeSpecialLineItems) {
-			$currency = new NostoCurrencyCode($order->getCurrency());
 			$shippingCost = $order->getInvoiceShipping();
 			if ($shippingCost > 0) {
+				$dummyDetail = new \Shopware\Models\Order\Detail();
+				$dummyDetail->setArticleName('Shipping cost');
+				$dummyDetail->setArticleId(-1);
+				$dummyDetail->setQuantity(1);
+				$dummyDetail->setOrder($order);
+				$dummyDetail->setPrice($shippingCost);
+
 				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadSpecialItemData('Shipping cost', new NostoPrice($shippingCost), $currency);
+				$item->loadData($dummyDetail, $order->getShop());
 				$this->purchasedItems[] = $item;
 			}
 		}

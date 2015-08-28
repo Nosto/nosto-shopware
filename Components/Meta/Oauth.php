@@ -37,14 +37,15 @@
 /**
  * Meta-data class for handling OAuth 2 requests during account connect.
  *
- * Implements NostoOAuthClientMetaInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoOAuthClientMetaInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements NostoOAuthClientMetaInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoOAuthClientMetaInterface
 {
 	/**
 	 * @var string OAuth2 redirect url to where the OAuth2 server should redirect the user after authorizing.
@@ -82,7 +83,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 		$this->language = new NostoLanguageCode(
 			substr($locale->getLocale(), 0, 2)
 		);
-		$this->account = $account;
+		if (!is_null($account)) {
+			$this->account = $account;
+		}
 	}
 
 	/**

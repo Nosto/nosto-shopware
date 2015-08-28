@@ -41,21 +41,24 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     extend: 'Enlight.app.Controller',
 
     /**
-     * Settings for the controller.
-     */
-    settings: {
-        postMessageOrigin: null
-    },
-
-    /**
      * Initializes the controller.
      *
      * @return void
      */
     init: function () {
         var me = this;
+        me.control({
+            'nosto-sidebar-general button[action=update-accounts]': {
+                click: me.onUpdateAccounts
+            },
+            'nosto-sidebar-multi-currency button[action=update-exchange-rates]': {
+                click: me.onUpdateExchangeRates
+            },
+            'nosto-sidebar-multi-currency button[action=submit-multi-currency-settings]': {
+                click: me.onSubmitMultiCurrencySettings
+            }
+        });
         me.showWindow();
-        me.loadSettings();
         me.postMessageListener();
     },
 
@@ -66,40 +69,20 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      */
     showWindow: function () {
         var me = this;
-        me.accountStore = me.getStore('Account');
-        me.mainWindow = me.getView('Main').create({
-            accountStore: me.accountStore
-        });
+
+        me.mainWindow = me.getView('Main').create();
         me.mainWindow.show();
         me.mainWindow.setLoading(true);
-        me.accountStore.load({
+
+        me.batchStore = me.getStore('Batch');
+        me.batchStore.load({
             callback: function(records, op, success) {
                 me.mainWindow.setLoading(false);
                 if (success) {
-                    me.mainWindow.initAccountTabs();
+                    me.settings = records[0].getConfigs().getAt(0);
+                    me.mainWindow.fireEvent('storesLoaded', records[0]);
                 } else {
-                    throw new Error('Nosto: failed to load accounts.');
-                }
-            }
-        });
-    },
-
-    /**
-     * Loads controller settings.
-     *
-     * @return void
-     */
-    loadSettings: function () {
-        var me = this;
-        Ext.Ajax.request({
-            method: 'GET',
-            url: '{url controller=NostoTagging action=loadSettings}',
-            success: function(response) {
-                var op = Ext.decode(response.responseText);
-                if (op.success && op.data) {
-                    me.settings = op.data;
-                } else {
-                    throw new Error('Nosto: failed to load settings.');
+                    throw new Error('Nosto: failed to load stores.');
                 }
             }
         });
@@ -126,7 +109,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      */
     receiveMessage: function(event) {
         var me = this,
-            originRegexp = new RegExp(me.settings.postMessageOrigin),
+            originRegexp = new RegExp(me.settings.get('postMessageOrigin')),
             json,
             data,
             account,
@@ -205,9 +188,142 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                     });
                     break;
 
+                case 'syncAccount':
+                    Ext.Ajax.request({
+                        method: 'POST',
+                        url: '{url controller=NostoTagging action=syncAccount}',
+                        params: {
+                            shopId: account.get('shopId')
+                        },
+                        success: function(response) {
+                            op = Ext.decode(response.responseText);
+                            if (op.success && op.data.redirect_url) {
+                                window.location.href = op.data.redirect_url;
+                            } else {
+                                throw new Error('Nosto: failed to handle account synchronisation.');
+                            }
+                        }
+                    });
+                    break;
+
                 default:
                     throw new Error('Nosto: invalid postMessage `type`.');
             }
+        }
+    },
+
+    /**
+     * Updates currency exchange rates for all Nosto accounts using multi currency.
+     *
+     * @return void
+     */
+    onUpdateExchangeRates: function() {
+        var me = this,
+            op;
+
+        Ext.Ajax.request({
+            method: 'POST',
+            url: '{url controller=NostoTagging action=updateCurrencyExchangeRates}',
+            success: function(response) {
+                op = Ext.decode(response.responseText);
+                if (op.success && op.data.messages) {
+                    me.growl(op.data.messages);
+                } else {
+                    throw new Error('Nosto: failed to update currency exchange rates.');
+                }
+            }
+        });
+    },
+
+    /**
+     * Updates all Nosto accounts. Sync info like shop url and currency settings to Nosto.
+     *
+     * @return void
+     */
+    onUpdateAccounts: function() {
+        var me = this,
+            op;
+
+        Ext.Ajax.request({
+            method: 'POST',
+            url: '{url controller=NostoTagging action=updateAccounts}',
+            success: function(response) {
+                op = Ext.decode(response.responseText);
+                if (op.success && op.data.messages) {
+                    me.growl(op.data.messages);
+                } else {
+                    throw new Error('Nosto: failed to update Nosto accounts.');
+                }
+            }
+        });
+    },
+
+    /**
+     * Event listener for the Multi Currency form submit button click event.
+     * Submits the form to save the multi currency settings.
+     *
+     * @return void
+     */
+    onSubmitMultiCurrencySettings: function () {
+        var me = this,
+            form = me.mainWindow.sideBar.multiCurrencySettings.settingsForm;
+
+        me.saveAdvancedSettings(form);
+    },
+
+    /**
+     * Saves the "Advanced Settings" by submitting the passed form.
+     * There will be one form per accordion panel, but the submit action will
+     * be the same for all of them.
+     *
+     * @param form object
+     * @return void
+     */
+    saveAdvancedSettings: function (form) {
+        var me = this;
+
+        if (form.getForm().isValid()) {
+            form.submit({
+                success: function(form, action) {
+                    if (action.result.data.messages) {
+                        me.growl(action.result.data.messages);
+                    } else {
+                        me.growl([
+                            {
+                                title: 'Success',
+                                text: 'Settings have been saved.'
+                            }
+                        ]);
+                    }
+                },
+                failure: function(form, action) {
+                    if (action.result.data.messages) {
+                        me.growl(action.result.data.messages);
+                    } else {
+                        me.growl([
+                            {
+                                title: 'Error',
+                                text: 'Settings have NOT been saved.'
+                            }
+                        ]);
+                    }
+                }
+            });
+        }
+    },
+
+    /**
+     * Shows a "growl" message notification to the user.
+     *
+     * @param messages object
+     * @return void
+     */
+    growl: function(messages) {
+        for (var i = 0, l = messages.length; i < l; i++) {
+            Shopware.Notification.createStickyGrowlMessage({
+                title: messages[i].title,
+                text: messages[i].text
+            });
         }
     }
 });

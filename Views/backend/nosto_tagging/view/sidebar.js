@@ -1,4 +1,3 @@
-<?php
 /**
  * Copyright (c) 2015, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,73 +33,86 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-/**
- * Model for customer information. This is used when compiling the info about
- * customers that is sent to Nosto.
- *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
- *
- * @package Shopware
- * @subpackage Plugins_Frontend
- * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
- */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
-{
-	/**
-	 * @var string the customer first name.
-	 */
-	protected $firstName;
+Ext.define('Shopware.apps.NostoTagging.view.Sidebar', {
+    /**
+     * @string
+     */
+    extend:'Ext.panel.Panel',
 
-	/**
-	 * @var string the customer last name.
-	 */
-	protected $lastName;
+    /**
+     * @string
+     */
+    alias: 'widget.nosto-sidebar',
 
-	/**
-	 * @var string the customer email address.
-	 */
-	protected $email;
+    /**
+     * @string
+     */
+    region: 'east',
 
-	/**
-	 * Loads customer data from the logged in customer.
-	 *
-	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
-	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer )
-	{
-		$this->firstName = $customer->getBilling()->getFirstName();
-		$this->lastName = $customer->getBilling()->getLastName();
-		$this->email = $customer->getEmail();
-	}
+    /**
+     * @object
+     */
+    layout: 'accordion',
 
-	/**
-	 * Returns the customer first name.
-	 *
-	 * @return string the first name.
-	 */
-	public function getFirstName()
-	{
-		return $this->firstName;
-	}
+    /**
+     * @boolean
+     */
+    collapsible: true,
 
-	/**
-	 * Returns the customer last name.
-	 *
-	 * @return string the last name.
-	 */
-	public function getLastName()
-	{
-		return $this->lastName;
-	}
+    /**
+     * @boolean
+     */
+    collapsed: true,
 
-	/**
-	 * Returns the customer email address.
-	 *
-	 * @return string the email address.
-	 */
-	public function getEmail()
-	{
-		return $this->email;
-	}
-}
+    /**
+     * @string
+     */
+    title: '{s name=sidebar/title}Advanced Settings{/s}',
+
+    /**
+     * @integer
+     */
+    width: 350,
+
+    /**
+     * Initializes the component.
+     *
+     * @public
+     * @return void
+     */
+    initComponent:function () {
+        var me = this;
+
+        me.items = me.createElements();
+        me.callParent(arguments);
+    },
+
+    /**
+     * Creates the component elements.
+     *
+     * @return object
+     */
+    createElements: function () {
+        var me = this;
+
+        me.generalSettings = Ext.create('Shopware.apps.NostoTagging.view.sidebar.General');
+        me.multiCurrencySettings = Ext.create('Shopware.apps.NostoTagging.view.sidebar.Currency');
+
+        return [
+            me.generalSettings,
+            me.multiCurrencySettings
+        ];
+    },
+
+    /**
+     * populates the sidebar panels with data form the given stores.
+     *
+     * @param stores object
+     * @return void
+     */
+    populatePanels: function (stores) {
+        var me = this;
+
+        me.multiCurrencySettings.loadStoreData(stores);
+    }
+});

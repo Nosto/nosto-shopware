@@ -38,14 +38,15 @@
  * Meta-data class for account owner information sent to Nosto during account
  * create.
  *
- * Implements NostoAccountMetaOwnerInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoAccountMetaOwnerInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner implements NostoAccountMetaOwnerInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoAccountMetaOwnerInterface
 {
 	/**
 	 * @var string the first name of the account owner.

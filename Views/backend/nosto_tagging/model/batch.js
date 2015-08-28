@@ -1,4 +1,3 @@
-<?php
 /**
  * Copyright (c) 2015, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,73 +33,33 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-/**
- * Model for customer information. This is used when compiling the info about
- * customers that is sent to Nosto.
- *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
- *
- * @package Shopware
- * @subpackage Plugins_Frontend
- * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
- */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
-{
-	/**
-	 * @var string the customer first name.
-	 */
-	protected $firstName;
-
-	/**
-	 * @var string the customer last name.
-	 */
-	protected $lastName;
-
-	/**
-	 * @var string the customer email address.
-	 */
-	protected $email;
-
-	/**
-	 * Loads customer data from the logged in customer.
-	 *
-	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
-	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer )
-	{
-		$this->firstName = $customer->getBilling()->getFirstName();
-		$this->lastName = $customer->getBilling()->getLastName();
-		$this->email = $customer->getEmail();
-	}
-
-	/**
-	 * Returns the customer first name.
-	 *
-	 * @return string the first name.
-	 */
-	public function getFirstName()
-	{
-		return $this->firstName;
-	}
-
-	/**
-	 * Returns the customer last name.
-	 *
-	 * @return string the last name.
-	 */
-	public function getLastName()
-	{
-		return $this->lastName;
-	}
-
-	/**
-	 * Returns the customer email address.
-	 *
-	 * @return string the email address.
-	 */
-	public function getEmail()
-	{
-		return $this->email;
-	}
-}
+Ext.define('Shopware.apps.NostoTagging.model.Batch', {
+    extend: 'Ext.data.Model',
+    fields: [ 'id' ],
+    associations:[
+        {
+            type: 'hasMany',
+            model: 'Shopware.apps.NostoTagging.model.Account',
+            name: 'getAccounts',
+            associationKey: 'accounts'
+        },
+        {
+            type: 'hasMany',
+            model: 'Shopware.apps.NostoTagging.model.Config',
+            name: 'getConfigs',
+            associationKey: 'configs'
+        },
+        {
+            type: 'hasMany',
+            model: 'Shopware.apps.NostoTagging.model.Setting',
+            name: 'getSettings',
+            associationKey: 'settings'
+        },
+        {
+            type: 'hasMany',
+            model: 'Shopware.apps.NostoTagging.model.MultiCurrencyMethod',
+            name: 'getMultiCurrencyMethods',
+            associationKey: 'multiCurrencyMethods'
+        }
+    ]
+});

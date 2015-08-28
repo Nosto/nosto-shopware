@@ -39,9 +39,22 @@ Ext.define('Shopware.apps.NostoTagging', {
     bulkLoad: true,
     loadPath: '{url action=load}',
     controllers: ['Main'],
-    stores:['Account'],
-    models:['Account'],
-    views: ['Main'],
+    stores:[
+        'Batch'
+    ],
+    models:[
+        'Account',
+        'Batch',
+        'Config',
+        'MultiCurrencyMethod',
+        'Setting'
+    ],
+    views: [
+        'Main',
+        'Sidebar',
+        'sidebar.General',
+        'sidebar.Currency'
+    ],
     launch: function () {
         var me = this,
             ctrl = me.getController('Main');

@@ -35,72 +35,49 @@
  */
 
 /**
- * Model for customer information. This is used when compiling the info about
- * customers that is sent to Nosto.
- *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Base class for all components.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
-	 * @var string the customer first name.
+	 * @var array of cached helper class instances.
 	 */
-	protected $firstName;
+	private static $helpers = array();
 
 	/**
-	 * @var string the customer last name.
+	 * @param string $class
+	 * @return mixed
 	 */
-	protected $lastName;
-
-	/**
-	 * @var string the customer email address.
-	 */
-	protected $email;
-
-	/**
-	 * Loads customer data from the logged in customer.
-	 *
-	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
-	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer )
+	private function helper($class)
 	{
-		$this->firstName = $customer->getBilling()->getFirstName();
-		$this->lastName = $customer->getBilling()->getLastName();
-		$this->email = $customer->getEmail();
+		if (!isset(self::$helpers[$class])) {
+			self::$helpers[$class] = new $class();
+		}
+		return self::$helpers[$class];
 	}
 
 	/**
-	 * Returns the customer first name.
+	 * Returns the cached price helper instance.
 	 *
-	 * @return string the first name.
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Price the helper.
 	 */
-	public function getFirstName()
+	protected function getPriceHelper()
 	{
-		return $this->firstName;
+		return $this->helper('Shopware_Plugins_Frontend_NostoTagging_Components_Price');
 	}
 
 	/**
-	 * Returns the customer last name.
+	 * Returns the cached currency helper instance.
 	 *
-	 * @return string the last name.
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Currency the helper.
 	 */
-	public function getLastName()
+	protected function getCurrencyHelper()
 	{
-		return $this->lastName;
-	}
-
-	/**
-	 * Returns the customer email address.
-	 *
-	 * @return string the email address.
-	 */
-	public function getEmail()
-	{
-		return $this->email;
+		return $this->helper('Shopware_Plugins_Frontend_NostoTagging_Components_Currency');
 	}
 }
