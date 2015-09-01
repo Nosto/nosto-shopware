@@ -98,12 +98,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Currency extends Shopwar
 	 */
 	public function getCurrencyObject(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Currency $currency)
 	{
-
 		/** @var NostoHelperCurrency $helper */
 		$helper = Nosto::helper('currency');
 		$nostoCurrency = $helper->parseZendCurrencyFormat(
 			$currency->getCurrency(),
-			$shop->getLocale()->getLocale()
+            new Zend_Currency(
+                $shop->getLocale()->getLocale(),
+                $currency->getCurrency()
+            )
 		);
 
 		// Override the currency symbol configured for the SW currency.
