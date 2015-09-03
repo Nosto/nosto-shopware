@@ -4,23 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f112b126d54930403b938744196abb97",
+    "hash": "afe6819804db2d10dd4f0c4ab9c41719",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "dev-develop",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/php-sdk.git",
-                "reference": "a8db425eb204fe01339114bbf639d58421d0f477"
+                "reference": "ef6615706a32ef65364238a6d84c052c1dd8166c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/a8db425eb204fe01339114bbf639d58421d0f477",
-                "reference": "a8db425eb204fe01339114bbf639d58421d0f477",
+                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/ef6615706a32ef65364238a6d84c052c1dd8166c",
+                "reference": "ef6615706a32ef65364238a6d84c052c1dd8166c",
                 "shasum": ""
             },
             "require-dev": {
+                "codeception/aspect-mock": "0.5.3",
                 "codeception/codeception": "2.0.0",
                 "codeception/specify": "0.4.1"
             },
@@ -30,18 +31,16 @@
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
-                "source": "https://github.com/Nosto/php-sdk/tree/develop",
+                "source": "https://github.com/Nosto/php-sdk/tree/2.1.0",
                 "issues": "https://github.com/Nosto/php-sdk/issues"
             },
-            "time": "2015-09-01 05:53:34"
+            "time": "2015-09-03 07:15:41"
         }
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "nosto/php-sdk": 20
-    },
+    "minimum-stability": "stable",
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

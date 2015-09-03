@@ -103,8 +103,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Currency extends Shopwar
 		$nostoCurrency = $helper->parseZendCurrencyFormat(
 			$currency->getCurrency(),
             new Zend_Currency(
-                $shop->getLocale()->getLocale(),
-                $currency->getCurrency()
+                $currency->getCurrency(),
+                $shop->getLocale()->getLocale()
             )
 		);
 

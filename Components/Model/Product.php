@@ -125,9 +125,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	protected $datePublished;
 
     /**
-     * @var string the price variation ID the product prices are in.
+     * @var NostoPriceVariation the price variation the product prices are in.
      */
-    protected $priceVariationId;
+    protected $priceVariation;
 
     /**
      * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation[] list of price variations for this product.
@@ -166,7 +166,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->datePublished = new NostoDate($article->getAdded()->getTimestamp());
 
 		if ($shop->getCurrencies()->count() > 1) {
-			$this->priceVariationId = $defaultCurrency->getCurrency();
+			$this->priceVariation = new NostoPriceVariation($defaultCurrency->getCurrency());
 			if ($plugin->isMultiCurrencyMethodPriceVariation()) {
 				foreach ($shop->getCurrencies() as $currency) {
 					if ($currency->getCurrency() === $defaultCurrency->getCurrency()) {
@@ -362,7 +362,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
      */
     public function getThumbUrl()
     {
-        return null; // todo
+        return null;
     }
 
 	/**
@@ -394,7 +394,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getPriceVariationId()
 	{
-		return $this->priceVariationId;
+		return !is_null($this->priceVariation)
+            ? $this->priceVariation->getId()
+            : null;
 	}
 
 	/**
