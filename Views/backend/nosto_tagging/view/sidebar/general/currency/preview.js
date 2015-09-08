@@ -48,7 +48,7 @@ Ext.define('Shopware.apps.NostoTagging.view.sidebar.general.currency.Preview', {
      * @object
      */
     snippets: {
-        notice: '{s name=sidebar/general/currency/preview/snippets_notice}Preview of the current currency formats extracted from Shopware. These are synchronised to Nosto when clicking the "Update Accounts" button above. Synchronising is only needed if the formats have changed in Shopware since Nosto was installed.{/s}'
+        notice: '{s name=sidebar/general/currency/preview/snippets_notice}Preview of the current currency formats extracted from Shopware. These are synchronised to Nosto when clicking the `Update Accounts` button above. Synchronising is only needed if the formats have changed in Shopware since Nosto was installed.{/s}'
     },
 
     /**
