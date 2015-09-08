@@ -35,7 +35,7 @@
 
 Ext.define('Shopware.apps.NostoTagging.model.Config', {
     extend: 'Ext.data.Model',
-    fields:[
+    fields: [
         { name: 'postMessageOrigin', type: 'string' }
     ]
 });

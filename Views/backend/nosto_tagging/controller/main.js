@@ -76,7 +76,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
 
         me.batchStore = me.getStore('Batch');
         me.batchStore.load({
-            callback: function(records, op, success) {
+            callback: function (records, op, success) {
                 me.mainWindow.setLoading(false);
                 if (success) {
                     me.settings = records[0].getConfigs().getAt(0);
@@ -107,7 +107,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      * @param event Object
      * @return void
      */
-    receiveMessage: function(event) {
+    receiveMessage: function (event) {
         var me = this,
             originRegexp = new RegExp(me.settings.get('postMessageOrigin')),
             json,
@@ -121,11 +121,11 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             return;
         }
         // If the message does not start with '[Nosto]', then it is not for us.
-        if ((''+event.data).substr(0, 7) !== '[Nosto]') {
+        if (('' + event.data).substr(0, 7) !== '[Nosto]') {
             return;
         }
 
-        json = (''+event.data).substr(7);
+        json = ('' + event.data).substr(7);
         data = Ext.decode(json);
         if (typeof data === 'object' && data.type) {
             account = me.mainWindow.getActiveAccount();
@@ -138,7 +138,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         account.set('email', data.params.email);
                     }
                     account.save({
-                        success: function(record, op) {
+                        success: function (record, op) {
                             // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
                                 accountData = op.resultSet.records[0].data;
@@ -155,7 +155,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
 
                 case 'removeAccount':
                     account.destroy({
-                        success: function(record, op) {
+                        success: function (record, op) {
                             // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
                                 accountData = op.resultSet.records[0].data;
@@ -177,7 +177,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         params: {
                             shopId: account.get('shopId')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             op = Ext.decode(response.responseText);
                             if (op.success && op.data.redirect_url) {
                                 window.location.href = op.data.redirect_url;
@@ -195,7 +195,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         params: {
                             shopId: account.get('shopId')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             op = Ext.decode(response.responseText);
                             if (op.success && op.data.redirect_url) {
                                 window.location.href = op.data.redirect_url;
@@ -217,14 +217,14 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      *
      * @return void
      */
-    onUpdateExchangeRates: function() {
+    onUpdateExchangeRates: function () {
         var me = this,
             op;
 
         Ext.Ajax.request({
             method: 'POST',
             url: '{url controller=NostoTagging action=updateCurrencyExchangeRates}',
-            success: function(response) {
+            success: function (response) {
                 op = Ext.decode(response.responseText);
                 if (op.success && op.data.messages) {
                     me.growl(op.data.messages);
@@ -240,14 +240,14 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      *
      * @return void
      */
-    onUpdateAccounts: function() {
+    onUpdateAccounts: function () {
         var me = this,
             op;
 
         Ext.Ajax.request({
             method: 'POST',
             url: '{url controller=NostoTagging action=updateAccounts}',
-            success: function(response) {
+            success: function (response) {
                 op = Ext.decode(response.responseText);
                 if (op.success && op.data.messages) {
                     me.growl(op.data.messages);
@@ -284,7 +284,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
 
         if (form.getForm().isValid()) {
             form.submit({
-                success: function(form, action) {
+                success: function (form, action) {
                     if (action.result.data.messages) {
                         me.growl(action.result.data.messages);
                     } else {
@@ -296,7 +296,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         ]);
                     }
                 },
-                failure: function(form, action) {
+                failure: function (form, action) {
                     if (action.result.data.messages) {
                         me.growl(action.result.data.messages);
                     } else {
@@ -318,7 +318,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      * @param messages object
      * @return void
      */
-    growl: function(messages) {
+    growl: function (messages) {
         for (var i = 0, l = messages.length; i < l; i++) {
             Shopware.Notification.createStickyGrowlMessage({
                 title: messages[i].title,

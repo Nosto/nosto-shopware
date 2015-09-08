@@ -37,7 +37,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Sidebar', {
     /**
      * @string
      */
-    extend:'Ext.panel.Panel',
+    extend: 'Ext.panel.Panel',
 
     /**
      * @string
@@ -80,7 +80,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Sidebar', {
      * @public
      * @return void
      */
-    initComponent:function () {
+    initComponent: function () {
         var me = this;
 
         me.items = me.createElements();
@@ -113,6 +113,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Sidebar', {
     populatePanels: function (stores) {
         var me = this;
 
+        me.generalSettings.loadStoreData(stores);
         me.multiCurrencySettings.loadStoreData(stores);
     }
 });

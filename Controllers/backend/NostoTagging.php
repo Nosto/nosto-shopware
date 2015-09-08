@@ -73,6 +73,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 				'configs' => $this->getConfigStoreData(),
 				'settings' => $this->getSettingStoreData(),
 				'multiCurrencyMethods' => $this->getMultiCurrencyStoreData(),
+				'currencies' => $this->getCurrencyStoreData(),
 			)
 		));
 	}
@@ -382,6 +383,27 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	}
 
 	/**
+	 * Gets a list of currenty
+	 *
+	 * @param \Shopware\Models\Shop\Repository $repository
+	 * @param int                              $hydrationMode
+	 * @return \Shopware\Models\Shop\Shop[]
+	 */
+	protected function getActiveShops(\Shopware\Models\Shop\Repository $repository, $hydrationMode = \Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY)
+	{
+		if (method_exists($repository, 'getActiveShops')) {
+			return $repository->getActiveShops($hydrationMode);
+		} else {
+			// SW 4.0 does not have the `getActiveShops` method, so we fall back
+			// on manually building the query.
+			return $repository->createQueryBuilder('shop')
+				->where('shop.active = 1')
+				->getQuery()
+				->getResult($hydrationMode);
+		}
+	}
+
+	/**
 	 * Gets a list of accounts to populate client side Account models.
 	 * These are created for every shop, even if there is no Nosto account
 	 * configured for it yet. This is done in order to streamline the
@@ -409,18 +431,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	{
 		$data = array();
 
-		/* @var \Shopware\Models\Shop\Repository $repository */
-		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
-		if (method_exists($repository, 'getActiveShops')) {
-			$result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-		} else {
-			// SW 4.0 does not have the `getActiveShops` method, so we fall back
-			// on manually building the query.
-			$result = $repository->createQueryBuilder('shop')
-				->where('shop.active = 1')
-				->getQuery()
-				->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-		}
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$identity = Shopware()->Auth()->getIdentity();
 		$setting = Shopware()
@@ -433,7 +443,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 			Shopware()->Models()->flush();
 		}
 
-		foreach ($result as $row) {
+		/* @var \Shopware\Models\Shop\Repository $repository */
+		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+		foreach ($this->getActiveShops($repository) as $row) {
 			$params = array();
 			$shop = $repository->getActiveById($row['id']);
 			if (is_null($shop)) {
@@ -541,5 +553,57 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 				'name' => 'Product Variation'
 			)
 		);
+	}
+
+	/**
+	 * Gets a list of currencies in use for each shop to populate the client
+	 * side Currency models.
+	 *
+	 * These models are used to show a preview of the currency formats that are
+	 * sent to Nosto when doing the "update accounts" action.
+	 *
+	 * The Currency models are formatted as follows:
+	 *
+	 * array(
+	 *   array(
+	 *     'code' => 'USD',
+	 *     'shopId' => 1,
+	 *     'shopName' => 'My Shop',
+	 *     'preview' => '$1,123.45'
+	 *   )
+	 * )
+	 */
+	protected function getCurrencyStoreData()
+	{
+		$currencyData = array();
+
+		/* @var \Shopware\Models\Shop\Repository $repository */
+		$repository = Shopware()
+			->Models()
+			->getRepository('Shopware\Models\Shop\Shop');
+
+		foreach ($this->getActiveShops($repository, \Doctrine\ORM\AbstractQuery::HYDRATE_OBJECT) as $shop) {
+			$currencies = $shop->getCurrencies();
+			// If the shop has no own currencies configured and has a "main
+			// shop" defined, we assume this is as "language shop" and take the
+			// currencies from the "main shop".
+			if ($currencies->count() === 0 && $shop->getMain()) {
+				$currencies = $shop->getMain()->getCurrencies();
+			}
+			foreach ($currencies as $currency) {
+				$zendCurrency = new Zend_Currency(
+					$currency->getCurrency(),
+					$shop->getLocale()->getLocale()
+				);
+				$currencyData[] = array(
+					'code' => $currency->getCurrency(),
+					'shopId' => $shop->getId(),
+					'shopName' => $shop->getName(),
+					'preview' => $zendCurrency->toCurrency(1234.56),
+				);
+			}
+		}
+
+		return $currencyData;
 	}
 }

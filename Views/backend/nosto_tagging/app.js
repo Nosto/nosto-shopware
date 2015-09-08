@@ -39,13 +39,14 @@ Ext.define('Shopware.apps.NostoTagging', {
     bulkLoad: true,
     loadPath: '{url action=load}',
     controllers: ['Main'],
-    stores:[
+    stores: [
         'Batch'
     ],
-    models:[
+    models: [
         'Account',
         'Batch',
         'Config',
+        'Currency',
         'MultiCurrencyMethod',
         'Setting'
     ],

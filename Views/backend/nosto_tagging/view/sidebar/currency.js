@@ -37,7 +37,7 @@ Ext.define('Shopware.apps.NostoTagging.view.sidebar.Currency', {
     /**
      * @string
      */
-    extend:'Ext.panel.Panel',
+    extend: 'Ext.panel.Panel',
 
     /**
      * @string
@@ -80,7 +80,7 @@ Ext.define('Shopware.apps.NostoTagging.view.sidebar.Currency', {
      * @public
      * @return void
      */
-    initComponent:function () {
+    initComponent: function () {
         var me = this;
 
         me.items = me.createElements();

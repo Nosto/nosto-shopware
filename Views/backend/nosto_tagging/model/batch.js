@@ -36,7 +36,7 @@
 Ext.define('Shopware.apps.NostoTagging.model.Batch', {
     extend: 'Ext.data.Model',
     fields: [ 'id' ],
-    associations:[
+    associations: [
         {
             type: 'hasMany',
             model: 'Shopware.apps.NostoTagging.model.Account',
@@ -60,6 +60,12 @@ Ext.define('Shopware.apps.NostoTagging.model.Batch', {
             model: 'Shopware.apps.NostoTagging.model.MultiCurrencyMethod',
             name: 'getMultiCurrencyMethods',
             associationKey: 'multiCurrencyMethods'
+        },
+        {
+            type: 'hasMany',
+            model: 'Shopware.apps.NostoTagging.model.Currency',
+            name: 'getCurrencies',
+            associationKey: 'currencies'
         }
     ]
 });

@@ -84,7 +84,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      *
      * @return void
      */
-    registerEvents: function() {
+    registerEvents: function () {
         this.addEvents(
             'storesLoaded'
         );
@@ -146,7 +146,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
             i = 0,
             tab;
 
-        me.accountStore.each(function(account) {
+        me.accountStore.each(function (account) {
             tab = me.tabPanel.add({
                 title: account.get('shopName'),
                 xtype: 'component',
@@ -174,7 +174,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
             activeTab = me.tabPanel.getActiveTab(),
             activeAccount = null;
 
-        me.accountStore.each(function(account) {
+        me.accountStore.each(function (account) {
             if (account.get('shopId') === activeTab.shopId) {
                 activeAccount = account;
             }

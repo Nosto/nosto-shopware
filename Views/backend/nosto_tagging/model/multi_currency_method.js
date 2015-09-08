@@ -36,7 +36,7 @@
 Ext.define('Shopware.apps.NostoTagging.model.MultiCurrencyMethod', {
     extend: 'Ext.data.Model',
     idProperty: 'id',
-    fields:[
+    fields: [
         { name: 'id', type: 'string' },
         { name: 'name', type: 'string' }
     ]
