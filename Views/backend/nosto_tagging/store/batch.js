@@ -33,32 +33,17 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-Ext.define('Shopware.apps.NostoTagging.model.Account', {
-    extend: 'Ext.data.Model',
-    idProperty: 'id',
-    fields: [
-        { name: 'id', type: 'int' },
-        { name: 'name', type: 'string' },
-        { name: 'url', type: 'string' },
-        { name: 'email', type: 'string' },
-        { name: 'shopId', type: 'int' },
-        { name: 'shopName', type: 'string' }
-    ],
+Ext.define('Shopware.apps.NostoTagging.store.Batch', {
+    extend: 'Ext.data.Store',
+    model: 'Shopware.apps.NostoTagging.model.Batch',
+    autoLoad: false,
     proxy: {
         type: 'ajax',
-        api: {
-            create: '{url action=createAccount}',
-            update: '{url action=createAccount}',
-            destroy: '{url action=deleteAccount}'
-        },
+        url: '{url action=loadStores}',
         reader: {
-            idProperty: 'id',
             type: 'json',
-            root: 'data'
-        },
-        writer: {
-            type: 'json',
-            writeAllFields: true
+            root: 'data',
+            totalProperty: 'total'
         }
     }
 });

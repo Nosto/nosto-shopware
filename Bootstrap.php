@@ -49,6 +49,10 @@ require_once 'vendor/nosto/php-sdk/autoload.php';
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 	const PLATFORM_NAME = 'shopware';
+    const CONFIG_MULTI_CURRENCY_METHOD = 'multiCurrencyMethod';
+	const CONFIG_DIRECT_INCLUDE = 'directInclude';
+    const MULTI_CURRENCY_METHOD_PRICE_VARIATION = 'priceVariation';
+    const MULTI_CURRENCY_METHOD_EXCHANGE_RATE = 'exchangeRate';
 
 	/**
 	 * @inheritdoc
@@ -113,6 +117,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->createMyAttributes();
 		$this->createMyMenu();
 		$this->registerMyEvents();
+		$this->registerCronJobs();
 		return true;
 	}
 
@@ -213,6 +218,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->addEmbedScript($view);
 		$this->addCustomerTagging($view);
 		$this->addCartTagging($view);
+		$this->addPriceVariationTagging($view);
 
 		$locale = Shopware()->Shop()->getLocale()->getLocale();
 		$view->assign('nostoVersion', $this->getVersion());
@@ -456,6 +462,35 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Handler for the currency exchange rate update cron job.
+	 *
+	 * Sends currency exchange rates to Nosto for accounts that are connected
+	 * to multi currency shops.
+	 *
+	 * @param Shopware_Components_Cron_CronJob $job
+	 * @return bool true if cron job is properly completed
+	 */
+	public function onCronJobUpdateNostoCurrencyExchangeRates(Shopware_Components_Cron_CronJob $job)
+	{
+		if ($this->isMultiCurrencyMethodExchangeRate()) {
+			/* @var \Shopware\CustomModels\Nosto\Account\Repository $accountRepository */
+			$accountRepository = Shopware()->Models()->getRepository('Shopware\CustomModels\Nosto\Account\Account');
+			/* @var \Shopware\Models\Shop\Repository $shopRepository */
+			$shopRepository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+			$accountHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+
+			foreach ($accountRepository->findAll() as $account) {
+				/** @var \Shopware\CustomModels\Nosto\Account\Account $account */
+				$shop = $shopRepository->getActiveById($account->getShopId());
+				$shop->registerResources(Shopware()->Bootstrap());
+				$accountHelper->updateCurrencyExchangeRates($account, $shop);
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Returns a unique ID for this Shopware installation.
 	 */
 	public function getUniqueId()
@@ -474,6 +509,58 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		}
 
 		return $setting->getValue();
+	}
+
+	/**
+	 * Checks if the current multi currency method is set to exchange rate.
+	 * This is the default multi currency method used by the plugin.
+	 *
+	 * Exchange rate means that Nosto is doing the price conversion in the
+	 * recommendations based to rates sent to Nosto over the API, or manually
+	 * entered in the Nosto backend.
+	 *
+	 * @return bool true if the multi currency methods is exchange rate.
+	 */
+	public function isMultiCurrencyMethodExchangeRate()
+	{
+		$setting = Shopware()
+			->Models()
+			->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+			->findOneBy(array('name' => self::CONFIG_MULTI_CURRENCY_METHOD));
+		return ((!is_null($setting) && $setting->getValue() === self::MULTI_CURRENCY_METHOD_EXCHANGE_RATE) || is_null($setting));
+	}
+
+	/**
+	 * Checks if the current multi currency method is set to price variation.
+	 *
+	 * Price variation means that all the different product prices are tagged
+	 * along side the product on the product page. This method does not use
+	 * the currency rates to populate prices in the recommendations, but the
+	 * values from the variation tagging.
+	 *
+	 * @return bool true if the multi currency methods is price variation.
+	 */
+	public function isMultiCurrencyMethodPriceVariation()
+	{
+		$setting = Shopware()
+			->Models()
+			->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+			->findOneBy(array('name' => self::CONFIG_MULTI_CURRENCY_METHOD));
+		return (!is_null($setting) && $setting->getValue() === self::MULTI_CURRENCY_METHOD_PRICE_VARIATION);
+	}
+
+	/**
+	 * Return if we are to use the script direct include.
+	 *
+	 * @return bool if we are to use the script direct include.
+	 */
+	public function getUseScriptDirectInclude()
+	{
+		$setting = Shopware()
+			->Models()
+			->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+			->findOneBy(array('name' => self::CONFIG_DIRECT_INCLUDE));
+		return (!is_null($setting) && (int)$setting->getValue() === 1);
 	}
 
 	/**
@@ -648,6 +735,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Register cron jobs for this plugin.
+	 *
+	 * Run on install.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onCronJobUpdateNostoCurrencyExchangeRates
+	 */
+	protected function registerCronJobs()
+	{
+		$this->createCronJob(
+			'Update currency exchange rates in Nosto',
+			'UpdateNostoCurrencyExchangeRates',
+			86400,
+			false
+		);
+
+		$this->subscribeEvent(
+			'Shopware_CronJob_UpdateNostoCurrencyExchangeRates',
+			'onCronJobUpdateNostoCurrencyExchangeRates'
+		);
+	}
+
+	/**
 	 * Adds the embed JavaScript to the view.
 	 *
 	 * This script should be present on all pages.
@@ -664,6 +774,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$view->assign('nostoAccountName', $nostoAccount->getName());
 		$view->assign('nostoServerUrl', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
+		$view->assign('nostoScriptDirectInclude', $this->getUseScriptDirectInclude());
 	}
 
 	/**
@@ -749,12 +860,36 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$nostoCart = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart();
 		try {
-			$nostoCart->loadData($baskets);
+			$nostoCart->loadData($baskets, Shopware()->Shop());
 		} catch (NostoException $e) {
 			Shopware()->Pluginlogger()->error($e);
 		}
 
 		$view->assign('nostoCart', $nostoCart);
+	}
+
+	/**
+	 * Adds the price variation tagging to the view.
+	 *
+	 * This tagging should be present on all pages if the shop is configured to
+	 * use multiple currencies. It tells Nosto what price variation the
+	 * recommendations should be shown in.
+	 *
+	 * @param Enlight_View_Default $view the view.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+	 */
+	protected function addPriceVariationTagging(Enlight_View_Default $view)
+	{
+		$shop = Shopware()->Shop();
+		if ($shop->getCurrencies()->count() > 1) {
+			try {
+				$variation = new NostoPriceVariation($shop->getCurrency()->getCurrency());
+				$view->assign('nostoPriceVariation', $variation);
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
+			}
+		}
 	}
 
 	/**

@@ -37,14 +37,15 @@
 /**
  * Meta-data class for information included in SSO requests.
  *
- * Implements NostoAccountMetaSingleSignOnInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoAccountMetaSingleSignOnInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Sso implements NostoAccountMetaSingleSignOnInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Sso extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoAccountMetaSingleSignOnInterface
 {
 	/**
 	 * @var string the admin user first name.

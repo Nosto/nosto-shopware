@@ -33,32 +33,90 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-Ext.define('Shopware.apps.NostoTagging.model.Account', {
-    extend: 'Ext.data.Model',
-    idProperty: 'id',
-    fields: [
-        { name: 'id', type: 'int' },
-        { name: 'name', type: 'string' },
-        { name: 'url', type: 'string' },
-        { name: 'email', type: 'string' },
-        { name: 'shopId', type: 'int' },
-        { name: 'shopName', type: 'string' }
-    ],
-    proxy: {
-        type: 'ajax',
-        api: {
-            create: '{url action=createAccount}',
-            update: '{url action=createAccount}',
-            destroy: '{url action=deleteAccount}'
-        },
-        reader: {
-            idProperty: 'id',
-            type: 'json',
-            root: 'data'
-        },
-        writer: {
-            type: 'json',
-            writeAllFields: true
-        }
+Ext.define('Shopware.apps.NostoTagging.view.Sidebar', {
+    /**
+     * @string
+     */
+    extend: 'Ext.panel.Panel',
+
+    /**
+     * @string
+     */
+    alias: 'widget.nosto-sidebar',
+
+    /**
+     * @string
+     */
+    region: 'east',
+
+    /**
+     * @object
+     */
+    layout: 'accordion',
+
+    /**
+     * @boolean
+     */
+    collapsible: true,
+
+    /**
+     * @boolean
+     */
+    collapsed: true,
+
+    /**
+     * @string
+     */
+    title: '{s name=sidebar/title}Advanced Settings{/s}',
+
+    /**
+     * @integer
+     */
+    width: 350,
+
+    /**
+     * Initializes the component.
+     *
+     * @public
+     * @return void
+     */
+    initComponent: function () {
+        var me = this;
+
+        me.items = me.createElements();
+        me.callParent(arguments);
+    },
+
+    /**
+     * Creates the component elements.
+     *
+     * @return object
+     */
+    createElements: function () {
+        var me = this;
+
+        me.generalSettings = Ext.create('Shopware.apps.NostoTagging.view.sidebar.General');
+        me.accountSettings = Ext.create('Shopware.apps.NostoTagging.view.sidebar.Account');
+        me.multiCurrencySettings = Ext.create('Shopware.apps.NostoTagging.view.sidebar.Currency');
+
+        return [
+            me.generalSettings,
+            me.accountSettings,
+            me.multiCurrencySettings
+        ];
+    },
+
+    /**
+     * populates the sidebar panels with data form the given stores.
+     *
+     * @param stores object
+     * @return void
+     */
+    populatePanels: function (stores) {
+        var me = this;
+
+        me.generalSettings.loadStoreData(stores);
+        me.accountSettings.loadStoreData(stores);
+        me.multiCurrencySettings.loadStoreData(stores);
     }
 });

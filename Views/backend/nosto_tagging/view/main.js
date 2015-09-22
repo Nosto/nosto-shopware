@@ -72,11 +72,66 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      */
     initComponent: function () {
         var me = this;
-        me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
-            layout: 'fit',
+
+        me.items = me.createElements();
+        me.registerEvents();
+        me.callParent(arguments);
+        me.on('storesLoaded', me.onStoresLoaded, me);
+    },
+
+    /**
+     * Registers additional component events.
+     *
+     * @return void
+     */
+    registerEvents: function () {
+        this.addEvents(
+            'storesLoaded'
+        );
+    },
+
+    /**
+     * Event listener for the stores loaded event.
+     * Here we populate all the data in the view.
+     *
+     * @param object stores
+     * @return void
+     */
+    onStoresLoaded: function (stores) {
+        var me = this;
+
+        // Create the Nosto account management tabs.
+        me.accountStore = stores.getAccounts();
+        me.createAccountTabs();
+
+        // Populate the advanced settings sidebar.
+        me.sideBar.populatePanels(stores);
+    },
+
+    /**
+     * Creates the window elements.
+     *
+     * @return object
+     */
+    createElements: function () {
+        var me = this;
+
+        me.tabPanel = Ext.create('Ext.tab.Panel', {
+            region: 'center',
             items: []
         });
-        me.callParent(arguments);
+        me.sideBar = Ext.create('Shopware.apps.NostoTagging.view.Sidebar', {
+            region: 'east',
+            items: []
+        });
+
+        return Ext.create('Ext.container.Container', {
+            layout: 'border',
+            items: [
+                me.tabPanel,
+                me.sideBar
+            ]
+        });
     },
 
     /**
@@ -86,12 +141,12 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * @public
      * @return void
      */
-    initAccountTabs: function () {
+    createAccountTabs: function () {
         var me = this,
             i = 0,
             tab;
 
-        me.accountStore.each(function(account) {
+        me.accountStore.each(function (account) {
             tab = me.tabPanel.add({
                 title: account.get('shopName'),
                 xtype: 'component',
@@ -119,7 +174,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
             activeTab = me.tabPanel.getActiveTab(),
             activeAccount = null;
 
-        me.accountStore.each(function(account) {
+        me.accountStore.each(function (account) {
             if (account.get('shopId') === activeTab.shopId) {
                 activeAccount = account;
             }

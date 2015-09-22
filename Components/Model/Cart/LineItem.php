@@ -38,14 +38,14 @@
  * Model for shopping cart line items. This is used when compiling the shopping
  * cart info that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_LineItem
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_LineItem
 {
 	/**
 	 * @var string the product id for the line item.
@@ -76,25 +76,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	 * Loads the line item data from the basket model.
 	 *
 	 * @param Shopware\Models\Order\Basket $basket an order basket item.
-	 * @param NostoCurrencyCode            $currencyCode the line item currency code.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the basket item resides in.
 	 */
-	public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
+	public function loadData(Shopware\Models\Order\Basket $basket, \Shopware\Models\Shop\Shop $shop)
 	{
-		$this->productId = -1;
-
-		if ($basket->getArticleId() > 0) {
-			// If this is a product variation, we need to load the parent
-			// article to fetch it's number and name.
-			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $basket->getArticleId());
-			if (!empty($article)) {
-				$this->productId = $article->getMainDetail()->getNumber();
-			}
-		}
-
+		$this->productId = $this->fetchProductId($basket->getArticleId());
 		$this->name = $basket->getArticleName();
 		$this->quantity = (int)$basket->getQuantity();
-		$this->unitPrice = new NostoPrice($basket->getPrice());
-		$this->currency = $currencyCode;
+		$this->unitPrice = $this->fetchUnitPrice($basket, $shop);
+		$this->currency = new NostoCurrencyCode(
+			$this->getCurrencyHelper()
+				->getShopDefaultCurrency($shop)
+				->getCurrency()
+		);
 	}
 
 	/**
@@ -145,5 +139,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	public function getCurrency()
 	{
 		return $this->currency;
+	}
+
+	/**
+	 * Fetches the unit price for given basket item.
+	 *
+	 * The price in the basket item will always be in the currency of the shop
+	 * the basket is in, so we need to convert it to the shop's base currency
+	 * as we always tag prices in their base currency.
+	 *
+	 * @param \Shopware\Models\Order\Basket $basket the basket item.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the item resides in.
+	 * @return NostoPrice the unit price.
+	 */
+	protected function fetchUnitPrice(\Shopware\Models\Order\Basket $basket, \Shopware\Models\Shop\Shop $shop)
+	{
+		return $this->getPriceHelper()->round(
+			$this->getPriceHelper()->convertCurrency(
+				new NostoPrice($basket->getPrice()),
+				$this->getCurrencyHelper()->getShopDefaultCurrency($shop),
+				$shop->getCurrency()
+			)
+		);
 	}
 }

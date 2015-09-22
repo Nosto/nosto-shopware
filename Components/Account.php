@@ -37,12 +37,14 @@
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
  *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Account
+class Shopware_Plugins_Frontend_NostoTagging_Components_Account extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * Creates a new Nosto account for the given shop.
@@ -79,6 +81,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 
 	/**
 	 * Converts a `NostoAccount` into a `\Shopware\CustomModels\Nosto\Account\Account` model.
+	 * If an existing SW account model exists for the shop, it will be updated and returned.
+	 * If no existing account exists, one will be created and returned.
+	 *
+	 * NOTE: updating an account only updated the `data` field, not `id`, `shop_id` nor `name`.
 	 *
 	 * @param NostoAccount $nostoAccount the account to convert.
 	 * @param \Shopware\Models\Shop\Shop $shop the shop the account belongs to.
@@ -86,9 +92,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 */
 	public function convertToShopwareAccount(\NostoAccount $nostoAccount, \Shopware\Models\Shop\Shop $shop)
 	{
-		$account = new \Shopware\CustomModels\Nosto\Account\Account();
-		$account->setShopId($shop->getId());
-		$account->setName($nostoAccount->getName());
+		$account = $this->findAccount($shop);
+		if (is_null($account)) {
+			$account = new \Shopware\CustomModels\Nosto\Account\Account();
+			$account->setShopId($shop->getId());
+			$account->setName($nostoAccount->getName());
+		}
 		$data = array('apiTokens' => array());
 		foreach ($nostoAccount->getTokens() as $token) {
 			$data['apiTokens'][$token->getName()] = $token->getValue();
@@ -185,5 +194,63 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		}
 
 		return Nosto::helper('iframe')->getUrl($metaSso, $metaIframe, $nostoAccount, $params);
+	}
+
+	/**
+	 * Sends a currency exchange rate update request to Nosto via the API.
+	 *
+	 * Checks if multi currency is enabled for the shop before attempting to
+	 * send the exchange rates.
+	 *
+	 * @param \Shopware\CustomModels\Nosto\Account\Account $account the account for which to update the rates.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop which rates are to be updated.
+	 *
+	 * @return bool
+	 */
+	public function updateCurrencyExchangeRates(\Shopware\CustomModels\Nosto\Account\Account $account, \Shopware\Models\Shop\Shop $shop)
+	{
+		$currencies = $shop->getCurrencies();
+		if (!($currencies->count() > 1)) {
+			return false;
+		}
+
+		try {
+			$currencyHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Currency();
+			$collection = $currencyHelper->getShopExchangeRateCollection($shop);
+			$service = new NostoServiceCurrencyExchangeRate($this->convertToNostoAccount($account));
+			return $service->update($collection);
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sends a update account request to Nosto via the API.
+	 *
+	 * This is used to update the details of a Nosto account from the
+	 * "Advanced Settings" page, as well as after an account has been
+	 * successfully connected through OAuth.
+	 *
+	 * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to update.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop to which the account belongs.
+	 *
+	 * @return bool
+	 */
+	public function updateAccount(\Shopware\CustomModels\Nosto\Account\Account $account, \Shopware\Models\Shop\Shop $shop)
+	{
+		try {
+			$identity = Shopware()->Auth()->getIdentity();
+			$locale = (!is_null($identity) && isset($identity->locale)) ? $identity->locale : null;
+			$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account();
+			$meta->loadData($shop, $locale, $identity);
+			$service = new NostoServiceAccount();
+			return $service->update($this->convertToNostoAccount($account), $meta);
+		} catch (NostoException $e) {
+			Shopware()->Pluginlogger()->error($e);
+		}
+
+		return false;
 	}
 }

@@ -37,14 +37,15 @@
 /**
  * Meta-data class for billing information sent to Nosto during account create.
  *
- * Implements NostoAccountMetaBillingInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoAccountMetaBillingInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing implements NostoAccountMetaBillingInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoAccountMetaBillingInterface
 {
 	/**
 	 * @var NostoCountryCode the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.

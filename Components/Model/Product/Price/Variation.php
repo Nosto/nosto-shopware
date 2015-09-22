@@ -35,72 +35,95 @@
  */
 
 /**
- * Model for customer information. This is used when compiling the info about
- * customers that is sent to Nosto.
+ * Model for product price variation information. This is used when compiling the info about a
+ * product that is sent to Nosto if the multi currency setting is set to "priceVariation".
  *
  * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoProductPriceVariationInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoProductPriceVariationInterface
 {
 	/**
-	 * @var string the customer first name.
+	 * @var NostoPriceVariation
 	 */
-	protected $firstName;
+	protected $id;
 
 	/**
-	 * @var string the customer last name.
+	 * @var NostoCurrencyCode
 	 */
-	protected $lastName;
+	protected $currency;
 
 	/**
-	 * @var string the customer email address.
+	 * @var NostoPrice
 	 */
-	protected $email;
+	protected $price;
 
 	/**
-	 * Loads customer data from the logged in customer.
-	 *
-	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
+	 * @var NostoPrice
 	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer )
-	{
-		$this->firstName = $customer->getBilling()->getFirstName();
-		$this->lastName = $customer->getBilling()->getLastName();
-		$this->email = $customer->getEmail();
-	}
+	protected $listPrice;
 
 	/**
-	 * Returns the customer first name.
-	 *
-	 * @return string the first name.
+	 * @var NostoProductAvailability
 	 */
-	public function getFirstName()
-	{
-		return $this->firstName;
-	}
+	protected $availability;
 
 	/**
-	 * Returns the customer last name.
-	 *
-	 * @return string the last name.
+	 * @param \Shopware\Models\Article\Article $article
+	 * @param \Shopware\Models\Shop\Currency $currency
+	 * @param NostoProductAvailability $availability
 	 */
-	public function getLastName()
-	{
-		return $this->lastName;
-	}
+	public function loadData(\Shopware\Models\Article\Article $article, Shopware\Models\Shop\Currency $currency, NostoProductAvailability $availability)
+    {
+		$this->id = new NostoPriceVariation($currency->getCurrency());
+		$this->currency = new NostoCurrencyCode($currency->getCurrency());
+        $this->price = $this->getPriceHelper()->getArticlePriceInclTax($article, $currency);
+        $this->listPrice = $this->getPriceHelper()->getArticleListPriceInclTax($article, $currency);
+        $this->availability = $availability;
+    }
 
-	/**
-	 * Returns the customer email address.
-	 *
-	 * @return string the email address.
-	 */
-	public function getEmail()
-	{
-		return $this->email;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getListPrice()
+    {
+        return $this->listPrice;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAvailability()
+    {
+        return $this->availability;
+    }
 }

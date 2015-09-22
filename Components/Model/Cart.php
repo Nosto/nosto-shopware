@@ -38,14 +38,14 @@
  * Model for shopping cart information. This is used when compiling the info
  * about carts that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] line items in the cart.
@@ -56,18 +56,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	 * Loads the cart line items from the order baskets.
 	 *
 	 * @param \Shopware\Models\Order\Basket[] $baskets the users basket items.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the basket resides in.
 	 */
-	public function loadData(array $baskets)
+	public function loadData(array $baskets, \Shopware\Models\Shop\Shop $shop)
 	{
-		$currency = new NostoCurrencyCode(Shopware()->Shop()->getCurrency()->getCurrency());
 		foreach ($baskets as $basket) {
 			$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
-			$item->loadData($basket, $currency);
+			$item->loadData($basket, $shop);
 			$this->lineItems[] = $item;
 		}
 	}
 
 	/**
+	 * Returns the cart line items.
+	 *
 	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] the line items in the cart.
 	 */
 	public function getLineItems()

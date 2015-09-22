@@ -38,12 +38,14 @@
  * Product update service. Used for communicating create/update/delete
  * events for products to Nosto.
  *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product
+class Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * Sends info to Nosto about a newly created product.
@@ -158,9 +160,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product
 			$account = $helper->findAccount($shop);
 			if (!is_null($account)) {
 				$nostoAccount = $helper->convertToNostoAccount($account);
-				if ($nostoAccount->isConnectedToNosto()) {
-					$data[$shop->getId()] = $nostoAccount;
-				}
+				$data[$shop->getId()] = $nostoAccount;
 			}
 		}
 

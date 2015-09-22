@@ -35,30 +35,49 @@
  */
 
 /**
- * Base class for all component models.
+ * Base class for all components.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
-	 * Returns a protected/private property value by invoking it's public getter.
-	 *
-	 * The getter names are assumed to be the property name in camel case with preceding word "get".
-	 *
-	 * @param string $name the property name.
-	 * @return mixed the property value.
-	 * @throws Exception if public getter does not exist.
+	 * @var array of cached helper class instances.
 	 */
-	public function __get($name)
+	private static $helpers = array();
+
+	/**
+	 * @param string $class
+	 * @return mixed
+	 */
+	private function helper($class)
 	{
-		$getter = 'get'.str_replace('_', '', $name);
-		if (method_exists($this, $getter)) {
-			return $this->{$getter}();
+		if (!isset(self::$helpers[$class])) {
+			self::$helpers[$class] = new $class();
 		}
-		throw new Exception(sprintf('Property `%s.%s` is not defined.', get_class($this), $name));
+		return self::$helpers[$class];
+	}
+
+	/**
+	 * Returns the cached price helper instance.
+	 *
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Price the helper.
+	 */
+	protected function getPriceHelper()
+	{
+		return $this->helper('Shopware_Plugins_Frontend_NostoTagging_Components_Price');
+	}
+
+	/**
+	 * Returns the cached currency helper instance.
+	 *
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Currency the helper.
+	 */
+	protected function getCurrencyHelper()
+	{
+		return $this->helper('Shopware_Plugins_Frontend_NostoTagging_Components_Currency');
 	}
 }

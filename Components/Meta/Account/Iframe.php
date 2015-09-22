@@ -37,14 +37,15 @@
 /**
  * Meta-data class for information included in the plugin configuration iframe.
  *
- * Implements NostoAccountMetaIframeInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoAccountMetaIframeInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe implements NostoAccountMetaIframeInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoAccountMetaIframeInterface
 {
 	/**
 	 * @var NostoLanguageCode the language ISO (ISO 639-1) code for oauth server locale.

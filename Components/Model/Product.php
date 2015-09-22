@@ -38,15 +38,15 @@
  * Model for product information. This is used when compiling the info about a
  * product that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
- * Implements NostoProductInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoProductInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoProductInterface
 {
 	const ADD_TO_CART = 'add-to-cart';
 
@@ -124,6 +124,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	protected $datePublished;
 
+    /**
+     * @var NostoPriceVariation the price variation the product prices are in.
+     */
+    protected $priceVariation;
+
+    /**
+     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation[] list of price variations for this product.
+     */
+    protected $priceVariations = array();
+
 	/**
 	 * Loads the model data from an article and shop.
 	 *
@@ -136,13 +146,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$shop = Shopware()->Shop();
 		}
 
+        /** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
+        $plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
+		$defaultCurrency = $this->getCurrencyHelper()->getShopDefaultCurrency($shop);
+
 		$this->assignId($article);
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
 		$this->imageUrl = $this->assembleImageUrl($article);
-		$this->price = new NostoPrice($this->calcPriceInclTax($article, 'price'));
-		$this->listPrice = new NostoPrice($this->calcPriceInclTax($article, 'listPrice'));
-		$this->currency = new NostoCurrencyCode($shop->getCurrency()->getCurrency());
+		$this->currency = new NostoCurrencyCode($defaultCurrency->getCurrency());
+		$this->price = $this->getPriceHelper()->getArticlePriceInclTax($article, $defaultCurrency);
+		$this->listPrice = $this->getPriceHelper()->getArticleListPriceInclTax($article, $defaultCurrency);
 		$this->availability = new NostoProductAvailability($this->checkAvailability($article));
 		$this->tags['tag1'] = $this->buildTags($article);
 		$this->categories = $this->buildCategoryPaths($article, $shop);
@@ -150,6 +164,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->description = $article->getDescriptionLong();
 		$this->brand = $article->getSupplier()->getName();
 		$this->datePublished = new NostoDate($article->getAdded()->getTimestamp());
+
+		if ($shop->getCurrencies()->count() > 1) {
+			$this->priceVariation = new NostoPriceVariation($defaultCurrency->getCurrency());
+			if ($plugin->isMultiCurrencyMethodPriceVariation()) {
+				foreach ($shop->getCurrencies() as $currency) {
+					if ($currency->getCurrency() === $defaultCurrency->getCurrency()) {
+						continue;
+					}
+					$variation = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation();
+					$variation->loadData($article, $currency, $this->availability);
+					$this->priceVariations[] = $variation;
+				}
+			}
+		}
 	}
 
 	/**
@@ -209,27 +237,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		}
 
 		return $url;
-	}
-
-	/**
-	 * Calculates the price including tax and returns it.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param string $type the type of price, i.e. "price" or "listPrice".
-	 * @return string the price formatted according to Nosto standards.
-	 */
-	protected function calcPriceInclTax(\Shopware\Models\Article\Article $article, $type = 'price')
-	{
-		/** @var Shopware\Models\Article\Price $price */
-		$price = $article->getMainDetail()->getPrices()->first();
-		// If the list price is not set, fall back on the normal price.
-		if ($type === 'listPrice' && $price->getPseudoPrice() > 0) {
-			$value = $price->getPseudoPrice();
-		} else {
-			$value = $price->getPrice();
-		}
-		$tax = $article->getTax()->getTax();
-		return ($value * (1 + ($tax / 100)));
 	}
 
 	/**
@@ -350,6 +357,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		return $this->imageUrl;
 	}
 
+    /**
+     * @inheritdoc
+     */
+    public function getThumbUrl()
+    {
+        return null;
+    }
+
 	/**
 	 * @inheritdoc
 	 */
@@ -379,8 +394,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getPriceVariationId()
 	{
-		// todo: implement for multi-currency
-		return null;
+		return !is_null($this->priceVariation)
+            ? $this->priceVariation->getId()
+            : null;
 	}
 
 	/**
@@ -459,7 +475,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getPriceVariations()
 	{
-		// todo: implement for multi-currency
-		return array();
+		return $this->priceVariations;
 	}
 }

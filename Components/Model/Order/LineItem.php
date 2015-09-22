@@ -38,15 +38,15 @@
  * Model for order line item information. This is used when compiling the info
  * about an order that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
- * Implements NostoOrderItemInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_LineItem
+ * Implements NostoOrderItemInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderItemInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_LineItem implements NostoOrderItemInterface
 {
 	/**
 	 * @var string the unique identifier of the purchased item.
@@ -78,40 +78,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	 * Populates the order line item with data from the order detail model.
 	 *
 	 * @param \Shopware\Models\Order\Detail $detail the order detail model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the order was made in.
 	 */
-	public function loadData(\Shopware\Models\Order\Detail $detail)
+	public function loadData(\Shopware\Models\Order\Detail $detail, \Shopware\Models\Shop\Shop $shop)
 	{
-		$this->productId = -1;
-
-		if ($detail->getArticleId() > 0) {
-			// If this is a product variation, we need to load the parent
-			// article to fetch it's number and name.
-			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', $detail->getArticleId());
-			if (!empty($article)) {
-				$this->productId = $article->getMainDetail()->getNumber();
-			}
-		}
-
+		$this->productId = $this->fetchProductId($detail->getArticleId());
 		$this->name = $detail->getArticleName();
 		$this->quantity = (int)$detail->getQuantity();
-		$this->unitPrice = new NostoPrice($detail->getPrice());
-		$this->currency = new NostoCurrencyCode($detail->getOrder()->getCurrency());
-	}
-
-	/**
-	 * Loads a special item, e.g. shipping cost.
-	 *
-	 * @param string           	$name the name of the item.
-	 * @param NostoPrice 		$price the unit price of the item.
-	 * @param NostoCurrencyCode	$currency the 3-letter ISO code (ISO 4217) for the item currency.
-	 */
-	public function loadSpecialItemData($name, NostoPrice $price, NostoCurrencyCode $currency)
-	{
-		$this->productId = -1;
-		$this->quantity = 1;
-		$this->name = (string)$name;
-		$this->unitPrice = $price;
-		$this->currency = $currency;
+		$this->unitPrice = $this->fetchUnitPrice($detail, $shop);
+		$this->currency = new NostoCurrencyCode(
+			$this->getCurrencyHelper()
+				->getShopDefaultCurrency($shop)
+				->getCurrency()
+		);
 	}
 
 	/**
@@ -152,5 +131,35 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	public function getCurrency()
 	{
 		return $this->currency;
+	}
+
+	/**
+	 * Fetches the unit price for given order item.
+	 *
+	 * The price in the order item will always be in the currency of the shop
+	 * the order was placed in, so we need to convert it to the shop's base currency
+	 * as we always tag prices in their base currency.
+	 *
+	 * @param \Shopware\Models\Order\Detail $detail the order detail model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
+	 * @return NostoPrice the unit price.
+	 */
+	protected function fetchUnitPrice(\Shopware\Models\Order\Detail $detail, \Shopware\Models\Shop\Shop $shop)
+	{
+		$order = $detail->getOrder();
+		// We need to create a dummy currency and populate it with the order
+		// currency details as the exchange rate might have changed since the
+		// order was made.
+		$dummyCurrency = new \Shopware\Models\Shop\Currency();
+		$dummyCurrency->setCurrency($order->getCurrency());
+		$dummyCurrency->setFactor($order->getCurrencyFactor());
+
+		return $this->getPriceHelper()->round(
+			$this->getPriceHelper()->convertCurrency(
+				new NostoPrice($detail->getPrice()),
+				$this->getCurrencyHelper()->getShopDefaultCurrency($shop),
+				$dummyCurrency
+			)
+		);
 	}
 }

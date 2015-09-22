@@ -37,14 +37,15 @@
 /**
  * Meta-data class for account information sent to Nosto during account create.
  *
- * Implements NostoAccountMetaInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoAccountMetaInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements NostoAccountMetaInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoAccountMetaInterface
 {
 	/**
 	 * @var string the store name.
@@ -92,6 +93,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	protected $signUpApiToken = 'kIqtTZOTRTNJ1zPZgjkI4Ft572sfLrqjD4XewXqYrdGrqsgnYbWqGXR3Evxqmii1';
 
 	/**
+	 * @var NostoCurrency[] list of supported currencies by the store.
+	 */
+	protected $currencies = array();
+
+	/**
+	 * @var string the default price variation ID if using multiple currencies.
+	 */
+	protected $defaultPriceVariationId;
+
+	/**
+	 * @var bool if the store uses exchange rates to manage multiple currencies.
+	 */
+	protected $useCurrencyExchangeRates = false;
+
+	/**
 	 * Loads the Data Transfer Object.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
@@ -104,10 +120,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 			$locale = $shop->getLocale();
 		}
 
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
+		$plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
+		$defaultCurrency = $this->getCurrencyHelper()->getShopDefaultCurrency($shop);
+
 		$this->title = Shopware()->App().' - '.$shop->getName();
 		$this->name = substr(sha1(rand()), 0, 8);
 		$this->frontPageUrl = Shopware()->Front()->Router()->assemble(array('module' => 'frontend'));
-		$this->currency = new NostoCurrencyCode($shop->getCurrency()->getCurrency());
+		$this->currency = new NostoCurrencyCode($defaultCurrency->getCurrency());
 		$this->language = new NostoLanguageCode(substr($shop->getLocale()->getLocale(), 0, 2));
 		$this->ownerLanguage = new NostoLanguageCode(substr($locale->getLocale(), 0, 2));
 
@@ -116,6 +136,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 
 		$this->billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
 		$this->billing->loadData($shop);
+
+        if ($shop->getCurrencies()->count() > 0) {
+            foreach ($shop->getCurrencies() as $currency) {
+                $this->currencies[$currency->getCurrency()] = $this->getCurrencyHelper()->getCurrencyObject($shop, $currency);
+            }
+            if (count($this->currencies) > 1) {
+                $this->defaultPriceVariationId = $defaultCurrency->getCurrency();
+                $this->useCurrencyExchangeRates = $plugin->isMultiCurrencyMethodExchangeRate();
+            }
+        }
 	}
 
 	/**
@@ -212,8 +242,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	 */
 	public function getCurrencies()
 	{
-		// todo: implement for multi-currency
-		return array();
+		return $this->currencies;
 	}
 
 	/**
@@ -221,8 +250,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	 */
 	public function getDefaultPriceVariationId()
 	{
-		// todo: implement for multi-currency
-		return null;
+		return $this->defaultPriceVariationId;
 	}
 
 	/**
@@ -230,7 +258,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	 */
 	public function getUseCurrencyExchangeRates()
 	{
-		// todo: implement for multi-currency
-		return array();
+		return $this->useCurrencyExchangeRates;
 	}
 }
