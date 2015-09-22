@@ -78,7 +78,7 @@
 					<div class="variation">
 						<span class="variation_id">{$variation->getId()->getId()|escape:'htmlall':'UTF-8'}</span>
 						<span class="price_currency_code">{$variation->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
-						<span class="price">{$variation->getPrice()->getPrice()|currency}</span>
+						<span class="price">{$variation->getPrice()->getPrice()|number_format:2:".":""}</span>
 						<span class="list_price">{$variation->getListPrice()->getPrice()|number_format:2:".":""}</span>
 						<span class="availability">{$variation->getAvailability()->getAvailability()|escape:'htmlall':'UTF-8'}</span>
 					</div>
