@@ -337,7 +337,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 			'data' => array('messages' => array())
 		);
 
-		$attributes = array('multiCurrencyMethod');
+		$attributes = array('multiCurrencyMethod', 'directInclude');
 		$persistedSettings = array();
 		foreach ($attributes as $attributeName) {
 			$attributeValue = $this->Request()->getParam($attributeName, null);
@@ -511,7 +511,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	protected function getSettingStoreData()
 	{
 		$settings = array(
-			'multiCurrencyMethod' => 'exchangeRate'
+			'multiCurrencyMethod' => 'exchangeRate',
+			'directInclude' => '0'
 		);
 
 		$models = Shopware()

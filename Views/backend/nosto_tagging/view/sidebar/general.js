@@ -53,10 +53,15 @@ Ext.define('Shopware.apps.NostoTagging.view.sidebar.General', {
      * @object
      */
     snippets: {
-        notice: '{s name=sidebar/general/snippets_notice}Synchronise shop settings with Nosto by clicking the button below. This will send information like currency settings to Nosto.{/s}',
+        notice: '{s name=sidebar/general/snippets_notice_text}General system settings.{/s}',
+        field: {
+            directInclude: {
+                label: '{s name=sidebar/general/snippets_field_directInclude_label}Use Direct Include (Beta){/s}'
+            }
+        },
         button: {
-            updateAccounts: {
-                label: '{s name=sidebar/general/snippets_button_updateAccounts_label}Update Accounts{/s}'
+            submit: {
+                label: '{s name=sidebar/general/snippets_button_submit_label}Save{/s}'
             }
         }
     },
@@ -87,29 +92,50 @@ Ext.define('Shopware.apps.NostoTagging.view.sidebar.General', {
     createElements: function () {
         var me = this;
 
-        me.currencyPreview = Ext.create('Shopware.apps.NostoTagging.view.sidebar.general.currency.Preview');
+        me.directIncludeCombo = Ext.create('Ext.form.field.ComboBox', {
+            name: 'directInclude',
+            store: Ext.create('Ext.data.Store', {
+                fields: ['val', 'name'],
+                data: [
+                    { val: "0", name: "No" },
+                    { val: "1", name: "Yes" }
+                ]
+            }),
+            queryMode: 'local',
+            forceSelection: true,
+            valueField: 'val',
+            displayField: 'name',
+            fieldLabel: me.snippets.field.directInclude.label
+        });
 
-        return Ext.create('Ext.form.FieldSet', {
-            layout: 'anchor',
+        return me.settingsForm = Ext.create('Ext.form.Panel', {
+            url: '{url controller=NostoTagging action=saveAdvancedSettings}',
             border: false,
-            padding: 10,
-            defaults: {
-                labelWidth: 120,
-                anchor: '100%'
-            },
             items: [
+                Ext.create('Ext.form.FieldSet', {
+                    layout: 'anchor',
+                    border: false,
+                    padding: 10,
+                    defaults: {
+                        labelWidth: 120,
+                        anchor: '100%'
+                    },
+                    items: [
+                        {
+                            xtype: 'container',
+                            cls: Ext.baseCSSPrefix + 'global-notice-text',
+                            html: me.snippets.notice
+                        },
+                        me.directIncludeCombo
+                    ]
+                })
+            ],
+            buttons: [
                 {
-                    xtype: 'container',
-                    cls: Ext.baseCSSPrefix + 'global-notice-text',
-                    html: me.snippets.notice
-                },
-                {
-                    xtype: 'button',
-                    text: me.snippets.button.updateAccounts.label,
-                    cls: 'small secondary',
-                    action: 'update-accounts'
-                },
-                me.currencyPreview
+                    text: me.snippets.button.submit.label,
+                    cls: 'small primary',
+                    action: 'submit-general-settings'
+                }
             ]
         });
     },
@@ -123,6 +149,6 @@ Ext.define('Shopware.apps.NostoTagging.view.sidebar.General', {
     loadStoreData: function (stores) {
         var me = this;
 
-        me.currencyPreview.bindStore(stores.getCurrencies());
+        me.settingsForm.loadRecord(stores.getSettings().getAt(0));
     }
 });

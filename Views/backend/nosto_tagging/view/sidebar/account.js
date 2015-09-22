@@ -33,32 +33,38 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-Ext.define('Shopware.apps.NostoTagging.view.sidebar.general.currency.Preview', {
+Ext.define('Shopware.apps.NostoTagging.view.sidebar.Account', {
     /**
      * @string
      */
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
 
     /**
      * @string
      */
-    alias: 'widget.nosto-sidebar-general-currency-preview',
+    alias: 'widget.nosto-sidebar-account',
+
+    /**
+     * @string
+     */
+    title: '{s name=sidebar/account/title}Account{/s}',
 
     /**
      * @object
      */
     snippets: {
-        notice: '{s name=sidebar/general/currency/preview/snippets_notice}Preview of the current currency formats extracted from Shopware. These are synchronised to Nosto when clicking the `Update Accounts` button above. Synchronising is only needed if the formats have changed in Shopware since Nosto was installed.{/s}'
+        notice: '{s name=sidebar/account/snippets_notice}Synchronise shop settings with Nosto by clicking the button below. This will send information like currency settings to Nosto.{/s}',
+        button: {
+            updateAccounts: {
+                label: '{s name=sidebar/account/snippets_button_updateAccounts_label}Update Accounts{/s}'
+            }
+        }
     },
 
     /**
-     * @object
+     * @number
      */
-    defaults: {
-        style: {
-            margin: '15px 0 15px 0'
-        }
-    },
+    bodyPadding: 10,
 
     /**
      * Initializes the component.
@@ -69,54 +75,54 @@ Ext.define('Shopware.apps.NostoTagging.view.sidebar.general.currency.Preview', {
     initComponent: function () {
         var me = this;
 
+        me.items = me.createElements();
         me.callParent(arguments);
     },
 
     /**
-     * Binds the store to this container, i.e. creates the currency preview
-     * items defined in the store and renders them.
+     * Creates the component elements.
      *
-     * @param store object
+     * @return object
+     */
+    createElements: function () {
+        var me = this;
+
+        me.currencyPreview = Ext.create('Shopware.apps.NostoTagging.view.sidebar.account.currency.Preview');
+
+        return Ext.create('Ext.form.FieldSet', {
+            layout: 'anchor',
+            border: false,
+            padding: 10,
+            defaults: {
+                labelWidth: 120,
+                anchor: '100%'
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    cls: Ext.baseCSSPrefix + 'global-notice-text',
+                    html: me.snippets.notice
+                },
+                {
+                    xtype: 'button',
+                    text: me.snippets.button.updateAccounts.label,
+                    cls: 'small secondary',
+                    action: 'update-accounts'
+                },
+                me.currencyPreview
+            ]
+        });
+    },
+
+    /**
+     * Loads data from stores into this view.
+     *
+     * @param stores object
      * @return void
      */
-    bindStore: function (store) {
-        var me = this,
-            i,
-            j,
-            group,
-            child,
-            groups,
-            fieldSet;
+    loadStoreData: function (stores) {
+        var me = this;
 
-        store.group('shopName');
-        groups = store.getGroups();
-
-        me.add({
-            xtype: 'container',
-            cls: Ext.baseCSSPrefix + 'global-notice-text',
-            html: me.snippets.notice
-        });
-
-        for (i in groups) {
-            if (groups.hasOwnProperty(i)) {
-                group = groups[i];
-                fieldSet = Ext.create('Ext.form.FieldSet', {
-                    title: group.name,
-                    items: []
-                });
-                for (j in group.children) {
-                    if (group.children.hasOwnProperty(j)) {
-                        child = group.children[j];
-                        fieldSet.add({
-                            xtype: 'container',
-                            cls: Ext.baseCSSPrefix,
-                            html: child.data.preview
-                        });
-                    }
-                }
-
-                me.add(fieldSet);
-            }
-        }
+        me.currencyPreview.bindStore(stores.getCurrencies());
     }
 });

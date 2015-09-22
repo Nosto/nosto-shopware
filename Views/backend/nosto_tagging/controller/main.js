@@ -48,11 +48,14 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     init: function () {
         var me = this;
         me.control({
-            'nosto-sidebar-general button[action=update-accounts]': {
+            'nosto-sidebar-account button[action=update-accounts]': {
                 click: me.onUpdateAccounts
             },
             'nosto-sidebar-multi-currency button[action=update-exchange-rates]': {
                 click: me.onUpdateExchangeRates
+            },
+            'nosto-sidebar-general button[action=submit-general-settings]': {
+                click: me.onSubmitGeneralSettings
             },
             'nosto-sidebar-multi-currency button[action=submit-multi-currency-settings]': {
                 click: me.onSubmitMultiCurrencySettings
@@ -256,6 +259,19 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                 }
             }
         });
+    },
+
+    /**
+     * Event listener for the General form submit button click event.
+     * Submits the form to save the settings.
+     *
+     * @return void
+     */
+    onSubmitGeneralSettings: function () {
+        var me = this,
+            form = me.mainWindow.sideBar.generalSettings.settingsForm;
+
+        me.saveAdvancedSettings(form);
     },
 
     /**

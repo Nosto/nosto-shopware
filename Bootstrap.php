@@ -50,6 +50,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 	const PLATFORM_NAME = 'shopware';
     const CONFIG_MULTI_CURRENCY_METHOD = 'multiCurrencyMethod';
+	const CONFIG_DIRECT_INCLUDE = 'directInclude';
     const MULTI_CURRENCY_METHOD_PRICE_VARIATION = 'priceVariation';
     const MULTI_CURRENCY_METHOD_EXCHANGE_RATE = 'exchangeRate';
 
@@ -549,6 +550,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Return if we are to use the script direct include.
+	 *
+	 * @return bool if we are to use the script direct include.
+	 */
+	public function getUseScriptDirectInclude()
+	{
+		$setting = Shopware()
+			->Models()
+			->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+			->findOneBy(array('name' => self::CONFIG_DIRECT_INCLUDE));
+		return (!is_null($setting) && (int)$setting->getValue() === 1);
+	}
+
+	/**
 	 * Creates needed db tables used by the plugin models.
 	 *
 	 * Run on install.
@@ -759,6 +774,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$view->assign('nostoAccountName', $nostoAccount->getName());
 		$view->assign('nostoServerUrl', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
+		$view->assign('nostoScriptDirectInclude', $this->getUseScriptDirectInclude());
 	}
 
 	/**

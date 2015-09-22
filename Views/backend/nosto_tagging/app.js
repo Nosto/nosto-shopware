@@ -54,7 +54,8 @@ Ext.define('Shopware.apps.NostoTagging', {
         'Main',
         'Sidebar',
         'sidebar.General',
-        'sidebar.general.currency.Preview',
+        'sidebar.Account',
+        'sidebar.account.currency.Preview',
         'sidebar.Currency'
     ],
     launch: function () {
