@@ -150,7 +150,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
         $plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
 		$defaultCurrency = $this->getCurrencyHelper()->getShopDefaultCurrency($shop);
 
-		$this->assignId($article);
+		$this->productId = (int)$article->getId();
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
 		$this->imageUrl = $this->assembleImageUrl($article);
@@ -172,12 +172,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 					if ($currency->getCurrency() === $defaultCurrency->getCurrency()) {
 						continue;
 					}
-					$variation = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation();
-					$variation->loadData($article, $currency, $this->availability);
+					$variation = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation($article, $currency, $this->availability);
 					$this->priceVariations[] = $variation;
 				}
 			}
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoProduct' => $this,
+				'article' => $article,
+				'shop' => $shop,
+			)
+		);
 	}
 
 	/**
@@ -311,18 +319,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			}
 		}
 		return $paths;
-	}
-
-	/**
-	 * Assigns an ID for the model from an article.
-	 *
-	 * This method exists in order to expose a public API to change the ID.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 */
-	public function assignId(\Shopware\Models\Article\Article $article)
-	{
-		$this->productId = $article->getMainDetail()->getNumber();
 	}
 
 	/**
@@ -476,5 +472,456 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function getPriceVariations()
 	{
 		return $this->priceVariations;
+	}
+
+	/**
+	 * Sets the product ID from given product.
+	 *
+	 * The product ID must be an integer above zero.
+	 *
+	 * Usage:
+	 * $object->setProductId(1);
+	 *
+	 * @param int $id the product ID.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setProductId($id)
+	{
+		if (!is_int($id) || !($id > 0)) {
+			throw new InvalidArgumentException('ID must be an integer above zero.');
+		}
+
+		$this->productId = $id;
+	}
+
+	/**
+	 * Sets the availability state of the product.
+	 *
+	 * The availability of the product must be either "InStock" or "OutOfStock",
+	 * represented as a value object of class `NostoProductAvailability`.
+	 *
+	 * Usage:
+	 * $object->setAvailability(new NostoProductAvailability(NostoProductAvailability::IN_STOCK));
+	 *
+	 * @param NostoProductAvailability $availability the availability.
+	 */
+	public function setAvailability(NostoProductAvailability $availability)
+	{
+		$this->availability = $availability;
+	}
+
+	/**
+	 * Sets the currency code (ISO 4217) the product is sold in.
+	 *
+	 * The currency must be in ISO 4217 format, represented as a value object of
+	 * class `NostoCurrencyCode`.
+	 *
+	 * Usage:
+	 * $object->setCurrency(new NostoCurrencyCode('USD'));
+	 *
+	 * @param NostoCurrencyCode $currency the currency code.
+	 */
+	public function setCurrency(NostoCurrencyCode $currency)
+	{
+		$this->currency = $currency;
+	}
+
+	/**
+	 * Sets the products published date.
+	 *
+	 * The date must be a UNIX timestamp, represented as a value object of
+	 * class `NostoDate`.
+	 *
+	 * Usage:
+	 * $object->setDatePublished(new NostoDate(strtotime('2015-01-01 00:00:00')));
+	 *
+	 * @param NostoDate $date the date.
+	 */
+	public function setDatePublished(NostoDate $date)
+	{
+		$this->datePublished = $date;
+	}
+
+	/**
+	 * Sets the product price.
+	 *
+	 * The price must be a numeric value, represented as a value object of
+	 * class `NostoPrice`.
+	 *
+	 * Usage:
+	 * $object->setPrice(new NostoPrice(99.99));
+	 *
+	 * @param NostoPrice $price the price.
+	 */
+	public function setPrice(NostoPrice $price)
+	{
+		$this->price = $price;
+	}
+
+	/**
+	 * Sets the product list price.
+	 *
+	 * The price must be a numeric value, represented as a value object of
+	 * class `NostoPrice`.
+	 *
+	 * Usage:
+	 * $object->setListPrice(new NostoPrice(99.99));
+	 *
+	 * @param NostoPrice $listPrice the price.
+	 */
+	public function setListPrice(NostoPrice $listPrice)
+	{
+		$this->listPrice = $listPrice;
+	}
+
+	/**
+	 * Sets the product price variation ID.
+	 *
+	 * The ID must be a non-empty string, represented as a value object of
+	 * class `NostoPriceVariation`.
+	 *
+	 * Usage:
+	 * $object->setPriceVariationId(new NostoPriceVariation('USD'));
+	 *
+	 * @param NostoPriceVariation $priceVariation the price variation.
+	 */
+	public function setPriceVariationId(NostoPriceVariation $priceVariation)
+	{
+		$this->priceVariation = $priceVariation;
+	}
+
+	/**
+	 * Sets the product price variations.
+	 *
+	 * The variations represent the possible product prices in different
+	 * currencies and must implement the `NostoProductPriceVariationInterface`
+	 * interface.
+	 * This is only used in multi currency environments when the multi currency
+	 * method is set to "priceVariations".
+	 *
+	 * Usage:
+	 * $object->setPriceVariations(array(NostoProductPriceVariationInterface $priceVariation [, ... ]))
+	 *
+	 * @param NostoProductPriceVariationInterface[] $priceVariations the price variations.
+	 */
+	public function setPriceVariations(array $priceVariations)
+	{
+		$this->priceVariations = array();
+		foreach ($priceVariations as $priceVariation) {
+			$this->addPriceVariation($priceVariation);
+		}
+	}
+
+	/**
+	 * Adds a product price variation.
+	 *
+	 * The variation represents the product price in another currency than the
+	 * base currency, and must implement the `NostoProductPriceVariationInterface`
+	 * interface.
+	 * This is only used in multi currency environments when the multi currency
+	 * method is set to "priceVariations".
+	 *
+	 * Usage:
+	 * $object->addPriceVariation(NostoProductPriceVariationInterface $priceVariation);
+	 *
+	 * @param NostoProductPriceVariationInterface $priceVariation the price variation.
+	 */
+	public function addPriceVariation(NostoProductPriceVariationInterface $priceVariation)
+	{
+		$this->priceVariations[] = $priceVariation;
+	}
+
+	/**
+	 * Sets all the tags to the `tag1` field.
+	 *
+	 * The tags must be an array of non-empty string values.
+	 *
+	 * Usage:
+	 * $object->setTag1(array('customTag1', 'customTag2'));
+	 *
+	 * @param array $tags the tags.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setTag1(array $tags)
+	{
+		$this->tags['tag1'] = array();
+		foreach ($tags as $tag) {
+			$this->addTag1($tag);
+		}
+	}
+
+	/**
+	 * Adds a new tag to the `tag1` field.
+	 *
+	 * The tag must be a non-empty string value.
+	 *
+	 * Usage:
+	 * $object->addTag1('customTag');
+	 *
+	 * @param string $tag the tag to add.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function addTag1($tag)
+	{
+		if (!is_string($tag) || empty($tag)) {
+			throw new InvalidArgumentException('Tag must be a non-empty string value.');
+		}
+
+		$this->tags['tag1'][] = $tag;
+	}
+
+	/**
+	 * Sets all the tags to the `tag2` field.
+	 *
+	 * The tags must be an array of non-empty string values.
+	 *
+	 * Usage:
+	 * $object->setTag2(array('customTag1', 'customTag2'));
+	 *
+	 * @param array $tags the tags.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setTag2(array $tags)
+	{
+		$this->tags['tag2'] = array();
+		foreach ($tags as $tag) {
+			$this->addTag2($tag);
+		}
+	}
+
+	/**
+	 * Adds a new tag to the `tag2` field.
+	 *
+	 * The tag must be a non-empty string value.
+	 *
+	 * Usage:
+	 * $object->addTag2('customTag');
+	 *
+	 * @param string $tag the tag to add.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function addTag2($tag)
+	{
+		if (!is_string($tag) || empty($tag)) {
+			throw new InvalidArgumentException('Tag must be a non-empty string value.');
+		}
+
+		$this->tags['tag2'][] = $tag;
+	}
+
+	/**
+	 * Sets all the tags to the `tag3` field.
+	 *
+	 * The tags must be an array of non-empty string values.
+	 *
+	 * Usage:
+	 * $object->setTag3(array('customTag1', 'customTag2'));
+	 *
+	 * @param array $tags the tags.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setTag3(array $tags)
+	{
+		$this->tags['tag3'] = array();
+		foreach ($tags as $tag) {
+			$this->addTag3($tag);
+		}
+	}
+
+	/**
+	 * Adds a new tag to the `tag3` field.
+	 *
+	 * The tag must be a non-empty string value.
+	 *
+	 * Usage:
+	 * $object->addTag3('customTag');
+	 *
+	 * @param string $tag the tag to add.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function addTag3($tag)
+	{
+		if (!is_string($tag) || empty($tag)) {
+			throw new InvalidArgumentException('Tag must be a non-empty string value.');
+		}
+
+		$this->tags['tag3'][] = $tag;
+	}
+
+	/**
+	 * Sets the brand name of the product manufacturer.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setBrand('Example');
+	 *
+	 * @param string $brand the brand name.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setBrand($brand)
+	{
+		if (!is_string($brand) || empty($brand)) {
+			throw new InvalidArgumentException('Brand must be a non-empty string value.');
+		}
+
+		$this->brand = $brand;
+	}
+
+	/**
+	 * Sets the product categories.
+	 *
+	 * The categories must be an array of non-empty string values. The
+	 * categories are expected to include the entire sub/parent category path,
+	 * e.g. "clothes/winter/coats".
+	 *
+	 * Usage:
+	 * $object->setCategories(array('clothes/winter/coats' [, ... ] ));
+	 *
+	 * @param array $categories the categories.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setCategories(array $categories)
+	{
+		$this->categories = array();
+		foreach ($categories as $category) {
+			$this->addCategory($category);
+		}
+	}
+
+	/**
+	 * Adds a category to the product.
+	 *
+	 * The category must be a non-empty string and is expected to include the
+	 * entire sub/parent category path, e.g. "clothes/winter/coats".
+	 *
+	 * Usage:
+	 * $object->addCategory('clothes/winter/coats');
+	 *
+	 * @param string $category the category.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function addCategory($category)
+	{
+		if (!is_string($category) || empty($category)) {
+			throw new InvalidArgumentException('Category must be a non-empty string value.');
+		}
+
+		$this->categories[] = $category;
+	}
+
+	/**
+	 * Sets the product name.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setName('Example');
+	 *
+	 * @param string $name the name.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setName($name)
+	{
+		if (!is_string($name) || empty($name)) {
+			throw new InvalidArgumentException('Category must be a non-empty string value.');
+		}
+
+		$this->name = $name;
+	}
+
+	/**
+	 * Sets the URL for the product page in the shop that shows this product.
+	 *
+	 * The URL must be absolute, i.e. must include the protocol http or https.
+	 *
+	 * Usage:
+	 * $object->setUrl("http://my.shop.com/products/example.html");
+	 *
+	 * @param string $url the url.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setUrl($url)
+	{
+		if (!Zend_Uri::check($url)) {
+			throw new InvalidArgumentException('URL must be valid and absolute.');
+		}
+
+		$this->url = $url;
+	}
+
+	/**
+	 * Sets the image URL for the product.
+	 *
+	 * The URL must be absolute, i.e. must include the protocol http or https.
+	 *
+	 * Usage:
+	 * $object->setImageUrl("http://my.shop.com/media/example.jpg");
+	 *
+	 * @param string $imageUrl the url.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setImageUrl($imageUrl)
+	{
+		if (!Zend_Uri::check($imageUrl)) {
+			throw new InvalidArgumentException('Image URL must be valid and absolute.');
+		}
+
+		$this->imageUrl = $imageUrl;
+	}
+
+	/**
+	 * Sets the product description.
+	 *
+	 * The description must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setDescription('Lorem ipsum dolor sit amet, ludus possim ut ius, bonorum facilis mandamus nam ea. ... ');
+	 *
+	 * @param string $description the description.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setDescription($description)
+	{
+		if (!is_string($description) || empty($description)) {
+			throw new InvalidArgumentException('Description must be a non-empty string value.');
+		}
+
+		$this->description = $description;
+	}
+
+	/**
+	 * Sets the product `short` description.
+	 *
+	 * The description must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setShortDescription('Lorem ipsum dolor sit amet, ludus possim ut ius.');
+	 *
+	 * @param string $shortDescription the `short` description.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setShortDescription($shortDescription)
+	{
+		if (!is_string($shortDescription) || empty($shortDescription)) {
+			throw new InvalidArgumentException('Short description must be a non-empty string value.');
+		}
+
+		$this->shortDescription = $shortDescription;
 	}
 }

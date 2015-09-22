@@ -61,10 +61,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	public function loadData(array $baskets, \Shopware\Models\Shop\Shop $shop)
 	{
 		foreach ($baskets as $basket) {
-			$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
-			$item->loadData($basket, $shop);
+			$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem($basket, $shop);
 			$this->lineItems[] = $item;
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCart' => $this,
+				'baskets' => $baskets,
+				'shop' => $shop,
+			)
+		);
 	}
 
 	/**
@@ -75,5 +83,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	public function getLineItems()
 	{
 		return $this->lineItems;
+	}
+
+	/**
+	 * Adds a new item to the cart tagging.
+	 *
+	 * Usage:
+	 * $object->addLineItem(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item);
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item the new item.
+	 */
+	public function addLineItem(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item)
+	{
+		$this->lineItems[] = $item;
 	}
 }

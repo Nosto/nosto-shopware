@@ -75,12 +75,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 	protected $currency;
 
 	/**
+	 * Constructor.
+	 *
 	 * Populates the order line item with data from the order detail model.
 	 *
 	 * @param \Shopware\Models\Order\Detail $detail the order detail model.
 	 * @param \Shopware\Models\Shop\Shop $shop the shop the order was made in.
 	 */
-	public function loadData(\Shopware\Models\Order\Detail $detail, \Shopware\Models\Shop\Shop $shop)
+	public function __construct(\Shopware\Models\Order\Detail $detail, \Shopware\Models\Shop\Shop $shop)
 	{
 		$this->productId = $this->fetchProductId($detail->getArticleId());
 		$this->name = $detail->getArticleName();

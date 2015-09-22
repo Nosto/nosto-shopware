@@ -73,12 +73,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	protected $currency;
 
 	/**
+	 * Constructor.
+	 *
 	 * Loads the line item data from the basket model.
 	 *
 	 * @param Shopware\Models\Order\Basket $basket an order basket item.
 	 * @param \Shopware\Models\Shop\Shop $shop the shop the basket item resides in.
 	 */
-	public function loadData(Shopware\Models\Order\Basket $basket, \Shopware\Models\Shop\Shop $shop)
+	public function __construct(Shopware\Models\Order\Basket $basket, \Shopware\Models\Shop\Shop $shop)
 	{
 		$this->productId = $this->fetchProductId($basket->getArticleId());
 		$this->name = $basket->getArticleName();

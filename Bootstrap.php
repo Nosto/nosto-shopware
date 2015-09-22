@@ -974,7 +974,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	protected function addSearchTagging(Enlight_View_Default $view)
 	{
 		$nostoSearch = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search();
-		$nostoSearch->setSearchTerm(Shopware()->Front()->Request()->sSearch);
+		$nostoSearch->loadData(Shopware()->Front()->Request()->sSearch);
 
 		$view->assign('nostoSearch', $nostoSearch);
 	}

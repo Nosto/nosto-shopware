@@ -53,13 +53,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Sho
 	protected $searchTerm;
 
 	/**
-	 * Setter for the search term.
+	 * Sets up this DTO.
 	 *
-	 * @param string $term the term.
+	 * @param string $term the search term.
 	 */
-	public function setSearchTerm($term)
+	public function loadData($term)
 	{
 		$this->searchTerm = $term;
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoSearch' => $this,
+				'searchTerm' => $term
+			)
+		);
 	}
 
 	/**
@@ -70,5 +78,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Sho
 	public function getSearchTerm()
 	{
 		return $this->searchTerm;
+	}
+
+	/**
+	 * Sets the search term.
+	 *
+	 * The term must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setSearchTerm('test');
+	 *
+	 * @param string $term the search term.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setSearchTerm($term)
+	{
+		if (!is_string($term) || empty($term)) {
+			throw new InvalidArgumentException('Search term must be a non-empty string value.');
+		}
+
+		$this->searchTerm = $term;
 	}
 }

@@ -64,11 +64,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	protected $email;
 
 	/**
+	 * Constructor.
+	 *
 	 * Loads the order buyer info from the customer model.
 	 *
 	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
 	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer)
+	public function __construct(\Shopware\Models\Customer\Customer $customer)
 	{
 		$this->firstName = $customer->getBilling()->getFirstName();
 		$this->lastName = $customer->getBilling()->getLastName();

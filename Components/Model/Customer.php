@@ -67,11 +67,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	 *
 	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
 	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer )
+	public function loadData(\Shopware\Models\Customer\Customer $customer)
 	{
 		$this->firstName = $customer->getBilling()->getFirstName();
 		$this->lastName = $customer->getBilling()->getLastName();
 		$this->email = $customer->getEmail();
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCustomer' => $this,
+				'customer' => $customer
+			)
+		);
 	}
 
 	/**
@@ -102,5 +110,72 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	public function getEmail()
 	{
 		return $this->email;
+	}
+
+	/**
+	 * Sets the first name of the logged in user.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setFirstName('John');
+	 *
+	 * @param string $firstName the name.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setFirstName($firstName)
+	{
+		if (!is_string($firstName) || empty($firstName)) {
+			throw new InvalidArgumentException('First name must be a non-empty string value.');
+		}
+
+		$this->firstName = $firstName;
+	}
+
+	/**
+	 * Sets the last name of the logged in user.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setLastName('Doe');
+	 *
+	 * @param string $lastName the name.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setLastName($lastName)
+	{
+		if (!is_string($lastName) || empty($lastName)) {
+			throw new InvalidArgumentException('Last name must be a non-empty string value.');
+		}
+
+		$this->lastName = $lastName;
+	}
+
+	/**
+	 * Sets the email address of the logged in user.
+	 *
+	 * The email must be a non-empty valid email address string.
+	 *
+	 * Usage:
+	 * $object->setEmail('john.doe@example.com');
+	 *
+	 * @param string $email the email.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setEmail($email)
+	{
+		if (!is_string($email) || empty($email)) {
+			throw new InvalidArgumentException('Email name must be a non-empty string value.');
+		}
+		$validator = new Zend_Validate_EmailAddress();
+		if (!$validator->isValid($email)) {
+			throw new InvalidArgumentException('Email is not a valid email address.');
+		}
+
+		$this->email = $email;
 	}
 }

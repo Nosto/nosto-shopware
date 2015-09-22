@@ -101,17 +101,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 			$this->paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
 		}
 
-		$this->orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
-		$this->orderStatus->loadData($order);
-
-		$this->buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
-		$this->buyerInfo->loadData($order->getCustomer());
+		$this->orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status($order);
+		$this->buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer($order->getCustomer());
 
 		foreach ($order->getDetails() as $detail) {
 			/** @var Shopware\Models\Order\Detail $detail */
 			if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadData($detail, $order->getShop());
+				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem($detail, $order->getShop());
 				$this->purchasedItems[] = $item;
 			}
 		}
@@ -126,11 +122,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 				$dummyDetail->setOrder($order);
 				$dummyDetail->setPrice($shippingCost);
 
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadData($dummyDetail, $order->getShop());
+				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem($dummyDetail, $order->getShop());
 				$this->purchasedItems[] = $item;
 			}
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoOrder' => $this,
+				'order' => $order,
+				'shop' => $order->getShop()
+			)
+		);
 	}
 
 	/**
@@ -188,5 +192,108 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	public function getOrderStatus()
 	{
 		return $this->orderStatus;
+	}
+
+	/**
+	 * Sets the unique order number identifying the order.
+	 *
+	 * The number must be a non-empty value.
+	 *
+	 * Usage:
+	 * $object->setOrderNumber('order123');
+	 *
+	 * @param string|int $orderNumber the order number.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setOrderNumber($orderNumber)
+	{
+		if (!(is_int($orderNumber) || is_string($orderNumber)) || empty($orderNumber)) {
+			throw new InvalidArgumentException('Order number must be a non-empty value.');
+		}
+
+		$this->orderNumber = $orderNumber;
+	}
+
+	/**
+	 * Sets the date when the order was placed.
+	 *
+	 * The date must be an instance of the NostoDate class.
+	 *
+	 * Usage:
+	 * $object->setCreatedDate(new NostoDate(strtotime('2015-01-01 00:00:00')));
+	 *
+	 * @param NostoDate $createdDate the creation date.
+	 */
+	public function setCreatedDate(NostoDate $createdDate)
+	{
+		$this->createdDate = $createdDate;
+	}
+
+	/**
+	 * Sets the payment provider used for placing the order.
+	 *
+	 * The provider must be a non-empty string value. Preferred formatting is
+	 * "[provider name] [provider version]".
+	 *
+	 * Usage:
+	 * $object->setPaymentProvider("payment_gateway [1.0.0]");
+	 *
+	 * @param string $paymentProvider the payment provider.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setPaymentProvider($paymentProvider)
+	{
+		if (!is_string($paymentProvider) || empty($paymentProvider)) {
+			throw new InvalidArgumentException('Payment provider must be a non-empty string value.');
+		}
+
+		$this->paymentProvider = $paymentProvider;
+	}
+
+	/**
+	 * Sets the buyer info of the user who placed the order.
+	 *
+	 * The info object must implement the NostoOrderBuyerInterface interface.
+	 *
+	 * Usage:
+	 * $object->setBuyerInfo(NostoOrderBuyerInterface $buyerInfo);
+	 *
+	 * @param NostoOrderBuyerInterface $buyerInfo the buyer info object.
+	 */
+	public function setBuyerInfo(NostoOrderBuyerInterface $buyerInfo)
+	{
+		$this->buyerInfo = $buyerInfo;
+	}
+
+	/**
+	 * Adds a purchased item to the order.
+	 *
+	 * The item object must implement the NostoOrderItemInterface interface.
+	 *
+	 * Usage:
+	 * $object->addPurchasedItems(NostoOrderItemInterface $purchasedItem);
+	 *
+	 * @param NostoOrderItemInterface $purchasedItem the item object.
+	 */
+	public function addPurchasedItems(NostoOrderItemInterface $purchasedItem)
+	{
+		$this->purchasedItems[] = $purchasedItem;
+	}
+
+	/**
+	 * Sets the order status.
+	 *
+	 * The status object must implement the NostoOrderStatusInterface interface.
+	 *
+	 * Usage:
+	 * $object->setOrderStatus(NostoOrderStatusInterface $orderStatus);
+	 *
+	 * @param NostoOrderStatusInterface $orderStatus the status object.
+	 */
+	public function setOrderStatus(NostoOrderStatusInterface $orderStatus)
+	{
+		$this->orderStatus = $orderStatus;
 	}
 }

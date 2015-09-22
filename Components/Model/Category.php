@@ -60,6 +60,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	public function loadData(\Shopware\Models\Category\Category $category)
 	{
 		$this->categoryPath = $this->buildCategoryPath($category);
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCategory' => $this,
+				'category' => $category
+			)
+		);
 	}
 
 	/**
@@ -92,5 +100,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	public function getCategoryPath()
 	{
 		return $this->categoryPath;
+	}
+
+	/**
+	 * Sets the category path.
+	 *
+	 * The path must be a non-empty string, that starts with a "/" char.
+	 *
+	 * Usage:
+	 * $object->setCategoryPath('/Clothes/Winter/Coats');
+	 *
+	 * @param string $categoryPath the category path.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setCategoryPath($categoryPath)
+	{
+		if (!is_string($categoryPath) || empty($categoryPath)) {
+			throw new InvalidArgumentException('Category path must be a non-empty string value.');
+		}
+		if ($categoryPath[0] !== '/') {
+			throw new InvalidArgumentException(sprintf('Category path must start with a %s character.', '/'));
+		}
+
+		$this->categoryPath = $categoryPath;
 	}
 }

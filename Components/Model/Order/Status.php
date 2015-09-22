@@ -59,11 +59,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	protected $label;
 
 	/**
+	 * Constructor.
+	 *
 	 * Populates the order status with data from the order model.
 	 *
 	 * @param Shopware\Models\Order\Order $order the order model.
 	 */
-	public function loadData(Shopware\Models\Order\Order $order)
+	public function __construct(Shopware\Models\Order\Order $order)
 	{
 		$description = $order->getOrderStatus()->getDescription();
 		$this->code = $this->convertDescriptionToCode($description);

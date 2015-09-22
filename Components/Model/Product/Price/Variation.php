@@ -74,11 +74,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Vari
 	protected $availability;
 
 	/**
+	 * Constructor.
+	 *
 	 * @param \Shopware\Models\Article\Article $article
 	 * @param \Shopware\Models\Shop\Currency $currency
 	 * @param NostoProductAvailability $availability
 	 */
-	public function loadData(\Shopware\Models\Article\Article $article, Shopware\Models\Shop\Currency $currency, NostoProductAvailability $availability)
+	public function __construct(\Shopware\Models\Article\Article $article, Shopware\Models\Shop\Currency $currency, NostoProductAvailability $availability)
     {
 		$this->id = new NostoPriceVariation($currency->getCurrency());
 		$this->currency = new NostoCurrencyCode($currency->getCurrency());

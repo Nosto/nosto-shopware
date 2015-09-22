@@ -110,7 +110,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Service_Product extends 
 	{
 		foreach ($this->getAccounts($article) as $account) {
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->assignId($article);
+			$model->setProductId((int)$article->getId());
 			try {
 				$service = new NostoServiceProduct($account);
 				$service->addProduct($model);
