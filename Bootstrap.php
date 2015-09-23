@@ -55,6 +55,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const MULTI_CURRENCY_METHOD_EXCHANGE_RATE = 'exchangeRate';
 
 	/**
+	 * @var array of cached helper class instances.
+	 */
+	private static $helpers = array();
+
+	/**
 	 * @inheritdoc
 	 */
 	public function afterInit()
@@ -561,6 +566,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
 			->findOneBy(array('name' => self::CONFIG_DIRECT_INCLUDE));
 		return (!is_null($setting) && (int)$setting->getValue() === 1);
+	}
+
+	/**
+	 * Returns a helper instance.
+	 *
+	 * @param string $name the helper name.
+	 * @return mixed
+	 */
+	public function helper($name)
+	{
+		if (!isset(self::$helpers[$name])) {
+			$classPrefix = 'Shopware_Plugins_Frontend_NostoTagging_Components_';
+			$className = $classPrefix . ucfirst($name);
+			self::$helpers[$name] = new $className();
+		}
+		return self::$helpers[$name];
 	}
 
 	/**

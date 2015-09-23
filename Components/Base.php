@@ -45,39 +45,12 @@
 abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
-	 * @var array of cached helper class instances.
-	 */
-	private static $helpers = array();
-
-	/**
-	 * @param string $class
-	 * @return mixed
-	 */
-	private function helper($class)
-	{
-		if (!isset(self::$helpers[$class])) {
-			self::$helpers[$class] = new $class();
-		}
-		return self::$helpers[$class];
-	}
-
-	/**
-	 * Returns the cached price helper instance.
+	 * Returns the plugin instance.
 	 *
-	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Price the helper.
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Bootstrap
 	 */
-	protected function getPriceHelper()
+	public function plugin()
 	{
-		return $this->helper('Shopware_Plugins_Frontend_NostoTagging_Components_Price');
-	}
-
-	/**
-	 * Returns the cached currency helper instance.
-	 *
-	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Currency the helper.
-	 */
-	protected function getCurrencyHelper()
-	{
-		return $this->helper('Shopware_Plugins_Frontend_NostoTagging_Components_Currency');
+		return Shopware()->Plugins()->Frontend()->NostoTagging();
 	}
 }

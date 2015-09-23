@@ -146,17 +146,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$shop = Shopware()->Shop();
 		}
 
-        /** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
-        $plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
-		$defaultCurrency = $this->getCurrencyHelper()->getShopDefaultCurrency($shop);
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Price $helperPrice */
+		$helperPrice = $this->plugin()->helper('price');
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Currency $helperCurrency */
+		$helperCurrency = $this->plugin()->helper('currency');
+
+		$defaultCurrency = $helperCurrency->getShopDefaultCurrency($shop);
 
 		$this->productId = (int)$article->getId();
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
 		$this->imageUrl = $this->assembleImageUrl($article);
 		$this->currency = new NostoCurrencyCode($defaultCurrency->getCurrency());
-		$this->price = $this->getPriceHelper()->getArticlePriceInclTax($article, $defaultCurrency);
-		$this->listPrice = $this->getPriceHelper()->getArticleListPriceInclTax($article, $defaultCurrency);
+		$this->price = $helperPrice->getArticlePriceInclTax($article, $defaultCurrency);
+		$this->listPrice = $helperPrice->getArticleListPriceInclTax($article, $defaultCurrency);
 		$this->availability = new NostoProductAvailability($this->checkAvailability($article));
 		$this->tags['tag1'] = $this->buildTags($article);
 		$this->categories = $this->buildCategoryPaths($article, $shop);
@@ -167,13 +170,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 
 		if ($shop->getCurrencies()->count() > 1) {
 			$this->priceVariation = new NostoPriceVariation($defaultCurrency->getCurrency());
-			if ($plugin->isMultiCurrencyMethodPriceVariation()) {
+			if ($this->plugin()->isMultiCurrencyMethodPriceVariation()) {
 				foreach ($shop->getCurrencies() as $currency) {
 					if ($currency->getCurrency() === $defaultCurrency->getCurrency()) {
 						continue;
 					}
-					$variation = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation($article, $currency, $this->availability);
-					$this->priceVariations[] = $variation;
+
+					$this->priceVariations[] = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation(
+						new NostoPriceVariation($currency->getCurrency()),
+						new NostoCurrencyCode($currency->getCurrency()),
+						$helperPrice->getArticlePriceInclTax($article, $currency),
+						$helperPrice->getArticleListPriceInclTax($article, $currency),
+						$this->availability
+					);
 				}
 			}
 		}
@@ -630,6 +639,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function addPriceVariation(NostoProductPriceVariationInterface $priceVariation)
 	{
 		$this->priceVariations[] = $priceVariation;
+	}
+
+	/**
+	 * Removes a product price variation at given index.
+	 *
+	 * Usage:
+	 * $object->removePriceVariationAt(0);
+	 *
+	 * @param int $index the index of the variation in the list.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function removePriceVariationAt($index)
+	{
+		if (!isset($this->priceVariations[$index])) {
+			throw new InvalidArgumentException('No price variation found at given index.');
+		}
+		unset($this->priceVariations[$index]);
 	}
 
 	/**

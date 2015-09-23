@@ -76,17 +76,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Vari
 	/**
 	 * Constructor.
 	 *
-	 * @param \Shopware\Models\Article\Article $article
-	 * @param \Shopware\Models\Shop\Currency $currency
-	 * @param NostoProductAvailability $availability
+	 * Sets up this Value Object.
+	 *
+	 * @param NostoPriceVariation $id the variation ID.
+	 * @param NostoCurrencyCode $currency the ISO 4217 currency code.
+	 * @param NostoPrice $price the price.
+	 * @param NostoPrice $unitPrice the unit price.
+	 * @param NostoProductAvailability $availability the availability.
 	 */
-	public function __construct(\Shopware\Models\Article\Article $article, Shopware\Models\Shop\Currency $currency, NostoProductAvailability $availability)
+	public function __construct(NostoPriceVariation $id, NostoCurrencyCode $currency, NostoPrice $price, NostoPrice $unitPrice, NostoProductAvailability $availability)
     {
-		$this->id = new NostoPriceVariation($currency->getCurrency());
-		$this->currency = new NostoCurrencyCode($currency->getCurrency());
-        $this->price = $this->getPriceHelper()->getArticlePriceInclTax($article, $currency);
-        $this->listPrice = $this->getPriceHelper()->getArticleListPriceInclTax($article, $currency);
-        $this->availability = $availability;
+		$this->id = $id;
+		$this->currency = $currency;
+		$this->price = $price;
+		$this->listPrice = $unitPrice;
+		$this->availability = $availability;
     }
 
     /**

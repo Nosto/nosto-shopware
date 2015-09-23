@@ -61,29 +61,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	/**
 	 * Constructor.
 	 *
-	 * Populates the order status with data from the order model.
+	 * Sets up this Value Object.
 	 *
-	 * @param Shopware\Models\Order\Order $order the order model.
+	 * @param string $code the status code.
+	 * @param string $label the status code label.
+	 *
+	 * @throws InvalidArgumentException
 	 */
-	public function __construct(Shopware\Models\Order\Order $order)
+	public function __construct($code, $label)
 	{
-		$description = $order->getOrderStatus()->getDescription();
-		$this->code = $this->convertDescriptionToCode($description);
-		$this->label = $description;
-	}
+		if (!is_string($code) || empty($code)) {
+			throw new InvalidArgumentException('Code must be a non-empty string.');
+		}
+		if (!is_string($label) || empty($label)) {
+			throw new InvalidArgumentException('Label must be a non-empty string.');
+		}
 
-	/**
-	 * Converts a human readable status description to a machine readable code,
-	 * i.e. converts the description to a lower case alphanumeric string.
-	 *
-	 * @param string $description the description to convert.
-	 * @return string the status code.
-	 */
-	protected function convertDescriptionToCode($description)
-	{
-		$pattern = array('/[^a-zA-Z0-9]+/', '/_+/', '/^_+/', '/_+$/');
-		$replacement = array('_', '_', '', '');
-		return strtolower(preg_replace($pattern, $replacement, $description));
+		$this->code = $code;
+		$this->label = $label;
 	}
 
 	/**
@@ -101,4 +96,4 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	{
 		return $this->label;
 	}
-} 
+}

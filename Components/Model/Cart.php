@@ -61,8 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	public function loadData(array $baskets, \Shopware\Models\Shop\Shop $shop)
 	{
 		foreach ($baskets as $basket) {
-			$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem($basket, $shop);
-			$this->lineItems[] = $item;
+			$this->lineItems[] = $this->buildItem($basket, $shop);
 		}
 
 		Enlight()->Events()->notify(
@@ -72,6 +71,51 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 				'baskets' => $baskets,
 				'shop' => $shop,
 			)
+		);
+	}
+
+	/**
+	 * Builds a line item from a shop basket.
+	 *
+	 * @param \Shopware\Models\Order\Basket $basket the basket model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
+	 */
+	protected function buildItem(\Shopware\Models\Order\Basket $basket, \Shopware\Models\Shop\Shop $shop)
+	{
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Price $helperPrice */
+		$helperPrice = $this->plugin()->helper('price');
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Currency $helperCurrency */
+		$helperCurrency = $this->plugin()->helper('currency');
+
+		$productId = -1;
+		if ($basket->getArticleId() > 0) {
+			$article = Shopware()
+				->Models()
+				->find(
+					'Shopware\Models\Article\Article',
+					$basket->getArticleId()
+				);
+			if (!empty($article)) {
+				$productId = $article->getMainDetail()->getNumber();
+			}
+		}
+
+		$defaultCurrency = $helperCurrency->getShopDefaultCurrency($shop);
+		$unitPrice = $helperPrice->round(
+			$helperPrice->convertCurrency(
+				new NostoPrice($basket->getPrice()),
+				$defaultCurrency,
+				$shop->getCurrency()
+			)
+		);
+
+		return new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem(
+			$productId,
+			(int)$basket->getQuantity(),
+			(string)$basket->getArticleName(),
+			$unitPrice,
+			new NostoCurrencyCode($defaultCurrency->getCurrency())
 		);
 	}
 
@@ -86,6 +130,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	}
 
 	/**
+	 * Sets the cart line items.
+	 *
+	 * This replaces any existing ones.
+	 *
+	 * Usage:
+	 * $object->setLineItems(array(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item [, ... ]))
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] $lineItems the items.
+	 */
+	public function setLineItems(array $lineItems)
+	{
+		$this->lineItems = array();
+		foreach ($lineItems as $lineItem) {
+			$this->addLineItem($lineItem);
+		}
+	}
+
+	/**
 	 * Adds a new item to the cart tagging.
 	 *
 	 * Usage:
@@ -96,5 +158,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	public function addLineItem(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item)
 	{
 		$this->lineItems[] = $item;
+	}
+
+	/**
+	 * Removes a line item at given index.
+	 *
+	 * Usage:
+	 * $object->removeLineItemAt(0);
+	 *
+	 * @param int $index the index of the line item in the list.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function removeLineItemAt($index)
+	{
+		if (!isset($this->lineItems[$index])) {
+			throw new InvalidArgumentException('No line item found at given index.');
+		}
+		unset($this->lineItems[$index]);
 	}
 }

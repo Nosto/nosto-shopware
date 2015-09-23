@@ -48,30 +48,109 @@
 abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Model_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
-	 * Fetches the product ID of given item.
-	 *
-	 * The ID is that of the item in the basket, or it's parent ID if the item
-	 * is a product variation.
-	 *
-	 * @param int $articleId the ID of the article the item represents.
-	 * @return int|string the product ID.
+	 * @var string the product id for the line item.
 	 */
-	protected function fetchProductId($articleId)
-	{
-		$productId = -1;
+	protected $productId;
 
-		if ($articleId > 0) {
-			$article = Shopware()
-				->Models()
-				->find(
-					'Shopware\Models\Article\Article',
-					$articleId
-				);
-			if (!empty($article)) {
-				$productId = $article->getMainDetail()->getNumber();
-			}
+	/**
+	 * @var int the quantity of the line item.
+	 */
+	protected $quantity;
+
+	/**
+	 * @var string the name of the line item.
+	 */
+	protected $name;
+
+	/**
+	 * @var NostoPrice the unit price of the line item.
+	 */
+	protected $unitPrice;
+
+	/**
+	 * @var NostoCurrencyCode the 3-letter ISO code (ISO 4217) of the line item.
+	 */
+	protected $currency;
+
+	/**
+	 * Constructor.
+	 *
+	 * Sets up this Value Object.
+	 *
+	 * @param string|int $productId
+	 * @param int $quantity
+	 * @param string $name
+	 * @param NostoPrice $unitPrice
+	 * @param NostoCurrencyCode $currency
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function __construct($productId, $quantity, $name, NostoPrice $unitPrice, NostoCurrencyCode $currency)
+	{
+		if (!(is_int($productId) || is_string($productId))) {
+			throw new InvalidArgumentException('Product ID must be either an integer or a string.');
+		}
+		if (!is_int($quantity) || empty($quantity)) {
+			throw new InvalidArgumentException('Quantity must be an integer above zero.');
+		}
+		if (!is_string($name) || empty($name)) {
+			throw new InvalidArgumentException('Name must be an non-empty string.');
 		}
 
-		return $productId;
+		$this->productId = $productId;
+		$this->quantity = $quantity;
+		$this->name = $name;
+		$this->unitPrice = $unitPrice;
+		$this->currency = $currency;
+	}
+
+	/**
+	 * Returns the product id for the line item.
+	 *
+	 * @return int the product id.
+	 */
+	public function getProductId()
+	{
+		return $this->productId;
+	}
+
+	/**
+	 * Returns the quantity of the line item in the cart.
+	 *
+	 * @return int the quantity.
+	 */
+	public function getQuantity()
+	{
+		return $this->quantity;
+	}
+
+	/**
+	 * Returns the name of the line item.
+	 *
+	 * @return string the name.
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Returns the unit price of the line item.
+	 *
+	 * @return NostoPrice the unit price.
+	 */
+	public function getUnitPrice()
+	{
+		return $this->unitPrice;
+	}
+
+	/**
+	 * Returns the the 3-letter ISO code (ISO 4217) for the line item.
+	 *
+	 * @return NostoCurrencyCode the ISO code.
+	 */
+	public function getCurrency()
+	{
+		return $this->currency;
 	}
 }

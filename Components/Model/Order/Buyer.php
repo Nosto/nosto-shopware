@@ -66,15 +66,30 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	/**
 	 * Constructor.
 	 *
-	 * Loads the order buyer info from the customer model.
+	 * Sets up this Value Object.
 	 *
-	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
+	 * @param string $firstName the buyer first name.
+	 * @param string $lastName the buyer last name.
+	 * @param string $emailAddress the buyer email address.
+	 *
+	 * @throws InvalidArgumentException
 	 */
-	public function __construct(\Shopware\Models\Customer\Customer $customer)
+	public function __construct($firstName, $lastName, $emailAddress)
 	{
-		$this->firstName = $customer->getBilling()->getFirstName();
-		$this->lastName = $customer->getBilling()->getLastName();
-		$this->email = $customer->getEmail();
+		if (!is_string($firstName) || empty($firstName)) {
+			throw new InvalidArgumentException('First name must be a non-empty string.');
+		}
+		if (!is_string($lastName) || empty($lastName)) {
+			throw new InvalidArgumentException('Last name must be a non-empty string.');
+		}
+		$validator = new Zend_Validate_EmailAddress();
+		if (!$validator->isValid($emailAddress)) {
+			throw new InvalidArgumentException('Email must be a valid email address.');
+		}
+
+		$this->firstName = $firstName;
+		$this->lastName = $lastName;
+		$this->email = $emailAddress;
 	}
 
 	/**

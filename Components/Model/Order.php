@@ -101,14 +101,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 			$this->paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
 		}
 
-		$this->orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status($order);
-		$this->buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer($order->getCustomer());
+		$description = $order->getOrderStatus()->getDescription();
+		$statusCode = $this->statusDescriptionToCode($description);
+		$statusCodeLabel = $description;
+		$this->orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status(
+			$statusCode,
+			$statusCodeLabel
+		);
+
+		/** @var Shopware\Models\Customer\Customer $customer */
+		$customer = $order->getCustomer();
+		$billingAddress = $customer->getBilling();
+		$this->buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer(
+			$billingAddress->getFirstName(),
+			$billingAddress->getLastName(),
+			$customer->getEmail()
+		);
 
 		foreach ($order->getDetails() as $detail) {
 			/** @var Shopware\Models\Order\Detail $detail */
 			if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem($detail, $order->getShop());
-				$this->purchasedItems[] = $item;
+				$this->purchasedItems[] = $this->buildItem($order, $detail);
 			}
 		}
 
@@ -122,8 +135,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 				$dummyDetail->setOrder($order);
 				$dummyDetail->setPrice($shippingCost);
 
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem($dummyDetail, $order->getShop());
-				$this->purchasedItems[] = $item;
+				$this->purchasedItems[] = $this->buildItem($order, $dummyDetail);
 			}
 		}
 
@@ -134,6 +146,72 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 				'order' => $order,
 				'shop' => $order->getShop()
 			)
+		);
+	}
+
+	/**
+	 * Converts a human readable status description to a machine readable code,
+	 * i.e. converts the description to a lower case alphanumeric string.
+	 *
+	 * @param string $description the description to convert.
+	 * @return string the status code.
+	 */
+	protected function statusDescriptionToCode($description)
+	{
+		$pattern = array('/[^a-zA-Z0-9]+/', '/_+/', '/^_+/', '/_+$/');
+		$replacement = array('_', '_', '', '');
+		return strtolower(preg_replace($pattern, $replacement, $description));
+	}
+
+	/**
+	 * Builds a line item from an order detail.
+	 *
+	 * @param \Shopware\Models\Order\Order $order the order model.
+	 * @param \Shopware\Models\Order\Detail $detail the order detail model.
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
+	 */
+	protected function buildItem(\Shopware\Models\Order\Order $order, Shopware\Models\Order\Detail $detail)
+	{
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Price $helperPrice */
+		$helperPrice = $this->plugin()->helper('price');
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Currency $helperCurrency */
+		$helperCurrency = $this->plugin()->helper('currency');
+
+		$defaultCurrency = $helperCurrency->getShopDefaultCurrency($order->getShop());
+		// We need to create a dummy currency and populate it with the order
+		// currency details as the exchange rate might have changed since the
+		// order was made.
+		$dummyCurrency = new \Shopware\Models\Shop\Currency();
+		$dummyCurrency->setCurrency($order->getCurrency());
+		$dummyCurrency->setFactor($order->getCurrencyFactor());
+
+		$productId = -1;
+		if ($detail->getArticleId() > 0) {
+			$article = Shopware()
+				->Models()
+				->find(
+					'Shopware\Models\Article\Article',
+					$detail->getArticleId()
+				);
+			if (!empty($article)) {
+				$productId = $article->getMainDetail()->getNumber();
+			}
+		}
+
+		$unitPrice = $helperPrice->round(
+			$helperPrice->convertCurrency(
+				new NostoPrice($detail->getPrice()),
+				$defaultCurrency,
+				$dummyCurrency
+			)
+		);
+
+		return new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem(
+			$productId,
+			(int)$detail->getQuantity(),
+			(string)$detail->getArticleName(),
+			$unitPrice,
+			new NostoCurrencyCode($defaultCurrency->getCurrency())
 		);
 	}
 
@@ -268,6 +346,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	}
 
 	/**
+	 * Sets the purchased items for the order.
+	 *
+	 * This replaces any existing ones.
+	 *
+	 * Usage:
+	 * $object->setPurchasedItems(array(NostoOrderItemInterface $item [, ... ]))
+	 *
+	 * @param NostoOrderItemInterface[] $purchasedItems the items.
+	 */
+	public function setPurchasedItems(array $purchasedItems)
+	{
+		$this->purchasedItems = array();
+		foreach ($purchasedItems as $lineItem) {
+			$this->addPurchasedItem($lineItem);
+		}
+	}
+
+	/**
 	 * Adds a purchased item to the order.
 	 *
 	 * The item object must implement the NostoOrderItemInterface interface.
@@ -277,9 +373,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 *
 	 * @param NostoOrderItemInterface $purchasedItem the item object.
 	 */
-	public function addPurchasedItems(NostoOrderItemInterface $purchasedItem)
+	public function addPurchasedItem(NostoOrderItemInterface $purchasedItem)
 	{
 		$this->purchasedItems[] = $purchasedItem;
+	}
+
+	/**
+	 * Removes a purchased item at given index.
+	 *
+	 * Usage:
+	 * $object->removePurchasedItemAt(0);
+	 *
+	 * @param int $index the index of the purchased item in the list.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function removePurchasedItemAt($index)
+	{
+		if (!isset($this->purchasedItems[$index])) {
+			throw new InvalidArgumentException('No purchased item found at given index.');
+		}
+		unset($this->purchasedItems[$index]);
 	}
 
 	/**
