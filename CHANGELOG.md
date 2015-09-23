@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### Added
+- Multi-currency + exchange rate support
+- Account synchronisation support
+- Option to use direct include of Nosto script
+- Events after data models are loaded to provide data overrides
 
 ## [1.0.0]
 ### Added
