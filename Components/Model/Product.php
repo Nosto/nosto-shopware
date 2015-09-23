@@ -124,15 +124,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	protected $datePublished;
 
-    /**
-     * @var NostoPriceVariation the price variation the product prices are in.
-     */
-    protected $priceVariation;
+	/**
+	 * @var NostoPriceVariation the price variation the product prices are in.
+	 */
+	protected $priceVariation;
 
-    /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation[] list of price variations for this product.
-     */
-    protected $priceVariations = array();
+	/**
+	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation[] list of price variations for this product.
+	 */
+	protected $priceVariations = array();
 
 	/**
 	 * Loads the model data from an article and shop.
@@ -362,13 +362,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		return $this->imageUrl;
 	}
 
-    /**
-     * @inheritdoc
-     */
-    public function getThumbUrl()
-    {
-        return null;
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function getThumbUrl()
+	{
+		return null;
+	}
 
 	/**
 	 * @inheritdoc
@@ -400,8 +400,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function getPriceVariationId()
 	{
 		return !is_null($this->priceVariation)
-            ? $this->priceVariation->getId()
-            : null;
+			? $this->priceVariation->getId()
+			: null;
 	}
 
 	/**

@@ -49,10 +49,10 @@ require_once 'vendor/nosto/php-sdk/autoload.php';
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
 	const PLATFORM_NAME = 'shopware';
-    const CONFIG_MULTI_CURRENCY_METHOD = 'multiCurrencyMethod';
+	const CONFIG_MULTI_CURRENCY_METHOD = 'multiCurrencyMethod';
 	const CONFIG_DIRECT_INCLUDE = 'directInclude';
-    const MULTI_CURRENCY_METHOD_PRICE_VARIATION = 'priceVariation';
-    const MULTI_CURRENCY_METHOD_EXCHANGE_RATE = 'exchangeRate';
+	const MULTI_CURRENCY_METHOD_PRICE_VARIATION = 'priceVariation';
+	const MULTI_CURRENCY_METHOD_EXCHANGE_RATE = 'exchangeRate';
 
 	/**
 	 * @var array of cached helper class instances.

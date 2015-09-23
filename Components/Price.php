@@ -59,20 +59,20 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Price extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
-    /**
+	/**
 	 * Returns the article price with discounts and taxes applied.
 	 *
 	 * Rounds the result with a precision of 3, as that is what Shopware does
 	 * internally as well.
 	 *
-     * @param \Shopware\Models\Article\Article $article the article.
-     * @param \Shopware\Models\Shop\Currency $currency the currency.
-     * @return NostoPrice the price as a NostoPrice object.
-     */
-    public function getArticlePriceInclTax(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Currency $currency)
-    {
-        /** @var Shopware\Models\Article\Price $model */
-        $model = $article->getMainDetail()->getPrices()->first();
+	 * @param \Shopware\Models\Article\Article $article the article.
+	 * @param \Shopware\Models\Shop\Currency $currency the currency.
+	 * @return NostoPrice the price as a NostoPrice object.
+	 */
+	public function getArticlePriceInclTax(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Currency $currency)
+	{
+		/** @var Shopware\Models\Article\Price $model */
+		$model = $article->getMainDetail()->getPrices()->first();
 		$price = new NostoPrice($model->getPrice());
 
 		return $this->round(
@@ -81,9 +81,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Price extends Shopware_P
 				$article->getTax()
 			)
 		);
-    }
+	}
 
-    /**
+	/**
 	 * Returns the article list price with taxes applied.
 	 *
 	 * Rounds the result with a precision of 3, as that is what Shopware does
@@ -92,11 +92,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Price extends Shopware_P
 	 * @param \Shopware\Models\Article\Article $article the article.
 	 * @param \Shopware\Models\Shop\Currency $currency the currency.
 	 * @return NostoPrice the price as a NostoPrice object.
-     */
-    public function getArticleListPriceInclTax(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Currency $currency)
-    {
-        /** @var Shopware\Models\Article\Price $model */
-        $model = $article->getMainDetail()->getPrices()->first();
+	 */
+	public function getArticleListPriceInclTax(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Currency $currency)
+	{
+		/** @var Shopware\Models\Article\Price $model */
+		$model = $article->getMainDetail()->getPrices()->first();
 		$price = new NostoPrice(
 			(($model->getPseudoPrice() > 0)
 				? $model->getPseudoPrice()
@@ -109,7 +109,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Price extends Shopware_P
 				$article->getTax()
 			)
 		);
-    }
+	}
 
 	/**
 	 * Converts given price to another currency.
@@ -131,19 +131,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Price extends Shopware_P
 		return $currencyExchange->convert($price, $exchangeRate);
 	}
 
-    /**
+	/**
 	 * Applies given tax to the price.
 	 *
 	 * The tax calculation is done the same way Shopware does it internally.
 	 *
-     * @param NostoPrice $price the price.
-     * @param \Shopware\Models\Tax\Tax $tax the tax.
-     * @return NostoPrice the price incl. taxes a NostoPrice object.
-     */
-    public function applyTax(NostoPrice $price, \Shopware\Models\Tax\Tax $tax)
-    {
-        return $price->multiply((100 + $tax->getTax()) / 100);
-    }
+	 * @param NostoPrice $price the price.
+	 * @param \Shopware\Models\Tax\Tax $tax the tax.
+	 * @return NostoPrice the price incl. taxes a NostoPrice object.
+	 */
+	public function applyTax(NostoPrice $price, \Shopware\Models\Tax\Tax $tax)
+	{
+		return $price->multiply((100 + $tax->getTax()) / 100);
+	}
 
 	/**
 	 * Rounds the price with a precision of 3, as that is what Shopware does

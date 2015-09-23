@@ -72,7 +72,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
 				$meta->loadData($shop, null, $oldNostoAccount);
 
-                $service = new NostoServiceAccount();
+				$service = new NostoServiceAccount();
 				$newNostoAccount = $service->sync($meta, $code);
 
 				// If we are updating an existing account, double check that we
