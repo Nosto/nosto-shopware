@@ -120,9 +120,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account extends Sho
 			$locale = $shop->getLocale();
 		}
 
-		/** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
-		$plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
-		$defaultCurrency = $this->getCurrencyHelper()->getShopDefaultCurrency($shop);
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Currency $helperCurrency */
+		$helperCurrency = $this->plugin()->helper('currency');
+		$defaultCurrency = $helperCurrency->getShopDefaultCurrency($shop);
 
 		$this->title = Shopware()->App().' - '.$shop->getName();
 		$this->name = substr(sha1(rand()), 0, 8);
@@ -139,11 +139,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account extends Sho
 
         if ($shop->getCurrencies()->count() > 0) {
             foreach ($shop->getCurrencies() as $currency) {
-                $this->currencies[$currency->getCurrency()] = $this->getCurrencyHelper()->getCurrencyObject($shop, $currency);
+                $this->currencies[$currency->getCurrency()] = $helperCurrency->getCurrencyObject($shop, $currency);
             }
             if (count($this->currencies) > 1) {
                 $this->defaultPriceVariationId = $defaultCurrency->getCurrency();
-                $this->useCurrencyExchangeRates = $plugin->isMultiCurrencyMethodExchangeRate();
+                $this->useCurrencyExchangeRates = $this->plugin()->isMultiCurrencyMethodExchangeRate();
             }
         }
 	}

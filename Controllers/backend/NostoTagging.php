@@ -511,8 +511,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	protected function getSettingStoreData()
 	{
 		$settings = array(
-			'multiCurrencyMethod' => 'exchangeRate',
-			'directInclude' => '0'
+			Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_MULTI_CURRENCY_METHOD => 'exchangeRate',
+			Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_DIRECT_INCLUDE => '0'
 		);
 
 		$models = Shopware()

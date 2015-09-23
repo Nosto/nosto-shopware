@@ -103,18 +103,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe exte
 		if (is_null($locale)) {
 			$locale = $shop->getLocale();
 		}
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
-		/** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
-		$plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
+
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Url $helperUrl */
+		$helperUrl = $this->plugin()->helper('url');
 
 		$this->language = new NostoLanguageCode(substr($locale->getLocale(), 0, 2));
 		$this->shopLanguage = new NostoLanguageCode(substr($shop->getLocale()->getLocale(), 0, 2));
-		$this->uniqueId = $plugin->getUniqueId();
-		$this->previewUrlProduct = $helper->getProductPagePreviewUrl($shop);
-		$this->previewUrlCategory = $helper->getCategoryPagePreviewUrl($shop);
-		$this->previewUrlSearch = $helper->getSearchPagePreviewUrl($shop);
-		$this->previewUrlCart = $helper->getCartPagePreviewUrl($shop);
-		$this->previewUrlFront = $helper->getFrontPagePreviewUrl($shop);
+		$this->uniqueId = $this->plugin()->getUniqueId();
+		$this->previewUrlProduct = $helperUrl->getProductPagePreviewUrl($shop);
+		$this->previewUrlCategory = $helperUrl->getCategoryPagePreviewUrl($shop);
+		$this->previewUrlSearch = $helperUrl->getSearchPagePreviewUrl($shop);
+		$this->previewUrlCart = $helperUrl->getCartPagePreviewUrl($shop);
+		$this->previewUrlFront = $helperUrl->getFrontPagePreviewUrl($shop);
 		$this->shopName = Shopware()->App().' - '.$shop->getName();
 	}
 
