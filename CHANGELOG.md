@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Option to use direct include of Nosto script
 - Events after data models are loaded to provide data overrides
 
+## [1.0.1]
+### Fixed
+* Fatal error in product when image has no media
+
 ## [1.0.0]
 ### Added
 - First public release
@@ -57,7 +61,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.0.0...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.0.1...develop
+[1.0.1]: https://github.com/nosto/nosto-shopware-plugin/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/nosto/nosto-shopware-plugin/compare/0.6.0...1.0.0
 [0.6.0]: https://github.com/nosto/nosto-shopware-plugin/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/nosto/nosto-shopware-plugin/compare/0.4.1...0.5.0
