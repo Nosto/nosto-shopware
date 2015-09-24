@@ -216,6 +216,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {
 			$media = $image->getMedia();
+			if (is_null($media)) {
+				continue;
+			}
 			$type = strtolower($media->getType());
 			$dirPath = rtrim(Shopware()->DocPath('media_'.$type), DIRECTORY_SEPARATOR);
 			$fileName = ltrim($media->getFileName(), DIRECTORY_SEPARATOR);

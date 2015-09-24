@@ -121,6 +121,9 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 1.0.1
+* Fix fatal error in product when image has no media
+
 ### 1.0.0
 * First public release
 
