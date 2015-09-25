@@ -33,6 +33,29 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_order"}
+	{if isset($nostoOrder) && is_object($nostoOrder)}
+		<div class="nosto_purchase_order" style="display:none">
+			<span class="order_number">{$nostoOrder->getOrderNumber()|escape:'htmlall':'UTF-8'}</span>
+			<span class="order_status_code">{$nostoOrder->getOrderStatus()->getCode()|escape:'htmlall':'UTF-8'}</span>
+			<span class="order_status_label">{$nostoOrder->getOrderStatus()->getLabel()|escape:'htmlall':'UTF-8'}</span>
+			<span class="payment_provider">{$nostoOrder->getPaymentProvider()|escape:'htmlall':'UTF-8'}</span>
+			<div class="buyer">
+				<span class="first_name">{$nostoOrder->getBuyerInfo()->getFirstName()|escape:'htmlall':'UTF-8'}</span>
+				<span class="last_name">{$nostoOrder->getBuyerInfo()->getLastName()|escape:'htmlall':'UTF-8'}</span>
+				<span class="email">{$nostoOrder->getBuyerInfo()->getEmail()|escape:'htmlall':'UTF-8'}</span>
+			</div>
+			<div class="purchased_items">
+				{foreach from=$nostoOrder->getPurchasedItems() item=lineItem}
+					<div class="line_item">
+						<span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
+						<span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
+						<span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
+						<span class="unit_price">{$lineItem->getUnitPrice()->getPrice()|number_format:2:".":""}</span>
+						<span class="price_currency_code">{$lineItem->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
+					</div>
+				{/foreach}
+			</div>
+		</div>
+	{/if}
 {/block}

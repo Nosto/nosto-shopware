@@ -33,6 +33,38 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_addtocart_script"}
+	<script type="text/javascript">
+		//<![CDATA[
+		{literal}
+		if (typeof Nosto === "undefined") {
+			var Nosto = {};
+		}
+		{/literal}
+		Nosto.addProductToCart = function (productNumber) {
+			var form = document.createElement("form");
+			form.setAttribute("method", "post");
+			form.setAttribute("action", "{url controller=checkout action=addArticle}");
+
+			var hiddenFields = {
+				"sActionIdentifier": "{$sUniqueRand}",
+				"sAdd": productNumber,
+				"sQuantity": 1
+			};
+
+			for(var key in hiddenFields) {
+				if(hiddenFields.hasOwnProperty(key)) {
+					var hiddenField = document.createElement("input");
+					hiddenField.setAttribute("type", "hidden");
+					hiddenField.setAttribute("name", key);
+					hiddenField.setAttribute("value", hiddenFields[key]);
+					form.appendChild(hiddenField);
+				}
+			}
+
+			document.body.appendChild(form);
+			form.submit();
+		};
+		//]]>
+	</script>
 {/block}

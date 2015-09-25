@@ -33,6 +33,8 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_category"}
+	{if isset($nostoCategory) && is_object($nostoCategory)}
+		<div class="nosto_category" style="display:none">{$nostoCategory->getCategoryPath()|escape:'htmlall':'UTF-8'}</div>
+	{/if}
 {/block}

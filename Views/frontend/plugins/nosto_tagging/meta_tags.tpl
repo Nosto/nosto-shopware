@@ -33,6 +33,8 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name='nosto_meta_tags'}
+	<meta name="nosto-version" content="{$nostoVersion|escape:'quotes'}">
+	<meta name="nosto-unique-id" content="{$nostoUniqueId|escape:'quotes'}">
+	<meta name="nosto-language" content="{$nostoLanguage|escape:'quotes'}">
 {/block}

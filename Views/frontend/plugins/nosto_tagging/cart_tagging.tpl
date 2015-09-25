@@ -33,6 +33,18 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_cart"}
+	<div class="nosto_cart" style="display:none">
+		{if isset($nostoCart) && is_object($nostoCart)}
+		{foreach from=$nostoCart->getLineItems() item=lineItem}
+			<div class="line_item">
+				<span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
+				<span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
+				<span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
+				<span class="unit_price">{$lineItem->getUnitPrice()->getPrice()|number_format:2:".":""}</span>
+				<span class="price_currency_code">{$lineItem->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
+			</div>
+		{/foreach}
+		{/if}
+	</div>
 {/block}

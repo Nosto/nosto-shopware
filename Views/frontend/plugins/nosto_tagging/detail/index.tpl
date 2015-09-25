@@ -34,59 +34,6 @@
 *}
 
 {block name="frontend_index_content" append}
-    <div class="nosto_element" id="nosto-page-product1"></div>
-    <div class="nosto_element" id="nosto-page-product2"></div>
-    <div class="nosto_element" id="nosto-page-product3"></div>
-	{if isset($nostoProduct) && is_object($nostoProduct)}
-		<div class="nosto_product" style="display: none">
-			<span class="url">{$nostoProduct->getUrl()|escape:'htmlall':'UTF-8'}</span>
-			<span class="product_id">{$nostoProduct->getProductId()|escape:'htmlall':'UTF-8'}</span>
-			<span class="name">{$nostoProduct->getName()|escape:'htmlall':'UTF-8'}</span>
-			<span class="image_url">{$nostoProduct->getImageUrl()|escape:'htmlall':'UTF-8'}</span>
-			{if $nostoProduct->getPrice()}
-				<span class="price">{$nostoProduct->getPrice()->getPrice()|number_format:2:".":""}</span>
-			{/if}
-			{if $nostoProduct->getCurrency()}
-				<span class="price_currency_code">{$nostoProduct->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
-			{/if}
-			{if $nostoProduct->getAvailability()}
-				<span class="availability">{$nostoProduct->getAvailability()->getAvailability()|escape:'htmlall':'UTF-8'}</span>
-			{/if}
-			{foreach from=$nostoProduct->getCategories() item=category}
-				<span class="category">{$category|escape:'htmlall':'UTF-8'}</span>
-			{/foreach}
-			{if $nostoProduct->getFullDescription()}
-				<span class="description">{$nostoProduct->getFullDescription()|escape:'htmlall':'UTF-8'}</span>
-			{/if}
-			{if $nostoProduct->getListPrice()}
-				<span class="list_price">{$nostoProduct->getListPrice()->getPrice()|number_format:2:".":""}</span>
-			{/if}
-			{if $nostoProduct->getBrand()}
-				<span class="brand">{$nostoProduct->getBrand()|escape:'htmlall':'UTF-8'}</span>
-			{/if}
-			{foreach from=$nostoProduct->getTags() key=type item=tags}
-				{foreach from=$tags item=tag}
-					<span class="{$type|escape:'quotes'}">{$tag|escape:'htmlall':'UTF-8'}</span>
-				{/foreach}
-			{/foreach}
-			{if $nostoProduct->getDatePublished()}
-				<span class="date_published">{$nostoProduct->getDatePublished()|date_format:'%Y-%m-%d'}</span>
-			{/if}
-			{if $nostoProduct->getPriceVariationId()}
-				<span class="variation_id">{$nostoProduct->getPriceVariationId()|escape:'htmlall':'UTF-8'}</span>
-				{foreach from=$nostoProduct->getPriceVariations() item=variation}
-					<div class="variation">
-						<span class="variation_id">{$variation->getId()->getId()|escape:'htmlall':'UTF-8'}</span>
-						<span class="price_currency_code">{$variation->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
-						<span class="price">{$variation->getPrice()->getPrice()|number_format:2:".":""}</span>
-						<span class="list_price">{$variation->getListPrice()->getPrice()|number_format:2:".":""}</span>
-						<span class="availability">{$variation->getAvailability()->getAvailability()|escape:'htmlall':'UTF-8'}</span>
-					</div>
-				{/foreach}
-			{/if}
-		</div>
-	{/if}
-	{if isset($nostoCategory) && is_object($nostoCategory)}
-		<div class="nosto_category" style="display:none">{$nostoCategory->getCategoryPath()|escape:'htmlall':'UTF-8'}</div>
-	{/if}
+	{include file="frontend/plugins/nosto_tagging/detail/product_recos.tpl"}
+	{include file="frontend/plugins/nosto_tagging/detail/product_tagging.tpl"}
 {/block}

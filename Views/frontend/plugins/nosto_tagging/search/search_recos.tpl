@@ -33,6 +33,7 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_search_recos"}
+	<div class="nosto_element" id="nosto-page-search1"></div>
+    <div class="nosto_element" id="nosto-page-search2"></div>
 {/block}

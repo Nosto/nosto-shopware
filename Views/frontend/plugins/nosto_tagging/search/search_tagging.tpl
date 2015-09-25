@@ -33,6 +33,8 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_search"}
+	{if isset($nostoSearch) && is_object($nostoSearch)}
+		<div class="nosto_search_term" style="display:none">{$nostoSearch->getSearchTerm()|escape:'htmlall':'UTF-8'}</div>
+	{/if}
 {/block}

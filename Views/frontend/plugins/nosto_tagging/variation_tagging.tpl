@@ -33,6 +33,10 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_variation"}
+	{if isset($nostoPriceVariation) && is_object($nostoPriceVariation)}
+		<div class="nosto_price_variation" style="display:none">
+			{$nostoPriceVariation->getId()|escape:'htmlall':'UTF-8'}
+		</div>
+	{/if}
 {/block}

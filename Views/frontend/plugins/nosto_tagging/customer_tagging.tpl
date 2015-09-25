@@ -33,6 +33,12 @@
 * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
 *}
 
-{block name="frontend_index_content" append}
-	{include file="frontend/plugins/nosto_tagging/index/front_recos.tpl"}
+{block name="nosto_customer"}
+	{if isset($nostoCustomer) && is_object($nostoCustomer)}
+		<div class="nosto_customer" style="display:none">
+			<span class="first_name">{$nostoCustomer->getFirstName()|escape:'htmlall':'UTF-8'}</span>
+			<span class="last_name">{$nostoCustomer->getLastName()|escape:'htmlall':'UTF-8'}</span>
+			<span class="email">{$nostoCustomer->getEmail()|escape:'htmlall':'UTF-8'}</span>
+		</div>
+	{/if}
 {/block}
