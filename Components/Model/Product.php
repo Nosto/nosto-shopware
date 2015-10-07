@@ -153,7 +153,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 
 		$defaultCurrency = $helperCurrency->getShopDefaultCurrency($shop);
 
-		$this->productId = (int)$article->getId();
+		$this->productId = $article->getMainDetail()->getNumber();
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
 		$this->imageUrl = $this->assembleImageUrl($article);
@@ -489,10 +489,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Sets the product ID from given product.
 	 *
-	 * The product ID must be an integer above zero.
+	 * The product ID must be a non-empty value.
 	 *
 	 * Usage:
-	 * $object->setProductId(1);
+	 * $object->setProductId("SW10151");
 	 *
 	 * @param int $id the product ID.
 	 *
@@ -500,8 +500,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setProductId($id)
 	{
-		if (!is_int($id) || !($id > 0)) {
-			throw new InvalidArgumentException('ID must be an integer above zero.');
+		if (empty($id)) {
+			throw new InvalidArgumentException('ID must be a non-empty value.');
 		}
 
 		$this->productId = $id;
