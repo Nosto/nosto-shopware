@@ -221,14 +221,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 				continue;
 			}
 			$type = strtolower($media->getType());
-			$dirPath = rtrim(Shopware()->DocPath('media_'.$type), DIRECTORY_SEPARATOR);
-			$fileName = ltrim($media->getFileName(), DIRECTORY_SEPARATOR);
-			$file = $dirPath.DIRECTORY_SEPARATOR.$fileName;
-			if (!file_exists($file)) {
+			$dir = Shopware()->DocPath('media_'.$type);
+			$file = basename($media->getPath());
+			if (!file_exists($dir.$file)) {
 				continue;
 			}
 			if (is_null($url) || $image->getMain() === 1) {
-				$secure = ($shop->getAlwaysSecure() || $shop->getSecure());
+				$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
 				$protocol = ($secure ? 'https://' : 'http://');
 				$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
 				$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
