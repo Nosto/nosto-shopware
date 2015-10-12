@@ -248,16 +248,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	protected function calcPriceInclTax(\Shopware\Models\Article\Article $article, $type = 'price')
 	{
+		/** @var NostoHelperPrice $helper */
+		$helper = Nosto::helper('price');
 		/** @var Shopware\Models\Article\Price $price */
 		$price = $article->getMainDetail()->getPrices()->first();
+		if (!$price) {
+			return $helper->format(0);
+		}
+
 		// If the list price is not set, fall back on the normal price.
 		if ($type === 'listPrice' && $price->getPseudoPrice() > 0) {
 			$value = $price->getPseudoPrice();
 		} else {
 			$value = $price->getPrice();
 		}
-		/** @var NostoHelperPrice $helper */
-		$helper = Nosto::helper('price');
+
 		$tax = $article->getTax()->getTax();
 		return $helper->format($value * (1 + ($tax / 100)));
 	}
