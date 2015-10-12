@@ -164,7 +164,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->assignId($article);
 		$this->_url = $this->assembleProductUrl($article, $shop);
 		$this->_name = $article->getName();
-		$this->_imageUrl = $this->assembleImageUrl($article);
+		$this->_imageUrl = $this->assembleImageUrl($article, $shop);
 		$this->_price = $this->calcPriceInclTax($article, 'price');
 		$this->_listPrice = $this->calcPriceInclTax($article, 'listPrice');
 		$this->_currencyCode = $shop->getCurrency()->getCurrency();
@@ -207,9 +207,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * The url will always be for the original image, not the thumbnails.
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string|null the url or null if image not found.
 	 */
-	protected function assembleImageUrl(\Shopware\Models\Article\Article $article)
+	protected function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
 	{
 		$url = null;
 
@@ -227,9 +228,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 				continue;
 			}
 			if (is_null($url) || $image->getMain() === 1) {
-				$baseUrl = trim(Shopware()->Config()->get('basePath'));
-				$filePath = ltrim($media->getPath(), '/');
-				$url = 'http://'.$baseUrl.'/'.$filePath;
+				$secure = ($shop->getAlwaysSecure() || $shop->getSecure());
+				$protocol = ($secure ? 'https://' : 'http://');
+				$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
+				$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
+				$file = '/'.ltrim($media->getPath(), '/');
+				$url = $protocol.$host.$path.$file;
 				if ($image->getMain() === 1) {
 					break;
 				}
