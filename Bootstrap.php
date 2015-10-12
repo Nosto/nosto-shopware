@@ -92,7 +92,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function getVersion()
 	{
-		return '1.0.1';
+		return '1.0.2';
 	}
 
 	/**
@@ -876,7 +876,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Order\Basket[] $baskets */
 		$baskets = Shopware()->Models()->getRepository('Shopware\Models\Order\Basket')->findBy(array(
-			'sessionId' => Shopware()->Session()->sessionId
+			'sessionId' => (Shopware()->Session()->offsetExists('sessionId')
+				? Shopware()->Session()->offsetGet('sessionId')
+				: Shopware()->SessionID())
 		));
 
 		$nostoCart = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart();

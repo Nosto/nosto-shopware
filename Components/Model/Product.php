@@ -156,7 +156,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->productId = (int)$article->getId();
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
-		$this->imageUrl = $this->assembleImageUrl($article);
+		$this->imageUrl = $this->assembleImageUrl($article, $shop);
 		$this->currency = new NostoCurrencyCode($defaultCurrency->getCurrency());
 		$this->price = $helperPrice->getArticlePriceInclTax($article, $defaultCurrency);
 		$this->listPrice = $helperPrice->getArticleListPriceInclTax($article, $defaultCurrency);
@@ -210,6 +210,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			'module' => 'frontend',
 			'controller' => 'detail',
 			'sArticle' => $article->getId(),
+			// Force SSL if it's enabled.
+			'forceSecure' => true,
 		));
 		// Always add the "__shop" parameter so that the crawler can distinguish
 		// between products in different shops even if the host and path of the
@@ -227,9 +229,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * The url will always be for the original image, not the thumbnails.
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string|null the url or null if image not found.
 	 */
-	protected function assembleImageUrl(\Shopware\Models\Article\Article $article)
+	protected function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
 	{
 		$url = null;
 
@@ -240,16 +243,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 				continue;
 			}
 			$type = strtolower($media->getType());
-			$dirPath = rtrim(Shopware()->DocPath('media_'.$type), DIRECTORY_SEPARATOR);
-			$fileName = ltrim($media->getFileName(), DIRECTORY_SEPARATOR);
-			$file = $dirPath.DIRECTORY_SEPARATOR.$fileName;
-			if (!file_exists($file)) {
+			$dir = Shopware()->DocPath('media_'.$type);
+			$file = basename($media->getPath());
+			if (!file_exists($dir.$file)) {
 				continue;
 			}
 			if (is_null($url) || $image->getMain() === 1) {
-				$baseUrl = trim(Shopware()->Config()->get('basePath'));
-				$filePath = ltrim($media->getPath(), '/');
-				$url = 'http://'.$baseUrl.'/'.$filePath;
+				// Force SSL if it's enabled.
+				$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
+				$protocol = ($secure ? 'https://' : 'http://');
+				$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
+				$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
+				$file = '/'.ltrim($media->getPath(), '/');
+				$url = $protocol.$host.$path.$file;
 				if ($image->getMain() === 1) {
 					break;
 				}
