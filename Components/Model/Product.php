@@ -190,6 +190,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			'module' => 'frontend',
 			'controller' => 'detail',
 			'sArticle' => $article->getId(),
+			// Force SSL if it's enabled.
+			'forceSecure' => true,
 		));
 		// Always add the "__shop" parameter so that the crawler can distinguish
 		// between products in different shops even if the host and path of the
@@ -227,6 +229,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 				continue;
 			}
 			if (is_null($url) || $image->getMain() === 1) {
+				// Force SSL if it's enabled.
 				$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
 				$protocol = ($secure ? 'https://' : 'http://');
 				$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
