@@ -92,7 +92,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function getVersion()
 	{
-		return '2.0.0-1rc';
+		return '2.0.0-2rc';
 	}
 
 	/**
