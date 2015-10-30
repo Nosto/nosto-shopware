@@ -121,6 +121,10 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 1.0.3
+* Remove check for existing image file in the file system, as it makes it hard
+to debug image url issues
+
 ### 1.0.2
 * Check that a price model is found before using it in the product model
 * Fix product image url protocol to be based on the current shop settings
