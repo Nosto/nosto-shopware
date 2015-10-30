@@ -218,17 +218,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {
-			$media = $image->getMedia();
-			if (is_null($media)) {
-				continue;
-			}
-			$type = strtolower($media->getType());
-			$dir = Shopware()->DocPath('media_'.$type);
-			$file = basename($media->getPath());
-			if (!file_exists($dir.$file)) {
-				continue;
-			}
 			if (is_null($url) || $image->getMain() === 1) {
+				$media = $image->getMedia();
+				if (is_null($media)) {
+					continue;
+				}
 				// Force SSL if it's enabled.
 				$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
 				$protocol = ($secure ? 'https://' : 'http://');
