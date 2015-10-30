@@ -73,8 +73,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Price extends Shopware_P
 	{
 		/** @var Shopware\Models\Article\Price $model */
 		$model = $article->getMainDetail()->getPrices()->first();
-		$price = new NostoPrice($model->getPrice());
+		if (!$model) {
+			return new NostoPrice(0);
+		}
 
+		$price = new NostoPrice($model->getPrice());
 		return $this->round(
 			$this->applyTax(
 				$this->convertCurrency($price, $currency),
@@ -97,12 +100,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Price extends Shopware_P
 	{
 		/** @var Shopware\Models\Article\Price $model */
 		$model = $article->getMainDetail()->getPrices()->first();
+		if (!$model) {
+			return new NostoPrice(0);
+		}
+
 		$price = new NostoPrice(
 			(($model->getPseudoPrice() > 0)
 				? $model->getPseudoPrice()
 				: $model->getPrice())
 		);
-
 		return $this->round(
 			$this->applyTax(
 				$this->convertCurrency($price, $currency),
