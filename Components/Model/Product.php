@@ -222,10 +222,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Assembles the product image url based on article.
 	 *
-	 * Validates that the image can be found in the file system before returning
-	 * the url. This will not guarantee that the url works, but we should be
-	 * able to assume that if the image is in the correct place, the url works.
-	 *
 	 * The url will always be for the original image, not the thumbnails.
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
@@ -238,17 +234,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {
-			$media = $image->getMedia();
-			if (is_null($media)) {
-				continue;
-			}
-			$type = strtolower($media->getType());
-			$dir = Shopware()->DocPath('media_'.$type);
-			$file = basename($media->getPath());
-			if (!file_exists($dir.$file)) {
-				continue;
-			}
 			if (is_null($url) || $image->getMain() === 1) {
+				$media = $image->getMedia();
+				if (is_null($media)) {
+					continue;
+				}
 				// Force SSL if it's enabled.
 				$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
 				$protocol = ($secure ? 'https://' : 'http://');
