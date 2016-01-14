@@ -146,13 +146,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	{
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
-		$currentPage = (int)($currentOffset / $pageSize);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('articles.id'))
 			->from('\Shopware\Models\Article\Article', 'articles')
 			->where('articles.active = 1')
-			->setFirstResult($currentPage)
+			->setFirstResult($currentOffset)
 			->setMaxResults($pageSize)
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
@@ -184,13 +183,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	{
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
-		$currentPage = (int)($currentOffset / $pageSize);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('orders.number'))
 			->from('\Shopware\Models\Order\Order', 'orders')
 			->where('orders.status >= 0')
-			->setFirstResult($currentPage)
+			->setFirstResult($currentOffset)
 			->setMaxResults($pageSize)
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
