@@ -33,17 +33,11 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-Ext.define('Shopware.apps.NostoTagging.store.Account', {
-    extend: 'Ext.data.Store',
-    model: 'Shopware.apps.NostoTagging.model.Account',
-    autoLoad: false,
-    proxy: {
-        type: 'ajax',
-        url: '{url action=getAccounts}',
-        reader: {
-            type: 'json',
-            root: 'data',
-            totalProperty: 'total'
-        }
-    }
+Ext.define('Shopware.apps.NostoTagging.model.MultiCurrencyMethod', {
+    extend: 'Ext.data.Model',
+    idProperty: 'id',
+    fields: [
+        { name: 'id', type: 'string' },
+        { name: 'name', type: 'string' }
+    ]
 });

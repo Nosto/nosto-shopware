@@ -38,71 +38,52 @@
  * Model for order information. This is used when compiling the info about an
  * order that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
- * Implements NostoOrderInterface.
- * Implements NostoValidatableModelInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoOrderInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderInterface, NostoValidatableInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoOrderInterface
 {
 	/**
 	 * @var string|int the unique order number identifying the order.
 	 */
-	protected $_orderNumber;
+	protected $orderNumber;
 
 	/**
-	 * @var string the date when the order was placed.
+	 * @var NostoDate the date when the order was placed.
 	 */
-	protected $_createdDate;
+	protected $createdDate;
 
 	/**
 	 * @var string the payment provider used for order.
 	 *
 	 * Formatted according to "[provider name] [provider version]".
 	 */
-	protected $_paymentProvider;
+	protected $paymentProvider;
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer The user info of the buyer.
 	 */
-	protected $_buyerInfo;
+	protected $buyerInfo;
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] the items in the order.
 	 */
-	protected $_purchasedItems = array();
+	protected $purchasedItems = array();
 
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status the order status model.
 	 */
-	protected $_orderStatus;
+	protected $orderStatus;
 
 	/**
 	 * @var bool if special line items like shipping cost should be included.
 	 */
-	protected $_includeSpecialLineItems = true;
-
-	/**
-	 * @inheritdoc
-	 */
-	public function getValidationRules()
-	{
-		return array(
-			array(
-				array(
-					'_orderNumber',
-					'_createdDate',
-					'_buyerInfo',
-					'_purchasedItems',
-				),
-				'required'
-			)
-		);
-	}
+	protected $includeSpecialLineItems = true;
 
 	/**
 	 * Loads order details from the order model.
@@ -111,38 +92,127 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function loadData(\Shopware\Models\Order\Order $order)
 	{
-		$this->_orderNumber = $order->getNumber();
-		$this->_createdDate = $order->getOrderTime()->format('Y-m-d');
+		$this->orderNumber = $order->getNumber();
+		$this->createdDate = new NostoDate($order->getOrderTime()->getTimestamp());
 
-		$this->_paymentProvider = $order->getPayment()->getName();
+		$this->paymentProvider = $order->getPayment()->getName();
 		$paymentPlugin = $order->getPayment()->getPlugin();
 		if (!is_null($paymentPlugin)) {
-			$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+			$this->paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
 		}
 
-		$this->_orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
-		$this->_orderStatus->loadData($order);
+		$description = $order->getOrderStatus()->getDescription();
+		$statusCode = $this->statusDescriptionToCode($description);
+		$statusCodeLabel = $description;
+		$this->orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status(
+			$statusCode,
+			$statusCodeLabel
+		);
 
-		$this->_buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
-		$this->_buyerInfo->loadData($order->getCustomer());
+		/** @var Shopware\Models\Customer\Customer $customer */
+		$customer = $order->getCustomer();
+		$billingAddress = $customer->getBilling();
+		$this->buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer(
+			$billingAddress->getFirstName(),
+			$billingAddress->getLastName(),
+			$customer->getEmail()
+		);
 
 		foreach ($order->getDetails() as $detail) {
 			/** @var Shopware\Models\Order\Detail $detail */
-			if ($this->_includeSpecialLineItems || $detail->getArticleId() > 0) {
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadData($detail);
-				$this->_purchasedItems[] = $item;
+			if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
+				$this->purchasedItems[] = $this->buildItem($order, $detail);
 			}
 		}
 
-		if ($this->_includeSpecialLineItems) {
+		if ($this->includeSpecialLineItems) {
 			$shippingCost = $order->getInvoiceShipping();
 			if ($shippingCost > 0) {
-				$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
-				$item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
-				$this->_purchasedItems[] = $item;
+				$dummyDetail = new \Shopware\Models\Order\Detail();
+				$dummyDetail->setArticleName('Shipping cost');
+				$dummyDetail->setArticleId(-1);
+				$dummyDetail->setQuantity(1);
+				$dummyDetail->setOrder($order);
+				$dummyDetail->setPrice($shippingCost);
+
+				$this->purchasedItems[] = $this->buildItem($order, $dummyDetail);
 			}
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoOrder' => $this,
+				'order' => $order,
+				'shop' => $order->getShop()
+			)
+		);
+	}
+
+	/**
+	 * Converts a human readable status description to a machine readable code,
+	 * i.e. converts the description to a lower case alphanumeric string.
+	 *
+	 * @param string $description the description to convert.
+	 * @return string the status code.
+	 */
+	protected function statusDescriptionToCode($description)
+	{
+		$pattern = array('/[^a-zA-Z0-9]+/', '/_+/', '/^_+/', '/_+$/');
+		$replacement = array('_', '_', '', '');
+		return strtolower(preg_replace($pattern, $replacement, $description));
+	}
+
+	/**
+	 * Builds a line item from an order detail.
+	 *
+	 * @param \Shopware\Models\Order\Order $order the order model.
+	 * @param \Shopware\Models\Order\Detail $detail the order detail model.
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
+	 */
+	protected function buildItem(\Shopware\Models\Order\Order $order, Shopware\Models\Order\Detail $detail)
+	{
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Price $helperPrice */
+		$helperPrice = $this->plugin()->helper('price');
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Currency $helperCurrency */
+		$helperCurrency = $this->plugin()->helper('currency');
+
+		$defaultCurrency = $helperCurrency->getShopDefaultCurrency($order->getShop());
+		// We need to create a dummy currency and populate it with the order
+		// currency details as the exchange rate might have changed since the
+		// order was made.
+		$dummyCurrency = new \Shopware\Models\Shop\Currency();
+		$dummyCurrency->setCurrency($order->getCurrency());
+		$dummyCurrency->setFactor($order->getCurrencyFactor());
+
+		$productId = -1;
+		if ($detail->getArticleId() > 0) {
+			$article = Shopware()
+				->Models()
+				->find(
+					'Shopware\Models\Article\Article',
+					$detail->getArticleId()
+				);
+			if (!empty($article)) {
+				$productId = $article->getMainDetail()->getNumber();
+			}
+		}
+
+		$unitPrice = $helperPrice->round(
+			$helperPrice->convertCurrency(
+				new NostoPrice($detail->getPrice()),
+				$defaultCurrency,
+				$dummyCurrency
+			)
+		);
+
+		return new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem(
+			$productId,
+			(int)$detail->getQuantity(),
+			(string)$detail->getArticleName(),
+			$unitPrice,
+			new NostoCurrencyCode($defaultCurrency->getCurrency())
+		);
 	}
 
 	/**
@@ -151,7 +221,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function disableSpecialLineItems()
 	{
-		$this->_includeSpecialLineItems = false;
+		$this->includeSpecialLineItems = false;
 	}
 
 	/**
@@ -159,7 +229,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getOrderNumber()
 	{
-		return $this->_orderNumber;
+		return $this->orderNumber;
 	}
 
 	/**
@@ -167,7 +237,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getCreatedDate()
 	{
-		return $this->_createdDate;
+		return $this->createdDate;
 	}
 
 	/**
@@ -175,7 +245,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getPaymentProvider()
 	{
-		return $this->_paymentProvider;
+		return $this->paymentProvider;
 	}
 
 	/**
@@ -183,7 +253,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getBuyerInfo()
 	{
-		return $this->_buyerInfo;
+		return $this->buyerInfo;
 	}
 
 	/**
@@ -191,7 +261,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getPurchasedItems()
 	{
-		return $this->_purchasedItems;
+		return $this->purchasedItems;
 	}
 
 	/**
@@ -199,6 +269,145 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	 */
 	public function getOrderStatus()
 	{
-		return $this->_orderStatus;
+		return $this->orderStatus;
+	}
+
+	/**
+	 * Sets the unique order number identifying the order.
+	 *
+	 * The number must be a non-empty value.
+	 *
+	 * Usage:
+	 * $object->setOrderNumber('order123');
+	 *
+	 * @param string|int $orderNumber the order number.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setOrderNumber($orderNumber)
+	{
+		if (!(is_int($orderNumber) || is_string($orderNumber)) || empty($orderNumber)) {
+			throw new InvalidArgumentException('Order number must be a non-empty value.');
+		}
+
+		$this->orderNumber = $orderNumber;
+	}
+
+	/**
+	 * Sets the date when the order was placed.
+	 *
+	 * The date must be an instance of the NostoDate class.
+	 *
+	 * Usage:
+	 * $object->setCreatedDate(new NostoDate(strtotime('2015-01-01 00:00:00')));
+	 *
+	 * @param NostoDate $createdDate the creation date.
+	 */
+	public function setCreatedDate(NostoDate $createdDate)
+	{
+		$this->createdDate = $createdDate;
+	}
+
+	/**
+	 * Sets the payment provider used for placing the order.
+	 *
+	 * The provider must be a non-empty string value. Preferred formatting is
+	 * "[provider name] [provider version]".
+	 *
+	 * Usage:
+	 * $object->setPaymentProvider("payment_gateway [1.0.0]");
+	 *
+	 * @param string $paymentProvider the payment provider.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setPaymentProvider($paymentProvider)
+	{
+		if (!is_string($paymentProvider) || empty($paymentProvider)) {
+			throw new InvalidArgumentException('Payment provider must be a non-empty string value.');
+		}
+
+		$this->paymentProvider = $paymentProvider;
+	}
+
+	/**
+	 * Sets the buyer info of the user who placed the order.
+	 *
+	 * The info object must implement the NostoOrderBuyerInterface interface.
+	 *
+	 * Usage:
+	 * $object->setBuyerInfo(NostoOrderBuyerInterface $buyerInfo);
+	 *
+	 * @param NostoOrderBuyerInterface $buyerInfo the buyer info object.
+	 */
+	public function setBuyerInfo(NostoOrderBuyerInterface $buyerInfo)
+	{
+		$this->buyerInfo = $buyerInfo;
+	}
+
+	/**
+	 * Sets the purchased items for the order.
+	 *
+	 * This replaces any existing ones.
+	 *
+	 * Usage:
+	 * $object->setPurchasedItems(array(NostoOrderItemInterface $item [, ... ]))
+	 *
+	 * @param NostoOrderItemInterface[] $purchasedItems the items.
+	 */
+	public function setPurchasedItems(array $purchasedItems)
+	{
+		$this->purchasedItems = array();
+		foreach ($purchasedItems as $lineItem) {
+			$this->addPurchasedItem($lineItem);
+		}
+	}
+
+	/**
+	 * Adds a purchased item to the order.
+	 *
+	 * The item object must implement the NostoOrderItemInterface interface.
+	 *
+	 * Usage:
+	 * $object->addPurchasedItems(NostoOrderItemInterface $purchasedItem);
+	 *
+	 * @param NostoOrderItemInterface $purchasedItem the item object.
+	 */
+	public function addPurchasedItem(NostoOrderItemInterface $purchasedItem)
+	{
+		$this->purchasedItems[] = $purchasedItem;
+	}
+
+	/**
+	 * Removes a purchased item at given index.
+	 *
+	 * Usage:
+	 * $object->removePurchasedItemAt(0);
+	 *
+	 * @param int $index the index of the purchased item in the list.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function removePurchasedItemAt($index)
+	{
+		if (!isset($this->purchasedItems[$index])) {
+			throw new InvalidArgumentException('No purchased item found at given index.');
+		}
+		unset($this->purchasedItems[$index]);
+	}
+
+	/**
+	 * Sets the order status.
+	 *
+	 * The status object must implement the NostoOrderStatusInterface interface.
+	 *
+	 * Usage:
+	 * $object->setOrderStatus(NostoOrderStatusInterface $orderStatus);
+	 *
+	 * @param NostoOrderStatusInterface $orderStatus the status object.
+	 */
+	public function setOrderStatus(NostoOrderStatusInterface $orderStatus)
+	{
+		$this->orderStatus = $orderStatus;
 	}
 }

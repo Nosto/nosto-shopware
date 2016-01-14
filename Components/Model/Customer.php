@@ -38,63 +38,144 @@
  * Model for customer information. This is used when compiling the info about
  * customers that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * @var string the customer first name.
 	 */
-	protected $_firstName;
+	protected $firstName;
 
 	/**
 	 * @var string the customer last name.
 	 */
-	protected $_lastName;
+	protected $lastName;
 
 	/**
 	 * @var string the customer email address.
 	 */
-	protected $_email;
+	protected $email;
 
 	/**
 	 * Loads customer data from the logged in customer.
 	 *
 	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
 	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer )
+	public function loadData(\Shopware\Models\Customer\Customer $customer)
 	{
-		$this->_firstName = $customer->getBilling()->getFirstName();
-		$this->_lastName = $customer->getBilling()->getLastName();
-		$this->_email = $customer->getEmail();
+		$this->firstName = $customer->getBilling()->getFirstName();
+		$this->lastName = $customer->getBilling()->getLastName();
+		$this->email = $customer->getEmail();
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCustomer' => $this,
+				'customer' => $customer
+			)
+		);
 	}
 
 	/**
-	 * @return string
+	 * Returns the customer first name.
+	 *
+	 * @return string the first name.
 	 */
 	public function getFirstName()
 	{
-		return $this->_firstName;
+		return $this->firstName;
 	}
 
 	/**
-	 * @return string
+	 * Returns the customer last name.
+	 *
+	 * @return string the last name.
 	 */
 	public function getLastName()
 	{
-		return $this->_lastName;
+		return $this->lastName;
 	}
 
 	/**
-	 * @return string
+	 * Returns the customer email address.
+	 *
+	 * @return string the email address.
 	 */
 	public function getEmail()
 	{
-		return $this->_email;
+		return $this->email;
+	}
+
+	/**
+	 * Sets the first name of the logged in user.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setFirstName('John');
+	 *
+	 * @param string $firstName the name.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setFirstName($firstName)
+	{
+		if (!is_string($firstName) || empty($firstName)) {
+			throw new InvalidArgumentException('First name must be a non-empty string value.');
+		}
+
+		$this->firstName = $firstName;
+	}
+
+	/**
+	 * Sets the last name of the logged in user.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setLastName('Doe');
+	 *
+	 * @param string $lastName the name.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setLastName($lastName)
+	{
+		if (!is_string($lastName) || empty($lastName)) {
+			throw new InvalidArgumentException('Last name must be a non-empty string value.');
+		}
+
+		$this->lastName = $lastName;
+	}
+
+	/**
+	 * Sets the email address of the logged in user.
+	 *
+	 * The email must be a non-empty valid email address string.
+	 *
+	 * Usage:
+	 * $object->setEmail('john.doe@example.com');
+	 *
+	 * @param string $email the email.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setEmail($email)
+	{
+		if (!is_string($email) || empty($email)) {
+			throw new InvalidArgumentException('Email name must be a non-empty string value.');
+		}
+		$validator = new Zend_Validate_EmailAddress();
+		if (!$validator->isValid($email)) {
+			throw new InvalidArgumentException('Email is not a valid email address.');
+		}
+
+		$this->email = $email;
 	}
 }

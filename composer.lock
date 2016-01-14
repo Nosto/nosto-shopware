@@ -4,25 +4,26 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f72819741181020b200324075ae1cad3",
+    "hash": "afe6819804db2d10dd4f0c4ab9c41719",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "1.13.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/php-sdk.git",
-                "reference": "7d2b48807e8abf68da5b0f6f67f9286c074dee38"
+                "reference": "ef6615706a32ef65364238a6d84c052c1dd8166c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/7d2b48807e8abf68da5b0f6f67f9286c074dee38",
-                "reference": "7d2b48807e8abf68da5b0f6f67f9286c074dee38",
+                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/ef6615706a32ef65364238a6d84c052c1dd8166c",
+                "reference": "ef6615706a32ef65364238a6d84c052c1dd8166c",
                 "shasum": ""
             },
             "require-dev": {
-                "codeception/codeception": "@stable",
-                "codeception/specify": "@stable"
+                "codeception/aspect-mock": "0.5.3",
+                "codeception/codeception": "2.0.0",
+                "codeception/specify": "0.4.1"
             },
             "type": "library",
             "license": [
@@ -30,10 +31,10 @@
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
             "support": {
-                "source": "https://github.com/Nosto/php-sdk/tree/1.13.0",
+                "source": "https://github.com/Nosto/php-sdk/tree/2.1.0",
                 "issues": "https://github.com/Nosto/php-sdk/issues"
             },
-            "time": "2015-07-28 12:17:40"
+            "time": "2015-09-03 07:15:41"
         }
     ],
     "packages-dev": [],

@@ -35,38 +35,101 @@
  */
 
 /**
- * Meta-data class for billing information sent to Nosto during account create.
+ * Model for product price variation information. This is used when compiling the info about a
+ * product that is sent to Nosto if the multi currency setting is set to "priceVariation".
  *
  * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
- * Implements NostoAccountMetaBillingInterface
+ * Implements NostoProductPriceVariationInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoAccountMetaBillingInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product_Price_Variation extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoProductPriceVariationInterface
 {
 	/**
-	 * @var NostoCountryCode the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
+	 * @var NostoPriceVariation
 	 */
-	protected $country;
+	protected $id;
 
 	/**
-	 * Loads the Data Transfer Object.
+	 * @var NostoCurrencyCode
+	 */
+	protected $currency;
+
+	/**
+	 * @var NostoPrice
+	 */
+	protected $price;
+
+	/**
+	 * @var NostoPrice
+	 */
+	protected $listPrice;
+
+	/**
+	 * @var NostoProductAvailability
+	 */
+	protected $availability;
+
+	/**
+	 * Constructor.
 	 *
-	 * @param \Shopware\Models\Shop\Shop $shop
+	 * Sets up this Value Object.
+	 *
+	 * @param NostoPriceVariation $id the variation ID.
+	 * @param NostoCurrencyCode $currency the ISO 4217 currency code.
+	 * @param NostoPrice $price the price.
+	 * @param NostoPrice $unitPrice the unit price.
+	 * @param NostoProductAvailability $availability the availability.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop)
-	{
-		$this->country = new NostoCountryCode(substr($shop->getLocale()->getLocale(), 3));
-	}
+	public function __construct(NostoPriceVariation $id, NostoCurrencyCode $currency, NostoPrice $price, NostoPrice $unitPrice, NostoProductAvailability $availability)
+    {
+		$this->id = $id;
+		$this->currency = $currency;
+		$this->price = $price;
+		$this->listPrice = $unitPrice;
+		$this->availability = $availability;
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getCountry()
-	{
-		return $this->country;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getListPrice()
+    {
+        return $this->listPrice;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAvailability()
+    {
+        return $this->availability;
+    }
 }

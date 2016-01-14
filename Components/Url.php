@@ -37,12 +37,14 @@
 /**
  * Url component. Used as a helper to manage url creation inside Shopware.
  *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Url
+class Shopware_Plugins_Frontend_NostoTagging_Components_Url extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * Returns a product page preview url in the given shop.

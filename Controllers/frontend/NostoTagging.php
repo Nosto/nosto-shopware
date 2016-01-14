@@ -62,18 +62,30 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		if (!is_null($code)) {
 			try {
 				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-				$account = $helper->findAccount($shop);
-				if (!is_null($account)) {
-					throw new NostoException(sprintf('Nosto account already exists for shop #%d.', $shop->getId()));
+				$oldAccount = $helper->findAccount($shop);
+				if (!is_null($oldAccount)) {
+					$oldNostoAccount = $helper->convertToNostoAccount($oldAccount);
+				} else {
+					$oldNostoAccount = null;
 				}
 
 				$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
-				$meta->loadData($shop);
-				$nostoAccount = NostoAccount::syncFromNosto($meta, $code);
+				$meta->loadData($shop, null, $oldNostoAccount);
 
-				$account = $helper->convertToShopwareAccount($nostoAccount, $shop);
+				$service = new NostoServiceAccount();
+				$newNostoAccount = $service->sync($meta, $code);
+
+				// If we are updating an existing account, double check that we
+				// got the same account back from Nosto.
+				if (!is_null($oldNostoAccount) && !$newNostoAccount->equals($oldNostoAccount)) {
+					throw new NostoException('Failed to sync account details, account mismatch.');
+				}
+
+				$account = $helper->convertToShopwareAccount($newNostoAccount, $shop);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
+				$helper->updateCurrencyExchangeRates($account, $shop);
+				$helper->updateAccount($account, $shop);
 
 				$redirectParams = array(
 					'module' => 'backend',
@@ -134,18 +146,17 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	{
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
-		$currentPage = (int)($currentOffset / $pageSize);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('articles.id'))
 			->from('\Shopware\Models\Article\Article', 'articles')
 			->where('articles.active = 1')
-			->setFirstResult($currentPage)
+			->setFirstResult($currentOffset)
 			->setMaxResults($pageSize)
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$collection = new NostoExportProductCollection();
+		$collection = new NostoExportCollectionProduct();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Article\Article $article */
 			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', (int)$row['id']);
@@ -153,10 +164,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				continue;
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($article);
-			$validator = new NostoValidator($model);
-			if ($validator->validate()) {
+			try {
+				$model->loadData($article);
 				$collection[] = $model;
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
 			}
 		}
 
@@ -171,18 +183,17 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	{
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
-		$currentPage = (int)($currentOffset / $pageSize);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('orders.number'))
 			->from('\Shopware\Models\Order\Order', 'orders')
 			->where('orders.status >= 0')
-			->setFirstResult($currentPage)
+			->setFirstResult($currentOffset)
 			->setMaxResults($pageSize)
 			->getQuery()
 			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$collection = new NostoExportOrderCollection();
+		$collection = new NostoExportCollectionOrder();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Order\Order $order */
 			$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
@@ -192,10 +203,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 			$model->disableSpecialLineItems();
-			$model->loadData($order);
-			$validator = new NostoValidator($model);
-			if ($validator->validate()) {
+			try {
+				$model->loadData($order);
 				$collection[] = $model;
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
 			}
 		}
 

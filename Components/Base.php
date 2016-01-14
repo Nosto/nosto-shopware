@@ -1,3 +1,4 @@
+<?php
 /**
  * Copyright (c) 2015, Nosto Solutions Ltd
  * All rights reserved.
@@ -33,32 +34,23 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-Ext.define('Shopware.apps.NostoTagging.model.Account', {
-    extend: 'Ext.data.Model',
-    idProperty: 'id',
-    fields: [
-        { name: 'id', type: 'int' },
-        { name: 'name', type: 'string' },
-        { name: 'url', type: 'string' },
-        { name: 'email', type: 'string' },
-        { name: 'shopId', type: 'int' },
-        { name: 'shopName', type: 'string' }
-    ],
-    proxy: {
-        type: 'ajax',
-        api: {
-            create: '{url action=createAccount}',
-            update: '{url action=createAccount}',
-            destroy: '{url action=deleteAccount}'
-        },
-        reader: {
-            idProperty: 'id',
-            type: 'json',
-            root: 'data'
-        },
-        writer: {
-            type: 'json',
-            writeAllFields: true
-        }
-    }
-});
+/**
+ * Base class for all components.
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
+abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Base
+{
+	/**
+	 * Returns the plugin instance.
+	 *
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Bootstrap
+	 */
+	public function plugin()
+	{
+		return Shopware()->Plugins()->Frontend()->NostoTagging();
+	}
+}

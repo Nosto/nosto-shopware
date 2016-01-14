@@ -35,84 +35,122 @@
  */
 
 /**
- * Model for order buyer information. This is used when compiling the info about
- * an order that is sent to Nosto.
+ * Model for shopping cart and order line items. This is used when compiling the shopping
+ * cart info that is sent to Nosto.
  *
  * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
- * Implements NostoOrderBuyerInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoOrderBuyerInterface
+abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Model_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
-	 * @var string the first name of the user who placed the order.
+	 * @var string the product id for the line item.
 	 */
-	protected $firstName;
+	protected $productId;
 
 	/**
-	 * @var string the last name of the user who placed the order.
+	 * @var int the quantity of the line item.
 	 */
-	protected $lastName;
+	protected $quantity;
 
 	/**
-	 * @var string the email address of the user who placed the order.
+	 * @var string the name of the line item.
 	 */
-	protected $email;
+	protected $name;
+
+	/**
+	 * @var NostoPrice the unit price of the line item.
+	 */
+	protected $unitPrice;
+
+	/**
+	 * @var NostoCurrencyCode the 3-letter ISO code (ISO 4217) of the line item.
+	 */
+	protected $currency;
 
 	/**
 	 * Constructor.
 	 *
 	 * Sets up this Value Object.
 	 *
-	 * @param string $firstName the buyer first name.
-	 * @param string $lastName the buyer last name.
-	 * @param string $emailAddress the buyer email address.
+	 * @param string|int $productId
+	 * @param int $quantity
+	 * @param string $name
+	 * @param NostoPrice $unitPrice
+	 * @param NostoCurrencyCode $currency
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct($firstName, $lastName, $emailAddress)
+	public function __construct($productId, $quantity, $name, NostoPrice $unitPrice, NostoCurrencyCode $currency)
 	{
-		if (!is_string($firstName) || empty($firstName)) {
-			throw new InvalidArgumentException('First name must be a non-empty string.');
+		if (!(is_int($productId) || is_string($productId))) {
+			throw new InvalidArgumentException('Product ID must be either an integer or a string.');
 		}
-		if (!is_string($lastName) || empty($lastName)) {
-			throw new InvalidArgumentException('Last name must be a non-empty string.');
+		if (!is_int($quantity) || empty($quantity)) {
+			throw new InvalidArgumentException('Quantity must be an integer above zero.');
 		}
-		$validator = new Zend_Validate_EmailAddress();
-		if (!$validator->isValid($emailAddress)) {
-			throw new InvalidArgumentException('Email must be a valid email address.');
+		if (!is_string($name) || empty($name)) {
+			throw new InvalidArgumentException('Name must be an non-empty string.');
 		}
 
-		$this->firstName = $firstName;
-		$this->lastName = $lastName;
-		$this->email = $emailAddress;
+		$this->productId = $productId;
+		$this->quantity = $quantity;
+		$this->name = $name;
+		$this->unitPrice = $unitPrice;
+		$this->currency = $currency;
 	}
 
 	/**
-	 * @inheritdoc
+	 * Returns the product id for the line item.
+	 *
+	 * @return int the product id.
 	 */
-	public function getFirstName()
+	public function getProductId()
 	{
-		return $this->firstName;
+		return $this->productId;
 	}
 
 	/**
-	 * @inheritdoc
+	 * Returns the quantity of the line item in the cart.
+	 *
+	 * @return int the quantity.
 	 */
-	public function getLastName()
+	public function getQuantity()
 	{
-		return $this->lastName;
+		return $this->quantity;
 	}
 
 	/**
-	 * @inheritdoc
+	 * Returns the name of the line item.
+	 *
+	 * @return string the name.
 	 */
-	public function getEmail()
+	public function getName()
 	{
-		return $this->email;
+		return $this->name;
+	}
+
+	/**
+	 * Returns the unit price of the line item.
+	 *
+	 * @return NostoPrice the unit price.
+	 */
+	public function getUnitPrice()
+	{
+		return $this->unitPrice;
+	}
+
+	/**
+	 * Returns the the 3-letter ISO code (ISO 4217) for the line item.
+	 *
+	 * @return NostoCurrencyCode the ISO code.
+	 */
+	public function getCurrency()
+	{
+		return $this->currency;
 	}
 }

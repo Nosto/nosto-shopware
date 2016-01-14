@@ -34,18 +34,22 @@
 *}
 
 {block name='frontend_index_header_meta_tags' append}
-	<meta name="nosto-version" content="{$nostoVersion|escape:'htmlall':'UTF-8'}">
-	<meta name="nosto-unique-id" content="{$nostoUniqueId|escape:'htmlall':'UTF-8'}">
-	<meta name="nosto-language" content="{$nostoLanguage|escape:'htmlall':'UTF-8'}">
+	<meta name="nosto-version" content="{$nostoVersion|escape:'quotes'}">
+	<meta name="nosto-unique-id" content="{$nostoUniqueId|escape:'quotes'}">
+	<meta name="nosto-language" content="{$nostoLanguage|escape:'quotes'}">
 {/block}
 {block name="frontend_index_header_javascript" append}
-{if isset($nostoAccountName) && isset($nostoAccountName)}
-	<script type="text/javascript">
-		//<![CDATA[
-		{literal}(function(){function a(a){var b,c,d=window.document.createElement("iframe");d.src="javascript:false",(d.frameElement||d).style.cssText="width: 0; height: 0; border: 0";var e=window.document.createElement("div");e.style.display="none";var f=window.document.createElement("div");e.appendChild(f),window.document.body.insertBefore(e,window.document.body.firstChild),f.appendChild(d);try{c=d.contentWindow.document}catch(g){b=document.domain,d.src="javascript:var d=document.open();d.domain='"+b+"';void(0);",c=d.contentWindow.document}return c.open()._l=function(){b&&(this.domain=b);var c=this.createElement("scr".concat("ipt"));c.src=a,this.body.appendChild(c)},c.write("<bo".concat('dy onload="document._l();">')),c.close(),d}var b="nostojs";window[b]=window[b]||function(a){(window[b].q=window[b].q||[]).push(a)},window[b].l=new Date;var c=function(d,e){if(!document.body)return setTimeout(function(){c(d,e)},30);e=e||{},window[b].o=e;var f=document.location.protocol,g=["https:"===f?f:"http:","//",e.host||"connect.nosto.com",e.path||"/include/",d].join("");a(g)};window[b].init=c})();{/literal}
-		nostojs.init("{$nostoAccountName|escape:"javascript":"UTF-8"}", {literal}{host:{/literal} "{$nostoServerUrl|escape:"javascript":"UTF-8"}"{literal}}{/literal});
-		//]]>
-	</script>
+{if isset($nostoServerUrl) && isset($nostoAccountName)}
+    {if $nostoScriptDirectInclude}
+        <script type="text/javascript" src="//{$nostoServerUrl|escape:"javascript":"UTF-8"}/include/{$nostoAccountName|escape:"javascript":"UTF-8"}" async></script>
+    {else}
+        <script type="text/javascript">
+            //<![CDATA[
+            {literal}(function(){function a(a){var b,c,d=window.document.createElement("iframe");d.src="javascript:false",(d.frameElement||d).style.cssText="width: 0; height: 0; border: 0";var e=window.document.createElement("div");e.style.display="none";var f=window.document.createElement("div");e.appendChild(f),window.document.body.insertBefore(e,window.document.body.firstChild),f.appendChild(d);try{c=d.contentWindow.document}catch(g){b=document.domain,d.src="javascript:var d=document.open();d.domain='"+b+"';void(0);",c=d.contentWindow.document}return c.open()._l=function(){b&&(this.domain=b);var c=this.createElement("scr".concat("ipt"));c.src=a,this.body.appendChild(c)},c.write("<bo".concat('dy onload="document._l();">')),c.close(),d}var b="nostojs";window[b]=window[b]||function(a){(window[b].q=window[b].q||[]).push(a)},window[b].l=new Date;var c=function(d,e){if(!document.body)return setTimeout(function(){c(d,e)},30);e=e||{},window[b].o=e;var f=document.location.protocol,g=["https:"===f?f:"http:","//",e.host||"connect.nosto.com",e.path||"/include/",d].join("");a(g)};window[b].init=c})();{/literal}
+            nostojs.init("{$nostoAccountName|escape:"javascript":"UTF-8"}", {literal}{host:{/literal} "{$nostoServerUrl|escape:"javascript":"UTF-8"}"{literal}}{/literal});
+            //]]>
+        </script>
+    {/if}
 	<script type="text/javascript">
 		//<![CDATA[
 		{literal}
@@ -96,10 +100,15 @@
 				<span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
 				<span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
 				<span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
-				<span class="unit_price">{$lineItem->getUnitPrice()|escape:'htmlall':'UTF-8'}</span>
-				<span class="price_currency_code">{$lineItem->getCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
+				<span class="unit_price">{$lineItem->getUnitPrice()->getPrice()|number_format:2:".":""}</span>
+				<span class="price_currency_code">{$lineItem->getCurrency()->getCode()|escape:'htmlall':'UTF-8'}</span>
 			</div>
 		{/foreach}
 		{/if}
 	</div>
+	{if isset($nostoPriceVariation) && is_object($nostoPriceVariation)}
+		<div class="nosto_price_variation" style="display:none">
+			{$nostoPriceVariation->getId()|escape:'htmlall':'UTF-8'}
+		</div>
+	{/if}
 {/block}

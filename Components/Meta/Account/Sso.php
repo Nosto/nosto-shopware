@@ -1,3 +1,4 @@
+<?php
 /**
  * Copyright (c) 2015, Nosto Solutions Ltd
  * All rights reserved.
@@ -33,32 +34,78 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-Ext.define('Shopware.apps.NostoTagging.model.Account', {
-    extend: 'Ext.data.Model',
-    idProperty: 'id',
-    fields: [
-        { name: 'id', type: 'int' },
-        { name: 'name', type: 'string' },
-        { name: 'url', type: 'string' },
-        { name: 'email', type: 'string' },
-        { name: 'shopId', type: 'int' },
-        { name: 'shopName', type: 'string' }
-    ],
-    proxy: {
-        type: 'ajax',
-        api: {
-            create: '{url action=createAccount}',
-            update: '{url action=createAccount}',
-            destroy: '{url action=deleteAccount}'
-        },
-        reader: {
-            idProperty: 'id',
-            type: 'json',
-            root: 'data'
-        },
-        writer: {
-            type: 'json',
-            writeAllFields: true
-        }
-    }
-});
+/**
+ * Meta-data class for information included in SSO requests.
+ *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoAccountMetaSingleSignOnInterface
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Sso extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoAccountMetaSingleSignOnInterface
+{
+	/**
+	 * @var string the admin user first name.
+	 */
+	protected $firstName;
+
+	/**
+	 * @var string the admin user last name.
+	 */
+	protected $lastName;
+
+	/**
+	 * @var string the admin user email address.
+	 */
+	protected $email;
+
+	/**
+	 * Loads the Data Transfer Object.
+	 *
+	 * @param stdClass|null $identity the user identity.
+	 */
+	public function loadData($identity = null)
+	{
+		if (!is_null($identity)) {
+			list($firstName, $lastName) = explode(' ', $identity->name);
+			$this->firstName = $firstName;
+			$this->lastName = $lastName;
+			$this->email = $identity->email;
+		}
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getPlatform()
+	{
+		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getFirstName()
+	{
+		return $this->firstName;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getLastName()
+	{
+		return $this->lastName;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getEmail()
+	{
+		return $this->email;
+	}
+}

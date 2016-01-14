@@ -38,12 +38,14 @@
  * Customer component. Used as a helper to manage the Nosto user session inside
  * Shopware.
  *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
+class Shopware_Plugins_Frontend_NostoTagging_Components_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * @var string the name of the cookie where the Nosto ID can be found.

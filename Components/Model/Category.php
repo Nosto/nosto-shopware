@@ -38,19 +38,19 @@
  * Model for product category information. This is used when compiling the info
  * about categories that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * @var string the full category path with categories separated by a `/` sign.
 	 */
-	protected $_categoryPath;
+	protected $categoryPath;
 
 	/**
 	 * Loads the category data from a category model.
@@ -59,7 +59,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	 */
 	public function loadData(\Shopware\Models\Category\Category $category)
 	{
-		$this->_categoryPath = $this->buildCategoryPath($category);
+		$this->categoryPath = $this->buildCategoryPath($category);
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCategory' => $this,
+				'category' => $category
+			)
+		);
 	}
 
 	/**
@@ -91,6 +99,30 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	 */
 	public function getCategoryPath()
 	{
-		return $this->_categoryPath;
+		return $this->categoryPath;
+	}
+
+	/**
+	 * Sets the category path.
+	 *
+	 * The path must be a non-empty string, that starts with a "/" char.
+	 *
+	 * Usage:
+	 * $object->setCategoryPath('/Clothes/Winter/Coats');
+	 *
+	 * @param string $categoryPath the category path.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function setCategoryPath($categoryPath)
+	{
+		if (!is_string($categoryPath) || empty($categoryPath)) {
+			throw new InvalidArgumentException('Category path must be a non-empty string value.');
+		}
+		if ($categoryPath[0] !== '/') {
+			throw new InvalidArgumentException(sprintf('Category path must start with a %s character.', '/'));
+		}
+
+		$this->categoryPath = $categoryPath;
 	}
 }

@@ -37,50 +37,59 @@
 /**
  * Meta-data class for handling OAuth 2 requests during account connect.
  *
- * Implements NostoOAuthClientMetaDataInterface.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ * Implements NostoOAuthClientMetaInterface
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements NostoOAuthClientMetaDataInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth extends Shopware_Plugins_Frontend_NostoTagging_Components_Base implements NostoOAuthClientMetaInterface
 {
 	/**
 	 * @var string OAuth2 redirect url to where the OAuth2 server should redirect the user after authorizing.
 	 */
-	protected $_redirectUrl;
+	protected $redirectUrl;
 
 	/**
-	 * @var string 2-letter ISO code (ISO 639-1) for the language the OAuth2 server uses for UI localization.
+	 * @var NostoLanguageCode 2-letter ISO code (ISO 639-1) for the language the OAuth2 server uses for UI localization.
 	 */
-	protected $_languageCode = 'en';
+	protected $language = 'en';
 
 	/**
-	 * Loads the oauth meta data from the shop model.
+	 * @var NostoAccount optional account to do the OAuth for.
+	 */
+	protected $account;
+
+	/**
+	 * Loads the Data Transfer Object.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @param \Shopware\Models\Shop\Locale $locale the locale model or null.
+	 * @param NostoAccount $account optional account to do the OAuth for.
 	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null)
+	public function loadData(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, NostoAccount $account = null)
 	{
 		if (is_null($locale)) {
 			$locale = $shop->getLocale();
 		}
 
-		$this->_redirectUrl = Shopware()->Front()->Router()->assemble(array(
+		$this->redirectUrl = Shopware()->Front()->Router()->assemble(array(
 			'module' => 'frontend',
 			'controller' => 'nostotagging',
 			'action' => 'oauth'
 		));
-		$this->_languageCode = strtolower(substr($locale->getLocale(), 0, 2));
+		$this->language = new NostoLanguageCode(
+			substr($locale->getLocale(), 0, 2)
+		);
+		if (!is_null($account)) {
+			$this->account = $account;
+		}
 	}
 
 	/**
-	 * The OAuth2 client ID.
-	 * This will be a platform specific ID that Nosto will issue.
-	 *
-	 * @return string the client id.
+	 * @inheritdoc
 	 */
 	public function getClientId()
 	{
@@ -88,10 +97,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	}
 
 	/**
-	 * The OAuth2 client secret.
-	 * This will be a platform specific secret that Nosto will issue.
-	 *
-	 * @return string the client secret.
+	 * @inheritdoc
 	 */
 	public function getClientSecret()
 	{
@@ -99,23 +105,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	}
 
 	/**
-	 * The OAuth2 redirect url to where the OAuth2 server should redirect the user after authorizing the application to
-	 * act on the users behalf.
-	 * This url must by publicly accessible and the domain must match the one defined for the Nosto account.
-	 *
-	 * @return string the url.
+	 * @inheritdoc
 	 */
 	public function getRedirectUrl()
 	{
-		return $this->_redirectUrl;
+		return $this->redirectUrl;
 	}
 
 	/**
-	 * The scopes for the OAuth2 request.
-	 * These are used to request specific API tokens from Nosto and should almost always be the ones defined in
-	 * NostoApiToken::$tokenNames.
-	 *
-	 * @return array the scopes.
+	 * @inheritdoc
 	 */
 	public function getScopes()
 	{
@@ -124,12 +122,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 	}
 
 	/**
-	 * The 2-letter ISO code (ISO 639-1) for the language the OAuth2 server uses for UI localization.
-	 *
-	 * @return string the ISO code.
+	 * @inheritdoc
 	 */
-	public function getLanguageIsoCode()
-	{
-		return $this->_languageCode;
-	}
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+	/**
+	 * @inheritdoc
+	 */
+    public function getAccount()
+    {
+        return $this->account;
+    }
 }

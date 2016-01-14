@@ -1,3 +1,4 @@
+<?php
 /**
  * Copyright (c) 2015, Nosto Solutions Ltd
  * All rights reserved.
@@ -33,32 +34,52 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-Ext.define('Shopware.apps.NostoTagging.model.Account', {
-    extend: 'Ext.data.Model',
-    idProperty: 'id',
-    fields: [
-        { name: 'id', type: 'int' },
-        { name: 'name', type: 'string' },
-        { name: 'url', type: 'string' },
-        { name: 'email', type: 'string' },
-        { name: 'shopId', type: 'int' },
-        { name: 'shopName', type: 'string' }
-    ],
-    proxy: {
-        type: 'ajax',
-        api: {
-            create: '{url action=createAccount}',
-            update: '{url action=createAccount}',
-            destroy: '{url action=deleteAccount}'
-        },
-        reader: {
-            idProperty: 'id',
-            type: 'json',
-            root: 'data'
-        },
-        writer: {
-            type: 'json',
-            writeAllFields: true
-        }
-    }
-});
+/**
+ * Order confirmation service. Used to send order information to Nosto.
+ *
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+ *
+ * @package Shopware
+ * @subpackage Plugins_Frontend
+ * @author Nosto Solutions Ltd <shopware@nosto.com>
+ * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
+ */
+class Shopware_Plugins_Frontend_NostoTagging_Components_Service_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
+{
+	/**
+	 * Sends an order confirmation API call to Nosto for an order.
+	 *
+	 * @param Shopware\Models\Order\Order $order the order model.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
+	 */
+	public function confirm(Shopware\Models\Order\Order $order)
+	{
+		$shop = $order->getShop();
+		if (is_null($shop)) {
+			return;
+		}
+
+		$accountHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
+		$account = $accountHelper->findAccount($shop);
+
+		if (!is_null($account)) {
+			$nostoAccount = $accountHelper->convertToNostoAccount($account);
+			try {
+				$attribute = Shopware()
+					->Models()
+					->getRepository('Shopware\Models\Attribute\Order')
+					->findOneBy(array('orderId' => $order->getId()));
+				$customerId = (!is_null($attribute)) ? $attribute->getNostoCustomerID() : null;
+
+				$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+				$model->loadData($order);
+
+				$service = new NostoServiceOrder($nostoAccount);
+				$service->confirm($model, $customerId);
+			} catch (NostoException $e) {
+				Shopware()->Pluginlogger()->error($e);
+			}
+		}
+	}
+}

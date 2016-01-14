@@ -38,40 +38,143 @@
  * Model for shopping cart information. This is used when compiling the info
  * about carts that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopware_Plugins_Frontend_NostoTagging_Components_Base
 {
 	/**
 	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] line items in the cart.
 	 */
-	protected $_lineItems = array();
+	protected $lineItems = array();
 
 	/**
 	 * Loads the cart line items from the order baskets.
 	 *
 	 * @param \Shopware\Models\Order\Basket[] $baskets the users basket items.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop the basket resides in.
 	 */
-	public function loadData(array $baskets)
+	public function loadData(array $baskets, \Shopware\Models\Shop\Shop $shop)
 	{
-		$currency = Shopware()->Shop()->getCurrency()->getCurrency();
 		foreach ($baskets as $basket) {
-			$item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
-			$item->loadData($basket, $currency);
-			$this->_lineItems[] = $item;
+			$this->lineItems[] = $this->buildItem($basket, $shop);
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCart' => $this,
+				'baskets' => $baskets,
+				'shop' => $shop,
+			)
+		);
 	}
 
 	/**
+	 * Builds a line item from a shop basket.
+	 *
+	 * @param \Shopware\Models\Order\Basket $basket the basket model.
+	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
+	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
+	 */
+	protected function buildItem(\Shopware\Models\Order\Basket $basket, \Shopware\Models\Shop\Shop $shop)
+	{
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Price $helperPrice */
+		$helperPrice = $this->plugin()->helper('price');
+		/** @var Shopware_Plugins_Frontend_NostoTagging_Components_Currency $helperCurrency */
+		$helperCurrency = $this->plugin()->helper('currency');
+
+		$productId = -1;
+		if ($basket->getArticleId() > 0) {
+			$article = Shopware()
+				->Models()
+				->find(
+					'Shopware\Models\Article\Article',
+					$basket->getArticleId()
+				);
+			if (!empty($article)) {
+				$productId = $article->getMainDetail()->getNumber();
+			}
+		}
+
+		$defaultCurrency = $helperCurrency->getShopDefaultCurrency($shop);
+		$unitPrice = $helperPrice->round(
+			$helperPrice->convertCurrency(
+				new NostoPrice($basket->getPrice()),
+				$defaultCurrency,
+				$shop->getCurrency()
+			)
+		);
+
+		return new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem(
+			$productId,
+			(int)$basket->getQuantity(),
+			(string)$basket->getArticleName(),
+			$unitPrice,
+			new NostoCurrencyCode($defaultCurrency->getCurrency())
+		);
+	}
+
+	/**
+	 * Returns the cart line items.
+	 *
 	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] the line items in the cart.
 	 */
 	public function getLineItems()
 	{
-		return $this->_lineItems;
+		return $this->lineItems;
+	}
+
+	/**
+	 * Sets the cart line items.
+	 *
+	 * This replaces any existing ones.
+	 *
+	 * Usage:
+	 * $object->setLineItems(array(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item [, ... ]))
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] $lineItems the items.
+	 */
+	public function setLineItems(array $lineItems)
+	{
+		$this->lineItems = array();
+		foreach ($lineItems as $lineItem) {
+			$this->addLineItem($lineItem);
+		}
+	}
+
+	/**
+	 * Adds a new item to the cart tagging.
+	 *
+	 * Usage:
+	 * $object->addLineItem(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item);
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item the new item.
+	 */
+	public function addLineItem(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem $item)
+	{
+		$this->lineItems[] = $item;
+	}
+
+	/**
+	 * Removes a line item at given index.
+	 *
+	 * Usage:
+	 * $object->removeLineItemAt(0);
+	 *
+	 * @param int $index the index of the line item in the list.
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function removeLineItemAt($index)
+	{
+		if (!isset($this->lineItems[$index])) {
+			throw new InvalidArgumentException('No line item found at given index.');
+		}
+		unset($this->lineItems[$index]);
 	}
 }
