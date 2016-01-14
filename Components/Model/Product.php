@@ -56,47 +56,47 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var string absolute url to the product page.
 	 */
-	protected $_url;
+	protected $url;
 
 	/**
 	 * @var string product object id.
 	 */
-	protected $_productId;
+	protected $productId;
 
 	/**
 	 * @var string product name.
 	 */
-	protected $_name;
+	protected $name;
 
 	/**
 	 * @var string absolute url to the product image.
 	 */
-	protected $_imageUrl;
+	protected $imageUrl;
 
 	/**
 	 * @var string product price, discounted including vat.
 	 */
-	protected $_price;
+	protected $price;
 
 	/**
 	 * @var string product list price, including vat.
 	 */
-	protected $_listPrice;
+	protected $listPrice;
 
 	/**
 	 * @var string the currency iso code.
 	 */
-	protected $_currencyCode;
+	protected $currencyCode;
 
 	/**
 	 * @var string product availability (use constants).
 	 */
-	protected $_availability;
+	protected $availability;
 
 	/**
 	 * @var array list of product tags.
 	 */
-	protected $_tags = array(
+	protected $tags = array(
 		'tag1' => array(),
 		'tag2' => array(),
 		'tag3' => array(),
@@ -105,27 +105,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var array list of product category strings.
 	 */
-	protected $_categories = array();
+	protected $categories = array();
 
 	/**
 	 * @var string the product short description.
 	 */
-	protected $_shortDescription;
+	protected $shortDescription;
 
 	/**
 	 * @var string the product description.
 	 */
-	protected $_description;
+	protected $description;
 
 	/**
 	 * @var string the product brand name.
 	 */
-	protected $_brand;
+	protected $brand;
 
 	/**
 	 * @var string the product publish date.
 	 */
-	protected $_datePublished;
+	protected $datePublished;
 
 	/**
 	 * @inheritdoc
@@ -161,20 +161,30 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$shop = Shopware()->Shop();
 		}
 
-		$this->assignId($article);
-		$this->_url = $this->assembleProductUrl($article, $shop);
-		$this->_name = $article->getName();
-		$this->_imageUrl = $this->assembleImageUrl($article, $shop);
-		$this->_price = $this->calcPriceInclTax($article, 'price');
-		$this->_listPrice = $this->calcPriceInclTax($article, 'listPrice');
-		$this->_currencyCode = $shop->getCurrency()->getCurrency();
-		$this->_availability = $this->checkAvailability($article);
-		$this->_tags['tag1'] = $this->buildTags($article);
-		$this->_categories = $this->buildCategoryPaths($article, $shop);
-		$this->_shortDescription = $article->getDescription();
-		$this->_description = $article->getDescriptionLong();
-		$this->_brand = $article->getSupplier()->getName();
-		$this->_datePublished = $article->getAdded()->format('Y-m-d');
+		$this->productId = $article->getMainDetail()->getNumber();
+		$this->url = $this->assembleProductUrl($article, $shop);
+		$this->name = $article->getName();
+		$this->imageUrl = $this->assembleImageUrl($article, $shop);
+		$this->currencyCode = $shop->getCurrency()->getCurrency();
+		$this->price = $this->calcPriceInclTax($article, 'price');
+		$this->listPrice = $this->calcPriceInclTax($article, 'listPrice');
+		$this->currencyCode = $shop->getCurrency()->getCurrency();
+		$this->availability = $this->checkAvailability($article);
+		$this->tags['tag1'] = $this->buildTags($article);
+		$this->categories = $this->buildCategoryPaths($article, $shop);
+		$this->shortDescription = $article->getDescription();
+		$this->description = $article->getDescriptionLong();
+		$this->brand = $article->getSupplier()->getName();
+		$this->datePublished = $article->getAdded()->format('Y-m-d');
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoProduct' => $this,
+				'article' => $article,
+				'shop' => $shop,
+			)
+		);
 	}
 
 	/**
@@ -342,23 +352,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * Assigns an ID for the model from an article.
-	 *
-	 * This method exists in order to expose a public API to change the ID.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 */
-	public function assignId(\Shopware\Models\Article\Article $article)
-	{
-		$this->_productId = $article->getMainDetail()->getNumber();
-	}
-
-	/**
 	 * @inheritdoc
 	 */
 	public function getUrl()
 	{
-		return $this->_url;
+		return $this->url;
 	}
 
 	/**
@@ -366,7 +364,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getProductId()
 	{
-		return $this->_productId;
+		return $this->productId;
 	}
 
 	/**
@@ -374,7 +372,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getName()
 	{
-		return $this->_name;
+		return $this->name;
 	}
 
 	/**
@@ -382,7 +380,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getImageUrl()
 	{
-		return $this->_imageUrl;
+		return $this->imageUrl;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getThumbUrl()
+	{
+		return null;
 	}
 
 	/**
@@ -390,7 +396,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getPrice()
 	{
-		return $this->_price;
+		return $this->price;
 	}
 
 	/**
@@ -398,7 +404,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getListPrice()
 	{
-		return $this->_listPrice;
+		return $this->listPrice;
 	}
 
 	/**
@@ -406,7 +412,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getCurrencyCode()
 	{
-		return $this->_currencyCode;
+		return $this->currencyCode;
 	}
 
 	/**
@@ -414,7 +420,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getAvailability()
 	{
-		return $this->_availability;
+		return $this->availability;
 	}
 
 	/**
@@ -422,7 +428,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getTags()
 	{
-		return $this->_tags;
+		return $this->tags;
 	}
 
 	/**
@@ -430,7 +436,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getCategories()
 	{
-		return $this->_categories;
+		return $this->categories;
 	}
 
 	/**
@@ -438,7 +444,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getShortDescription()
 	{
-		return $this->_shortDescription;
+		return $this->shortDescription;
 	}
 
 	/**
@@ -446,7 +452,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getDescription()
 	{
-		return $this->_description;
+		return $this->description;
 	}
 
 	/**
@@ -455,11 +461,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function getFullDescription()
 	{
 		$descriptions = array();
-		if (!empty($this->_shortDescription)) {
-			$descriptions[] = $this->_shortDescription;
+		if (!empty($this->shortDescription)) {
+			$descriptions[] = $this->shortDescription;
 		}
-		if (!empty($this->_description)) {
-			$descriptions[] = $this->_description;
+		if (!empty($this->description)) {
+			$descriptions[] = $this->description;
 		}
 		return implode(' ', $descriptions);
 	}
@@ -469,7 +475,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getBrand()
 	{
-		return $this->_brand;
+		return $this->brand;
 	}
 
 	/**
@@ -477,6 +483,321 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getDatePublished()
 	{
-		return $this->_datePublished;
+		return $this->datePublished;
+	}
+
+	/**
+	 * Sets the product ID from given product.
+	 *
+	 * The product ID must be an integer above zero.
+	 *
+	 * Usage:
+	 * $object->setProductId(1);
+	 *
+	 * @param int $id the product ID.
+	 */
+	public function setProductId($id)
+	{
+		$this->productId = $id;
+	}
+
+	/**
+	 * Sets the availability state of the product.
+	 *
+	 * The availability of the product must be either "InStock" or "OutOfStock"
+	 *
+	 * Usage:
+	 * $object->setAvailability('InStock');
+	 *
+	 * @param string $availability the availability.
+	 */
+	public function setAvailability($availability)
+	{
+		$this->availability = $availability;
+	}
+
+	/**
+	 * Sets the currency code (ISO 4217) the product is sold in.
+	 *
+	 * The currency must be in ISO 4217 format
+	 *
+	 * Usage:
+	 * $object->setCurrency('USD');
+	 *
+	 * @param string $currency the currency code.
+	 */
+	public function setCurrencyCode($currency)
+	{
+		$this->currencyCode = $currency;
+	}
+
+	/**
+	 * Sets the products published date.
+	 *
+	 * The date must be a date in the Y-m-d format
+	 *
+	 * Usage:
+	 * $object->setDatePublished('2015-01-01');
+	 *
+	 * @param string $date the date.
+	 */
+	public function setDatePublished($date)
+	{
+		$this->datePublished = $date;
+	}
+
+	/**
+	 * Sets the product price.
+	 *
+	 * The price must be a numeric value
+	 *
+	 * Usage:
+	 * $object->setPrice(99.99);
+	 *
+	 * @param integer $price the price.
+	 */
+	public function setPrice($price)
+	{
+		$this->price = $price;
+	}
+
+	/**
+	 * Sets the product list price.
+	 *
+	 ** The price must be a numeric value
+	 *
+	 * Usage:
+	 * $object->setListPrice(99.99);
+	 *
+	 * @param integer $listPrice the price.
+	 */
+	public function setListPrice($listPrice)
+	{
+		$this->listPrice = $listPrice;
+	}
+
+	/**
+	 * Sets all the tags to the `tag1` field.
+	 *
+	 * The tags must be an array of non-empty string values.
+	 *
+	 * Usage:
+	 * $object->setTag1(array('customTag1', 'customTag2'));
+	 *
+	 * @param array $tags the tags.
+	 */
+	public function setTag1(array $tags)
+	{
+		$this->tags['tag1'] = array();
+		foreach ($tags as $tag) {
+			$this->addTag1($tag);
+		}
+	}
+
+	/**
+	 * Adds a new tag to the `tag1` field.
+	 *
+	 * The tag must be a non-empty string value.
+	 *
+	 * Usage:
+	 * $object->addTag1('customTag');
+	 *
+	 * @param string $tag the tag to add.
+	 */
+	public function addTag1($tag)
+	{
+		$this->tags['tag1'][] = $tag;
+	}
+
+	/**
+	 * Sets all the tags to the `tag2` field.
+	 *
+	 * The tags must be an array of non-empty string values.
+	 *
+	 * Usage:
+	 * $object->setTag2(array('customTag1', 'customTag2'));
+	 *
+	 * @param array $tags the tags.
+	 */
+	public function setTag2(array $tags)
+	{
+		$this->tags['tag2'] = array();
+		foreach ($tags as $tag) {
+			$this->addTag2($tag);
+		}
+	}
+
+	/**
+	 * Adds a new tag to the `tag2` field.
+	 *
+	 * The tag must be a non-empty string value.
+	 *
+	 * Usage:
+	 * $object->addTag2('customTag');
+	 *
+	 * @param string $tag the tag to add.
+	 */
+	public function addTag2($tag)
+	{
+		$this->tags['tag2'][] = $tag;
+	}
+
+	/**
+	 * Sets all the tags to the `tag3` field.
+	 *
+	 * The tags must be an array of non-empty string values.
+	 *
+	 * Usage:
+	 * $object->setTag3(array('customTag1', 'customTag2'));
+	 *
+	 * @param array $tags the tags.
+	 */
+	public function setTag3(array $tags)
+	{
+		$this->tags['tag3'] = array();
+		foreach ($tags as $tag) {
+			$this->addTag3($tag);
+		}
+	}
+
+	/**
+	 * Adds a new tag to the `tag3` field.
+	 *
+	 * The tag must be a non-empty string value.
+	 *
+	 * Usage:
+	 * $object->addTag3('customTag');
+	 *
+	 * @param string $tag the tag to add.
+	 */
+	public function addTag3($tag)
+	{
+		$this->tags['tag3'][] = $tag;
+	}
+
+	/**
+	 * Sets the brand name of the product manufacturer.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setBrand('Example');
+	 *
+	 * @param string $brand the brand name.
+	 */
+	public function setBrand($brand)
+	{
+		$this->brand = $brand;
+	}
+
+	/**
+	 * Sets the product categories.
+	 *
+	 * The categories must be an array of non-empty string values. The
+	 * categories are expected to include the entire sub/parent category path,
+	 * e.g. "clothes/winter/coats".
+	 *
+	 * Usage:
+	 * $object->setCategories(array('clothes/winter/coats' [, ... ] ));
+	 *
+	 * @param array $categories the categories.
+	 */
+	public function setCategories(array $categories)
+	{
+		$this->categories = array();
+		foreach ($categories as $category) {
+			$this->addCategory($category);
+		}
+	}
+
+	/**
+	 * Adds a category to the product.
+	 *
+	 * The category must be a non-empty string and is expected to include the
+	 * entire sub/parent category path, e.g. "clothes/winter/coats".
+	 *
+	 * Usage:
+	 * $object->addCategory('clothes/winter/coats');
+	 *
+	 * @param string $category the category.
+	 */
+	public function addCategory($category)
+	{
+		$this->categories[] = $category;
+	}
+
+	/**
+	 * Sets the product name.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setName('Example');
+	 *
+	 * @param string $name the name.
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+	}
+
+	/**
+	 * Sets the URL for the product page in the shop that shows this product.
+	 *
+	 * The URL must be absolute, i.e. must include the protocol http or https.
+	 *
+	 * Usage:
+	 * $object->setUrl("http://my.shop.com/products/example.html");
+	 *
+	 * @param string $url the url.
+	 */
+	public function setUrl($url)
+	{
+		$this->url = $url;
+	}
+
+	/**
+	 * Sets the image URL for the product.
+	 *
+	 * The URL must be absolute, i.e. must include the protocol http or https.
+	 *
+	 * Usage:
+	 * $object->setImageUrl("http://my.shop.com/media/example.jpg");
+	 *
+	 * @param string $imageUrl the url.
+	 */
+	public function setImageUrl($imageUrl)
+	{
+		$this->imageUrl = $imageUrl;
+	}
+
+	/**
+	 * Sets the product description.
+	 *
+	 * The description must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setDescription('Lorem ipsum dolor sit amet, ludus possim ut ius, bonorum facilis mandamus nam ea. ... ');
+	 *
+	 * @param string $description the description.
+	 */
+	public function setDescription($description)
+	{
+		$this->description = $description;
+	}
+
+	/**
+	 * Sets the product `short` description.
+	 *
+	 * The description must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setShortDescription('Lorem ipsum dolor sit amet, ludus possim ut ius.');
+	 *
+	 * @param string $shortDescription the `short` description.
+	 */
+	public function setShortDescription($shortDescription)
+	{
+		$this->shortDescription = $shortDescription;
 	}
 }
