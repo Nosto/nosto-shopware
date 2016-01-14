@@ -386,14 +386,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @inheritdoc
 	 */
-	public function getThumbUrl()
-	{
-		return null;
-	}
-
-	/**
-	 * @inheritdoc
-	 */
 	public function getPrice()
 	{
 		return $this->price;
