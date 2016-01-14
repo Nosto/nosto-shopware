@@ -69,7 +69,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			try {
 				$op = new NostoOperationProduct($account);
 				$op->addProduct($model);
-				$op->create();
+				$op->upsert();
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}
@@ -100,7 +100,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			try {
 				$op = new NostoOperationProduct($account);
 				$op->addProduct($model);
-				$op->update();
+				$op->upsert();
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}
