@@ -73,6 +73,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
 			'controller' => 'nostotagging',
 			'action' => 'oauth'
 		));
+		$defaults = array(
+			'__shop' => $shop->getId()
+		);
+		$this->_redirectUrl = NostoHttpRequest::replaceQueryParamsInUrl($defaults, $this->_redirectUrl);
 		$this->_languageCode = strtolower(substr($locale->getLocale(), 0, 2));
 	}
 
