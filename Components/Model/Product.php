@@ -47,7 +47,7 @@
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface, NostoValidatableInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface
 {
 	const IN_STOCK = 'InStock';
 	const OUT_OF_STOCK = 'OutOfStock';
@@ -126,28 +126,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * @var string the product publish date.
 	 */
 	protected $_datePublished;
-
-	/**
-	 * @inheritdoc
-	 */
-	public function getValidationRules()
-	{
-		return array(
-			array(
-				array(
-					'_url',
-					'_productId',
-					'_name',
-					'_imageUrl',
-					'_price',
-					'_listPrice',
-					'_currencyCode',
-					'_availability',
-				),
-				'required'
-			)
-		);
-	}
 
 	/**
 	 * Loads the model data from an article and shop.
