@@ -121,6 +121,18 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 1.0.4
+* Fixed the order and product export controller to respect the shop parameters
+* Added support for MediaService in Shopware 5
+* Added functionality for overriding the product data
+* Added the shop-selection parameter to the signup and OAuth redirect URLs
+* Removed the validation for the products and orders during export.
+* Added recommendation slots to the order confirmation page
+* Used the upsert endpoint for product creation and updation
+* Fixed the offsets used when exporting orders and products.
+* Fix the email address use when creating a new account
+* Fixed a bug where the email address in account opening is omitted
+
 ### 1.0.3
 * Remove check for existing image file in the file system, as it makes it hard
 to debug image url issues
