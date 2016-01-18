@@ -151,6 +151,9 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             }
             switch (data.type) {
                 case 'newAccount':
+                    if (data.params && data.params.email) {
+                        account.set('email', data.params.email);
+                    }
                     account.save({
                         success: function(record, op) {
                             // why can't we get the model data binding to work?

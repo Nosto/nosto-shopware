@@ -40,6 +40,7 @@ Ext.define('Shopware.apps.NostoTagging.model.Account', {
         { name:'id', type:'int' },
         { name:'name', type:'string' },
         { name:'url', type:'string' },
+        { name: 'email', type: 'string' },
         { name:'shopId', type:'int' },
         { name:'shopName', type:'string' }
     ],

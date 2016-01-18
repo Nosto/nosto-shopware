@@ -144,12 +144,13 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
 		if (!empty($id)) {
 			$result->andWhere('\'details.number = ' . $id);
+			$result = $result->getQuery();
+		} else {
+			$result = $result->orderBy('articles.added', 'DESC')
+				->setFirstResult($currentOffset)
+				->setMaxResults($pageSize)
+				->getQuery();
 		}
-
-		$result = $result->orderBy('articles.added', 'DESC')
-			->setFirstResult($currentOffset)
-			->setMaxResults($pageSize)
-			->getQuery();
 
 		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
@@ -162,10 +163,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article);
-			$validator = new NostoValidator($model);
-			if ($validator->validate()) {
-				$collection[] = $model;
-			}
+			$collection[] = $model;
 		}
 
 		$this->export($collection);
@@ -210,10 +208,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 			$model->disableSpecialLineItems();
 			$model->loadData($order);
-			$validator = new NostoValidator($model);
-			if ($validator->validate()) {
-				$collection[] = $model;
-			}
+			$collection[] = $model;
 		}
 
 		$this->export($collection);

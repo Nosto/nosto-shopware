@@ -62,14 +62,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article, $shop);
-			$validator = new NostoValidator($model);
-			if (!$validator->validate()) {
-				continue;
-			}
 			try {
 				$op = new NostoOperationProduct($account);
 				$op->addProduct($model);
-				$op->create();
+				$op->upsert();
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}
@@ -93,14 +89,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article, $shop);
-			$validator = new NostoValidator($model);
-			if (!$validator->validate()) {
-				continue;
-			}
 			try {
 				$op = new NostoOperationProduct($account);
 				$op->addProduct($model);
-				$op->update();
+				$op->upsert();
 			} catch (NostoException $e) {
 				Shopware()->Pluginlogger()->error($e);
 			}
