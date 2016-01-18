@@ -156,10 +156,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
 		$collection = new NostoExportProductCollection();
+		$category = Shopware()->Shop()->getCategory();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Article\Article $article */
 			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', (int)$row['id']);
-			if (is_null($article)) {
+			if (is_null($article) || !in_array($category, $article->getAllCategories())) {
 				continue;
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
