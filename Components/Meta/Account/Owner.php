@@ -69,8 +69,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
 	 */
 	public function loadData($identity = null)
 	{
-		if (!is_null($identity))
-		{
+		if (!is_null($identity)) {
 			list($firstName, $lastName) = explode(' ', $identity->name);
 			$this->_firstName = $firstName;
 			$this->_lastName = $lastName;

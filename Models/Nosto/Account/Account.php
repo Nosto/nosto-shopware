@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert,
 class Account extends ModelEntity
 {
 	/**
-	 * @var integer $id
+	 * @var integer $_id
 	 *
 	 * @Assert\NotBlank
 	 *
@@ -55,39 +55,39 @@ class Account extends ModelEntity
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="IDENTITY")
 	 */
-	private $id;
+	private $_id;
 
 	/**
-	 * @var integer $shopId
+	 * @var integer $_shopId
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="shop_id", type="integer", nullable=false)
 	 */
-	private $shopId;
+	private $_shopId;
 
 	/**
-	 * @var string $name
+	 * @var string $_name
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="name", type="string", length=255, nullable=false)
 	 */
-	private $name;
+	private $_name;
 
 	/**
-	 * @var string $data
+	 * @var string $_data
 	 *
 	 * @ORM\Column(name="data", type="text", nullable=true)
 	 */
-	private $data;
+	private $_data;
 
 	/**
 	 * @return int
 	 */
 	public function getId()
 	{
-		return $this->id;
+		return $this->_id;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class Account extends ModelEntity
 	 */
 	public function setShopId($shopId)
 	{
-		$this->shopId = $shopId;
+		$this->_shopId = $shopId;
 		return $this;
 	}
 
@@ -105,7 +105,7 @@ class Account extends ModelEntity
 	 */
 	public function getShopId()
 	{
-		return $this->shopId;
+		return $this->_shopId;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class Account extends ModelEntity
 	 */
 	public function setName($name)
 	{
-		$this->name = $name;
+		$this->_name = $name;
 		return $this;
 	}
 
@@ -123,7 +123,7 @@ class Account extends ModelEntity
 	 */
 	public function getName()
 	{
-		return $this->name;
+		return $this->_name;
 	}
 
 	/**
@@ -132,7 +132,7 @@ class Account extends ModelEntity
 	 */
 	public function setData($data)
 	{
-		$this->data = json_encode($data);
+		$this->_data = json_encode($data);
 		return $this;
 	}
 
@@ -141,6 +141,6 @@ class Account extends ModelEntity
 	 */
 	public function getData()
 	{
-		return json_decode($this->data, true);
+		return json_decode($this->_data, true);
 	}
 }

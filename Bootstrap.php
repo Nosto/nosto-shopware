@@ -568,14 +568,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	protected function createMyMenu()
 	{
-		$this->createMenuItem(array(
+		$this->createMenuItem(
+			array(
 			'label' => 'Nosto',
 			'controller' => 'NostoTagging',
 			'action' => 'Index',
 			'active' => 1,
 			'parent' => $this->Menu()->findOneBy('id', 23), // Configuration
 			'class' => 'nosto--icon'
-		));
+			)
+		);
 	}
 
 	/**
@@ -739,11 +741,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	protected function addCartTagging(Enlight_View_Default $view)
 	{
 		/** @var Shopware\Models\Order\Basket[] $baskets */
-		$baskets = Shopware()->Models()->getRepository('Shopware\Models\Order\Basket')->findBy(array(
+		$baskets = Shopware()->Models()->getRepository('Shopware\Models\Order\Basket')->findBy(
+			array(
 			'sessionId' => (Shopware()->Session()->offsetExists('sessionId')
-				? Shopware()->Session()->offsetGet('sessionId')
+			? Shopware()->Session()->offsetGet('sessionId')
 				: Shopware()->SessionID())
-		));
+			)
+		);
 
 		$nostoCart = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart();
 		$nostoCart->loadData($baskets);

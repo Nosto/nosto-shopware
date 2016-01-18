@@ -63,11 +63,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 		if (empty($result)) {
 			return null;
 		}
-		$url = Shopware()->Front()->Router()->assemble(array(
+		$url = Shopware()->Front()->Router()->assemble(
+			array(
 			'module' => 'frontend',
 			'controller' => 'detail',
 			'sArticle' => $result[0]['id'],
-		));
+			)
+		);
 		return $this->addPreviewUrlQueryParams($shop, $url);
 	}
 
@@ -91,11 +93,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 		if (empty($result)) {
 			return null;
 		}
-		$url = Shopware()->Front()->Router()->assemble(array(
+		$url = Shopware()->Front()->Router()->assemble(
+			array(
 			'module' => 'frontend',
 			'controller' => 'cat',
 			'sCategory' => $result[0]['id'],
-		));
+			)
+		);
 		return $this->addPreviewUrlQueryParams($shop, $url);
 	}
 
@@ -107,11 +111,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 */
 	public function getCartPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
-		$url = Shopware()->Front()->Router()->assemble(array(
+		$url = Shopware()->Front()->Router()->assemble(
+			array(
 			'module' => 'frontend',
 			'controller' => 'checkout',
 			'action' => 'cart',
-		));
+			)
+		);
 		return $this->addPreviewUrlQueryParams($shop, $url);
 	}
 
@@ -123,10 +129,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 */
 	public function getSearchPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
-		$url = Shopware()->Front()->Router()->assemble(array(
+		$url = Shopware()->Front()->Router()->assemble(
+			array(
 			'module' => 'frontend',
 			'controller' => 'search',
-		));
+			)
+		);
 		return $this->addPreviewUrlQueryParams($shop, $url, array('sSearch' => 'nosto'));
 	}
 
@@ -138,9 +146,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 */
 	public function getFrontPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
-		$url = Shopware()->Front()->Router()->assemble(array(
+		$url = Shopware()->Front()->Router()->assemble(
+			array(
 			'module' => 'frontend',
-		));
+			)
+		);
 		return $this->addPreviewUrlQueryParams($shop, $url);
 	}
 

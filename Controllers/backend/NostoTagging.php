@@ -66,15 +66,17 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 	 */
 	public function loadSettingsAction()
 	{
-		$this->View()->assign(array(
+		$this->View()->assign(
+			array(
 			'success' => true,
 			'data' => array(
-				'postMessageOrigin' => Nosto::getEnvVariable(
-					'NOSTO_IFRAME_ORIGIN_REGEXP',
-					self::DEFAULT_IFRAME_ORIGIN_REGEXP
-				)
+			'postMessageOrigin' => Nosto::getEnvVariable(
+				'NOSTO_IFRAME_ORIGIN_REGEXP',
+				self::DEFAULT_IFRAME_ORIGIN_REGEXP
 			)
-		));
+			)
+			)
+		);
 	}
 
 	/**
@@ -181,15 +183,15 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 					'id' => $account->getId(),
 					'name' => $account->getName(),
 					'url' => $helper->buildAccountIframeUrl(
-							$shop,
-							$identity->locale,
-							$account,
-							$identity,
-							array(
+						$shop,
+						$identity->locale,
+						$account,
+						$identity,
+						array(
 								'message_type' => NostoMessage::TYPE_SUCCESS,
 								'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
 							)
-						),
+					),
 					'shopId' => $shop->getId(),
 					'shopName' => $shop->getName(),
 				);
@@ -227,15 +229,15 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 			$success = true;
 			$data = array(
 				'url' => $helper->buildAccountIframeUrl(
-						$shop,
-						$identity->locale,
-						null,
-						$identity,
-						array(
+					$shop,
+					$identity->locale,
+					null,
+					$identity,
+					array(
 							'message_type' => NostoMessage::TYPE_SUCCESS,
 							'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
 						)
-					),
+				),
 				'shopId' => $shop->getId(),
 				'shopName' => $shop->getName(),
 			);
