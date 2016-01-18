@@ -204,6 +204,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	{
 		$url = null;
 
+        /*
+		 * Media service was introduced in Shopware 5.1
+		 * @var \Shopware\Bundle\MediaBundle\MediaService()
+		 **/
+		try {
+			$mediaService = Shopware()->Container()
+				->get('shopware_media.media_service');
+		} catch (\Exception $E) {
+		}
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {
 			if (is_null($url) || $image->getMain() === 1) {
@@ -211,13 +220,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 				if (is_null($media)) {
 					continue;
 				}
+				if ($mediaService instanceof \Shopware\Bundle\MediaBundle\MediaServiceInterface) {
+					$url = $mediaService->getUrl($media->getPath());
+				} else {
+					$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
+					$protocol = ($secure ? 'https://' : 'http://');
+					$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
+					$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
+					$file = '/'.ltrim($media->getPath(), '/');
+					$url = $protocol.$host.$path.$file;
+				}
 				// Force SSL if it's enabled.
-				$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
-				$protocol = ($secure ? 'https://' : 'http://');
-				$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
-				$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
-				$file = '/'.ltrim($media->getPath(), '/');
-				$url = $protocol.$host.$path.$file;
 				if ($image->getMain() === 1) {
 					break;
 				}
