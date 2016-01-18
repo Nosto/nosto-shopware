@@ -134,21 +134,33 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	{
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
+		$id = $this->Request()->getParam('id', false);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('articles.id'))
 			->from('\Shopware\Models\Article\Article', 'articles')
-			->where('articles.active = 1')
-			->setFirstResult($currentOffset)
-			->setMaxResults($pageSize)
-			->getQuery()
-			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+			->innerJoin('\Shopware\Models\Article\Detail', 'details', \Doctrine\ORM\Query\Expr\Join::WITH, 'articles.mainDetailId = details.id')
+			->where('articles.active = 1');
+
+		if (!empty($id)) {
+			$result = $result->andWhere('details.number = :id')
+				->setParameter('id', $id)
+				->getQuery();
+		} else {
+			$result = $result->orderBy('articles.added', 'DESC')
+				->setFirstResult($currentOffset)
+				->setMaxResults($pageSize)
+				->getQuery();
+		}
+
+		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
 		$collection = new NostoExportProductCollection();
+		$category = Shopware()->Shop()->getCategory();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Article\Article $article */
 			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', (int)$row['id']);
-			if (is_null($article)) {
+			if (is_null($article) || !in_array($category, $article->getAllCategories())) {
 				continue;
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
@@ -167,22 +179,33 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	{
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
+		$id = $this->Request()->getParam('id', false);
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('orders.number'))
 			->from('\Shopware\Models\Order\Order', 'orders')
-			->where('orders.status >= 0')
-			->setFirstResult($currentOffset)
-			->setMaxResults($pageSize)
-			->getQuery()
-			->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+			->where('orders.status >= 0');
+
+		if (!empty($id)) {
+			$result = $result->andWhere('orders.number = :id')
+				->setParameter('id', $id)
+				->getQuery();
+		} else {
+			$result = $result->orderBy('orders.orderTime', 'DESC')
+				->setFirstResult($currentOffset)
+				->setMaxResults($pageSize)
+				->getQuery();
+		}
+
+		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
 		$collection = new NostoExportOrderCollection();
+		$shop = Shopware()->Shop()->getId();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Order\Order $order */
 			$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
 				->findOneBy(array('number' => $row['number']));
-			if (is_null($order)) {
+			if (is_null($order) || $order->getShop()->getId() != $shop) {
 				continue;
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
@@ -210,4 +233,5 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		}
 		die();
 	}
+
 }
