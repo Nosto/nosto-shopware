@@ -211,9 +211,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		try {
 			$mediaService = Shopware()->Container()
 				->get('shopware_media.media_service');
-			$userMediaService = true;
 		} catch (\Exception $E) {
-			$userMediaService = false;
 		}
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {
@@ -222,7 +220,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 				if (is_null($media)) {
 					continue;
 				}
-				if ($userMediaService === true) {
+				if ($mediaService instanceof \Shopware\Bundle\MediaBundle\MediaServiceInterface) {
 					$url = $mediaService->getUrl($media->getPath());
 				} else {
 					$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
