@@ -134,43 +134,22 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	{
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
-		$currentPage = (int)($currentOffset / $pageSize);
 		$id = $this->Request()->getParam('id', false);
-		$ids = $this->Request()->getParam('ids', false);
-
-		$where = 'articles.active = :active';
-		$bindings = array(':active' => 1);
-		$andWheres = array();
-
-		if (!empty($ids)) {
-			$productIds = $this->convertToArray($ids);
-			$andWheres[] = 'details.number IN (:productIds)';
-			$bindings[':productIds'] =  $productIds;
-		}
-
-		if (!empty($id)) {
-			$andWheres[] = 'details.number = :productId';
-			$bindings[':productId'] =  $id;
-		}
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('articles.id'))
 			->from('\Shopware\Models\Article\Article', 'articles')
 			->innerJoin('\Shopware\Models\Article\Detail', 'details', \Doctrine\ORM\Query\Expr\Join::WITH, 'articles.id = details.articleId')
-			->where($where);
+			->where('articles.active = 1');
 
-		foreach ($andWheres as $andWhere) {
-			$result = $result->andWhere($andWhere);
+		if (!empty($id)) {
+			$result->andWhere('\'details.number = ' . $id);
 		}
 
 		$result = $result->orderBy('articles.added', 'DESC')
-			->setFirstResult($currentPage)
+			->setFirstResult($currentOffset)
 			->setMaxResults($pageSize)
 			->getQuery();
-
-		foreach ($bindings as $key=>$val) {
-			$result = $result->setParameter($key, $val);
-		}
 
 		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
@@ -202,40 +181,21 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
 		$id = $this->Request()->getParam('id', false);
-		$ids = $this->Request()->getParam('ids', false);
-
-		$currentPage = (int)($currentOffset / $pageSize);
-
-		$where = 'orders.status >= :status';
-		$bindings = array(':status' => 0);
-		$andWheres = array();
-
-		if (!empty($ids)) {
-			$orderIds = $this->convertToArray($ids);
-			$andWheres[] = 'orders.number IN (:orderNumbers)';
-			$bindings[':orderNumbers'] =  $orderIds;
-		}
-
-		if (!empty($id)) {
-			$andWheres[] = 'orders.number = :orderNumber';
-			$bindings[':orderNumber'] =  $id;
-		}
 
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('orders.number'))
 			->from('\Shopware\Models\Order\Order', 'orders')
-			->where('orders.status >= :status');
-		foreach ($andWheres as $andWhere) {
-			$result = $result->andWhere($andWhere);
-		}
-		$result = $result->orderBy('orders.orderTime', 'DESC')
-			->setFirstResult($currentPage)
-			->setMaxResults($pageSize)
-			->getQuery();
-		foreach ($bindings as $key=>$val) {
-			$result = $result->setParameter($key, $val);
-		}
+			->where('orders.status >= 0');
 
+		if (!empty($id)) {
+			$result->andWhere('orders.number = ' . $id);
+			$result = $result->getQuery();
+		} else {
+			$result = $result->orderBy('orders.orderTime', 'DESC')
+				->setFirstResult($currentOffset)
+				->setMaxResults($pageSize)
+				->getQuery();
+		}
 
 		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
@@ -274,24 +234,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			echo $cipherText;
 		}
 		die();
-	}
-
-	/**
-	 * Convert a comma separated string into array & removes possible duplicates
-	 *
-	 * @param mixed $ids
-	 * @return array
-	 */
-	private function convertToArray($ids)
-	{
-		if (!is_array($ids)) {
-			$ids = explode(',', $ids);
-		}
-		if (!is_array($ids)) {
-			return array();
-		}
-
-		return array_unique($ids);
 	}
 
 }
