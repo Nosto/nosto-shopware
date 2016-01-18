@@ -143,9 +143,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			->where('articles.active = 1');
 
 		if (!empty($id)) {
-			$result = $result->andWhere('details.number = :id');
-			$result = $result->setParameter('id', $id);
-			$result = $result->getQuery();
+			$result = $result->andWhere('details.number = :id')
+				->setParameter('id', $id)
+				->getQuery();
 		} else {
 			$result = $result->orderBy('articles.added', 'DESC')
 				->setFirstResult($currentOffset)
@@ -186,9 +186,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 			->where('orders.status >= 0');
 
 		if (!empty($id)) {
-			$result = $result->andWhere('orders.number = :id');
-			$result = $result->setParameter('id', $id);
-			$result = $result->getQuery();
+			$result = $result->andWhere('orders.number = :id')
+				->setParameter('id', $id)
+				->getQuery();
 		} else {
 			$result = $result->orderBy('orders.orderTime', 'DESC')
 				->setFirstResult($currentOffset)
