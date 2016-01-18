@@ -175,7 +175,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	 */
 	public function exportOrdersAction()
 	{
-		new \Shopware\Models\Attribute\Order();
 		$pageSize = (int)$this->Request()->getParam('limit', 100);
 		$currentOffset = (int)$this->Request()->getParam('offset', 0);
 		$id = $this->Request()->getParam('id', false);
