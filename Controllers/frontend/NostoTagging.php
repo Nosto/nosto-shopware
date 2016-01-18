@@ -139,7 +139,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('articles.id'))
 			->from('\Shopware\Models\Article\Article', 'articles')
-			->innerJoin('\Shopware\Models\Article\Detail', 'details', \Doctrine\ORM\Query\Expr\Join::WITH, 'articles.id = details.articleId')
+			->innerJoin('\Shopware\Models\Article\Detail', 'details', \Doctrine\ORM\Query\Expr\Join::WITH, 'articles.mainDetailId = details.id')
 			->where('articles.active = 1');
 
 		if (!empty($id)) {
