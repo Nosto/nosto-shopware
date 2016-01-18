@@ -200,11 +200,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
 		$collection = new NostoExportOrderCollection();
+		$shop = Shopware()->Shop()->getId();
 		foreach ($result as $row) {
 			/** @var Shopware\Models\Order\Order $order */
 			$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
 				->findOneBy(array('number' => $row['number']));
-			if (is_null($order)) {
+			if (is_null($order) || $order->getShop()->getId() != $shop) {
 				continue;
 			}
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
