@@ -56,47 +56,47 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var string absolute url to the product page.
 	 */
-	protected $_url;
+	protected $url; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product object id.
 	 */
-	protected $_productId;
+	protected $productId; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product name.
 	 */
-	protected $_name;
+	protected $name; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string absolute url to the product image.
 	 */
-	protected $_imageUrl;
+	protected $imageUrl; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product price, discounted including vat.
 	 */
-	protected $_price;
+	protected $price; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product list price, including vat.
 	 */
-	protected $_listPrice;
+	protected $listPrice; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the currency iso code.
 	 */
-	protected $_currencyCode;
+	protected $currencyCode; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product availability (use constants).
 	 */
-	protected $_availability;
+	protected $availability; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var array list of product tags.
 	 */
-	protected $_tags = array(
+	protected $tags = array( //@codingStandardsIgnoreLine
 		'tag1' => array(),
 		'tag2' => array(),
 		'tag3' => array(),
@@ -105,27 +105,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var array list of product category strings.
 	 */
-	protected $_categories = array();
+	protected $categories = array(); //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product short description.
 	 */
-	protected $_shortDescription;
+	protected $shortDescription; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product description.
 	 */
-	protected $_description;
+	protected $description; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product brand name.
 	 */
-	protected $_brand;
+	protected $brand; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product publish date.
 	 */
-	protected $_datePublished;
+	protected $datePublished; //@codingStandardsIgnoreLine
 
 	/**
 	 * Loads the model data from an article and shop.
@@ -139,21 +139,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$shop = Shopware()->Shop();
 		}
 
-		$this->_productId = $article->getMainDetail()->getNumber();
-		$this->_url = $this->assembleProductUrl($article, $shop);
-		$this->_name = $article->getName();
-		$this->_imageUrl = $this->assembleImageUrl($article, $shop);
-		$this->_currencyCode = $shop->getCurrency()->getCurrency();
-		$this->_price = $this->calcPriceInclTax($article, 'price');
-		$this->_listPrice = $this->calcPriceInclTax($article, 'listPrice');
-		$this->_currencyCode = $shop->getCurrency()->getCurrency();
-		$this->_availability = $this->checkAvailability($article);
-		$this->_tags['tag1'] = $this->buildTags($article);
-		$this->_categories = $this->buildCategoryPaths($article, $shop);
-		$this->_shortDescription = $article->getDescription();
-		$this->_description = $article->getDescriptionLong();
-		$this->_brand = $article->getSupplier()->getName();
-		$this->_datePublished = $article->getAdded()->format('Y-m-d');
+		$this->productId = $article->getMainDetail()->getNumber();
+		$this->url = $this->assembleProductUrl($article, $shop);
+		$this->name = $article->getName();
+		$this->imageUrl = $this->assembleImageUrl($article, $shop);
+		$this->currencyCode = $shop->getCurrency()->getCurrency();
+		$this->price = $this->calcPriceInclTax($article, 'price');
+		$this->listPrice = $this->calcPriceInclTax($article, 'listPrice');
+		$this->currencyCode = $shop->getCurrency()->getCurrency();
+		$this->availability = $this->checkAvailability($article);
+		$this->tags['tag1'] = $this->buildTags($article);
+		$this->categories = $this->buildCategoryPaths($article, $shop);
+		$this->shortDescription = $article->getDescription();
+		$this->description = $article->getDescriptionLong();
+		$this->brand = $article->getSupplier()->getName();
+		$this->datePublished = $article->getAdded()->format('Y-m-d');
 
 		Enlight()->Events()->notify(
 			__CLASS__ . '_AfterLoad',
@@ -207,9 +207,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$url = null;
 
 		/*
-		 * Media service was introduced in Shopware 5.1
-		 * @var \Shopware\Bundle\MediaBundle\MediaService()
-		 **/
+         * Media service was introduced in Shopware 5.1
+         * @var \Shopware\Bundle\MediaBundle\MediaService()
+         **/
 		try {
 			$mediaService = Shopware()->Container()
 				->get('shopware_media.media_service');
@@ -349,7 +349,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getUrl()
 	{
-		return $this->_url;
+		return $this->url;
 	}
 
 	/**
@@ -357,7 +357,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getProductId()
 	{
-		return $this->_productId;
+		return $this->productId;
 	}
 
 	/**
@@ -365,7 +365,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getName()
 	{
-		return $this->_name;
+		return $this->name;
 	}
 
 	/**
@@ -373,7 +373,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getImageUrl()
 	{
-		return $this->_imageUrl;
+		return $this->imageUrl;
 	}
 
 	/**
@@ -381,7 +381,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getPrice()
 	{
-		return $this->_price;
+		return $this->price;
 	}
 
 	/**
@@ -389,7 +389,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getListPrice()
 	{
-		return $this->_listPrice;
+		return $this->listPrice;
 	}
 
 	/**
@@ -397,7 +397,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getCurrencyCode()
 	{
-		return $this->_currencyCode;
+		return $this->currencyCode;
 	}
 
 	/**
@@ -405,7 +405,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getAvailability()
 	{
-		return $this->_availability;
+		return $this->availability;
 	}
 
 	/**
@@ -413,7 +413,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getTags()
 	{
-		return $this->_tags;
+		return $this->tags;
 	}
 
 	/**
@@ -421,7 +421,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getCategories()
 	{
-		return $this->_categories;
+		return $this->categories;
 	}
 
 	/**
@@ -429,7 +429,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getShortDescription()
 	{
-		return $this->_shortDescription;
+		return $this->shortDescription;
 	}
 
 	/**
@@ -437,7 +437,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getDescription()
 	{
-		return $this->_description;
+		return $this->description;
 	}
 
 	/**
@@ -446,11 +446,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function getFullDescription()
 	{
 		$descriptions = array();
-		if (!empty($this->_shortDescription)) {
-			$descriptions[] = $this->_shortDescription;
+		if (!empty($this->shortDescription)) {
+			$descriptions[] = $this->shortDescription;
 		}
-		if (!empty($this->_description)) {
-			$descriptions[] = $this->_description;
+		if (!empty($this->description)) {
+			$descriptions[] = $this->description;
 		}
 		return implode(' ', $descriptions);
 	}
@@ -460,7 +460,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getBrand()
 	{
-		return $this->_brand;
+		return $this->brand;
 	}
 
 	/**
@@ -468,7 +468,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function getDatePublished()
 	{
-		return $this->_datePublished;
+		return $this->datePublished;
 	}
 
 	/**
@@ -483,7 +483,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setProductId($id)
 	{
-		$this->_productId = $id;
+		$this->productId = $id;
 	}
 
 	/**
@@ -498,7 +498,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setAvailability($availability)
 	{
-		$this->_availability = $availability;
+		$this->availability = $availability;
 	}
 
 	/**
@@ -513,7 +513,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setCurrencyCode($currency)
 	{
-		$this->_currencyCode = $currency;
+		$this->currencyCode = $currency;
 	}
 
 	/**
@@ -528,7 +528,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setDatePublished($date)
 	{
-		$this->_datePublished = $date;
+		$this->datePublished = $date;
 	}
 
 	/**
@@ -543,7 +543,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setPrice($price)
 	{
-		$this->_price = $price;
+		$this->price = $price;
 	}
 
 	/**
@@ -558,7 +558,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setListPrice($listPrice)
 	{
-		$this->_listPrice = $listPrice;
+		$this->listPrice = $listPrice;
 	}
 
 	/**
@@ -573,7 +573,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setTag1(array $tags)
 	{
-		$this->_tags['tag1'] = array();
+		$this->tags['tag1'] = array();
 		foreach ($tags as $tag) {
 			$this->addTag1($tag);
 		}
@@ -591,7 +591,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function addTag1($tag)
 	{
-		$this->_tags['tag1'][] = $tag;
+		$this->tags['tag1'][] = $tag;
 	}
 
 	/**
@@ -606,7 +606,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setTag2(array $tags)
 	{
-		$this->_tags['tag2'] = array();
+		$this->tags['tag2'] = array();
 		foreach ($tags as $tag) {
 			$this->addTag2($tag);
 		}
@@ -624,7 +624,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function addTag2($tag)
 	{
-		$this->_tags['tag2'][] = $tag;
+		$this->tags['tag2'][] = $tag;
 	}
 
 	/**
@@ -639,7 +639,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setTag3(array $tags)
 	{
-		$this->_tags['tag3'] = array();
+		$this->tags['tag3'] = array();
 		foreach ($tags as $tag) {
 			$this->addTag3($tag);
 		}
@@ -657,7 +657,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function addTag3($tag)
 	{
-		$this->_tags['tag3'][] = $tag;
+		$this->tags['tag3'][] = $tag;
 	}
 
 	/**
@@ -672,7 +672,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setBrand($brand)
 	{
-		$this->_brand = $brand;
+		$this->brand = $brand;
 	}
 
 	/**
@@ -689,7 +689,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setCategories(array $categories)
 	{
-		$this->_categories = array();
+		$this->categories = array();
 		foreach ($categories as $category) {
 			$this->addCategory($category);
 		}
@@ -708,7 +708,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function addCategory($category)
 	{
-		$this->_categories[] = $category;
+		$this->categories[] = $category;
 	}
 
 	/**
@@ -723,7 +723,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setName($name)
 	{
-		$this->_name = $name;
+		$this->name = $name;
 	}
 
 	/**
@@ -738,7 +738,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setUrl($url)
 	{
-		$this->_url = $url;
+		$this->url = $url;
 	}
 
 	/**
@@ -753,7 +753,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setImageUrl($imageUrl)
 	{
-		$this->_imageUrl = $imageUrl;
+		$this->imageUrl = $imageUrl;
 	}
 
 	/**
@@ -768,7 +768,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setDescription($description)
 	{
-		$this->_description = $description;
+		$this->description = $description;
 	}
 
 	/**
@@ -783,6 +783,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function setShortDescription($shortDescription)
 	{
-		$this->_shortDescription = $shortDescription;
+		$this->shortDescription = $shortDescription;
 	}
 }
