@@ -55,7 +55,7 @@ class Setting extends ModelEntity
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="IDENTITY")
 	 */
-	private $id;
+	private $id; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string $name
@@ -64,14 +64,14 @@ class Setting extends ModelEntity
 	 *
 	 * @ORM\Column(name="name", type="string", length=255, nullable=false)
 	 */
-	private $name;
+	private $name; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string $value
 	 *
 	 * @ORM\Column(name="value", type="text", nullable=true)
 	 */
-	private $value;
+	private $value; //@codingStandardsIgnoreLine
 
 	/**
 	 * @return int

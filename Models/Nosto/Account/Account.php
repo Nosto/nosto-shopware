@@ -55,7 +55,7 @@ class Account extends ModelEntity
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="IDENTITY")
 	 */
-	private $id;
+	private $id; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var integer $shopId
@@ -64,7 +64,7 @@ class Account extends ModelEntity
 	 *
 	 * @ORM\Column(name="shop_id", type="integer", nullable=false)
 	 */
-	private $shopId;
+	private $shopId; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string $name
@@ -73,14 +73,14 @@ class Account extends ModelEntity
 	 *
 	 * @ORM\Column(name="name", type="string", length=255, nullable=false)
 	 */
-	private $name;
+	private $name; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string $data
 	 *
 	 * @ORM\Column(name="data", type="text", nullable=true)
 	 */
-	private $data;
+	private $data; //@codingStandardsIgnoreLine
 
 	/**
 	 * @return int

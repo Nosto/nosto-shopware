@@ -47,7 +47,7 @@
  * @author Nosto Solutions Ltd <shopware@nosto.com>
  * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface, NostoValidatableInterface
 {
 	const IN_STOCK = 'InStock';
 	const OUT_OF_STOCK = 'OutOfStock';
@@ -56,47 +56,47 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var string absolute url to the product page.
 	 */
-	protected $url;
+	protected $url; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product object id.
 	 */
-	protected $productId;
+	protected $productId; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product name.
 	 */
-	protected $name;
+	protected $name; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string absolute url to the product image.
 	 */
-	protected $imageUrl;
+	protected $imageUrl; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product price, discounted including vat.
 	 */
-	protected $price;
+	protected $price; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product list price, including vat.
 	 */
-	protected $listPrice;
+	protected $listPrice; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the currency iso code.
 	 */
-	protected $currencyCode;
+	protected $currencyCode; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string product availability (use constants).
 	 */
-	protected $availability;
+	protected $availability; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var array list of product tags.
 	 */
-	protected $tags = array(
+	protected $tags = array( //@codingStandardsIgnoreLine
 		'tag1' => array(),
 		'tag2' => array(),
 		'tag3' => array(),
@@ -105,27 +105,35 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * @var array list of product category strings.
 	 */
-	protected $categories = array();
+	protected $categories = array(); //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product short description.
 	 */
-	protected $shortDescription;
+	protected $shortDescription; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product description.
 	 */
-	protected $description;
+	protected $description; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product brand name.
 	 */
-	protected $brand;
+	protected $brand; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string the product publish date.
 	 */
-	protected $datePublished;
+	protected $datePublished; //@codingStandardsIgnoreLine
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getValidationRules()
+	{
+		return array();
+	}
 
 	/**
 	 * Loads the model data from an article and shop.
@@ -174,13 +182,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	protected function assembleProductUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
 	{
-		$url = Shopware()->Front()->Router()->assemble(array(
+		$url = Shopware()->Front()->Router()->assemble(
+			array(
 			'module' => 'frontend',
 			'controller' => 'detail',
 			'sArticle' => $article->getId(),
 			// Force SSL if it's enabled.
 			'forceSecure' => true,
-		));
+			)
+		);
 		// Always add the "__shop" parameter so that the crawler can distinguish
 		// between products in different shops even if the host and path of the
 		// shops match.
@@ -204,14 +214,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	{
 		$url = null;
 
-        /*
-		 * Media service was introduced in Shopware 5.1
-		 * @var \Shopware\Bundle\MediaBundle\MediaService()
-		 **/
+		/*
+         * Media service was introduced in Shopware 5.1
+         * @var \Shopware\Bundle\MediaBundle\MediaService()
+         **/
 		try {
 			$mediaService = Shopware()->Container()
 				->get('shopware_media.media_service');
-		} catch (\Exception $E) {
+		} catch (\Exception $error) {
+			$mediaService = false;
 		}
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {

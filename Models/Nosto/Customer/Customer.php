@@ -55,7 +55,7 @@ class Customer extends ModelEntity
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="IDENTITY")
 	 */
-	private $id;
+	private $id; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string $sessionId
@@ -64,7 +64,7 @@ class Customer extends ModelEntity
 	 *
 	 * @ORM\Column(name="session_id", type="string", length=255, nullable=false)
 	 */
-	private $sessionId;
+	private $sessionId; //@codingStandardsIgnoreLine
 
 	/**
 	 * @var string $nostoId
@@ -73,7 +73,7 @@ class Customer extends ModelEntity
 	 *
 	 * @ORM\Column(name="nosto_id", type="string", length=255, nullable=false)
 	 */
-	private $nostoId;
+	private $nostoId; //@codingStandardsIgnoreLine
 
 	/**
 	 * @return int
