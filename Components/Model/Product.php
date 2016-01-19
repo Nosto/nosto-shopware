@@ -214,6 +214,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$mediaService = Shopware()->Container()
 				->get('shopware_media.media_service');
 		} catch (\Exception $error) {
+			$mediaService = false;
 		}
 		/** @var Shopware\Models\Article\Image $image */
 		foreach ($article->getImages() as $image) {
