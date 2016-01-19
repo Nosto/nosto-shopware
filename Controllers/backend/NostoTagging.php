@@ -188,9 +188,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 						$account,
 						$identity,
 						array(
-								'message_type' => NostoMessage::TYPE_SUCCESS,
-								'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
-							)
+							'message_type' => NostoMessage::TYPE_SUCCESS,
+							'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
+						)
 					),
 					'shopId' => $shop->getId(),
 					'shopName' => $shop->getName(),
@@ -234,9 +234,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 					null,
 					$identity,
 					array(
-							'message_type' => NostoMessage::TYPE_SUCCESS,
-							'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
-						)
+						'message_type' => NostoMessage::TYPE_SUCCESS,
+						'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
+					)
 				),
 				'shopId' => $shop->getId(),
 				'shopName' => $shop->getName(),

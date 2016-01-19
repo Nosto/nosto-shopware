@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert,
 class Setting extends ModelEntity
 {
 	/**
-	 * @var integer $_id
+	 * @var integer $id
 	 *
 	 * @Assert\NotBlank
 	 *
@@ -55,30 +55,30 @@ class Setting extends ModelEntity
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="IDENTITY")
 	 */
-	private $_id;
+	private $id; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var string $_name
+	 * @var string $name
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="name", type="string", length=255, nullable=false)
 	 */
-	private $_name;
+	private $name; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var string $_value
+	 * @var string $value
 	 *
 	 * @ORM\Column(name="value", type="text", nullable=true)
 	 */
-	private $_value;
+	private $value; //@codingStandardsIgnoreLine
 
 	/**
 	 * @return int
 	 */
 	public function getId()
 	{
-		return $this->_id;
+		return $this->id;
 	}
 
 	/**
@@ -86,7 +86,7 @@ class Setting extends ModelEntity
 	 */
 	public function getName()
 	{
-		return $this->_name;
+		return $this->name;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Setting extends ModelEntity
 	 */
 	public function setName($name)
 	{
-		$this->_name = $name;
+		$this->name = $name;
 		return $this;
 	}
 
@@ -104,7 +104,7 @@ class Setting extends ModelEntity
 	 */
 	public function getValue()
 	{
-		return $this->_value;
+		return $this->value;
 	}
 
 	/**
@@ -113,7 +113,7 @@ class Setting extends ModelEntity
 	 */
 	public function setValue($value)
 	{
-		$this->_value = $value;
+		$this->value = $value;
 		return $this;
 	}
 }

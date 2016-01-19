@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert,
 class Account extends ModelEntity
 {
 	/**
-	 * @var integer $_id
+	 * @var integer $id
 	 *
 	 * @Assert\NotBlank
 	 *
@@ -55,39 +55,39 @@ class Account extends ModelEntity
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="IDENTITY")
 	 */
-	private $_id;
+	private $id; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var integer $_shopId
+	 * @var integer $shopId
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="shop_id", type="integer", nullable=false)
 	 */
-	private $_shopId;
+	private $shopId; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var string $_name
+	 * @var string $name
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="name", type="string", length=255, nullable=false)
 	 */
-	private $_name;
+	private $name; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var string $_data
+	 * @var string $data
 	 *
 	 * @ORM\Column(name="data", type="text", nullable=true)
 	 */
-	private $_data;
+	private $data; //@codingStandardsIgnoreLine
 
 	/**
 	 * @return int
 	 */
 	public function getId()
 	{
-		return $this->_id;
+		return $this->id;
 	}
 
 	/**
@@ -96,7 +96,7 @@ class Account extends ModelEntity
 	 */
 	public function setShopId($shopId)
 	{
-		$this->_shopId = $shopId;
+		$this->shopId = $shopId;
 		return $this;
 	}
 
@@ -105,7 +105,7 @@ class Account extends ModelEntity
 	 */
 	public function getShopId()
 	{
-		return $this->_shopId;
+		return $this->shopId;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class Account extends ModelEntity
 	 */
 	public function setName($name)
 	{
-		$this->_name = $name;
+		$this->name = $name;
 		return $this;
 	}
 
@@ -123,7 +123,7 @@ class Account extends ModelEntity
 	 */
 	public function getName()
 	{
-		return $this->_name;
+		return $this->name;
 	}
 
 	/**
@@ -132,7 +132,7 @@ class Account extends ModelEntity
 	 */
 	public function setData($data)
 	{
-		$this->_data = json_encode($data);
+		$this->data = json_encode($data);
 		return $this;
 	}
 
@@ -141,6 +141,6 @@ class Account extends ModelEntity
 	 */
 	public function getData()
 	{
-		return json_decode($this->_data, true);
+		return json_decode($this->data, true);
 	}
 }

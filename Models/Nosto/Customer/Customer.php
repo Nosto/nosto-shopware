@@ -47,7 +47,7 @@ use Symfony\Component\Validator\Constraints as Assert,
 class Customer extends ModelEntity
 {
 	/**
-	 * @var integer $_id
+	 * @var integer $id
 	 *
 	 * @Assert\NotBlank
 	 *
@@ -55,32 +55,32 @@ class Customer extends ModelEntity
 	 * @ORM\Id
 	 * @ORM\GeneratedValue(strategy="IDENTITY")
 	 */
-	private $_id;
+	private $id; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var string $_sessionId
+	 * @var string $sessionId
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="session_id", type="string", length=255, nullable=false)
 	 */
-	private $_sessionId;
+	private $sessionId; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var string $_nostoId
+	 * @var string $nostoId
 	 *
 	 * @Assert\NotBlank
 	 *
 	 * @ORM\Column(name="nosto_id", type="string", length=255, nullable=false)
 	 */
-	private $_nostoId;
+	private $nostoId; //@codingStandardsIgnoreLine
 
 	/**
 	 * @return int
 	 */
 	public function getId()
 	{
-		return $this->_id;
+		return $this->id;
 	}
 
 	/**
@@ -88,7 +88,7 @@ class Customer extends ModelEntity
 	 */
 	public function getSessionId()
 	{
-		return $this->_sessionId;
+		return $this->sessionId;
 	}
 
 	/**
@@ -97,7 +97,7 @@ class Customer extends ModelEntity
 	 */
 	public function setSessionId($id)
 	{
-		$this->_sessionId = $id;
+		$this->sessionId = $id;
 		return $this;
 	}
 
@@ -106,7 +106,7 @@ class Customer extends ModelEntity
 	 */
 	public function getNostoId()
 	{
-		return $this->_nostoId;
+		return $this->nostoId;
 	}
 
 	/**
@@ -115,7 +115,7 @@ class Customer extends ModelEntity
 	 */
 	public function setNostoId($id)
 	{
-		$this->_nostoId = $id;
+		$this->nostoId = $id;
 		return $this;
 	}
 }
