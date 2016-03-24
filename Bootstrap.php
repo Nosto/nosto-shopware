@@ -48,6 +48,7 @@ require_once 'vendor/nosto/php-sdk/src/config.inc.php';
  */
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
+
 	const PLATFORM_NAME = 'shopware';
 
 	/**
@@ -83,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function getVersion()
 	{
-		return '1.0.4';
+		return '1.1.0';
 	}
 
 	/**
@@ -112,6 +113,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->createMyTables();
 		$this->createMyAttributes();
 		$this->createMyMenu();
+		$this->createMyEmotions();
 		$this->registerMyEvents();
 		return true;
 	}
@@ -516,6 +518,53 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		Shopware()->Models()->generateAttributeModels(
 			array('s_order_attributes')
 		);
+	}
+
+	/**
+	 * Creates needed emotions for Shopping World templates
+	 *
+	 * Run on install.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
+	 */
+	protected function createMyEmotions()
+	{
+		$component = $this->createEmotionComponent(
+			array(
+				'name' => 'Nosto Recommendation',
+				'template' => 'nosto_slot',
+				//'xtype' => 'emotion-nosto-recommendation',
+				'description' => 'Add Nosto recommendations to your Shop World templates...'
+			)
+		);
+		// ToDo - instructions & texts
+		$component->createTextField(
+			array(
+				'name' => 'slot_id',
+				'fieldLabel' => 'Slot Id',
+				'supportText' => 'E.g. frontpage-nosto-1, nosto-page-cart2',
+				'helpTitle' => 'Nosto recommendation slots',
+				'helpText' => '
+					Slot id is the id for div element....you can
+					customise and create new slots from Nosto\'s settings',
+				'defaultValue' => 'frontpage-nosto-1',
+				'allowBlank' => false
+			)
+		);
+
+		return true;
+	}
+
+	/**
+	 * Drops created emotions
+	 *
+	 * Run on uninstall.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::uninstall
+	 */
+	protected function dropMyEmotions()
+	{
+		// ToDo
 	}
 
 	/**

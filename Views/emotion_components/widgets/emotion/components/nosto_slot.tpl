@@ -1,0 +1,1 @@
+<div class="nosto_element" id="{$Data.slot_id}"></div>
