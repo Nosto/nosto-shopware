@@ -521,9 +521,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
-	 * Creates needed emotions for Shopping World templates
-	 *
-	 * Run on install.
+	 * Creates Nosto emotions for Shopping World templates
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 */
@@ -533,38 +531,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			array(
 				'name' => 'Nosto Recommendation',
 				'template' => 'nosto_slot',
-				//'xtype' => 'emotion-nosto-recommendation',
-				'description' => 'Add Nosto recommendations to your Shop World templates...'
+				'description' => 'Add Nosto recommendations to your Shopping World templates'
 			)
 		);
-		// ToDo - instructions & texts
 		$component->createTextField(
 			array(
 				'name' => 'slot_id',
-				'fieldLabel' => 'Slot Id',
-				'supportText' => 'E.g. frontpage-nosto-1, nosto-page-cart2',
-				'helpTitle' => 'Nosto recommendation slots',
+				'fieldLabel' => 'Nosto slot div ID',
+				'supportText' => 'E.g. frontpage-nosto-1, nosto-shopware-1',
+				'helpTitle' => 'Nosto recommendation slot',
 				'helpText' => '
-					Slot id is the id for div element....you can
-					customise and create new slots from Nosto\'s settings',
+					Nosto slot div ID is the id attribute of the element where
+					Nosto recommendations are populated. It is recommended that
+					you create new recommendation slot for Shopping World elements
+					from Nosto settings. You must have mathcing slot created in Nosto
+					settings.',
 				'defaultValue' => 'frontpage-nosto-1',
 				'allowBlank' => false
 			)
 		);
 
 		return true;
-	}
-
-	/**
-	 * Drops created emotions
-	 *
-	 * Run on uninstall.
-	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::uninstall
-	 */
-	protected function dropMyEmotions()
-	{
-		// ToDo
 	}
 
 	/**
