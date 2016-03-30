@@ -156,7 +156,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->listPrice = $this->calcPriceInclTax($article, 'listPrice');
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
 		$this->availability = $this->checkAvailability($article);
-		$this->tags['tag1'] = $this->buildTags($article);
+		$this->tags = $this->buildTags($article, $shop);
 		$this->categories = $this->buildCategoryPaths($article, $shop);
 		$this->shortDescription = $article->getDescription();
 		$this->description = $article->getDescriptionLong();
@@ -314,7 +314,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * @param \Shopware\Models\Article\Article $article the article model.
 	 * @return array
 	 */
-	protected function buildTags(\Shopware\Models\Article\Article $article)
+	protected function buildTags(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
 	{
 		$tags = array();
 
@@ -322,7 +322,47 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		// the shopping cart directly from the recommendations.
 		$configuratorSet = $article->getConfiguratorSet();
 		if (empty($configuratorSet)) {
-			$tags[] = self::ADD_TO_CART;
+			$tags1 = array(self::ADD_TO_CART);
+		}
+
+		$tags['tag1'] = $tags1;
+
+		$mainDetail = $article->getMainDetail();
+		$unit = $mainDetail->getUnit();
+
+		// Check that we got both a unit and a price.
+		if ($unit && $this->getPrice()) {
+			try {
+				$unitName = $unit->getUnit();
+				$purchaseUnit = (double)$mainDetail->getPurchaseUnit();
+				$referenceUnit = (double)$mainDetail->getReferenceUnit();
+				$price = $this->getPrice();
+				// Convert the price into the current displayed currency.
+				$price *= $shop->getCurrency()->getFactor();
+				$referencePrice = $price / $purchaseUnit * $referenceUnit;
+				$zendCurrency = new Zend_Currency(
+					$shop->getCurrency()->getCurrency(),
+					$shop->getLocale()->getLocale()
+				);
+				$zendCurrency->setFormat(
+					array(
+						'position' => ($shop->getCurrency()->getSymbolPosition() > 0
+							? $shop->getCurrency()->getSymbolPosition()
+							: 8)
+					)
+				);
+				$priceString = $zendCurrency->toCurrency($referencePrice);
+				$tags2 = array("{$priceString} / {$referenceUnit} {$unitName}");
+				$tags['tag2'] = $tags2;
+			} catch (\Exception $e) {
+				Shopware()->PluginLogger()->warning(
+					sprintf(
+						'Could not construct currency. Error was: %s (%s)',
+						$e->getMessage(),
+						$e->getCode()
+					)
+				);
+			}
 		}
 
 		return $tags;
