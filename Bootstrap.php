@@ -48,6 +48,7 @@ require_once 'vendor/nosto/php-sdk/src/config.inc.php';
  */
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
+
 	const PLATFORM_NAME = 'shopware';
 
 	/**
@@ -83,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function getVersion()
 	{
-		return '1.0.4';
+		return '1.1.0';
 	}
 
 	/**
@@ -112,6 +113,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->createMyTables();
 		$this->createMyAttributes();
 		$this->createMyMenu();
+		$this->createMyEmotions();
 		$this->registerMyEvents();
 		return true;
 	}
@@ -516,6 +518,40 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		Shopware()->Models()->generateAttributeModels(
 			array('s_order_attributes')
 		);
+	}
+
+	/**
+	 * Creates Nosto emotions for Shopping World templates
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
+	 */
+	protected function createMyEmotions()
+	{
+		$component = $this->createEmotionComponent(
+			array(
+				'name' => 'Nosto Recommendation',
+				'template' => 'nosto_slot',
+				'description' => 'Add Nosto recommendations to your Shopping World templates'
+			)
+		);
+		$component->createTextField(
+			array(
+				'name' => 'slot_id',
+				'fieldLabel' => 'Nosto slot div ID',
+				'supportText' => 'E.g. frontpage-nosto-1, nosto-shopware-1',
+				'helpTitle' => 'Nosto recommendation slot',
+				'helpText' => '
+					Nosto slot div ID is the id attribute of the element where
+					Nosto recommendations are populated. It is recommended that
+					you create new recommendation slot for Shopping World elements
+					from Nosto settings. You must have mathcing slot created in Nosto
+					settings.',
+				'defaultValue' => 'frontpage-nosto-1',
+				'allowBlank' => false
+			)
+		);
+
+		return true;
 	}
 
 	/**
