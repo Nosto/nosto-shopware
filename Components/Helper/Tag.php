@@ -65,10 +65,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
 		// the shopping cart directly from the recommendations.
 		$configuratorSet = $article->getConfiguratorSet();
 		if (empty($configuratorSet)) {
-			$tags1 = array(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product::ADD_TO_CART);
+			$tags['tag1'] = array(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product::ADD_TO_CART);
 		}
-
-		$tags['tag1'] = $tags1;
 
 		try{
 			$pricePerUnit = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price::generatePricePerUnit(
@@ -89,5 +87,4 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
 		}
 		return $tags;
 	}
-
 }
