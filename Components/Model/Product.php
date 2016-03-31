@@ -34,6 +34,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
+use \Shopware\Models\Article\Article as Article;
+use \Shopware\Models\Shop\Shop as Shop;
+
 /**
  * Model for product information. This is used when compiling the info about a
  * product that is sent to Nosto.
@@ -138,10 +145,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Loads the model data from an article and shop.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop the product is in.
+	 * @param Article $article the article model.
+	 * @param Shop $shop the shop the product is in.
 	 */
-	public function loadData(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop = null)
+	public function loadData(Article $article, Shop $shop = null)
 	{
 		if (is_null($shop)) {
 			$shop = Shopware()->Shop();
@@ -150,23 +157,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->productId = $article->getMainDetail()->getNumber();
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
-		$this->imageUrl = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image::assembleImageUrl(
-			$article,
-			$shop
-		);
+		$this->imageUrl = ImageHelper::assembleImageUrl($article, $shop);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
-		$this->price = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price::calcArticlePriceInclTax(
-			$article, 'price'
-		);
-		$this->listPrice = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price::calcArticlePriceInclTax(
-			$article, 'listPrice'
-		);
+		$this->price = PriceHelper::calcArticlePriceInclTax($article, PriceHelper::PRICE_TYPE_NORMAL);
+		$this->listPrice = PriceHelper::calcArticlePriceInclTax($article, PriceHelper::PRICE_TYPE_LIST);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
 		$this->availability = $this->checkAvailability($article);
-		$this->tags = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag::buildProductTags(
-			$article,
-			$shop
-		);
+		$this->tags = TagHelper::buildProductTags($article, $shop);
 		$this->categories = $this->buildCategoryPaths($article, $shop);
 		$this->shortDescription = $article->getDescription();
 		$this->description = $article->getDescriptionLong();
@@ -186,11 +183,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Assembles the product url based on article and shop.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
+	 * @param Article $article the article model.
+	 * @param Shop $shop the shop model.
 	 * @return string the url.
 	 */
-	protected function assembleProductUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	protected function assembleProductUrl(Article $article, Shop $shop)
 	{
 		$url = Shopware()->Front()->Router()->assemble(
 			array(
@@ -212,10 +209,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * The product is considered in stock if any of it's variations has a stock
 	 * value larger than zero.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param Article $article the article model.
 	 * @return string either "InStock" or "OutOfStock".
 	 */
-	protected function checkAvailability(\Shopware\Models\Article\Article $article)
+	protected function checkAvailability(Article $article)
 	{
 		/** @var \Shopware\Models\Article\Detail[] $details */
 		$details = Shopware()
@@ -236,14 +233,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * By "path" we mean the full tree path of the products categories and
 	 * sub-categories.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop the article is in.
+	 * @param Article $article the article model.
+	 * @param Shop $shop the shop the article is in.
 	 * @return array the paths or empty array if no categories where found.
 	 */
-	protected function buildCategoryPaths(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	protected function buildCategoryPaths(Article $article, Shop $shop)
 	{
 		$paths = array();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
+		$helper = new NostoCategory();
 		$shopCatId = $shop->getCategory()->getId();
 		/** @var Shopware\Models\Category\Category $category */
 		foreach ($article->getCategories() as $category) {
@@ -673,7 +670,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * The description must be a non-empty string.
 	 *
 	 * Usage:
-	 * $object->setDescription('Lorem ipsum dolor sit amet, ludus possim ut ius, bonorum facilis mandamus nam ea. ... ');
+	 * $object->setDescription('Lorem ipsum dolor sit amet, ludus possim ut ius, bonorum ea. ... ');
 	 *
 	 * @param string $description the description.
 	 */

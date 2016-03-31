@@ -34,6 +34,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use \Shopware\Models\Article\Article as Article;
+use \Shopware\Models\Shop\Shop as Shop;
+
 /**
  * Helper class for prices
  *
@@ -45,6 +48,9 @@
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 {
 
+	const PRICE_TYPE_NORMAL = 'price';
+	const PRICE_TYPE_LIST = 'listPrice';
+
 	/**
 	 * Calculates the price of an article including tax
 	 *
@@ -52,7 +58,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 	 * @param string $type the type of price, i.e. "price" or "listPrice".
 	 * @return string the price formatted according to Nosto standards.
 	 */
-	public static function calcArticlePriceInclTax(\Shopware\Models\Article\Article $article, $type = 'price')
+	public static function calcArticlePriceInclTax(Article $article, $type = self::PRICE_TYPE_NORMAL)
 	{
 		/** @var NostoHelperPrice $helper */
 		$helper = Nosto::helper('price');
@@ -63,7 +69,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 		}
 
 		// If the list price is not set, fall back on the normal price.
-		if ($type === 'listPrice' && $price->getPseudoPrice() > 0) {
+		if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
 			$value = $price->getPseudoPrice();
 		} else {
 			$value = $price->getPrice();
@@ -81,13 +87,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 	 * @return bool|string
 	 * @throws Zend_Currency_Exception
 	 */
-	public static function generatePricePerUnit(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	public static function generatePricePerUnit(Article $article, Shop $shop)
 	{
 		$mainDetail = $article->getMainDetail();
 		$unit = $mainDetail->getUnit();
 		$price = self::calcArticlePriceInclTax(
 			$article,
-			'price'
+			self::PRICE_TYPE_NORMAL
 		);
 		$purchaseUnit = (double)$mainDetail->getPurchaseUnit();
 		if ($unit && $price && $purchaseUnit > 0) {

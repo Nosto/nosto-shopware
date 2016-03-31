@@ -34,6 +34,11 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as NostoProduct;
+use \Shopware\Models\Article\Article as Article;
+use \Shopware\Models\Shop\Shop as Shop;
+
 /**
  * Helper class for tags
  *
@@ -57,7 +62,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
 	 * @param \Shopware\Models\Shop\Shop $shop
 	 * @return array
 	 */
-	public static function buildProductTags(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	public static function buildProductTags(Article $article, Shop $shop)
 	{
 		$tags = array();
 
@@ -65,11 +70,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
 		// the shopping cart directly from the recommendations.
 		$configuratorSet = $article->getConfiguratorSet();
 		if (empty($configuratorSet)) {
-			$tags['tag1'] = array(Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product::ADD_TO_CART);
+			$tags['tag1'] = array(NostoProduct::ADD_TO_CART);
 		}
 
 		try{
-			$pricePerUnit = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price::generatePricePerUnit(
+			$pricePerUnit = PriceHelper::generatePricePerUnit(
 				$article,
 				$shop
 			);

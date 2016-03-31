@@ -34,6 +34,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use \Shopware\Models\Article\Article as Article;
+use \Shopware\Models\Shop\Shop as Shop;
+use \Shopware\Bundle\MediaBundle\MediaServiceInterface as MediaServiceInterface;
+
 /**
  * Helper class for images
  *
@@ -57,15 +61,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
 	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string|null the url or null if image not found.
 	 */
-	public static function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	public static function assembleImageUrl(Article $article, Shop $shop)
 	{
 		$url = null;
 
-		/*
-         * Media service was introduced in Shopware 5.1
-         * @var \Shopware\Bundle\MediaBundle\MediaService()
-         **/
 		try {
+			/*
+			 * Media service was introduced in Shopware 5.1
+			 * @var MediaServiceInterface $mediaService
+			 **/
 			$mediaService = Shopware()->Container()
 				->get('shopware_media.media_service');
 		} catch (\Exception $error) {
@@ -78,7 +82,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
 				if (is_null($media)) {
 					continue;
 				}
-				if ($mediaService instanceof \Shopware\Bundle\MediaBundle\MediaServiceInterface) {
+				if ($mediaService instanceof MediaServiceInterface) {
 					$url = $mediaService->getUrl($media->getPath());
 				} else {
 					$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
