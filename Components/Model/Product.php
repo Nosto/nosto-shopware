@@ -150,13 +150,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->productId = $article->getMainDetail()->getNumber();
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
-		$this->imageUrl = $this->assembleImageUrl($article, $shop);
+		$this->imageUrl = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image::assembleImageUrl(
+			$article,
+			$shop
+		);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
-		$this->price = $this->calcPriceInclTax($article, 'price');
-		$this->listPrice = $this->calcPriceInclTax($article, 'listPrice');
+		$this->price = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price::calcArticlePriceInclTax(
+			$article, 'price'
+		);
+		$this->listPrice = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price::calcArticlePriceInclTax(
+			$article, 'listPrice'
+		);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
 		$this->availability = $this->checkAvailability($article);
-		$this->tags = $this->buildTags($article, $shop);
+		$this->tags = Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag::buildProductTags(
+			$article,
+			$shop
+		);
 		$this->categories = $this->buildCategoryPaths($article, $shop);
 		$this->shortDescription = $article->getDescription();
 		$this->description = $article->getDescriptionLong();
@@ -198,88 +208,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * Assembles the product image url based on article.
-	 *
-	 * Validates that the image can be found in the file system before returning
-	 * the url. This will not guarantee that the url works, but we should be
-	 * able to assume that if the image is in the correct place, the url works.
-	 *
-	 * The url will always be for the original image, not the thumbnails.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
-	 * @return string|null the url or null if image not found.
-	 */
-	protected function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
-	{
-		$url = null;
-
-		/*
-         * Media service was introduced in Shopware 5.1
-         * @var \Shopware\Bundle\MediaBundle\MediaService()
-         **/
-		try {
-			$mediaService = Shopware()->Container()
-				->get('shopware_media.media_service');
-		} catch (\Exception $error) {
-			$mediaService = false;
-		}
-		/** @var Shopware\Models\Article\Image $image */
-		foreach ($article->getImages() as $image) {
-			if (is_null($url) || $image->getMain() === 1) {
-				$media = $image->getMedia();
-				if (is_null($media)) {
-					continue;
-				}
-				if ($mediaService instanceof \Shopware\Bundle\MediaBundle\MediaServiceInterface) {
-					$url = $mediaService->getUrl($media->getPath());
-				} else {
-					$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
-					$protocol = ($secure ? 'https://' : 'http://');
-					$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
-					$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
-					$file = '/'.ltrim($media->getPath(), '/');
-					$url = $protocol.$host.$path.$file;
-				}
-				// Force SSL if it's enabled.
-				if ($image->getMain() === 1) {
-					break;
-				}
-			}
-		}
-
-		return $url;
-	}
-
-	/**
-	 * Calculates the price including tax and returns it.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param string $type the type of price, i.e. "price" or "listPrice".
-	 * @return string the price formatted according to Nosto standards.
-	 */
-	protected function calcPriceInclTax(\Shopware\Models\Article\Article $article, $type = 'price')
-	{
-		/** @var NostoHelperPrice $helper */
-		$helper = Nosto::helper('price');
-		/** @var Shopware\Models\Article\Price $price */
-		$price = $article->getMainDetail()->getPrices()->first();
-		if (!$price) {
-			return $helper->format(0);
-		}
-
-		// If the list price is not set, fall back on the normal price.
-		if ($type === 'listPrice' && $price->getPseudoPrice() > 0) {
-			$value = $price->getPseudoPrice();
-		} else {
-			$value = $price->getPrice();
-		}
-
-		$tax = $article->getTax()->getTax();
-		return $helper->format($value * (1 + ($tax / 100)));
-	}
-
-	/**
 	 * Checks if the product is in stock and return the availability.
 	 * The product is considered in stock if any of it's variations has a stock
 	 * value larger than zero.
@@ -300,72 +228,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			}
 		}
 		return self::OUT_OF_STOCK;
-	}
-
-	/**
-	 * Builds the tag list for the product.
-	 *
-	 * Also includes the custom "add-to-cart" tag if the product can be added to
-	 * the shopping cart directly without any action from the user, e.g. the
-	 * product cannot have any variations or  choices. This tag is then used in
-	 * the recommendations to render the "Add to cart" button for the product
-	 * when it is recommended to a user.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @return array
-	 */
-	protected function buildTags(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
-	{
-		$tags = array();
-
-		// If the product does not have any variants, then it can be added to
-		// the shopping cart directly from the recommendations.
-		$configuratorSet = $article->getConfiguratorSet();
-		if (empty($configuratorSet)) {
-			$tags1 = array(self::ADD_TO_CART);
-		}
-
-		$tags['tag1'] = $tags1;
-
-		$mainDetail = $article->getMainDetail();
-		$unit = $mainDetail->getUnit();
-
-		// Check that we got both a unit and a price.
-		if ($unit && $this->getPrice()) {
-			try {
-				$unitName = $unit->getUnit();
-				$purchaseUnit = (double)$mainDetail->getPurchaseUnit();
-				$referenceUnit = (double)$mainDetail->getReferenceUnit();
-				$price = $this->getPrice();
-				// Convert the price into the current displayed currency.
-				$price *= $shop->getCurrency()->getFactor();
-				$referencePrice = $price / $purchaseUnit * $referenceUnit;
-				$zendCurrency = new Zend_Currency(
-					$shop->getCurrency()->getCurrency(),
-					$shop->getLocale()->getLocale()
-				);
-				$zendCurrency->setFormat(
-					array(
-						'position' => ($shop->getCurrency()->getSymbolPosition() > 0
-							? $shop->getCurrency()->getSymbolPosition()
-							: 8)
-					)
-				);
-				$priceString = $zendCurrency->toCurrency($referencePrice);
-				$tags2 = array("{$priceString} / {$referenceUnit} {$unitName}");
-				$tags['tag2'] = $tags2;
-			} catch (\Exception $e) {
-				Shopware()->PluginLogger()->warning(
-					sprintf(
-						'Could not construct currency. Error was: %s (%s)',
-						$e->getMessage(),
-						$e->getCode()
-					)
-				);
-			}
-		}
-
-		return $tags;
 	}
 
 	/**
