@@ -42,8 +42,6 @@
  *
  * @package Shopware
  * @subpackage Controllers_Backend
- * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
 class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs
 {

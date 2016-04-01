@@ -42,8 +42,6 @@
  *
  * @package Shopware
  * @subpackage Controllers_Frontend
- * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {

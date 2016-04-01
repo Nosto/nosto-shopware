@@ -42,8 +42,6 @@ use \Shopware\Models\Shop\Shop as Shop;
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
- * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 {
