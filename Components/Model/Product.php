@@ -34,6 +34,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
+use \Shopware\Models\Article\Article as Article;
+use \Shopware\Models\Shop\Shop as Shop;
+
 /**
  * Model for product information. This is used when compiling the info about a
  * product that is sent to Nosto.
@@ -138,10 +145,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Loads the model data from an article and shop.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop the product is in.
+	 * @param Article $article the article model.
+	 * @param Shop $shop the shop the product is in.
 	 */
-	public function loadData(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop = null)
+	public function loadData(Article $article, Shop $shop = null)
 	{
 		if (is_null($shop)) {
 			$shop = Shopware()->Shop();
@@ -150,13 +157,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->productId = $article->getMainDetail()->getNumber();
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
-		$this->imageUrl = $this->assembleImageUrl($article, $shop);
+		$this->imageUrl = ImageHelper::assembleImageUrl($article, $shop);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
-		$this->price = $this->calcPriceInclTax($article, 'price');
-		$this->listPrice = $this->calcPriceInclTax($article, 'listPrice');
+		$this->price = PriceHelper::calcArticlePriceInclTax($article, PriceHelper::PRICE_TYPE_NORMAL);
+		$this->listPrice = PriceHelper::calcArticlePriceInclTax($article, PriceHelper::PRICE_TYPE_LIST);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
 		$this->availability = $this->checkAvailability($article);
-		$this->tags['tag1'] = $this->buildTags($article);
+		$this->tags = TagHelper::buildProductTags($article, $shop);
 		$this->categories = $this->buildCategoryPaths($article, $shop);
 		$this->shortDescription = $article->getDescription();
 		$this->description = $article->getDescriptionLong();
@@ -176,11 +183,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	/**
 	 * Assembles the product url based on article and shop.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
+	 * @param Article $article the article model.
+	 * @param Shop $shop the shop model.
 	 * @return string the url.
 	 */
-	protected function assembleProductUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	protected function assembleProductUrl(Article $article, Shop $shop)
 	{
 		$url = Shopware()->Front()->Router()->assemble(
 			array(
@@ -198,96 +205,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * Assembles the product image url based on article.
-	 *
-	 * Validates that the image can be found in the file system before returning
-	 * the url. This will not guarantee that the url works, but we should be
-	 * able to assume that if the image is in the correct place, the url works.
-	 *
-	 * The url will always be for the original image, not the thumbnails.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
-	 * @return string|null the url or null if image not found.
-	 */
-	protected function assembleImageUrl(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
-	{
-		$url = null;
-
-		/*
-         * Media service was introduced in Shopware 5.1
-         * @var \Shopware\Bundle\MediaBundle\MediaService()
-         **/
-		try {
-			$mediaService = Shopware()->Container()
-				->get('shopware_media.media_service');
-		} catch (\Exception $error) {
-			$mediaService = false;
-		}
-		/** @var Shopware\Models\Article\Image $image */
-		foreach ($article->getImages() as $image) {
-			if (is_null($url) || $image->getMain() === 1) {
-				$media = $image->getMedia();
-				if (is_null($media)) {
-					continue;
-				}
-				if ($mediaService instanceof \Shopware\Bundle\MediaBundle\MediaServiceInterface) {
-					$url = $mediaService->getUrl($media->getPath());
-				} else {
-					$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
-					$protocol = ($secure ? 'https://' : 'http://');
-					$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
-					$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
-					$file = '/'.ltrim($media->getPath(), '/');
-					$url = $protocol.$host.$path.$file;
-				}
-				// Force SSL if it's enabled.
-				if ($image->getMain() === 1) {
-					break;
-				}
-			}
-		}
-
-		return $url;
-	}
-
-	/**
-	 * Calculates the price including tax and returns it.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param string $type the type of price, i.e. "price" or "listPrice".
-	 * @return string the price formatted according to Nosto standards.
-	 */
-	protected function calcPriceInclTax(\Shopware\Models\Article\Article $article, $type = 'price')
-	{
-		/** @var NostoHelperPrice $helper */
-		$helper = Nosto::helper('price');
-		/** @var Shopware\Models\Article\Price $price */
-		$price = $article->getMainDetail()->getPrices()->first();
-		if (!$price) {
-			return $helper->format(0);
-		}
-
-		// If the list price is not set, fall back on the normal price.
-		if ($type === 'listPrice' && $price->getPseudoPrice() > 0) {
-			$value = $price->getPseudoPrice();
-		} else {
-			$value = $price->getPrice();
-		}
-
-		$tax = $article->getTax()->getTax();
-		return $helper->format($value * (1 + ($tax / 100)));
-	}
-
-	/**
 	 * Checks if the product is in stock and return the availability.
 	 * The product is considered in stock if any of it's variations has a stock
 	 * value larger than zero.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param Article $article the article model.
 	 * @return string either "InStock" or "OutOfStock".
 	 */
-	protected function checkAvailability(\Shopware\Models\Article\Article $article)
+	protected function checkAvailability(Article $article)
 	{
 		/** @var \Shopware\Models\Article\Detail[] $details */
 		$details = Shopware()
@@ -303,45 +228,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * Builds the tag list for the product.
-	 *
-	 * Also includes the custom "add-to-cart" tag if the product can be added to
-	 * the shopping cart directly without any action from the user, e.g. the
-	 * product cannot have any variations or  choices. This tag is then used in
-	 * the recommendations to render the "Add to cart" button for the product
-	 * when it is recommended to a user.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @return array
-	 */
-	protected function buildTags(\Shopware\Models\Article\Article $article)
-	{
-		$tags = array();
-
-		// If the product does not have any variants, then it can be added to
-		// the shopping cart directly from the recommendations.
-		$configuratorSet = $article->getConfiguratorSet();
-		if (empty($configuratorSet)) {
-			$tags[] = self::ADD_TO_CART;
-		}
-
-		return $tags;
-	}
-
-	/**
 	 * Builds the category paths the product belongs to and returns them.
 	 *
 	 * By "path" we mean the full tree path of the products categories and
 	 * sub-categories.
 	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop the article is in.
+	 * @param Article $article the article model.
+	 * @param Shop $shop the shop the article is in.
 	 * @return array the paths or empty array if no categories where found.
 	 */
-	protected function buildCategoryPaths(\Shopware\Models\Article\Article $article, \Shopware\Models\Shop\Shop $shop)
+	protected function buildCategoryPaths(Article $article, Shop $shop)
 	{
 		$paths = array();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
+		$helper = new NostoCategory();
 		$shopCatId = $shop->getCategory()->getId();
 		/** @var Shopware\Models\Category\Category $category */
 		foreach ($article->getCategories() as $category) {
@@ -771,7 +670,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * The description must be a non-empty string.
 	 *
 	 * Usage:
-	 * $object->setDescription('Lorem ipsum dolor sit amet, ludus possim ut ius, bonorum facilis mandamus nam ea. ... ');
+	 * $object->setDescription('Lorem ipsum dolor sit amet, ludus possim ut ius, bonorum ea. ... ');
 	 *
 	 * @param string $description the description.
 	 */
