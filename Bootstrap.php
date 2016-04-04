@@ -43,8 +43,6 @@ require_once 'vendor/nosto/php-sdk/src/config.inc.php';
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
- * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2015 Nosto Solutions Ltd (http://www.nosto.com)
  */
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
@@ -98,7 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			'source' => $this->getSource(),
 			'author' => 'Nosto Solutions Ltd',
 			'supplier' => 'Nosto Solutions Ltd',
-			'copyright' => 'Copyright (c) 2015, Nosto Solutions Ltd',
+			'copyright' => 'Copyright (c) 2016, Nosto Solutions Ltd',
 			'description' => 'Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.',
 			'support' => 'support@nosto.com',
 			'link' => 'http://nosto.com'
