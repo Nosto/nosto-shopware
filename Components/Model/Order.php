@@ -105,7 +105,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 		try {
 			$this->_paymentProvider = $payment->getName();
 			$paymentPlugin = $payment->getPlugin();
-			if (!is_null($paymentPlugin)) {
+			if (!is_null($paymentPlugin) && $paymentPlugin->getVersion()) {
 				$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
 			}
 		} catch (Exception $e) {
