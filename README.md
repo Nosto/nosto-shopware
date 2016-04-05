@@ -121,6 +121,12 @@ BSD 3-Clause (http://opensource.org/licenses/BSD-3-Clause)
 
 ## Changelog
 
+### 1.1.0
+* Support using recommendations in Shopping Worlds
+* Add tagging to 404 pages
+* Automatic price per unit tagging (tag2) 
+* Fir for handling empty payment provider
+
 ### 1.0.4
 * Fix the order and product export controller to respect the shop parameters
 * Add support for MediaService in Shopware 5.1
