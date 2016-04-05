@@ -101,11 +101,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	{
 		$this->_orderNumber = $order->getNumber();
 		$this->_createdDate = $order->getOrderTime()->format('Y-m-d');
-
-		$this->_paymentProvider = $order->getPayment()->getName();
-		$paymentPlugin = $order->getPayment()->getPlugin();
-		if (!is_null($paymentPlugin)) {
-			$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+		$payment = $order->getPayment();
+		try {
+			$this->_paymentProvider = $payment->getName();
+			$paymentPlugin = $payment->getPlugin();
+			if (!is_null($paymentPlugin) && $paymentPlugin->getVersion()) {
+				$this->_paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+			}
+		} catch (Exception $e) {
+			$this->_paymentProvider = 'unknown';
 		}
 
 		$this->_orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
