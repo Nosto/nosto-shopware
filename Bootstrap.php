@@ -360,6 +360,39 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Event handler for `Enlight_Controller_Action_Frontend_Error_GenericError`.
+	 *
+	 * Adds the recommendation elements for not found pages.
+	 *
+	 * @param Enlight_Event_EventArgs $args the event arguments.
+	 * @return string the path to the controller file.
+	 */
+	public function onFrontEndErrorGenericError(Enlight_Event_EventArgs $args)
+	{
+		if (!$this->shopHasConnectedAccount()) {
+			return;
+		}
+
+		$controller = $args->getSubject();
+		$request = $controller->Request();
+		$response = $controller->Response();
+		$view = $controller->View();
+
+		if (
+			!$request->isDispatched()
+			|| $request->getModuleName() != 'frontend'
+			|| $request->getControllerName() != 'error'
+			|| $response->getHttpResponseCode() != 404
+			|| !$view->hasTemplate()
+		) {
+			return;
+		}
+
+		$view->addTemplateDir($this->Path().'Views/');
+		$view->extendsTemplate('frontend/plugins/nosto_tagging/notfound/index.tpl');
+	}
+
+	/**
 	 * Hook handler for `sOrder::sSaveOrder::after`.
 	 *
 	 * Sends an API order confirmation to Nosto.
@@ -542,7 +575,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 					Nosto slot div ID is the id attribute of the element where
 					Nosto recommendations are populated. It is recommended that
 					you create new recommendation slot for Shopping World elements
-					from Nosto settings. You must have mathcing slot created in Nosto
+					from Nosto settings. You must have matching slot created in Nosto
 					settings.',
 				'defaultValue' => 'frontpage-nosto-1',
 				'allowBlank' => false
@@ -680,6 +713,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->subscribeEvent(
 			'sOrder::sSaveOrder::after',
 			'onOrderSSaveOrderAfter'
+		);
+		$this->subscribeEvent(
+			'Enlight_Controller_Action_Frontend_Error_GenericError',
+			'onFrontEndErrorGenericError'
 		);
 	}
 
