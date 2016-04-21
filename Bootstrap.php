@@ -48,6 +48,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
 	const PLATFORM_NAME = 'shopware';
+	const PLUGIN_VERSION = '1.1.1';
 
 	/**
 	 * @inheritdoc
@@ -82,7 +83,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function getVersion()
 	{
-		return '1.1.0';
+		return self::PLUGIN_VERSION;
 	}
 
 	/**
