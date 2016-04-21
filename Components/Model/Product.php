@@ -152,7 +152,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$shop = Shopware()->Shop();
 		}
 
-		$this->productId = $article->getMainDetail()->getNumber();
+		$this->assignId($article);
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
 		$this->imageUrl = ImageHelper::assembleImageUrl($article, $shop);
@@ -189,11 +189,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	{
 		$url = Shopware()->Front()->Router()->assemble(
 			array(
-			'module' => 'frontend',
-			'controller' => 'detail',
-			'sArticle' => $article->getId(),
-			// Force SSL if it's enabled.
-			'forceSecure' => true,
+				'module' => 'frontend',
+				'controller' => 'detail',
+				'sArticle' => $article->getId(),
+				// Force SSL if it's enabled.
+				'forceSecure' => true,
 			)
 		);
 		// Always add the "__shop" parameter so that the crawler can distinguish
@@ -243,7 +243,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		/** @var Shopware\Models\Category\Category $category */
 		foreach ($article->getCategories() as $category) {
 			// Only include categories that are under the shop's root category.
-			if (strpos($category->getPath(), '|'.$shopCatId.'|') !== false) {
+			if (strpos($category->getPath(), '|' . $shopCatId . '|') !== false) {
 				$paths[] = $helper->buildCategoryPath($category);
 			}
 		}
@@ -690,5 +690,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function setShortDescription($shortDescription)
 	{
 		$this->shortDescription = $shortDescription;
+	}
+
+	/**
+	 * Assigns an ID for the model from an article.
+	 *
+	 * This method exists in order to expose a public API to change the ID.
+	 *
+	 * @param \Shopware\Models\Article\Article $article the article model.
+	 */
+	public function assignId(\Shopware\Models\Article\Article $article)
+	{
+		$this->setProductId($article->getMainDetail()->getNumber());
 	}
 }

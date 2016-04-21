@@ -104,7 +104,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	 */
 	public function delete(\Shopware\Models\Article\Article $article)
 	{
-		foreach ($this->getAccounts($article) as $account) {
+		foreach ($this->getAccounts($article, true) as $account) {
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->assignId($article);
 			try {
@@ -125,9 +125,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 	 * categories and checking if the shop root category is present.
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param boolean $allStores if true Nosto accounts from all stores will be returned
 	 * @return NostoAccount[] the accounts mapped in the shop IDs.
 	 */
-	protected function getAccounts(\Shopware\Models\Article\Article $article)
+	protected function getAccounts(\Shopware\Models\Article\Article $article, $allStores = false)
 	{
 		$data = array();
 
@@ -137,16 +138,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			->Models()
 			->getRepository('\Shopware\Models\Shop\Shop')
 			->findAll();
-		/** @var Shopware\Models\Category\Category $cat */
-		foreach ($article->getCategories() as $cat) {
-			foreach ($allShops as $shop) {
-				if (isset($inShops[$shop->getId()])) {
-					continue;
-				}
-				$shopCatId = $shop->getCategory()->getId();
-				if ($cat->getId() === $shopCatId
-					|| strpos($cat->getPath(), '|'.$shopCatId.'|') !== false) {
-					$inShops[$shop->getId()] = $shop;
+
+		if ($allStores === true) {
+			$inShops = $allShops;
+		} else {
+			/** @var Shopware\Models\Category\Category $cat */
+			foreach ($article->getCategories() as $cat) {
+				$catName = $cat->getName();
+				foreach ($allShops as $shop) {
+					if (isset($inShops[$shop->getId()])) {
+						continue;
+					}
+
+					$shopCatId = $shop->getCategory()->getId();
+					if ($cat->getId() === $shopCatId
+						|| strpos($cat->getPath(), '|' . $shopCatId . '|') !== false
+					) {
+						$inShops[$shop->getId()] = $shop;
+					}
 				}
 			}
 		}
