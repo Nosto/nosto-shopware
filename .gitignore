@@ -1,3 +1,5 @@
 vendor
+build/src
+build/package
 .idea
 

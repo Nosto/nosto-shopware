@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+  ~ Copyright (c) 2016, Nosto Solutions Ltd
+  ~ All rights reserved.
+  ~
+  ~ Redistribution and use in source and binary forms, with or without
+  ~ modification, are permitted provided that the following conditions are met:
+  ~
+  ~ 1. Redistributions of source code must retain the above copyright notice,
+  ~ this list of conditions and the following disclaimer.
+  ~
+  ~ 2. Redistributions in binary form must reproduce the above copyright notice,
+  ~ this list of conditions and the following disclaimer in the documentation
+  ~ and/or other materials provided with the distribution.
+  ~
+  ~ 3. Neither the name of the copyright holder nor the names of its contributors
+  ~ may be used to endorse or promote products derived from this software without
+  ~ specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  ~ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  ~ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ~ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+  ~ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  ~ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  ~ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  ~ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  ~ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ~ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  ~ POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~ @author Nosto Solutions Ltd <shopware@nosto.com>
+  ~ @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+  ~ @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
+  -->
+
+<project name="nostotagging" default="dist">
+
+    <property name="package"  value="${phing.project.name}" override="true" />
+    <property name="zipbase" value="./build/src/" override="false" />
+    <property name="zipdirectory" value="Frontend" override="false" />
+    <property name="buildsrc" value="./build/src/Frontend/NostoTagging" override="false" />
+    <property name="buildroot" value="./build" override="true" />
+    <property name="builddist" value="./build/package" override="true" />
+    <property name="srcdir"   value="${project.basedir}" override="true" />
+    <property name="vendordir"   value="vendor" override="true" />
+    <property name="packagename"   value="${project.basedir}" override="true" />
+
+    <!-- ============================================  -->
+    <!-- Target: prepare                               -->
+    <!-- ============================================  -->
+    <target name="prepare">
+        <echo msg="Cleaning up directory ./build" />
+        <delete dir="${builddist}" />
+        <delete dir="${buildsrc}" />
+        <delete dir="${zipbase}" />
+        <mkdir dir="${builddist}" />
+        <mkdir dir="${zipbase}" />
+        <mkdir dir="${buildsrc}" />
+        <copy todir="${buildsrc}">
+            <fileset refid="sourcefiles" />
+        </copy>
+        <phingcall target="updatedependencies" />
+        <phingcall target="cleandependencies" />
+    </target>
+
+    <target name="cleandependencies">
+        <delete dir="${buildsrc}/${vendordir}/nosto/php-sdk/tests" />
+        <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/codeception.yml" />
+        <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/.gitignore" />
+        <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/Gruntfile.js" />
+        <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/package.json" />
+        <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/composer.json" />
+        <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/src/.env.example" />
+        <delete dir="${buildsrc}/${vendordir}/composer" />
+        <delete file="${buildsrc}/composer.json" />
+        <delete file="${buildsrc}/composer.lock" />
+    </target>
+
+    <target name="updatedependencies">
+        <echo msg="Updating dependencies" />
+        <exec executable="composer" dir="${buildsrc}">
+            <arg value="install" />
+            <arg value="--no-dev" />
+        </exec>
+        <echo msg="Files copied and compressed" />
+    </target>
+
+    <fileset dir="${srcdir}" id="sourcefiles">
+        <patternset id="nostotagging.sources">
+            <include name="**" />
+            <exclude name="*.DS_STORE" />
+            <exclude name="**/.idea/**" />
+            <exclude name="**/tests/**" />
+            <exclude name="**/phing/**" />
+            <exclude name="**/build/**" />
+            <exclude name="**/build.xml" />
+            <exclude name="**/ruleset.xml" />
+            <exclude name="**/*Gruntfile*" />
+            <exclude name="**/*codeception*" />
+            <exclude name="${vendordir}/**" />
+            <exclude name="**/*package.json*" />
+        </patternset>
+    </fileset>
+
+    <!-- ============================================  -->
+    <!-- Target: build                                 -->
+    <!-- ============================================  -->
+    <target name="build" depends="prepare">
+        <echo msg="Building a package" />
+        <exec executable="zip" dir="${zipbase}">
+            <arg value="-r" />
+            <arg value="${zipdirectory}.zip" />
+            <arg value="${zipdirectory}" />
+        </exec>
+        <move file="${zipbase}/${zipdirectory}.zip" tofile="${builddist}/NostoTagging-${version}.zip" />
+        <echo msg="Files copied and compressed" />
+    </target>
+
+    <!-- ============================================  -->
+    <!-- (DEFAULT)  Target: dist                       -->
+    <!-- ============================================  -->
+    <target name="dist" depends="build">
+        <echo msg="All done" />
+    </target>
+</project>
