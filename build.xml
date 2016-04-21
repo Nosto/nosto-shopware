@@ -40,6 +40,7 @@
     <property name="zipdirectory" value="Frontend" override="false" />
     <property name="buildsrc" value="./build/src/Frontend/NostoTagging" override="false" />
     <property name="buildroot" value="./build" override="true" />
+    <property name="buildstatic" value="./build/static" override="true" />
     <property name="builddist" value="./build/package" override="true" />
     <property name="srcdir"   value="${project.basedir}" override="true" />
     <property name="vendordir"   value="vendor" override="true" />
@@ -61,6 +62,16 @@
         </copy>
         <phingcall target="updatedependencies" />
         <phingcall target="cleandependencies" />
+        <phingcall target="replacements" />
+    </target>
+
+    <!-- We must replace some files in order to comply with Shopware's validation rules -->
+    <target name="replacements">
+        <copy
+                file="${buildstatic}/NostoCryptRandom.php"
+                todir="${buildsrc}/${vendordir}/nosto/php-sdk/src/libs/phpseclib/crypt"
+                overwrite="true"
+        />
     </target>
 
     <target name="cleandependencies">
