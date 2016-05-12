@@ -105,4 +105,42 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 	{
 		return $this->_label;
 	}
-} 
+
+	/**
+	 * Sets the code of the order.
+	 *
+	 * The code must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setCode('offen');
+	 *
+	 * @param string $code the code.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setCode($code)
+	{
+		$this->_code = $code;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the label of the order.
+	 *
+	 * The label must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setLabel('Offen');
+	 *
+	 * @param string $label the label.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setLabel($label)
+	{
+		$this->_label = $label;
+
+		return $this;
+	}
+}

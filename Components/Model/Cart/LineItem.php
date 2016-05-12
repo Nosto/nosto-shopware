@@ -153,4 +153,97 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 	{
 		return $this->_currencyCode;
 	}
+
+	/**
+	 * Sets the product ID for the given cart item.
+	 * The product ID must be an integer above zero.
+	 *
+	 * Usage:
+	 * $object->setProductId(1);
+	 *
+	 * @param int $id the product ID.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setProductId($id)
+	{
+		$this->_productId = $id;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the quantity for the given cart item.
+	 * The quantity must be an integer above zero.
+	 *
+	 * Usage:
+	 * $object->setQuantity(1);
+	 *
+	 * @param int $quantity the quantity.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setQuantity($quantity)
+	{
+		$this->_quantity = $quantity;
+
+		return $this;
+	}
+
+	/**
+	 * Sets cart items name.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setName('My product');
+	 *
+	 * @param string $name the name.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setName($name)
+	{
+		$this->_name = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the unit price of the cart item.
+	 *
+	 * The price must be a numeric value
+	 *
+	 * Usage:
+	 * $object->setPrice(99.99);
+	 *
+	 * @param double $unitPrice the price.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setPrice($unitPrice)
+	{
+		$this->_unitPrice = $unitPrice;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the currency code (ISO 4217) the cart item is sold in.
+	 *
+	 * The currency must be in ISO 4217 format
+	 *
+	 * Usage:
+	 * $object->setCurrency('USD');
+	 *
+	 * @param string $currency the currency code.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setCurrencyCode($currency)
+	{
+		$this->_currencyCode = $currency;
+
+		return $this;
+	}
 }

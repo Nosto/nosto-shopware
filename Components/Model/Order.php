@@ -201,4 +201,118 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	{
 		return $this->_orderStatus;
 	}
+
+	/**
+	 * Sets the ordernumber.
+	 *
+	 * The ordernumber must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setOrderNumber('123456');
+	 *
+	 * @param string $orderNumber the ordernumber.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setOrderNumber($orderNumber)
+	{
+		$this->_orderNumber = $orderNumber;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the created date of the order.
+	 *
+	 * The created date must be a non-empty string in format Y-m-d.
+	 *
+	 * Usage:
+	 * $object->setCreatedDate('2016-01-20');
+	 *
+	 * @param string $createdDate the created date.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setCreatedDate($createdDate)
+	{
+		$this->_orderNumber = $createdDate;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the payment provider of the order.
+	 *
+	 * The payment provider must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setPaymentProvider('invoice');
+	 *
+	 * @param string $paymentProvider the payment provider.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setPaymentProvider($paymentProvider)
+	{
+		$this->_paymentProvider = $paymentProvider;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the buyer information for the order.
+	 *
+	 * The buyer information must be an instance of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer.
+	 *
+	 * Usage:
+	 * $object->setBuyerInfo(new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer());
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer $buyerInfo the buyer info.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setBuyerInfo($buyerInfo)
+	{
+		$this->_buyerInfo = $buyerInfo;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the purchased items for the order.
+	 *
+	 * The line items must be an array of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
+	 *
+	 * Usage:
+	 * $object->setPurchasedItems([new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem(), ...]);
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] $purchasedItems the purchased items.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setPurchasedItems($purchasedItems)
+	{
+		$this->_purchasedItems = $purchasedItems;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the order status.
+	 *
+	 * The order status must be an instance of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status.
+	 *
+	 * Usage:
+	 * $object->setOrderStatus(new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status());
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status $orderStatus the buyer info.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setOrderStatus($orderStatus)
+	{
+		$this->_orderStatus = $orderStatus;
+
+		return $this;
+	}
 }
