@@ -93,6 +93,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
 		$this->_quantity = (int)$basket->getQuantity();
 		$this->_unitPrice = Nosto::helper('price')->format($basket->getPrice());
 		$this->_currencyCode = strtoupper($currencyCode);
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCartLineItem' => $this,
+				'basket'            => $basket,
+				'currency'          => $currencyCode,
+			)
+		);
 	}
 
 	/**

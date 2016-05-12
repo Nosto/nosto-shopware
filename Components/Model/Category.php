@@ -58,6 +58,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	public function loadData(\Shopware\Models\Category\Category $category)
 	{
 		$this->_categoryPath = $this->buildCategoryPath($category);
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCategory' => $this,
+				'category'      => $category,
+			)
+		);
 	}
 
 	/**

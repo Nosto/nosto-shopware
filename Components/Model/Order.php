@@ -135,6 +135,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 				$this->_purchasedItems[] = $item;
 			}
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoOrder' => $this,
+				'order'      => $order,
+			)
+		);
 	}
 
 	/**

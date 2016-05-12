@@ -63,6 +63,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 			$item->loadData($basket, $currency);
 			$this->_lineItems[] = $item;
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCart' => $this,
+				'baskets'   => $baskets,
+				'currency'  => $currency,
+			)
+		);
 	}
 
 	/**

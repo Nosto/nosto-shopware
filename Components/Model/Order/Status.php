@@ -66,6 +66,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
 		$description = $order->getOrderStatus()->getDescription();
 		$this->_code = $this->convertDescriptionToCode($description);
 		$this->_label = $description;
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoOrderStatus' => $this,
+				'order'            => $order,
+			)
+		);
 	}
 
 	/**

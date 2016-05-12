@@ -71,6 +71,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 		$this->_firstName = $customer->getBilling()->getFirstName();
 		$this->_lastName = $customer->getBilling()->getLastName();
 		$this->_email = $customer->getEmail();
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoOrderBuyer' => $this,
+				'customer'        => $customer,
+			)
+		);
 	}
 
 	/**
