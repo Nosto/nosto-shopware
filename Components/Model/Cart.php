@@ -63,6 +63,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 			$item->loadData($basket, $currency);
 			$this->_lineItems[] = $item;
 		}
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCart' => $this,
+				'baskets'   => $baskets,
+				'currency'  => $currency,
+			)
+		);
 	}
 
 	/**
@@ -71,5 +80,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
 	public function getLineItems()
 	{
 		return $this->_lineItems;
+	}
+
+	/**
+	 * Sets the line items for the basket.
+	 *
+	 * The line items must be an array of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
+	 *
+	 * Usage:
+	 * $object->setLineItems([new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem(), ...]);
+	 *
+	 * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] $lineItems the line items.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setLineItems($lineItems)
+	{
+		$this->_lineItems = $lineItems;
+
+		return $this;
 	}
 }

@@ -65,11 +65,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	 *
 	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
 	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer )
+	public function loadData(\Shopware\Models\Customer\Customer $customer)
 	{
 		$this->_firstName = $customer->getBilling()->getFirstName();
 		$this->_lastName = $customer->getBilling()->getLastName();
 		$this->_email = $customer->getEmail();
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCustomer' => $this,
+				'customer'      => $customer,
+			)
+		);
 	}
 
 	/**
@@ -94,5 +102,62 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	public function getEmail()
 	{
 		return $this->_email;
+	}
+
+	/**
+	 * Sets the firstname of the customer.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setFirstName('John');
+	 *
+	 * @param string $firstName the firstname.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setFirstName($firstName)
+	{
+		$this->_firstName = $firstName;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the lastname of the customer.
+	 *
+	 * The name must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setLastName('Doe');
+	 *
+	 * @param string $lastName the lastname.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setLastName($lastName)
+	{
+		$this->_lastName = $lastName;
+
+		return $this;
+	}
+
+	/**
+	 * Sets the email of the customer.
+	 *
+	 * The email must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setEmail('john@doe.com');
+	 *
+	 * @param string $email the email.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setEmail($email)
+	{
+		$this->_email = $email;
+
+		return $this;
 	}
 }

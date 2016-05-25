@@ -58,6 +58,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	public function loadData(\Shopware\Models\Category\Category $category)
 	{
 		$this->_categoryPath = $this->buildCategoryPath($category);
+
+		Enlight()->Events()->notify(
+			__CLASS__ . '_AfterLoad',
+			array(
+				'nostoCategory' => $this,
+				'category'      => $category,
+			)
+		);
 	}
 
 	/**
@@ -90,5 +98,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends S
 	public function getCategoryPath()
 	{
 		return $this->_categoryPath;
+	}
+
+	/**
+	 * Sets the category path.
+	 *
+	 * The category path must be a non-empty string.
+	 *
+	 * Usage:
+	 * $object->setCategoryPath('Sports/Winter');
+	 *
+	 * @param string $categoryPath the category path.
+	 *
+	 * @return $this Self for chaining
+	 */
+	public function setCategoryPath($categoryPath)
+	{
+		$this->_categoryPath = $categoryPath;
+
+		return $this;
 	}
 }
