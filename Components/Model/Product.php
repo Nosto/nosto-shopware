@@ -54,10 +54,6 @@ use \Shopware\Models\Shop\Shop as Shop;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface, NostoValidatableInterface
 {
-	const IN_STOCK = 'InStock';
-	const OUT_OF_STOCK = 'OutOfStock';
-	const ADD_TO_CART = 'add-to-cart';
-
 	/**
 	 * @var string absolute url to the product page.
 	 */
@@ -703,4 +699,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	{
 		$this->setProductId($article->getMainDetail()->getNumber());
 	}
+
+	public function getVariationId()
+	{
+		return null;
+	}
+
+
 }

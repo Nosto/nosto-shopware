@@ -85,6 +85,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	protected $_includeSpecialLineItems = true;
 
 	/**
+	 * @var string external order referencet
+	 */
+	protected $_externalOrderRef;
+
+	/**
 	 * @inheritdoc
 	 */
 	public function getValidationRules()
@@ -314,5 +319,25 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 		$this->_orderStatus = $orderStatus;
 
 		return $this;
+	}
+
+	/**
+	 * Returns the external order reference
+	 *
+	 * @return string
+	 */
+	public function getExternalOrderRef()
+	{
+		return $this->_externalOrderRef;
+	}
+
+	/**
+	 * Sets the external order reference
+	 *
+	 * @param string $externalOrderRef
+	 */
+	public function setExternalOrderRef($externalOrderRef)
+	{
+		$this->_externalOrderRef = $externalOrderRef;
 	}
 }

@@ -90,6 +90,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	protected $_signUpApiToken = 'kIqtTZOTRTNJ1zPZgjkI4Ft572sfLrqjD4XewXqYrdGrqsgnYbWqGXR3Evxqmii1';
 
 	/**
+	 * @var array|stdClass the account details
+	 */
+	protected $_details;
+
+	/**
 	 * Loads the meta data for the given shop.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
@@ -309,7 +314,53 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	 */
 	public function getPartnerCode()
 	{
-		// todo: implement storage for partner code
 		return null;
 	}
+
+	/**
+	 * @return array
+	 */
+	public function getCurrencies()
+	{
+		return array();
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getUseCurrencyExchangeRates()
+	{
+		return array();
+	}
+
+	/**
+	 * @return null
+	 */
+	public function getDefaultVariationId()
+	{
+		return null;
+	}
+
+	/**
+	 * Returns the account details
+	 *
+	 * @return array|stdClass
+	 */
+	public function getDetails()
+	{
+		return $this->_details;
+	}
+
+	/**
+	 * Sets the account details
+	 *
+	 * @param array|stdClass $details
+	 */
+	public function setDetails($details)
+	{
+		$this->_details = $details;
+	}
+
+
+
 }
