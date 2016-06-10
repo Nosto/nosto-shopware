@@ -55,6 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function afterInit()
 	{
+		NostoHttpRequest::buildUserAgent(self::PLATFORM_NAME, \Shopware::VERSION, self::PLUGIN_VERSION);
 		$this->registerCustomModels();
 	}
 
