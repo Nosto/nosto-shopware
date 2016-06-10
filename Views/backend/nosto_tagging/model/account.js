@@ -42,7 +42,8 @@ Ext.define('Shopware.apps.NostoTagging.model.Account', {
         { name: 'url', type: 'string' },
         { name: 'email', type: 'string' },
         { name: 'shopId', type: 'int' },
-        { name: 'shopName', type: 'string' }
+        { name: 'shopName', type: 'string' },
+        { name: 'details', type: 'string' },
     ],
     proxy: {
         type: 'ajax',
