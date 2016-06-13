@@ -463,9 +463,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			if ($article instanceof \Shopware\Models\Article\Detail) {
 				$article = $article->getArticle();
 			}
-			Shopware()->Pluginlogger()->info('Commiting');
 			$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
 			$op->create($article);
+			self::$_productUpdated = true;
 		}
 	}
 
@@ -482,7 +482,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$article = $args->getEntity();
 		if (self::$_productUpdated == false) {
 			if ($article instanceof \Shopware\Models\Article\Detail) {
-				Shopware()->Pluginlogger()->info('Object is detail');
 				$article = $article->getArticle();
 			}
 			$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
