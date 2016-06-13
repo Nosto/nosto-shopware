@@ -153,6 +153,9 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                 case 'newAccount':
                     if (data.params && data.params.email) {
                         account.set('email', data.params.email);
+                        if(data.params.details) {
+                            account.set('details', JSON.stringify(data.params.details));
+                        }
                     }
                     account.save({
                         success: function(record, op) {
