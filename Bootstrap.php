@@ -48,7 +48,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
 	const PLATFORM_NAME = 'shopware';
-	const PLUGIN_VERSION = '1.1.1';
+	const PLUGIN_VERSION = '1.1.2';
 
 	private static $_productUpdated = false;
 
