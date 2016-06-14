@@ -48,13 +48,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
 	const PLATFORM_NAME = 'shopware';
-	const PLUGIN_VERSION = '1.1.1';
+	const PLUGIN_VERSION = '1.1.2';
+
+	private static $_productUpdated = false;
 
 	/**
 	 * @inheritdoc
 	 */
 	public function afterInit()
 	{
+		NostoHttpRequest::buildUserAgent(self::PLATFORM_NAME, \Shopware::VERSION, self::PLUGIN_VERSION);
 		$this->registerCustomModels();
 	}
 
@@ -455,8 +458,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
-		$op->create($article);
+
+		if (self::$_productUpdated == false) {
+			if ($article instanceof \Shopware\Models\Article\Detail) {
+				$article = $article->getArticle();
+			}
+			$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
+			$op->create($article);
+			self::$_productUpdated = true;
+		}
 	}
 
 	/**
@@ -470,8 +480,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		/** @var Shopware\Models\Article\Article $article */
 		$article = $args->getEntity();
-		$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
-		$op->update($article);
+		if (self::$_productUpdated == false) {
+			if ($article instanceof \Shopware\Models\Article\Detail) {
+				$article = $article->getArticle();
+			}
+			$op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
+			$op->update($article);
+			self::$_productUpdated = true;
+		}
 	}
 
 	/**
@@ -682,6 +698,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			'Shopware\Models\Order\Order::postUpdate',
 			'onPostUpdateOrder'
 		);
+		$this->subscribeEvent(
+			'Shopware\Models\Article\Detail::postPersist',
+			'onPostPersistArticle'
+		);
+		$this->subscribeEvent(
+			'Shopware\Models\Article\Detail::postUpdate',
+			'onPostUpdateArticle'
+		);
+
 		// Frontend events.
 		$this->subscribeEvent(
 			'Enlight_Controller_Dispatcher_ControllerPath_Frontend_NostoTagging',

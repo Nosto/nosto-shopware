@@ -51,10 +51,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * @param \Shopware\Models\Shop\Locale $locale the locale or null.
 	 * @param stdClass|null $identity the user identity.
 	 * @param string|null $email (optional) the account owner email if different than the active admin user.
+	 * @param array|stdClass $details (optional) the account details.
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
 	 * @throws NostoException if the account cannot be created for any reason.
 	 */
-	public function createAccount(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null, $email = null)
+	public function createAccount(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null, $email = null, $details = null)
 	{
 		$account = $this->findAccount($shop);
 		if (!is_null($account)) {
@@ -63,6 +64,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 
 		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account();
 		$meta->loadData($shop, $locale, $identity);
+		if (!empty($details)) {
+			$meta->setDetails($details);
+		}
 		$validator = new Zend_Validate_EmailAddress();
 		if ($validator->isValid($email)) {
 			$meta->getOwner()->setEmail($email);

@@ -164,16 +164,20 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		$data = array();
 		$shopId = $this->Request()->getParam('shopId', null);
 		$email = $this->Request()->getParam('email', null);
+		$details = $this->Request()->getParam('details', null);
+		if ($details) {
+			$details = json_decode($details);
+		}
 		/* @var \Shopware\Models\Shop\Repository $repository */
 		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
 		$shop = $repository->getActiveById($shopId);
 		$identity = Shopware()->Auth()->getIdentity();
-
+		
 		if (!is_null($shop)) {
 			$shop->registerResources(Shopware()->Bootstrap());
 			try {
 				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-				$account = $helper->createAccount($shop, $identity->locale, $identity, $email);
+				$account = $helper->createAccount($shop, $identity->locale, $identity, $email, $details);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
 				$success = true;
