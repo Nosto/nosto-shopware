@@ -3,7 +3,7 @@
     if (typeof nostojs != 'undefined' && nostojs != null) {
         try {
             nostojs(function (api) {
-                api.loadRecommendations('{$Data.slot_id}')
+                api.loadRecommendations()
             });
         } catch (err) {}
     }
