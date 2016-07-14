@@ -49,6 +49,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 	const PLATFORM_NAME = 'shopware';
 	const PLUGIN_VERSION = '1.1.2';
+	const MENU_PARENT_ID = 23;  // Configuration
+	const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
 
 	private static $_productUpdated = false;
 
@@ -652,13 +654,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	protected function createMyMenu()
 	{
+		if (
+			version_compare(
+				Shopware::VERSION,
+				self::NEW_ENTITY_MANAGER_VERSION
+			) < 0
+		) {
+			$parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
+		} else {
+			$parentMenu = $this->Menu()->findOneBy(array('id' => self::MENU_PARENT_ID));
+		}
 		$this->createMenuItem(
 			array(
 			'label' => 'Nosto',
 			'controller' => 'NostoTagging',
 			'action' => 'Index',
 			'active' => 1,
-			'parent' => $this->Menu()->findOneBy('id', 23), // Configuration
+			'parent' => $parentMenu,
 			'class' => 'nosto--icon'
 			)
 		);
