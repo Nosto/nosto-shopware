@@ -67,8 +67,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	 */
 	public function loadData(\Shopware\Models\Customer\Customer $customer)
 	{
-		$this->_firstName = $customer->getBilling()->getFirstName();
-		$this->_lastName = $customer->getBilling()->getLastName();
+		if ($customer->getBilling() instanceof \Shopware\Models\Customer\Billing) {
+			$this->_firstName = $customer->getBilling()->getFirstName();
+			$this->_lastName = $customer->getBilling()->getLastName();
+		}
 		$this->_email = $customer->getEmail();
 
 		Enlight()->Events()->notify(

@@ -161,7 +161,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->categories = $this->buildCategoryPaths($article, $shop);
 		$this->shortDescription = $article->getDescription();
 		$this->description = $article->getDescriptionLong();
-		$this->brand = $article->getSupplier()->getName();
+		if ($article->getSupplier() instanceof \Shopware\Models\Article\Supplier) {
+			$this->brand = $article->getSupplier()->getName();
+		} else {
+			$this->brand = '';
+		}
 		$this->datePublished = $article->getAdded()->format('Y-m-d');
 
 		Enlight()->Events()->notify(
