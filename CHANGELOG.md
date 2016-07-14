@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.1.3]
+- Fix failing installation with Shopware 5.2
+- Add safeguards for method calls to non-objects
+
 ## [1.1.2]
 - Add extendability for line items, cart, order, customer, category and buyer
 - Fix product update listener when only product details are updated
@@ -91,7 +95,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.2...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.3...develop
+[1.1.3]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.0.4...1.1.0
