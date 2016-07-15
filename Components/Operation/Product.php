@@ -60,12 +60,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article, $shop);
-			try {
-				$op = new NostoOperationProduct($account);
-				$op->addProduct($model);
-				$op->upsert();
-			} catch (NostoException $e) {
-				Shopware()->Pluginlogger()->error($e);
+			if ($model->getProductId()) {
+				try {
+					$op = new NostoOperationProduct($account);
+					$op->addProduct($model);
+					$op->upsert();
+				} catch (NostoException $e) {
+					Shopware()->Pluginlogger()->error($e);
+				}
 			}
 		}
 	}
@@ -87,12 +89,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			$shop->registerResources(Shopware()->Bootstrap());
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->loadData($article, $shop);
-			try {
-				$op = new NostoOperationProduct($account);
-				$op->addProduct($model);
-				$op->upsert();
-			} catch (NostoException $e) {
-				Shopware()->Pluginlogger()->error($e);
+			if ($model->getProductId()) {
+				try {
+					$op = new NostoOperationProduct($account);
+					$op->addProduct($model);
+					$op->upsert();
+				} catch (NostoException $e) {
+					Shopware()->Pluginlogger()->error($e);
+				}
 			}
 		}
 	}
@@ -107,12 +111,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 		foreach ($this->getAccounts($article, true) as $account) {
 			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
 			$model->assignId($article);
-			try {
-				$op = new NostoOperationProduct($account);
-				$op->addProduct($model);
-				$op->delete();
-			} catch (NostoException $e) {
-				Shopware()->Pluginlogger()->error($e);
+			if ($model->getProductId()) {
+				try {
+					$op = new NostoOperationProduct($account);
+					$op->addProduct($model);
+					$op->delete();
+				} catch (NostoException $e) {
+					Shopware()->Pluginlogger()->error($e);
+				}
 			}
 		}
 	}
