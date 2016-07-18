@@ -148,7 +148,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 			$shop = Shopware()->Shop();
 		}
 
-		$this->assignId($article);
+		try {
+			$this->assignId($article);
+		} catch(NostoException $e) {
+
+			return;
+		}
 		$this->url = $this->assembleProductUrl($article, $shop);
 		$this->name = $article->getName();
 		$this->imageUrl = ImageHelper::assembleImageUrl($article, $shop);
@@ -701,7 +706,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 */
 	public function assignId(\Shopware\Models\Article\Article $article)
 	{
-		$this->setProductId($article->getMainDetail()->getNumber());
+
+		$mainDetail = $article->getMainDetail();
+		if ($mainDetail instanceof \Shopware\Models\Article\Detail === false) {
+			throw new NostoException(
+				sprintf(
+					"Could not resolve product id - main detail doesn't exist for article %d",
+					$article->getId()
+				)
+			);
+		}
+		$this->setProductId($mainDetail->getNumber());
 	}
 
 	public function getVariationId()
