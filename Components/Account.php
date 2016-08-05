@@ -186,6 +186,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		} else {
 			$nostoAccount = null;
 		}
+		if (!isset($params['v'])) {
+			$params['v'] = 1;
+		}
 		return Nosto::helper('iframe')->getUrl($meta, $nostoAccount, $params);
 	}
 }
