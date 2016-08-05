@@ -48,9 +48,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
 	const PLATFORM_NAME = 'shopware';
-	const PLUGIN_VERSION = '1.1.4';
+	const PLUGIN_VERSION = '1.1.5';
 	const MENU_PARENT_ID = 23;  // Configuration
 	const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
+	const PLATFORM_UI_VERSION = '1';
 
 	private static $_productUpdated = false;
 

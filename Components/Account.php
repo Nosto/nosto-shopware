@@ -34,6 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
  *
@@ -185,6 +186,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 			$nostoAccount = $this->convertToNostoAccount($account);
 		} else {
 			$nostoAccount = null;
+		}
+		if (!isset($params['v'])) {
+			$params['v'] = NostoTaggingBootstrap::PLATFORM_UI_VERSION;
 		}
 		return Nosto::helper('iframe')->getUrl($meta, $nostoAccount, $params);
 	}
