@@ -53,28 +53,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 	 * Calculates the price of an article including tax
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @param \Shopware\Models\Shop\Shop $shop
 	 * @param string $type the type of price, i.e. "price" or "listPrice".
 	 * @return string the price formatted according to Nosto standards.
 	 */
-	public static function calcArticlePriceInclTax(Article $article, $type = self::PRICE_TYPE_NORMAL)
+	public static function calcArticlePriceInclTax(Article $article, Shop $shop, $type = self::PRICE_TYPE_NORMAL)
 	{
 		/** @var NostoHelperPrice $helper */
 		$helper = Nosto::helper('price');
 		/** @var Shopware\Models\Article\Price $price */
-		$price = $article->getMainDetail()->getPrices()->first();
+		$arrayCollection = $article->getMainDetail()->getPrices();
+		$price = $arrayCollection->first();
 		if (!$price) {
 			return $helper->format(0);
 		}
-
 		// If the list price is not set, fall back on the normal price.
 		if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
 			$value = $price->getPseudoPrice();
 		} else {
 			$value = $price->getPrice();
 		}
-
 		$tax = $article->getTax()->getTax();
-		return $helper->format($value * (1 + ($tax / 100)));
+		$priceWithTax = ($value * (1 + ($tax / 100))*$shop->getCurrency()->getFactor());
+		return $helper->format($priceWithTax);
 	}
 
 	/**
@@ -91,13 +92,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 		$unit = $mainDetail->getUnit();
 		$price = self::calcArticlePriceInclTax(
 			$article,
+			$shop,
 			self::PRICE_TYPE_NORMAL
 		);
 		$purchaseUnit = (double)$mainDetail->getPurchaseUnit();
 		if ($unit && $price && $purchaseUnit > 0) {
 			$unitName = $unit->getName();
 			$referenceUnit = (double)$mainDetail->getReferenceUnit();
-			$price *= $shop->getCurrency()->getFactor();
 			$referencePrice = $price / $purchaseUnit * $referenceUnit;
 			$zendCurrency = new Zend_Currency(
 				$shop->getCurrency()->getCurrency(),
