@@ -61,9 +61,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 	{
 		/** @var NostoHelperPrice $helper */
 		$helper = Nosto::helper('price');
-		/** @var Shopware\Models\Article\Price $price */
-		$arrayCollection = $article->getMainDetail()->getPrices();
-		$price = $arrayCollection->first();
+		/** @var \Shopware\Models\Article\Price $price */
+		$price = $article->getMainDetail()->getPrices()->first();
 		if (!$price) {
 			return $helper->format(0);
 		}
@@ -74,7 +73,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 			$value = $price->getPrice();
 		}
 		$tax = $article->getTax()->getTax();
-		$priceWithTax = ($value * (1 + ($tax / 100))*$shop->getCurrency()->getFactor());
+		$priceWithTax = ($value*(1+($tax/100))*$shop->getCurrency()->getFactor());
 		return $helper->format($priceWithTax);
 	}
 
