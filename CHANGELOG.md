@@ -104,7 +104,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.5...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.6...develop
+[1.1.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.5...1.1.6
 [1.1.5]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.4...1.1.5
 [1.1.4]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.2...1.1.3
