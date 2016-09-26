@@ -158,8 +158,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		$this->name = $article->getName();
 		$this->imageUrl = ImageHelper::assembleImageUrl($article, $shop);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
-		$this->price = PriceHelper::calcArticlePriceInclTax($article, PriceHelper::PRICE_TYPE_NORMAL);
-		$this->listPrice = PriceHelper::calcArticlePriceInclTax($article, PriceHelper::PRICE_TYPE_LIST);
+		$this->price = PriceHelper::calcArticlePriceInclTax(
+			$article,
+			$shop,
+			PriceHelper::PRICE_TYPE_NORMAL
+		);
+		$this->listPrice = PriceHelper::calcArticlePriceInclTax(
+			$article,
+			$shop,
+			PriceHelper::PRICE_TYPE_LIST
+		);
 		$this->currencyCode = $shop->getCurrency()->getCurrency();
 		$this->availability = $this->checkAvailability($article);
 		$this->tags = TagHelper::buildProductTags($article, $shop);

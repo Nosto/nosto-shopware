@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.1.6]
+- Add support for using multiple currencies across different stores
+
 ## [1.1.5]
 - Add support for the new Nosto UI
 
