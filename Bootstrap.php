@@ -52,6 +52,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	const MENU_PARENT_ID = 23;  // Configuration
 	const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
 	const PLATFORM_UI_VERSION = '1';
+	const PAGE_TYPE_FRONT_PAGE = 'front'; //done
+	const PAGE_TYPE_CART = 'cart';
+	const PAGE_TYPE_PRODUCT = 'product'; // done
+	const PAGE_TYPE_CATEGORY = 'category';
+	const PAGE_TYPE_SEARCH = 'search'; // done
+	const PAGE_TYPE_NOTFOUND = 'notfound'; // done
+	const PAGE_TYPE_ORDER = 'order'; // done
 
 	private static $_productUpdated = false;
 
@@ -243,6 +250,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_FRONT_PAGE);
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/index/index.tpl');
 	}
 
@@ -306,7 +314,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
-
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_CART);
 		if ($this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'cart')) {
 			$view->extendsTemplate('frontend/plugins/nosto_tagging/checkout/cart.tpl');
 		}
@@ -334,8 +342,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/search/index.tpl');
-
-		$this->addSearchTagging($view);
 	}
 
 	/**
@@ -396,6 +402,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		}
 
 		$view->addTemplateDir($this->Path().'Views/');
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_NOTFOUND);
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/notfound/index.tpl');
 	}
 
@@ -866,6 +873,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	}
 
 	/**
+	 * Adds the page type tagging to the view.
+	 *
+	 * @param Enlight_View_Default $view the view.
+	 * @param string $pageType
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+	 */
+	protected function addPageTypeTagging(Enlight_View_Default $view, $pageType)
+	{
+		$view->assign('nostoPageType', $pageType);
+	}
+
+	/**
 	 * Adds the product tagging to the view.
 	 *
 	 * This tagging should only be included on product (detail) pages.
@@ -897,6 +917,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 			$view->assign('nostoCategory', $nostoCategory);
 		}
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_PRODUCT);
 	}
 
 	/**
@@ -938,6 +959,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$nostoSearch->setSearchTerm(Shopware()->Front()->Request()->sSearch);
 
 		$view->assign('nostoSearch', $nostoSearch);
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
 	}
 
 	/**
@@ -986,6 +1008,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$nostoOrder->loadData($order);
 
 		$view->assign('nostoOrder', $nostoOrder);
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_ORDER);
 	}
 
 	/**
