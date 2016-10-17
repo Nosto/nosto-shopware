@@ -343,7 +343,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/search/index.tpl');
-		$this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
 	}
 
 	/**
