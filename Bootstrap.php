@@ -250,8 +250,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
-		$this->addPageTypeTagging($view, self::PAGE_TYPE_FRONT_PAGE);
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/index/index.tpl');
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_FRONT_PAGE);
 	}
 
 	/**
@@ -314,13 +314,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
-		$this->addPageTypeTagging($view, self::PAGE_TYPE_CART);
 		if ($this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'cart')) {
 			$view->extendsTemplate('frontend/plugins/nosto_tagging/checkout/cart.tpl');
+			$this->addPageTypeTagging($view, self::PAGE_TYPE_CART);
 		}
 		if ($this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'finish')) {
 			$view->extendsTemplate('frontend/plugins/nosto_tagging/checkout/finish.tpl');
 			$this->addOrderTagging($view);
+			$this->addPageTypeTagging($view, self::PAGE_TYPE_ORDER);
 		}
 	}
 
@@ -342,6 +343,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/search/index.tpl');
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
 	}
 
 	/**
@@ -402,8 +404,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		}
 
 		$view->addTemplateDir($this->Path().'Views/');
-		$this->addPageTypeTagging($view, self::PAGE_TYPE_NOTFOUND);
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/notfound/index.tpl');
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_NOTFOUND);
 	}
 
 	/**
