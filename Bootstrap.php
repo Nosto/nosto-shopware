@@ -52,13 +52,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	const MENU_PARENT_ID = 23;  // Configuration
 	const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
 	const PLATFORM_UI_VERSION = '1';
-	const PAGE_TYPE_FRONT_PAGE = 'front'; //done
+	const PAGE_TYPE_FRONT_PAGE = 'front';
 	const PAGE_TYPE_CART = 'cart';
-	const PAGE_TYPE_PRODUCT = 'product'; // done
+	const PAGE_TYPE_PRODUCT = 'product';
 	const PAGE_TYPE_CATEGORY = 'category';
-	const PAGE_TYPE_SEARCH = 'search'; // done
-	const PAGE_TYPE_NOTFOUND = 'notfound'; // done
-	const PAGE_TYPE_ORDER = 'order'; // done
+	const PAGE_TYPE_SEARCH = 'search';
+	const PAGE_TYPE_NOTFOUND = 'notfound';
+	const PAGE_TYPE_ORDER = 'order';
 
 	private static $_productUpdated = false;
 
@@ -939,11 +939,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		if (is_null($category)) {
 			return;
 		}
-
 		$nostoCategory = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
 		$nostoCategory->loadData($category);
-
 		$view->assign('nostoCategory', $nostoCategory);
+		$this->addPageTypeTagging($view, self::PAGE_TYPE_CATEGORY);
 	}
 
 	/**
