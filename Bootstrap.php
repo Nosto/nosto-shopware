@@ -1009,7 +1009,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$nostoOrder->loadData($order);
 
 		$view->assign('nostoOrder', $nostoOrder);
-		$this->addPageTypeTagging($view, self::PAGE_TYPE_ORDER);
 	}
 
 	/**
