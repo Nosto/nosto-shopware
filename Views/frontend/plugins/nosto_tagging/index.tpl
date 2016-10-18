@@ -102,4 +102,8 @@
 		{/foreach}
 		{/if}
 	</div>
+	{if isset($nostoPageType) && is_scalar($nostoPageType)}
+		<div class="nosto_page_type">{$nostoPageType|escape:'htmlall':'UTF-8'}</div>
+	{/if}
+
 {/block}
