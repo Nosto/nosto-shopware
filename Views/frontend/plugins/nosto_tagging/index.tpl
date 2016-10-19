@@ -53,7 +53,15 @@
 			var Nosto = {};
 		}
 		{/literal}
-		Nosto.addProductToCart = function (productNumber) {
+		Nosto.addProductToCart = function (productNumber, element) {
+			if (typeof nostojs !== 'undefined' && typeof element == 'object') {
+				var slotId = Nosto.resolveContextSlotId(element);
+				if (slotId) {
+					nostojs(function (api) {
+						api.recommendedProductAddedToCart(productNumber, slotId);
+					});
+				}
+			}
 			var form = document.createElement("form");
 			form.setAttribute("method", "post");
 			form.setAttribute("action", "{url controller=checkout action=addArticle}");
@@ -73,10 +81,29 @@
 					form.appendChild(hiddenField);
 				}
 			}
-
 			document.body.appendChild(form);
+			if (typeof CSRF.updateForms === 'function') {
+				CSRF.updateForms();
+			}
 			form.submit();
 		};
+		Nosto.resolveContextSlotId = function (element) {
+			var m = 20;
+			var n = 0;
+			var e = element;
+			while (typeof e.parentElement !== "undefined" && e.parentElement) {
+				++n;
+				e = e.parentElement;
+				if (e.getAttribute('class') == 'nosto_element' && e.getAttribute('id')) {
+					return e.getAttribute('id');
+				}
+				if (n >= m) {
+					return false;
+				}
+			}
+			return false;
+		}
+
 		//]]>
 	</script>
 {/if}
