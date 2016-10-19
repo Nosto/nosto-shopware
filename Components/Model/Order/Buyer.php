@@ -68,8 +68,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
 	 */
 	public function loadData(\Shopware\Models\Customer\Customer $customer)
 	{
-		$this->_firstName = $customer->getBilling()->getFirstName();
-		$this->_lastName = $customer->getBilling()->getLastName();
+		if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
+			/* @var \Shopware\Models\Customer\Address $address */
+			$address = $customer->getDefaultBillingAddress();
+			if ($address instanceof \Shopware\Models\Customer\Address) {
+				$this->_firstName = $address->getFirstname();
+				$this->_lastName = $address->getLastname();
+			}
+		} else {
+			/* @var \Shopware\Models\Customer\Billing $address */
+			$address = $customer->getBilling();
+			if ($address instanceof \Shopware\Models\Customer\Billing) {
+				$this->_firstName = $address->getFirstname();
+				$this->_lastName = $address->getLastname();
+			}
+		}
 		$this->_email = $customer->getEmail();
 
 		Enlight()->Events()->notify(
