@@ -82,7 +82,7 @@
 				}
 			}
 			document.body.appendChild(form);
-			if (typeof CSRF.updateForms === 'function') {
+			if (typeof CSRF === 'object' && typeof CSRF.updateForms === 'function') {
 				CSRF.updateForms();
 			}
 			form.submit();
