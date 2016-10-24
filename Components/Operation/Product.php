@@ -150,7 +150,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 		} else {
 			/** @var Shopware\Models\Category\Category $cat */
 			foreach ($article->getCategories() as $cat) {
-				$catName = $cat->getName();
 				foreach ($allShops as $shop) {
 					if (isset($inShops[$shop->getId()])) {
 						continue;

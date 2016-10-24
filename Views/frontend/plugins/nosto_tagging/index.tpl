@@ -114,6 +114,7 @@
 			<span class="first_name">{$nostoCustomer->getFirstName()|escape:'htmlall':'UTF-8'}</span>
 			<span class="last_name">{$nostoCustomer->getLastName()|escape:'htmlall':'UTF-8'}</span>
 			<span class="email">{$nostoCustomer->getEmail()|escape:'htmlall':'UTF-8'}</span>
+			<span class="nosto_customer_reference">{$nostoCustomer->getCustomerReference()|escape:'htmlall':'UTF-8'}</span>
 		</div>
 	{/if}
 	<div class="nosto_cart" style="display:none">
@@ -130,7 +131,7 @@
 		{/if}
 	</div>
 	{if isset($nostoPageType) && is_scalar($nostoPageType)}
-		<div class="nosto_page_type">{$nostoPageType|escape:'htmlall':'UTF-8'}</div>
+		<div class="nosto_page_type" style="display:none">{$nostoPageType|escape:'htmlall':'UTF-8'}</div>
 	{/if}
 
 {/block}

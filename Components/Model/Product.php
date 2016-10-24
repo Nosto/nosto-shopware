@@ -682,6 +682,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * This method exists in order to expose a public API to change the ID.
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @throws NostoException
 	 */
 	public function assignId(\Shopware\Models\Article\Article $article)
 	{
