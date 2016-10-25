@@ -48,9 +48,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
 	const PLATFORM_NAME = 'shopware';
-	const PLUGIN_VERSION = '1.1.6';
+	const PLUGIN_VERSION = '1.1.7';
 	const MENU_PARENT_ID = 23;  // Configuration
 	const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
+	const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
 	const PLATFORM_UI_VERSION = '1';
 	const PAGE_TYPE_FRONT_PAGE = 'front';
 	const PAGE_TYPE_CART = 'cart';
@@ -59,8 +60,38 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	const PAGE_TYPE_SEARCH = 'search';
 	const PAGE_TYPE_NOTFOUND = 'notfound';
 	const PAGE_TYPE_ORDER = 'order';
+	const SERVICE_ATTRIBUTE_CRUD = 'shopware_attribute.crud_service';
+	const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
+	const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
 
 	private static $_productUpdated = false;
+
+	/**
+	 * A list of custom database attributes
+	 * @var array
+	 */
+	private static $_customAttributes = array(
+		'0.1.0' => array(
+			's_order_attributes' => array(
+				'table' => 's_order_attributes',
+				'prefix' => self::NOSTO_CUSTOM_ATTRIBUTE_PREFIX,
+				'field' => 'customerID',
+				'type' => 'string',
+				'oldType' => 'VARCHAR(255)',
+				'keepOnUninstall' => false
+			),
+		),
+		'1.1.7' => array(
+			's_user_attributes' => array(
+				'table' => 's_user_attributes',
+				'prefix' => self::NOSTO_CUSTOM_ATTRIBUTE_PREFIX,
+				'field' => self::NOSTO_CUSTOMER_REFERENCE_FIELD,
+				'type' => 'string',
+				'oldType' => 'VARCHAR(32)',
+				'keepOnUninstall' => true
+			),
+		)
+	);
 
 	/**
 	 * @inheritdoc
@@ -123,11 +154,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function install()
 	{
 		$this->createMyTables();
-		$this->createMyAttributes();
+		$this->createMyAttributes('all');
 		$this->createMyMenu();
 		$this->createMyEmotions();
 		$this->registerMyEvents();
+
 		return true;
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function update($existingVersion)
+	{
+
+		return $this->createMyAttributes($existingVersion);
 	}
 
 	/**
@@ -137,14 +178,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		$this->dropMyTables();
 		$this->dropMyAttributes();
-		return true;
-	}
 
-	/**
-	 * @inheritdoc
-	 */
-	public function update($version)
-	{
 		return true;
 	}
 
@@ -423,7 +457,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			->Models()
 			->getRepository('Shopware\Models\Order\Order')
 			->findOneBy(array('number' => $sOrder->sOrderNumber));
-		if (is_object($order)) {
+		if ($order) {
 			// Store the Nosto customer ID in the order attribute if found.
 			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
 			$nostoId = $helper->getNostoId();
@@ -432,8 +466,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 					->Models()
 					->getRepository('Shopware\Models\Attribute\Order')
 					->findOneBy(array('orderId' => $order->getId()));
-				if (is_object($attribute)) {
-					$attribute->setNostoCustomerID($nostoId);
+				if (
+					$attribute instanceof \Shopware\Models\Attribute\Order
+					&& method_exists($attribute, 'setNostoCustomerId')
+				) {
+					$attribute->setNostoCustomerId($nostoId);
 					Shopware()->Models()->persist($attribute);
 					Shopware()->Models()->flush($attribute);
 				}
@@ -564,20 +601,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 *
 	 * Run on install.
 	 * Adds `nosto_customerID` to Shopware\Models\Attribute\Order.
-	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
+	 *
+	 * @param string  $fromVersion default all
 	 */
-	protected function createMyAttributes()
+	protected function createMyAttributes($fromVersion = 'all')
 	{
-		Shopware()->Models()->addAttribute(
-			's_order_attributes',
-			'nosto',
-			'customerID',
-			'VARCHAR(255)'
-		);
-		Shopware()->Models()->generateAttributeModels(
-			array('s_order_attributes')
-		);
+		foreach (self::$_customAttributes as $version => $attributes) {
+			if ($fromVersion === 'all' || version_compare($version, $fromVersion, '>')) {
+				foreach ($attributes as $attr) {
+					$this->addMyAttribute($attr);
+				}
+			}
+		}
 	}
 
 	/**
@@ -639,20 +675,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * Removes created attributes from core models
 	 *
 	 * Run on uninstall.
-	 * Removes `nosto_customerID` from Shopware\Models\Attribute\Order.
 	 *
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::uninstall
 	 */
 	protected function dropMyAttributes()
 	{
-		Shopware()->Models()->removeAttribute(
-			's_order_attributes',
-			'nosto',
-			'customerID'
-		);
-		Shopware()->Models()->generateAttributeModels(
-			array('s_order_attributes')
-		);
+		foreach (self::$_customAttributes as $version=> $attributes) {
+			foreach ($attributes as $table=> $attr) {
+				if ($attr['keepOnUninstall'] === false) {
+					$this->removeMyAttribute($attr);
+				}
+			}
+		}
 	}
 
 	/**
@@ -782,7 +816,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$shop = Shopware()->Shop();
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$nostoAccount = $helper->convertToNostoAccount($helper->findAccount($shop));
-
 		$view->assign('nostoAccountName', $nostoAccount->getName());
 		$view->assign('nostoServerUrl', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
 	}
@@ -1022,4 +1055,105 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		return $helper->accountExistsAndIsConnected($shop);
 	}
+
+	/**
+	 * Add new custom attribute to the database structure
+	 *
+	 * For the structure of attribute
+	 * @see self::$_customAttributes
+	 *
+	 * @param array $attribute
+	 */
+	private function addMyAttribute(array $attribute)
+	{
+		self::validateMyAttribute($attribute);
+		/* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
+		if (version_compare(Shopware::VERSION, self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+			$fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
+			/* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+			$attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
+			$attributeService->update(
+				$attribute['table'],
+				$fieldName,
+				$attribute['type']
+			);
+		} else {
+			Shopware()->Models()->addAttribute(
+				$attribute['table'],
+				$attribute['prefix'],
+				$attribute['field'],
+				$attribute['oldType']
+			);
+		}
+		Shopware()->Models()->generateAttributeModels(
+			array($attribute['table'])
+		);
+
+	}
+
+	/**
+	 * Removes custom attribute from the database
+	 *
+	 * For the structure of attribute
+	 * @see self::$_customAttributes
+	 *
+	 * @param array $attribute
+	 */
+	private function removeMyAttribute(array $attribute)
+	{
+		self::validateMyAttribute($attribute);
+		/* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
+		if (version_compare(Shopware::VERSION, self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+			$fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
+			/* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+			$attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
+			$attributeService->delete(
+				$attribute['table'],
+				$fieldName
+			);
+		} else {
+			Shopware()->Models()->removeAttribute(
+				$attribute['table'],
+				$attribute['prefix'],
+				$attribute['field']
+			);
+		}
+		Shopware()->Models()->generateAttributeModels(
+			array($attribute['table'])
+		);
+	}
+
+
+	/**
+	 * Validates that attribute can be added to the database
+	 *
+	 * For the structure of attribute
+	 * For the structure of attribute
+	 * @see self::$_customAttributes
+	 *
+	 * @param array $attribute
+	 * @throws NostoException
+	 */
+	public static function validateMyAttribute(array $attribute)
+	{
+		$keys = array(
+			'table',
+			'prefix',
+			'field',
+			'type',
+			'oldType',
+			'keepOnUninstall',
+		);
+		foreach ($keys as $key) {
+			if (!isset($attribute[$key])) {
+				throw new NostoException(
+					sprintf(
+						'Attribute array is missing key %s',
+						$key
+					)
+				);
+			}
+		}
+	}
 }
+

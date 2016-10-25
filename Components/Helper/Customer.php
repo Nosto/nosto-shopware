@@ -34,54 +34,30 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+
 /**
- * Order confirmation component. Used to send order information to Nosto.
+ * Helper class for customer
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
+class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer
 {
 	/**
-	 * Sends an order confirmation API call to Nosto for an order.
+	 * Generates new customer reference for Nosto
 	 *
-	 * @param Shopware\Models\Order\Order $order the order model.
+	 * @param \Shopware\Models\Customer\Customer $customer customer model.
 	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
+	 * @return string generated customer reference
 	 */
-	public function sendOrder(Shopware\Models\Order\Order $order)
+	public static function generateCustomerReference(\Shopware\Models\Customer\Customer $customer)
 	{
-		$shop = $order->getShop();
-		if (is_null($shop)) {
-			return;
-		}
+		$hash = md5($customer->getId().$customer->getEmail());
+		$uuid = uniqid(
+			substr($hash, 0, 8),
+			true
+		);
 
-		$accountHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$account = $accountHelper->findAccount($shop);
-
-		if (!is_null($account)) {
-			$nostoAccount = $accountHelper->convertToNostoAccount($account);
-			if ($nostoAccount->isConnectedToNosto()) {
-				try {
-					$attribute = Shopware()
-						->Models()
-						->getRepository('Shopware\Models\Attribute\Order')
-						->findOneBy(array('orderId' => $order->getId()));
-					if (
-						$attribute instanceof \Shopware\Models\Attribute\Order
-						&& method_exists($attribute, 'getNostoCustomerId')
-					) {
-						$customerId = $attribute->getNostoCustomerID();
-					} else {
-						$customerId = null;
-					}
-					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-					$model->loadData($order);
-					NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
-				} catch (NostoException $e) {
-					Shopware()->Pluginlogger()->error($e);
-				}
-			}
-		}
+		return $uuid;
 	}
 }

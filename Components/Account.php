@@ -96,6 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 			$data['apiTokens'][$token->getName()] = $token->getValue();
 		}
 		$account->setData($data);
+
 		return $account;
 	}
 
@@ -115,6 +116,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 				}
 			}
 		}
+
 		return $nostoAccount;
 	}
 

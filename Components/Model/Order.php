@@ -85,7 +85,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
 	protected $_includeSpecialLineItems = true;
 
 	/**
-	 * @var string external order referencet
+	 * @var string external order reference
 	 */
 	protected $_externalOrderRef;
 
