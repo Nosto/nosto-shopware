@@ -67,11 +67,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
 						->Models()
 						->getRepository('Shopware\Models\Attribute\Order')
 						->findOneBy(array('orderId' => $order->getId()));
-					$customerId = (!is_null($attribute)) ? $attribute->getNostoCustomerID() : null;
-
+					if (
+						$attribute instanceof \Shopware\Models\Attribute\Order
+						&& method_exists($attribute, 'getNostoCustomerId')
+					) {
+						$customerId = $attribute->getNostoCustomerID();
+					} else {
+						$customerId = null;
+					}
 					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
 					$model->loadData($order);
-
 					NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
 				} catch (NostoException $e) {
 					Shopware()->Pluginlogger()->error($e);

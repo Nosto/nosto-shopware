@@ -61,6 +61,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	const PAGE_TYPE_NOTFOUND = 'notfound';
 	const PAGE_TYPE_ORDER = 'order';
 	const SERVICE_ATTRIBUTE_CRUD = 'shopware_attribute.crud_service';
+	const NOSTO_CUSTOMER_REFERENCE_PREFIX = 'nosto';
+	const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
 
 	private static $_productUpdated = false;
 
@@ -75,16 +77,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 				'prefix' => 'nosto',
 				'field' => 'customerID',
 				'type' => 'string',
-				'oldType' => 'VARCHAR(255)'
+				'oldType' => 'VARCHAR(255)',
+				'keepOnUninstall' => false
 			),
 		),
 		'1.1.7' => array(
 			's_user_attributes' => array(
 				'table' => 's_user_attributes',
-				'prefix' => 'nosto',
-				'field' => 'customer_reference',
+				'prefix' => self::NOSTO_CUSTOMER_REFERENCE_PREFIX,
+				'field' => self::NOSTO_CUSTOMER_REFERENCE_FIELD,
 				'type' => 'string',
-				'oldType' => 'VARCHAR(32)'
+				'oldType' => 'VARCHAR(32)',
+				'keepOnUninstall' => true
 			),
 		)
 	);
@@ -453,7 +457,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			->Models()
 			->getRepository('Shopware\Models\Order\Order')
 			->findOneBy(array('number' => $sOrder->sOrderNumber));
-		if (is_object($order)) {
+		if ($order) {
 			// Store the Nosto customer ID in the order attribute if found.
 			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
 			$nostoId = $helper->getNostoId();
@@ -462,8 +466,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 					->Models()
 					->getRepository('Shopware\Models\Attribute\Order')
 					->findOneBy(array('orderId' => $order->getId()));
-				if (is_object($attribute)) {
-					$attribute->setNostoCustomerID($nostoId);
+				if (
+					$attribute instanceof \Shopware\Models\Attribute\Order
+					&& method_exists($attribute, 'setNostoCustomerId')
+				) {
+					$attribute->setNostoCustomerId($nostoId);
 					Shopware()->Models()->persist($attribute);
 					Shopware()->Models()->flush($attribute);
 				}
@@ -675,7 +682,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	{
 		foreach (self::$_customAttributes as $version=> $attributes) {
 			foreach ($attributes as $table=> $attr) {
-				$this->removeMyAttribute($attr);
+				if ($attr['keepOnUninstall'] === false) {
+					$this->removeMyAttribute($attr);
+				}
 			}
 		}
 	}
@@ -1075,10 +1084,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 				$attribute['field'],
 				$attribute['oldType']
 			);
-			Shopware()->Models()->generateAttributeModels(
-				array($attribute['table'])
-			);
 		}
+		Shopware()->Models()->generateAttributeModels(
+			array($attribute['table'])
+		);
+
 	}
 
 	/**
@@ -1132,9 +1142,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			'field',
 			'type',
 			'oldType',
+			'keepOnUninstall',
 		);
 		foreach ($keys as $key) {
-			if (empty($attribute[$key])) {
+			if (!isset($attribute[$key])) {
 				throw new NostoException(
 					sprintf(
 						'Attribute array is missing key %s',
