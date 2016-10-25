@@ -219,7 +219,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 			'',
 			sprintf(
 				'get%s%s',
-				ucfirst(NostoBootstrap::NOSTO_CUSTOMER_REFERENCE_PREFIX),
+				ucfirst(NostoBootstrap::NOSTO_CUSTOM_ATTRIBUTE_PREFIX),
 				ucfirst(NostoBootstrap::NOSTO_CUSTOMER_REFERENCE_FIELD)
 			)
 		);
@@ -228,7 +228,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 			'',
 			sprintf(
 				'set%s%s',
-				ucfirst(NostoBootstrap::NOSTO_CUSTOMER_REFERENCE_PREFIX),
+				ucfirst(NostoBootstrap::NOSTO_CUSTOM_ATTRIBUTE_PREFIX),
 				ucfirst(NostoBootstrap::NOSTO_CUSTOMER_REFERENCE_FIELD)
 			)
 		);

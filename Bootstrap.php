@@ -61,7 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	const PAGE_TYPE_NOTFOUND = 'notfound';
 	const PAGE_TYPE_ORDER = 'order';
 	const SERVICE_ATTRIBUTE_CRUD = 'shopware_attribute.crud_service';
-	const NOSTO_CUSTOMER_REFERENCE_PREFIX = 'nosto';
+	const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
 	const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
 
 	private static $_productUpdated = false;
@@ -74,7 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		'0.1.0' => array(
 			's_order_attributes' => array(
 				'table' => 's_order_attributes',
-				'prefix' => 'nosto',
+				'prefix' => self::NOSTO_CUSTOM_ATTRIBUTE_PREFIX,
 				'field' => 'customerID',
 				'type' => 'string',
 				'oldType' => 'VARCHAR(255)',
@@ -84,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		'1.1.7' => array(
 			's_user_attributes' => array(
 				'table' => 's_user_attributes',
-				'prefix' => self::NOSTO_CUSTOMER_REFERENCE_PREFIX,
+				'prefix' => self::NOSTO_CUSTOM_ATTRIBUTE_PREFIX,
 				'field' => self::NOSTO_CUSTOMER_REFERENCE_FIELD,
 				'type' => 'string',
 				'oldType' => 'VARCHAR(32)',
