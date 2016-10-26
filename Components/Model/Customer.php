@@ -34,6 +34,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
+
 /**
  * Model for customer information. This is used when compiling the info about
  * customers that is sent to Nosto.
@@ -61,6 +64,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 	protected $_email;
 
 	/**
+	 * @var string the customer reference.
+	 */
+	protected $_customerReference;
+
+	/**
 	 * Loads customer data from the logged in customer.
 	 *
 	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
@@ -72,6 +80,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 			$this->_lastName = $customer->getBilling()->getLastName();
 		}
 		$this->_email = $customer->getEmail();
+		try {
+			$this->populateCustomerReference($customer);
+		} catch (Exception $e) {
+			Shopware()->Pluginlogger()->error(
+				sprintf(
+					'Could not populate customer reference. Error was: %s',
+					$e->getMessage()
+				)
+			);
+		}
 
 		Enlight()->Events()->notify(
 			__CLASS__ . '_AfterLoad',
@@ -161,5 +179,86 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
 		$this->_email = $email;
 
 		return $this;
+	}
+
+	/**
+	 * Returns the customer reference attribute
+	 *
+	 * @return string
+	 */
+	public function getCustomerReference()
+	{
+		return $this->_customerReference;
+	}
+
+	/**
+	 * Sets the customer reference attribute
+	 *
+	 * @param string $customerReference
+	 */
+	public function setCustomerReference($customerReference)
+	{
+		$this->_customerReference = $customerReference;
+	}
+
+
+	/**
+	 * Returns the customer reference for Nosto.
+	 * If no customer reference is found for the user a new is created.
+	 *
+	 * @param \Shopware\Models\Customer\Customer $customer
+	 *
+	 * @throws NostoException if customer reference cannot be fetched or created
+	 *
+	 * @return void
+	 */
+	public function populateCustomerReference(\Shopware\Models\Customer\Customer $customer)
+	{
+		$getReferenceMethod = str_replace(
+			'_',
+			'',
+			sprintf(
+				'get%s%s',
+				ucfirst(NostoBootstrap::NOSTO_CUSTOM_ATTRIBUTE_PREFIX),
+				ucfirst(NostoBootstrap::NOSTO_CUSTOMER_REFERENCE_FIELD)
+			)
+		);
+		$setReferenceMethod = str_replace(
+			'_',
+			'',
+			sprintf(
+				'set%s%s',
+				ucfirst(NostoBootstrap::NOSTO_CUSTOM_ATTRIBUTE_PREFIX),
+				ucfirst(NostoBootstrap::NOSTO_CUSTOMER_REFERENCE_FIELD)
+			)
+		);
+		$customerReference = null;
+		$entityRepository = Shopware()
+			->Models()
+			->getRepository('Shopware\Models\Attribute\Customer');
+		$customerAttribute = $entityRepository
+			->findOneByCustomerId($customer->getId());
+		if (
+			!empty($customerAttribute)
+			&& $customerAttribute instanceof Shopware\Models\Attribute\Customer
+			&& method_exists($customerAttribute, $getReferenceMethod)
+		) {
+			$customerReference = $customerAttribute->$getReferenceMethod();
+		}
+		if (!$customerReference) {
+			$customerReference = CustomerHelper::generateCustomerReference($customer);
+			if (
+				is_object($customerAttribute)
+				&& method_exists($customerAttribute, $setReferenceMethod)
+			) {
+				$customerAttribute->$setReferenceMethod($customerReference);
+				Shopware()->Models()->persist($customerAttribute);
+				Shopware()->Models()->flush($customerAttribute);
+			}
+		}
+		if (!$customerReference) {
+			throw new NostoException('Could not fetch or generate customer reference');
+		}
+		$this->_customerReference = $customerReference;
 	}
 }

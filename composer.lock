@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b776ab04a46c28ad35774a616477909d",
-    "content-hash": "364822f4081449dcca0dec8fe6127fa6",
+    "hash": "bbeb30c2acc8d90acd6dda4c897c64fa",
+    "content-hash": "9f22b77065894da7a3ccd4131d785eeb",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "1.15.5",
+            "version": "1.15.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/php-sdk.git",
-                "reference": "19242ec1d9ffca92d94b87861ce960ba65d78323"
+                "reference": "e49d19d7de1aa1d591b6f202f5375b21183e3d95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/19242ec1d9ffca92d94b87861ce960ba65d78323",
-                "reference": "19242ec1d9ffca92d94b87861ce960ba65d78323",
+                "url": "https://api.github.com/repos/Nosto/php-sdk/zipball/e49d19d7de1aa1d591b6f202f5375b21183e3d95",
+                "reference": "e49d19d7de1aa1d591b6f202f5375b21183e3d95",
                 "shasum": ""
             },
             "require-dev": {
@@ -31,22 +31,22 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2016-06-08 12:10:50"
+            "time": "2016-10-07 05:56:52"
         }
     ],
     "packages-dev": [
         {
             "name": "phing/phing",
-            "version": "2.14.0",
+            "version": "2.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phingofficial/phing.git",
-                "reference": "7dd73c83c377623def54b58121f46b4dcb35dd61"
+                "reference": "0999ab4e94e609dc00998e3d1b88df843054db7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phingofficial/phing/zipball/7dd73c83c377623def54b58121f46b4dcb35dd61",
-                "reference": "7dd73c83c377623def54b58121f46b4dcb35dd61",
+                "url": "https://api.github.com/repos/phingofficial/phing/zipball/0999ab4e94e609dc00998e3d1b88df843054db7c",
+                "reference": "0999ab4e94e609dc00998e3d1b88df843054db7c",
                 "shasum": ""
             },
             "require": {
@@ -69,6 +69,7 @@
                 "phpunit/phpunit": ">=3.7",
                 "sebastian/git": "~1.0",
                 "sebastian/phpcpd": "2.x",
+                "siad007/versioncontrol_hg": "^1.0",
                 "squizlabs/php_codesniffer": "~2.2",
                 "symfony/yaml": "~2.7"
             },
@@ -83,6 +84,7 @@
                 "phpunit/php-code-coverage": "Library that provides collection, processing, and rendering functionality for PHP code coverage information",
                 "phpunit/phpunit": "The PHP Unit Testing Framework",
                 "sebastian/phpcpd": "Copy/Paste Detector (CPD) for PHP code",
+                "siad007/versioncontrol_hg": "A library for interfacing with Mercurial repositories.",
                 "tedivm/jshrink": "Javascript Minifier built in PHP"
             },
             "bin": [
@@ -91,7 +93,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.14.x-dev"
+                    "dev-master": "2.15.x-dev"
                 }
             },
             "autoload": {
@@ -124,7 +126,7 @@
                 "task",
                 "tool"
             ],
-            "time": "2016-03-10 21:39:23"
+            "time": "2016-10-13 09:01:45"
         }
     ],
     "aliases": [],

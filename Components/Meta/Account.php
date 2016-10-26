@@ -326,11 +326,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
 	}
 
 	/**
-	 * @return array
+	 * @return boolean
 	 */
 	public function getUseCurrencyExchangeRates()
 	{
-		return array();
+		return false;
 	}
 
 	/**

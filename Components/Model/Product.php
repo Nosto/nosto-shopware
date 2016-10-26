@@ -124,11 +124,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	protected $brand; //@codingStandardsIgnoreLine
 
 	/**
-	 * @var string the product publish date.
-	 */
-	protected $datePublished; //@codingStandardsIgnoreLine
-
-	/**
 	 * @inheritdoc
 	 */
 	public function getValidationRules()
@@ -179,7 +174,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 		} else {
 			$this->brand = '';
 		}
-		$this->datePublished = $article->getAdded()->format('Y-m-d');
 
 		Enlight()->Events()->notify(
 			__CLASS__ . '_AfterLoad',
@@ -383,14 +377,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	}
 
 	/**
-	 * @inheritdoc
-	 */
-	public function getDatePublished()
-	{
-		return $this->datePublished;
-	}
-
-	/**
 	 * Sets the product ID from given product.
 	 *
 	 * The product ID must be an integer above zero.
@@ -433,21 +419,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	public function setCurrencyCode($currency)
 	{
 		$this->currencyCode = $currency;
-	}
-
-	/**
-	 * Sets the products published date.
-	 *
-	 * The date must be a date in the Y-m-d format
-	 *
-	 * Usage:
-	 * $object->setDatePublished('2015-01-01');
-	 *
-	 * @param string $date the date.
-	 */
-	public function setDatePublished($date)
-	{
-		$this->datePublished = $date;
 	}
 
 	/**
@@ -711,6 +682,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
 	 * This method exists in order to expose a public API to change the ID.
 	 *
 	 * @param \Shopware\Models\Article\Article $article the article model.
+	 * @throws NostoException
 	 */
 	public function assignId(\Shopware\Models\Article\Article $article)
 	{

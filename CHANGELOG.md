@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.1.7]
+- Remove date_published field from product tagging
+- Add page type tagging
+- Add customer reference tagging
+- Use direct include for Nosto javascript
+- Fix add to cart javascript function
+- Handle some deprecated calls that will be removed in Shopware 5.3
+
 ## [1.1.6]
 - Add support for using multiple currencies across different stores
 
@@ -104,7 +112,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.6...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...develop
+[1.1.7]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.6...1.1.7
 [1.1.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.5...1.1.6
 [1.1.5]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.4...1.1.5
 [1.1.4]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.3...1.1.4

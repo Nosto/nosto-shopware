@@ -63,9 +63,6 @@
 					<span class="{$type|escape:'quotes'}">{$tag|escape:'htmlall':'UTF-8'}</span>
 				{/foreach}
 			{/foreach}
-			{if $nostoProduct->getDatePublished()}
-				<span class="date_published">{$nostoProduct->getDatePublished()|escape:'htmlall':'UTF-8'}</span>
-			{/if}
 		</div>
 	{/if}
 	{if isset($nostoCategory) && is_object($nostoCategory)}

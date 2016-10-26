@@ -3,7 +3,7 @@
     "description": "Personalization for Shopware",
     "license": "BSD-3-Clause",
     "require": {
-        "nosto/php-sdk": "1.15.5"
+        "nosto/php-sdk": "1.15.7"
     },
     "require-dev": {
         "phing/phing": "2.*"
