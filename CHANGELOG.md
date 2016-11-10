@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.8]
 - Fix issue in update method
+- Clear shopware cache after Nosto plug-in is installed or updated
 
 ## [1.1.7]
 - Remove date_published field from product tagging
