@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.1.8]
+- Fix issue in update method
+
 ## [1.1.7]
 - Remove date_published field from product tagging
 - Add page type tagging
@@ -112,7 +115,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.8...develop
+[1.1.8]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...1.1.8
 [1.1.7]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.6...1.1.7
 [1.1.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.5...1.1.6
 [1.1.5]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.4...1.1.5
