@@ -48,7 +48,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
 	const PLATFORM_NAME = 'shopware';
-	const PLUGIN_VERSION = '1.1.7';
+	const PLUGIN_VERSION = '1.1.8';
 	const MENU_PARENT_ID = 23;  // Configuration
 	const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
 	const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -167,8 +167,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 */
 	public function update($existingVersion)
 	{
+		$this->createMyAttributes($existingVersion);
 
-		return $this->createMyAttributes($existingVersion);
+		return true;
 	}
 
 	/**
@@ -306,7 +307,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
 		$view->extendsTemplate('frontend/plugins/nosto_tagging/detail/index.tpl');
-
 		$this->addProductTagging($view);
 	}
 
@@ -604,6 +604,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
 	 *
 	 * @param string  $fromVersion default all
+	 *
+	 * @return boolean
 	 */
 	protected function createMyAttributes($fromVersion = 'all')
 	{
@@ -614,6 +616,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 				}
 			}
 		}
+
+		return true;
 	}
 
 	/**
