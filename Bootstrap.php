@@ -158,6 +158,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->createMyMenu();
 		$this->createMyEmotions();
 		$this->registerMyEvents();
+		$this->clearShopwareCache();
 
 		return true;
 	}
@@ -168,6 +169,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	public function update($existingVersion)
 	{
 		$this->createMyAttributes($existingVersion);
+		$this->clearShopwareCache();
 
 		return true;
 	}
@@ -1156,6 +1158,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 						$key
 					)
 				);
+			}
+		}
+	}
+
+	/**
+	 * Clears following Shopware caches
+	 * - proxy cache
+	 * - template cache
+	 * - op cache
+	 */
+	private function clearShopwareCache()
+	{
+		/* @var \Shopware\Components\CacheManager $cacheManager */
+		$cacheManager = $this->get('shopware.cache_manager');
+		if ($cacheManager instanceof \Shopware\Components\CacheManager) {
+			if (method_exists($cacheManager, 'clearProxyCache')) {
+				$cacheManager->clearProxyCache();
+			}
+			if (method_exists($cacheManager, 'clearTemplateCache')) {
+				$cacheManager->clearTemplateCache();
+			}
+			if (method_exists($cacheManager, 'clearOpCache')) {
+				$cacheManager->clearOpCache();
 			}
 		}
 	}
