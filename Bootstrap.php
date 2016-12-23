@@ -253,7 +253,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
-
 		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
 		$helper->persistSession();
 
@@ -264,6 +263,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->addEmbedScript($view);
 		$this->addCustomerTagging($view);
 		$this->addCartTagging($view);
+		$this->addHcidTagging($view);
 
 		$locale = Shopware()->Shop()->getLocale()->getLocale();
 		$view->assign('nostoVersion', $this->getVersion());
@@ -824,6 +824,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$nostoAccount = $helper->convertToNostoAccount($helper->findAccount($shop));
 		$view->assign('nostoAccountName', $nostoAccount->getName());
 		$view->assign('nostoServerUrl', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
+	}
+
+	/**
+	 * Adds the hcid tagging for cart and customer.
+	 *
+	 * @param Enlight_View_Default $view the view.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+	 */
+	protected function addHcidTagging(Enlight_View_Default $view)
+	{
+		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
+		$view->assign('nostoHcid', $helper->getHcid());
 	}
 
 	/**

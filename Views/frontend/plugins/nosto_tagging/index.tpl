@@ -113,6 +113,9 @@
 {block name="frontend_index_content" append}
 	{if isset($nostoCustomer) && is_object($nostoCustomer)}
 		<div class="nosto_customer" style="display:none">
+			{if isset($nostoHcid) && !empty($nostoHcid)}
+				<span class="hcid">{$nostoHcid|escape:'htmlall':'UTF-8'}</span>
+			{/if}
 			<span class="first_name">{$nostoCustomer->getFirstName()|escape:'htmlall':'UTF-8'}</span>
 			<span class="last_name">{$nostoCustomer->getLastName()|escape:'htmlall':'UTF-8'}</span>
 			<span class="email">{$nostoCustomer->getEmail()|escape:'htmlall':'UTF-8'}</span>
@@ -120,16 +123,19 @@
 		</div>
 	{/if}
 	<div class="nosto_cart" style="display:none">
+		{if isset($nostoHcid) && !empty($nostoHcid)}
+			<span class="hcid">{$nostoHcid|escape:'htmlall':'UTF-8'}</span>
+		{/if}
 		{if isset($nostoCart) && is_object($nostoCart)}
-		{foreach from=$nostoCart->getLineItems() item=lineItem}
-			<div class="line_item">
-				<span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
-				<span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
-				<span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
-				<span class="unit_price">{$lineItem->getUnitPrice()|escape:'htmlall':'UTF-8'}</span>
-				<span class="price_currency_code">{$lineItem->getCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
-			</div>
-		{/foreach}
+			{foreach from=$nostoCart->getLineItems() item=lineItem}
+				<div class="line_item">
+					<span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
+					<span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
+					<span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
+					<span class="unit_price">{$lineItem->getUnitPrice()|escape:'htmlall':'UTF-8'}</span>
+					<span class="price_currency_code">{$lineItem->getCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
+				</div>
+			{/foreach}
 		{/if}
 	</div>
 	{if isset($nostoPageType) && is_scalar($nostoPageType)}
