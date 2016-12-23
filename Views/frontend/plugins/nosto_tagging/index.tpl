@@ -40,6 +40,12 @@
 {/block}
 {block name="frontend_index_header_javascript" append}
 {if isset($nostoAccountName) && isset($nostoAccountName)}
+	<!-- Nosto Javascript Stub -->
+	<script type="text/javascript">
+		{literal}
+			(function(){var name="nostojs";window[name]=window[name]||function(cb){(window[name].q=window[name].q||[]).push(cb);};})();
+		{/literal}
+	</script>
 	<!-- Nosto Tagging Script -->
 	<script type="text/javascript" src="//{$nostoServerUrl|escape:'htmlall':'UTF-8'}/include/{$nostoAccountName|escape:'htmlall':'UTF-8'}" async></script>
 	<script type="text/javascript">
