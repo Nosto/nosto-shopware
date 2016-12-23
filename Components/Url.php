@@ -42,13 +42,20 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 {
+	/*
+	 * Private constructor to prevent class to be initialized
+	 */
+	private function __construct()
+	{
+	}
+
 	/**
 	 * Returns a product page preview url in the given shop.
 	 *
 	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string the url.
 	 */
-	public function getProductPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+	public static function getProductPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('articles.id'))
@@ -68,7 +75,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 			'sArticle' => $result[0]['id'],
 			)
 		);
-		return $this->addPreviewUrlQueryParams($shop, $url);
+		return self::addPreviewUrlQueryParams($shop, $url);
 	}
 
 	/**
@@ -77,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string the url.
 	 */
-	public function getCategoryPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+	public static function getCategoryPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
 		$builder = Shopware()->Models()->createQueryBuilder();
 		$result = $builder->select(array('categories.id'))
@@ -98,7 +105,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 			'sCategory' => $result[0]['id'],
 			)
 		);
-		return $this->addPreviewUrlQueryParams($shop, $url);
+		return self::addPreviewUrlQueryParams($shop, $url);
 	}
 
 	/**
@@ -107,7 +114,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string the url.
 	 */
-	public function getCartPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+	public static function getCartPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
 		$url = Shopware()->Front()->Router()->assemble(
 			array(
@@ -116,7 +123,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 			'action' => 'cart',
 			)
 		);
-		return $this->addPreviewUrlQueryParams($shop, $url);
+		return self::addPreviewUrlQueryParams($shop, $url);
 	}
 
 	/**
@@ -125,7 +132,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string the url.
 	 */
-	public function getSearchPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+	public static function getSearchPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
 		$url = Shopware()->Front()->Router()->assemble(
 			array(
@@ -133,7 +140,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 			'controller' => 'search',
 			)
 		);
-		return $this->addPreviewUrlQueryParams($shop, $url, array('sSearch' => 'nosto'));
+		return self::addPreviewUrlQueryParams($shop, $url, array('sSearch' => 'nosto'));
 	}
 
 	/**
@@ -142,14 +149,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
 	 * @return string the url.
 	 */
-	public function getFrontPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+	public static function getFrontPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
 	{
 		$url = Shopware()->Front()->Router()->assemble(
 			array(
 			'module' => 'frontend',
 			)
 		);
-		return $this->addPreviewUrlQueryParams($shop, $url);
+		return self::addPreviewUrlQueryParams($shop, $url);
 	}
 
 	/**
@@ -162,7 +169,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 	 * @param array                      $params (optional) additional params to add to the url.
 	 * @return string the url with added params.
 	 */
-	protected function addPreviewUrlQueryParams(\Shopware\Models\Shop\Shop $shop, $url, $params = array())
+	protected static function addPreviewUrlQueryParams(\Shopware\Models\Shop\Shop $shop, $url, $params = array())
 	{
 		$defaults = array(
 			'__shop' => $shop->getId(),

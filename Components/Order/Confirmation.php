@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+
 /**
  * Order confirmation component. Used to send order information to Nosto.
  *
@@ -56,11 +58,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
 			return;
 		}
 
-		$accountHelper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$account = $accountHelper->findAccount($shop);
+		$account = NostoComponentAccount::findAccount($shop);
 
 		if (!is_null($account)) {
-			$nostoAccount = $accountHelper->convertToNostoAccount($account);
+			$nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
 			if ($nostoAccount->isConnectedToNosto()) {
 				try {
 					$attribute = Shopware()

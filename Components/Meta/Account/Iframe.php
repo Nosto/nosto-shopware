@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
+
 /**
  * Meta-data class for information included in the plugin configuration iframe.
  *
@@ -116,10 +118,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 		if (is_null($locale)) {
 			$locale = $shop->getLocale();
 		}
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Url();
 		/** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
 		$plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
-
 		if (!is_null($identity)) {
 			list($firstName, $lastName) = explode(' ', $identity->name);
 			$this->_firstName = $firstName;
@@ -129,11 +129,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
 		$this->_languageIsoCode = strtolower(substr($locale->getLocale(), 0, 2));
 		$this->_languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
 		$this->_uniqueId = $plugin->getUniqueId();
-		$this->_previewUrlProduct = $helper->getProductPagePreviewUrl($shop);
-		$this->_previewUrlCategory = $helper->getCategoryPagePreviewUrl($shop);
-		$this->_previewUrlSearch = $helper->getSearchPagePreviewUrl($shop);
-		$this->_previewUrlCart = $helper->getCartPagePreviewUrl($shop);
-		$this->_previewUrlFront = $helper->getFrontPagePreviewUrl($shop);
+		$this->_previewUrlProduct = NostoComponentUrl::getProductPagePreviewUrl($shop);
+		$this->_previewUrlCategory = NostoComponentUrl::getCategoryPagePreviewUrl($shop);
+		$this->_previewUrlSearch = NostoComponentUrl::getSearchPagePreviewUrl($shop);
+		$this->_previewUrlCart = NostoComponentUrl::getCartPagePreviewUrl($shop);
+		$this->_previewUrlFront = NostoComponentUrl::getFrontPagePreviewUrl($shop);
 		$this->_shopName = Shopware()->App().' - '.$shop->getName();
 	}
 
