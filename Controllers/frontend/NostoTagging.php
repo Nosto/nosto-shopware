@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+
 /**
  * Main frontend controller. Handles account connection via OAuth 2 and data
  * exports for products and orders.
@@ -59,8 +61,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
 		if (!is_null($code)) {
 			try {
-				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-				$account = $helper->findAccount($shop);
+				$account = NostoComponentAccount::findAccount($shop);
 				if (!is_null($account)) {
 					throw new NostoException(sprintf('Nosto account already exists for shop #%d.', $shop->getId()));
 				}
@@ -69,7 +70,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 				$meta->loadData($shop);
 				$nostoAccount = NostoAccount::syncFromNosto($meta, $code);
 
-				$account = $helper->convertToShopwareAccount($nostoAccount, $shop);
+				$account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
 
@@ -223,10 +224,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 	protected function export(NostoExportCollectionInterface $collection)
 	{
 		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$account = $helper->findAccount($shop);
+		$account = NostoComponentAccount::findAccount($shop);
 		if (!is_null($account)) {
-			$cipherText = NostoExporter::export($helper->convertToNostoAccount($account), $collection);
+			$cipherText = NostoExporter::export(
+				NostoComponentAccount::convertToNostoAccount($account),
+				$collection
+			);
 			echo $cipherText;
 		}
 		die();

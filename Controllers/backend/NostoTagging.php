@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+
 /**
  * Main backend controller. Handles account create/connect/delete requests
  * from the account configuration iframe.
@@ -113,7 +115,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 				->getQuery()
 				->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 		}
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		$identity = Shopware()->Auth()->getIdentity();
 		$setting = Shopware()
 			->Models()
@@ -133,12 +134,18 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 				continue;
 			}
 			$shop->registerResources(Shopware()->Bootstrap());
-			$account = $helper->findAccount($shop);
+			$account = NostoComponentAccount::findAccount($shop);
 			if (isset($oauthParams[$shop->getId()])) {
 				$params = $oauthParams[$shop->getId()];
 			}
 			$accountData = array(
-				'url' => $helper->buildAccountIframeUrl($shop, $identity->locale, $account, $identity, $params),
+				'url' => NostoComponentAccount::buildAccountIframeUrl(
+					$shop,
+					$identity->locale,
+					$account,
+					$identity,
+					$params
+				),
 				'shopId' => $shop->getId(),
 				'shopName' => $shop->getName(),
 			);
@@ -176,15 +183,20 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 		if (!is_null($shop)) {
 			$shop->registerResources(Shopware()->Bootstrap());
 			try {
-				$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-				$account = $helper->createAccount($shop, $identity->locale, $identity, $email, $details);
+				$account = NostoComponentAccount::createAccount(
+					$shop,
+					$identity->locale,
+					$identity,
+					$email,
+					$details
+				);
 				Shopware()->Models()->persist($account);
 				Shopware()->Models()->flush($account);
 				$success = true;
 				$data = array(
 					'id' => $account->getId(),
 					'name' => $account->getName(),
-					'url' => $helper->buildAccountIframeUrl(
+					'url' => NostoComponentAccount::buildAccountIframeUrl(
 						$shop,
 						$identity->locale,
 						$account,
@@ -226,8 +238,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 
 		if (!is_null($account) && !is_null($shop)) {
 			$shop->registerResources(Shopware()->Bootstrap());
-			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-			$helper->removeAccount($account);
+			NostoComponentAccount::removeAccount($account);
 			$success = true;
 			$data = array(
 				'url' => $helper->buildAccountIframeUrl(

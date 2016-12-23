@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+
 /**
  * Product operation component. Used for communicating create/update/delete
  * events for products to Nosto.
@@ -165,11 +167,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 			}
 		}
 
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
 		foreach ($inShops as $shop) {
-			$account = $helper->findAccount($shop);
+			$account = NostoComponentAccount::findAccount($shop);
 			if (!is_null($account)) {
-				$nostoAccount = $helper->convertToNostoAccount($account);
+				$nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
 				if ($nostoAccount->isConnectedToNosto()) {
 					$data[$shop->getId()] = $nostoAccount;
 				}

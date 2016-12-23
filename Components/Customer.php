@@ -53,6 +53,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 */
 	const VISITOR_HASH_ALGO = 'sha256';
 
+	/*
+	 * Constructor
+	 *
+     * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
+	 */
+	public function __construct()
+	{
+	}
+
 	/**
 	 * Persists the Shopware session and the Nosto session in the db.
 	 *
@@ -66,7 +75,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 * their status, and we need to know then which Nosto session the order
 	 * belonged to.
 	 */
-	public function persistSession()
+	public static function persistSession()
 	{
 		$sessionId = (Shopware()->Session()->offsetExists('sessionId')
 			? Shopware()->Session()->offsetGet('sessionId')
@@ -97,7 +106,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 *
 	 * @return null|string the Nosto ID.
 	 */
-	public function getNostoId()
+	public static function getNostoId()
 	{
 		$sessionId = (Shopware()->Session()->offsetExists('sessionId')
 			? Shopware()->Session()->offsetGet('sessionId')
@@ -117,9 +126,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 *
 	 * @return null|string the Nosto ID.
 	 */
-	public function getHcid()
+	public static function getHcid()
 	{
-		$nostoId = $this->getNostoId();
+		$nostoId = self::getNostoId();
 		$hcid = null;
 		if ($nostoId) {
 			$hcid = hash(self::VISITOR_HASH_ALGO, $nostoId);
