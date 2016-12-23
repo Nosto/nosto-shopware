@@ -49,6 +49,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	const COOKIE_NAME = '2c_cId';
 
 	/**
+	 * @var string the algorithm to use for hashing visitor id.
+	 */
+	const VISITOR_HASH_ALGO = 'sha256';
+
+	/**
 	 * Persists the Shopware session and the Nosto session in the db.
 	 *
 	 * We do this to be able to later map the Nosto session to an order. This
@@ -105,5 +110,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 			->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
 			->findOneBy(array('sessionId' => $sessionId));
 		return !is_null($customer) ? $customer->getNostoId() : null;
+	}
+
+	/**
+	 * Returns the hashed session
+	 *
+	 * @return null|string the Nosto ID.
+	 */
+	public function getHcid()
+	{
+		$nostoId = $this->getNostoId();
+		$hcid = null;
+		if ($nostoId) {
+			$hcid = hash(self::VISITOR_HASH_ALGO, $nostoId);
+		}
+
+		return $hcid;
 	}
 }
