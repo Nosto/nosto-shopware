@@ -43,9 +43,11 @@
 class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 {
 	/*
-	 * Private constructor to prevent class to be initialized
+	 * Constructor
+	 *
+     * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
 	 */
-	private function __construct()
+	public function __construct()
 	{
 	}
 
