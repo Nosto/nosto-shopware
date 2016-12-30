@@ -34,7 +34,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-require_once 'vendor/nosto/php-sdk/src/config.inc.php';
+require_once __DIR__ . '/vendor/nosto/php-sdk/src/config.inc.php';
+
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
 
 /**
  * The plugin bootstrap class.
@@ -48,7 +51,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
 	const PLATFORM_NAME = 'shopware';
-	const PLUGIN_VERSION = '1.1.8';
+	const PLUGIN_VERSION = '1.1.9';
 	const MENU_PARENT_ID = 23;  // Configuration
 	const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
 	const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -253,9 +256,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			|| !$this->shopHasConnectedAccount()) {
 			return;
 		}
-
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
-		$helper->persistSession();
+		NostoComponentCustomer::persistSession();
 
 		$view = $args->getSubject()->View();
 		$view->addTemplateDir($this->Path().'Views/');
@@ -264,6 +265,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 		$this->addEmbedScript($view);
 		$this->addCustomerTagging($view);
 		$this->addCartTagging($view);
+		$this->addHcidTagging($view);
 
 		$locale = Shopware()->Shop()->getLocale()->getLocale();
 		$view->assign('nostoVersion', $this->getVersion());
@@ -461,8 +463,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 			->findOneBy(array('number' => $sOrder->sOrderNumber));
 		if ($order) {
 			// Store the Nosto customer ID in the order attribute if found.
-			$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Customer();
-			$nostoId = $helper->getNostoId();
+			$nostoId = NostoComponentCustomer::getNostoId();
 			if (!empty($nostoId)) {
 				$attribute = Shopware()
 					->Models()
@@ -820,10 +821,25 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	protected function addEmbedScript(Enlight_View_Default $view)
 	{
 		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		$nostoAccount = $helper->convertToNostoAccount($helper->findAccount($shop));
-		$view->assign('nostoAccountName', $nostoAccount->getName());
-		$view->assign('nostoServerUrl', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
+		$nostoAccount = NostoComponentAccount::convertToNostoAccount(
+			NostoComponentAccount::findAccount($shop)
+		);
+		if ($nostoAccount instanceof NostoAccount) {
+			$view->assign('nostoAccountName', $nostoAccount->getName());
+			$view->assign('nostoServerUrl', Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com'));
+		}
+	}
+
+	/**
+	 * Adds the hcid tagging for cart and customer.
+	 *
+	 * @param Enlight_View_Default $view the view.
+	 *
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+	 */
+	protected function addHcidTagging(Enlight_View_Default $view)
+	{
+		$view->assign('nostoHcid', NostoComponentCustomer::getHcid());
 	}
 
 	/**
@@ -1058,8 +1074,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 	protected function shopHasConnectedAccount()
 	{
 		$shop = Shopware()->Shop();
-		$helper = new Shopware_Plugins_Frontend_NostoTagging_Components_Account();
-		return $helper->accountExistsAndIsConnected($shop);
+		return NostoComponentAccount::accountExistsAndIsConnected($shop);
 	}
 
 	/**

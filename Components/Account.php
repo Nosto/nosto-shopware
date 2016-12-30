@@ -43,6 +43,15 @@ use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 {
+	/*
+	 * Constructor
+	 *
+     * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
+	 */
+	public function __construct()
+	{
+	}
+
 	/**
 	 * Creates a new Nosto account for the given shop.
 	 *
@@ -56,9 +65,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
 	 * @throws NostoException if the account cannot be created for any reason.
 	 */
-	public function createAccount(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null, $email = null, $details = null)
+	public static function createAccount(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null, $email = null, $details = null)
 	{
-		$account = $this->findAccount($shop);
+		$account = self::findAccount($shop);
 		if (!is_null($account)) {
 			throw new NostoException(sprintf('Nosto account already exists for shop #%d.', $shop->getId()));
 		}
@@ -74,7 +83,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 		}
 
 		$nostoAccount = NostoAccount::create($meta);
-		$account = $this->convertToShopwareAccount($nostoAccount, $shop);
+		$account = self::convertToShopwareAccount($nostoAccount, $shop);
 
 		return $account;
 	}
@@ -86,7 +95,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * @param \Shopware\Models\Shop\Shop $shop the shop the account belongs to.
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the account model.
 	 */
-	public function convertToShopwareAccount(\NostoAccount $nostoAccount, \Shopware\Models\Shop\Shop $shop)
+	public static function convertToShopwareAccount(\NostoAccount $nostoAccount, \Shopware\Models\Shop\Shop $shop)
 	{
 		$account = new \Shopware\CustomModels\Nosto\Account\Account();
 		$account->setShopId($shop->getId());
@@ -106,7 +115,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * @param \Shopware\CustomModels\Nosto\Account\Account $account the account model.
 	 * @return NostoAccount the nosto account.
 	 */
-	public function convertToNostoAccount(\Shopware\CustomModels\Nosto\Account\Account $account)
+	public static function convertToNostoAccount(\Shopware\CustomModels\Nosto\Account\Account $account)
 	{
 		$nostoAccount = new NostoAccount($account->getName());
 		foreach ($account->getData() as $key => $items) {
@@ -125,9 +134,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 *
 	 * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to remove.
 	 */
-	public function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account)
+	public static function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account)
 	{
-		$nostoAccount = $this->convertToNostoAccount($account);
+		$nostoAccount = self::convertToNostoAccount($account);
 		Shopware()->Models()->remove($account);
 		Shopware()->Models()->flush();
 		try {
@@ -144,7 +153,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to get the account for.
 	 * @return \Shopware\CustomModels\Nosto\Account\Account the account or null if not found.
 	 */
-	public function findAccount(\Shopware\Models\Shop\Shop $shop)
+	public static function findAccount(\Shopware\Models\Shop\Shop $shop)
 	{
 		return Shopware()
 			->Models()
@@ -160,13 +169,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * @param \Shopware\Models\Shop\Shop $shop the shop to check the account for.
 	 * @return bool true if account exists and is connected to Nosto, false otherwise.
 	 */
-	public function accountExistsAndIsConnected(\Shopware\Models\Shop\Shop $shop)
+	public static function accountExistsAndIsConnected(\Shopware\Models\Shop\Shop $shop)
 	{
-		$account = $this->findAccount($shop);
+		$account = self::findAccount($shop);
 		if (is_null($account)) {
 			return false;
 		}
-		$nostoAccount = $this->convertToNostoAccount($account);
+		$nostoAccount = self::convertToNostoAccount($account);
 		return $nostoAccount->isConnectedToNosto();
 	}
 
@@ -180,12 +189,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 	 * @param array $params (optional) parameters for the url.
 	 * @return string the url.
 	 */
-	public function buildAccountIframeUrl(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, \Shopware\CustomModels\Nosto\Account\Account $account = null, $identity = null, array $params = array())
+	public static function buildAccountIframeUrl(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, \Shopware\CustomModels\Nosto\Account\Account $account = null, $identity = null, array $params = array())
 	{
 		$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
 		$meta->loadData($shop, $locale, $identity);
 		if (!is_null($account)) {
-			$nostoAccount = $this->convertToNostoAccount($account);
+			$nostoAccount = self::convertToNostoAccount($account);
 		} else {
 			$nostoAccount = null;
 		}

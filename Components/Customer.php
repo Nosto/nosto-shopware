@@ -49,6 +49,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	const COOKIE_NAME = '2c_cId';
 
 	/**
+	 * @var string the algorithm to use for hashing visitor id.
+	 */
+	const VISITOR_HASH_ALGO = 'sha256';
+
+	/*
+	 * Constructor
+	 *
+     * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
+	 */
+	public function __construct()
+	{
+	}
+
+	/**
 	 * Persists the Shopware session and the Nosto session in the db.
 	 *
 	 * We do this to be able to later map the Nosto session to an order. This
@@ -61,7 +75,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 * their status, and we need to know then which Nosto session the order
 	 * belonged to.
 	 */
-	public function persistSession()
+	public static function persistSession()
 	{
 		$sessionId = (Shopware()->Session()->offsetExists('sessionId')
 			? Shopware()->Session()->offsetGet('sessionId')
@@ -92,7 +106,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 	 *
 	 * @return null|string the Nosto ID.
 	 */
-	public function getNostoId()
+	public static function getNostoId()
 	{
 		$sessionId = (Shopware()->Session()->offsetExists('sessionId')
 			? Shopware()->Session()->offsetGet('sessionId')
@@ -105,5 +119,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 			->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
 			->findOneBy(array('sessionId' => $sessionId));
 		return !is_null($customer) ? $customer->getNostoId() : null;
+	}
+
+	/**
+	 * Returns the hashed session
+	 *
+	 * @return null|string the Nosto ID.
+	 */
+	public static function getHcid()
+	{
+		$nostoId = self::getNostoId();
+		$hcid = null;
+		if ($nostoId) {
+			$hcid = hash(self::VISITOR_HASH_ALGO, $nostoId);
+		}
+
+		return $hcid;
 	}
 }
