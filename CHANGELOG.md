@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.1.9]
+- Refactor utility methods to be static
+- Add visitor tagging hash
+- Add "js stub" for Nosto javascript
+
 ## [1.1.8]
 - Fix issue in update method
 - Clear shopware cache after Nosto plug-in is installed or updated
@@ -116,7 +121,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.8...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.9...develop
+[1.1.9]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...1.1.9
 [1.1.8]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...1.1.8
 [1.1.7]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.6...1.1.7
 [1.1.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.5...1.1.6
