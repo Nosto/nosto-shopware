@@ -244,7 +244,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
         /** @var \Shopware\Models\Article\Detail[] $details */
         $details = Shopware()
             ->Models()
-            ->getRepository('\Shopware\Models\Article\Detail')
+            ->getRepository(\Shopware\Models\Article\Detail::class)
             ->findBy(array('articleId' => $article->getId()));
         foreach ($details as $detail) {
             if ($detail->getInStock() > 0) {

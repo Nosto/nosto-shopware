@@ -579,7 +579,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     }
                     $setting = Shopware()
                         ->Models()
-                        ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+                        ->getRepository(\Shopware\CustomModels\Nosto\Setting\Setting::class)
                         ->findOneBy(array('name' => 'oauthParams'));
                     if (is_null($setting)) {
                         $setting = new \Shopware\CustomModels\Nosto\Setting\Setting();
@@ -774,7 +774,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         $setting = Shopware()
             ->Models()
-            ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+            ->getRepository(\Shopware\CustomModels\Nosto\Setting\Setting::class)
             ->findOneBy(array('name' => 'uniqueId'));
 
         if (is_null($setting)) {

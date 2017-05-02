@@ -93,7 +93,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         $inShops = array();
         $allShops = Shopware()
             ->Models()
-            ->getRepository('\Shopware\Models\Shop\Shop')
+            ->getRepository(\Shopware\Models\Shop\Shop::class)
             ->findAll();
 
         if ($allStores === true) {

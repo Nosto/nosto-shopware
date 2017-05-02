@@ -53,7 +53,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      */
     const VISITOR_HASH_ALGO = 'sha256';
 
-    /*
+    /**
      * Constructor
      *
      * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
@@ -87,7 +87,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         if (!empty($sessionId) && !empty($nostoId)) {
             $customer = Shopware()
                 ->Models()
-                ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
+                ->getRepository(\Shopware\CustomModels\Nosto\Customer\Customer::class)
                 ->findOneBy(array('sessionId' => $sessionId));
             if (empty($customer)) {
                 $customer = new \Shopware\CustomModels\Nosto\Customer\Customer();
@@ -132,7 +132,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         }
         $customer = Shopware()
             ->Models()
-            ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
+            ->getRepository(\Shopware\CustomModels\Nosto\Customer\Customer::class)
             ->findOneBy(array('sessionId' => $sessionId));
         return !is_null($customer) ? $customer->getNostoId() : null;
     }

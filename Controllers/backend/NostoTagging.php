@@ -118,7 +118,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $identity = Shopware()->Auth()->getIdentity();
         $setting = Shopware()
             ->Models()
-            ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+            ->getRepository(\Shopware\CustomModels\Nosto\Setting\Setting::class)
             ->findOneBy(array('name' => 'oauthParams'));
         if (!is_null($setting)) {
             $oauthParams = json_decode($setting->getValue(), true);
@@ -231,7 +231,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $shopId = $this->Request()->getParam('shopId', null);
         /** @var \Shopware\CustomModels\Nosto\Account\Account $account */
         $account = Shopware()->Models()->find(
-            '\Shopware\CustomModels\Nosto\Account\Account',
+            \Shopware\CustomModels\Nosto\Account\Account::class,
             $accountId
         );
         /* @var \Shopware\Models\Shop\Repository $repository */

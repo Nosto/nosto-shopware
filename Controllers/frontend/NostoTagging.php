@@ -140,9 +140,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('articles.id'))
-            ->from('\Shopware\Models\Article\Article', 'articles')
+            ->from(\Shopware\Models\Article\Article::class, 'articles')
             ->innerJoin(
-                '\Shopware\Models\Article\Detail',
+                \Shopware\Models\Article\Detail::class,
                 'details',
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 'articles.mainDetailId = details.id'
@@ -212,7 +212,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('orders.number'))
-            ->from('\Shopware\Models\Order\Order', 'orders')
+            ->from(\Shopware\Models\Order\Order::class, 'orders')
             ->where('orders.status >= 0');
 
         if (!empty($id)) {
