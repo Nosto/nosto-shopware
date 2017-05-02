@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,14 +33,15 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+//noinspection JSUnusedGlobalSymbols
 Ext.define('Shopware.apps.NostoTagging', {
     extend: 'Enlight.app.SubApplication',
     name: 'Shopware.apps.NostoTagging',
     bulkLoad: true,
     loadPath: '{url action=load}',
     controllers: ['Main'],
-    stores:['Account'],
-    models:['Account'],
+    stores: ['Account'],
+    models: ['Account'],
     views: ['Main'],
     launch: function () {
         var me = this,

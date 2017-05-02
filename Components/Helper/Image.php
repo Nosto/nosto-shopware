@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,9 +34,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use \Shopware\Models\Article\Article as Article;
-use \Shopware\Models\Shop\Shop as Shop;
-use \Shopware\Bundle\MediaBundle\MediaServiceInterface as MediaServiceInterface;
+use Shopware\Bundle\MediaBundle\MediaServiceInterface as MediaServiceInterface;
+use Shopware\Models\Article\Article as Article;
+use Shopware\Models\Shop\Shop as Shop;
 
 /**
  * Helper class for images
@@ -46,57 +46,60 @@ use \Shopware\Bundle\MediaBundle\MediaServiceInterface as MediaServiceInterface;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
 {
-	/**
-	 * Assembles the product image url based on article.
-	 *
-	 * Validates that the image can be found in the file system before returning
-	 * the url. This will not guarantee that the url works, but we should be
-	 * able to assume that if the image is in the correct place, the url works.
-	 *
-	 * The url will always be for the original image, not the thumbnails.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
-	 * @return string|null the url or null if image not found.
-	 */
-	public static function assembleImageUrl(Article $article, Shop $shop)
-	{
-		$url = null;
+    /**
+     * Assembles the product image url based on article.
+     *
+     * Validates that the image can be found in the file system before returning
+     * the url. This will not guarantee that the url works, but we should be
+     * able to assume that if the image is in the correct place, the url works.
+     *
+     * The url will always be for the original image, not the thumbnails.
+     *
+     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @return string|null the url or null if image not found.
+     */
+    public static function assembleImageUrl(Article $article, Shop $shop)
+    {
+        $url = null;
 
-		try {
-			/*
-			 * Media service was introduced in Shopware 5.1
-			 * @var MediaServiceInterface $mediaService
-			 **/
-			$mediaService = Shopware()->Container()
-				->get('shopware_media.media_service');
-		} catch (\Exception $error) {
-			$mediaService = false;
-		}
-		/** @var Shopware\Models\Article\Image $image */
-		foreach ($article->getImages() as $image) {
-			if (is_null($url) || $image->getMain() === 1) {
-				$media = $image->getMedia();
-				if (is_null($media)) {
-					continue;
-				}
-				if ($mediaService instanceof MediaServiceInterface) {
-					$url = $mediaService->getUrl($media->getPath());
-				} else {
-					$secure = ($shop->getSecure() || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure()));
-					$protocol = ($secure ? 'https://' : 'http://');
-					$host = ($secure ? $shop->getSecureHost() : $shop->getHost());
-					$path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
-					$file = '/'.ltrim($media->getPath(), '/');
-					$url = $protocol.$host.$path.$file;
-				}
-				// Force SSL if it's enabled.
-				if ($image->getMain() === 1) {
-					break;
-				}
-			}
-		}
+        try {
+            /*
+             * Media service was introduced in Shopware 5.1
+             * @var MediaServiceInterface $mediaService
+             **/
+            $mediaService = Shopware()->Container()
+                ->get('shopware_media.media_service');
+        } catch (\Exception $error) {
+            $mediaService = false;
+        }
+        /** @var Shopware\Models\Article\Image $image */
+        foreach ($article->getImages() as $image) {
+            if (is_null($url) || $image->getMain() === 1) {
+                $media = $image->getMedia();
+                if (is_null($media)) {
+                    continue;
+                }
+                if ($mediaService instanceof MediaServiceInterface) {
+                    $url = $mediaService->getUrl($media->getPath());
+                } else {
+                    $secure = ($shop->getSecure() || (method_exists(
+                        $shop,
+                        'getAlwaysSecure'
+                    ) && $shop->getAlwaysSecure()));
+                    $protocol = ($secure ? 'https://' : 'http://');
+                    $host = ($secure ? $shop->getSecureHost() : $shop->getHost());
+                    $path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
+                    $file = '/' . ltrim($media->getPath(), '/');
+                    $url = $protocol . $host . $path . $file;
+                }
+                // Force SSL if it's enabled.
+                if ($image->getMain() === 1) {
+                    break;
+                }
+            }
+        }
 
-		return $url;
-	}
+        return $url;
+    }
 }

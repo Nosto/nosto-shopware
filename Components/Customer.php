@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,97 +43,97 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 {
-	/**
-	 * @var string the name of the cookie where the Nosto ID can be found.
-	 */
-	const COOKIE_NAME = '2c_cId';
+    /**
+     * @var string the name of the cookie where the Nosto ID can be found.
+     */
+    const COOKIE_NAME = '2c_cId';
 
-	/**
-	 * @var string the algorithm to use for hashing visitor id.
-	 */
-	const VISITOR_HASH_ALGO = 'sha256';
+    /**
+     * @var string the algorithm to use for hashing visitor id.
+     */
+    const VISITOR_HASH_ALGO = 'sha256';
 
-	/*
-	 * Constructor
-	 *
+    /*
+     * Constructor
+     *
      * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
-	 */
-	public function __construct()
-	{
-	}
+     */
+    public function __construct()
+    {
+    }
 
-	/**
-	 * Persists the Shopware session and the Nosto session in the db.
-	 *
-	 * We do this to be able to later map the Nosto session to an order. This
-	 * is possible to do as the payment gateways are required to send the
-	 * Shopware session along with all the requests. This means that the session
-	 * will be available when the order is first created. When the order is
-	 * created we store the nosto session in the `s_order_attributes` table and
-	 * is use it from there when sending the order confirmations.
-	 * All this is needed as we re-send the orders when anything changes, like
-	 * their status, and we need to know then which Nosto session the order
-	 * belonged to.
-	 */
-	public static function persistSession()
-	{
-		$sessionId = (Shopware()->Session()->offsetExists('sessionId')
-			? Shopware()->Session()->offsetGet('sessionId')
-			: Shopware()->SessionID());
-		$nostoId = Shopware()
-			->Front()
-			->Request()
-			->getCookie(self::COOKIE_NAME, null);
-		if (!empty($sessionId) && !empty($nostoId)) {
-			$customer = Shopware()
-				->Models()
-				->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
-				->findOneBy(array('sessionId' => $sessionId));
-			if (empty($customer)) {
-				$customer = new \Shopware\CustomModels\Nosto\Customer\Customer();
-				$customer->setSessionId($sessionId);
-			}
-			if ($nostoId !== $customer->getNostoId()) {
-				$customer->setNostoId($nostoId);
-			}
-			Shopware()->Models()->persist($customer);
-			Shopware()->Models()->flush($customer);
-		}
-	}
+    /**
+     * Persists the Shopware session and the Nosto session in the db.
+     *
+     * We do this to be able to later map the Nosto session to an order. This
+     * is possible to do as the payment gateways are required to send the
+     * Shopware session along with all the requests. This means that the session
+     * will be available when the order is first created. When the order is
+     * created we store the nosto session in the `s_order_attributes` table and
+     * is use it from there when sending the order confirmations.
+     * All this is needed as we re-send the orders when anything changes, like
+     * their status, and we need to know then which Nosto session the order
+     * belonged to.
+     */
+    public static function persistSession()
+    {
+        $sessionId = (Shopware()->Session()->offsetExists('sessionId')
+            ? Shopware()->Session()->offsetGet('sessionId')
+            : Shopware()->SessionID());
+        $nostoId = Shopware()
+            ->Front()
+            ->Request()
+            ->getCookie(self::COOKIE_NAME, null);
+        if (!empty($sessionId) && !empty($nostoId)) {
+            $customer = Shopware()
+                ->Models()
+                ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
+                ->findOneBy(array('sessionId' => $sessionId));
+            if (empty($customer)) {
+                $customer = new \Shopware\CustomModels\Nosto\Customer\Customer();
+                $customer->setSessionId($sessionId);
+            }
+            if ($nostoId !== $customer->getNostoId()) {
+                $customer->setNostoId($nostoId);
+            }
+            Shopware()->Models()->persist($customer);
+            Shopware()->Models()->flush($customer);
+        }
+    }
 
-	/**
-	 * Returns the Nosto session ID based on the current Shopware session ID.
-	 *
-	 * @return null|string the Nosto ID.
-	 */
-	public static function getNostoId()
-	{
-		$sessionId = (Shopware()->Session()->offsetExists('sessionId')
-			? Shopware()->Session()->offsetGet('sessionId')
-			: Shopware()->SessionID());
-		if (empty($sessionId)) {
-			return null;
-		}
-		$customer = Shopware()
-			->Models()
-			->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
-			->findOneBy(array('sessionId' => $sessionId));
-		return !is_null($customer) ? $customer->getNostoId() : null;
-	}
+    /**
+     * Returns the hashed session
+     *
+     * @return null|string the Nosto ID.
+     */
+    public static function getHcid()
+    {
+        $nostoId = self::getNostoId();
+        $hcid = null;
+        if ($nostoId) {
+            $hcid = hash(self::VISITOR_HASH_ALGO, $nostoId);
+        }
 
-	/**
-	 * Returns the hashed session
-	 *
-	 * @return null|string the Nosto ID.
-	 */
-	public static function getHcid()
-	{
-		$nostoId = self::getNostoId();
-		$hcid = null;
-		if ($nostoId) {
-			$hcid = hash(self::VISITOR_HASH_ALGO, $nostoId);
-		}
+        return $hcid;
+    }
 
-		return $hcid;
-	}
+    /**
+     * Returns the Nosto session ID based on the current Shopware session ID.
+     *
+     * @return null|string the Nosto ID.
+     */
+    public static function getNostoId()
+    {
+        $sessionId = (Shopware()->Session()->offsetExists('sessionId')
+            ? Shopware()->Session()->offsetGet('sessionId')
+            : Shopware()->SessionID());
+        if (empty($sessionId)) {
+            return null;
+        }
+        $customer = Shopware()
+            ->Models()
+            ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
+            ->findOneBy(array('sessionId' => $sessionId));
+        return !is_null($customer) ? $customer->getNostoId() : null;
+    }
 }

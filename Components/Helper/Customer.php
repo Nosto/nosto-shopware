@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,21 +43,21 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer
 {
-	/**
-	 * Generates new customer reference for Nosto
-	 *
-	 * @param \Shopware\Models\Customer\Customer $customer customer model.
-	 *
-	 * @return string generated customer reference
-	 */
-	public static function generateCustomerReference(\Shopware\Models\Customer\Customer $customer)
-	{
-		$hash = md5($customer->getId().$customer->getEmail());
-		$uuid = uniqid(
-			substr($hash, 0, 8),
-			true
-		);
+    /**
+     * Generates new customer reference for Nosto
+     *
+     * @param \Shopware\Models\Customer\Customer $customer customer model.
+     *
+     * @return string generated customer reference
+     */
+    public static function generateCustomerReference(\Shopware\Models\Customer\Customer $customer)
+    {
+        $hash = md5($customer->getId() . $customer->getEmail());
+        $uuid = uniqid(
+            substr($hash, 0, 8),
+            true
+        );
 
-		return $uuid;
-	}
+        return $uuid;
+    }
 }

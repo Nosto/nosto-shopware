@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,73 +45,75 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner implements NostoAccountMetaDataOwnerInterface
 {
-	/**
-	 * @var string the first name of the account owner.
-	 */
-	protected $_firstName;
+    /**
+     * @var string the first name of the account owner.
+     */
+    protected $_firstName;
 
-	/**
-	 * @var string the last name of the account owner.
-	 */
-	protected $_lastName;
+    /**
+     * @var string the last name of the account owner.
+     */
+    protected $_lastName;
 
-	/**
-	 * @var string the email address of the account owner.
-	 */
-	protected $_email;
+    /**
+     * @var string the email address of the account owner.
+     */
+    protected $_email;
 
-	/**
-	 * Loads the data for the account owner.
-	 *
-	 * @param stdClass|null the user identity.
-	 */
-	public function loadData($identity = null)
-	{
-		if (!is_null($identity)) {
-			list($firstName, $lastName) = explode(' ', $identity->name);
-			$this->_firstName = $firstName;
-			$this->_lastName = $lastName;
-			$this->_email = $identity->email;
-		}
-	}
+    /**
+     * Loads the data for the account owner.
+     *
+     * @param stdClass|null the user identity.
+     */
+    public function loadData($identity = null)
+    {
+        if (!is_null($identity)) {
+            /** @noinspection PhpUndefinedFieldInspection */
+            $this->_email = $identity->email;
+            /** @noinspection PhpUndefinedFieldInspection */
+            list($firstName, $lastName) = explode(' ', $identity->name);
+            $this->_firstName = $firstName;
+            $this->_lastName = $lastName;
+        }
+    }
 
-	/**
-	 * The first name of the account owner.
-	 *
-	 * @return string the first name.
-	 */
-	public function getFirstName()
-	{
-		return $this->_firstName;
-	}
+    /**
+     * The first name of the account owner.
+     *
+     * @return string the first name.
+     */
+    public function getFirstName()
+    {
+        return $this->_firstName;
+    }
 
-	/**
-	 * The last name of the account owner.
-	 *
-	 * @return string the last name.
-	 */
-	public function getLastName()
-	{
-		return $this->_lastName;
-	}
+    /**
+     * The last name of the account owner.
+     *
+     * @return string the last name.
+     */
+    public function getLastName()
+    {
+        return $this->_lastName;
+    }
 
-	/**
-	 * The email address of the account owner.
-	 *
-	 * @return string the email address.
-	 */
-	public function getEmail()
-	{
-		return $this->_email;
-	}
+    /**
+     * The email address of the account owner.
+     *
+     * @return string the email address.
+     */
+    public function getEmail()
+    {
+        return $this->_email;
+    }
 
-	/**
-	 * Setter for the account owner's email address.
-	 *
-	 * @param string $email the email address.
-	 */
-	public function setEmail($email)
-	{
-		$this->_email = $email;
-	}
+    /**
+     * Setter for the account owner's email address.
+     *
+     * @param string $email the email address.
+     */
+    public function setEmail($email)
+    {
+        $this->_email = $email;
+    }
 }

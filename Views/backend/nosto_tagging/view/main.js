@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+//noinspection JSUnusedGlobalSymbols
 Ext.define('Shopware.apps.NostoTagging.view.Main', {
     /**
      * Extends the Enlight application window.
@@ -91,7 +92,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
             i = 0,
             tab;
 
-        me.accountStore.each(function(account) {
+        me.accountStore.each(function (account) {
             tab = me.tabPanel.add({
                 title: account.get('shopName'),
                 xtype: 'component',
@@ -119,7 +120,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
             activeTab = me.tabPanel.getActiveTab(),
             activeAccount = null;
 
-        me.accountStore.each(function(account) {
+        me.accountStore.each(function (account) {
             if (account.get('shopId') === activeTab.shopId) {
                 activeAccount = account;
             }

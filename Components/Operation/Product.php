@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,138 +45,139 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 {
-	/**
-	 * Sends info to Nosto about a newly created product.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the product.
-	 */
-	public function create(\Shopware\Models\Article\Article $article)
-	{
-		/* @var \Shopware\Models\Shop\Repository $repository */
-		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
-		foreach ($this->getAccounts($article) as $shopId => $account) {
-			$shop = $repository->getActiveById($shopId);
-			if (is_null($shop)) {
-				continue;
-			}
-			$shop->registerResources(Shopware()->Bootstrap());
-			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($article, $shop);
-			if ($model->getProductId()) {
-				try {
-					$op = new NostoOperationProduct($account);
-					$op->addProduct($model);
-					$op->upsert();
-				} catch (NostoException $e) {
-					Shopware()->Pluginlogger()->error($e);
-				}
-			}
-		}
-	}
+    /**
+     * Sends info to Nosto about a newly created product.
+     *
+     * @param \Shopware\Models\Article\Article $article the product.
+     */
+    public function create(\Shopware\Models\Article\Article $article)
+    {
+        /* @var \Shopware\Models\Shop\Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
+        foreach ($this->getAccounts($article) as $shopId => $account) {
+            $shop = $repository->getActiveById($shopId);
+            if (is_null($shop)) {
+                continue;
+            }
+            $shop->registerResources();
+            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model->loadData($article, $shop);
+            if ($model->getProductId()) {
+                try {
+                    $op = new NostoOperationProduct($account);
+                    $op->addProduct($model);
+                    $op->upsert();
+                } catch (NostoException $e) {
+                    Shopware()->PluginLogger()->error($e);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Sends info to Nosto about a newly updated product.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the product.
-	 */
-	public function update(\Shopware\Models\Article\Article $article)
-	{
-		/* @var \Shopware\Models\Shop\Repository $repository */
-		$repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
-		foreach ($this->getAccounts($article) as $shopId => $account) {
-			$shop = $repository->getActiveById($shopId);
-			if (is_null($shop)) {
-				continue;
-			}
-			$shop->registerResources(Shopware()->Bootstrap());
-			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($article, $shop);
-			if ($model->getProductId()) {
-				try {
-					$op = new NostoOperationProduct($account);
-					$op->addProduct($model);
-					$op->upsert();
-				} catch (NostoException $e) {
-					Shopware()->Pluginlogger()->error($e);
-				}
-			}
-		}
-	}
+    /**
+     * Returns the Nosto accounts for the product mapped on the shop ID to which
+     * they belong.
+     *
+     * The shops the product belongs to is determined by analyzing the products
+     * categories and checking if the shop root category is present.
+     *
+     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param boolean $allStores if true Nosto accounts from all stores will be returned
+     * @return NostoAccount[] the accounts mapped in the shop IDs.
+     */
+    protected function getAccounts(\Shopware\Models\Article\Article $article, $allStores = false)
+    {
+        $data = array();
 
-	/**
-	 * Sends info to Nosto about a deleted product.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the product.
-	 */
-	public function delete(\Shopware\Models\Article\Article $article)
-	{
-		foreach ($this->getAccounts($article, true) as $account) {
-			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->assignId($article);
-			if ($model->getProductId()) {
-				try {
-					$op = new NostoOperationProduct($account);
-					$op->addProduct($model);
-					$op->delete();
-				} catch (NostoException $e) {
-					Shopware()->Pluginlogger()->error($e);
-				}
-			}
-		}
-	}
+        /** @var \Shopware\Models\Shop\Shop[] $inShops */
+        $inShops = array();
+        $allShops = Shopware()
+            ->Models()
+            ->getRepository('\Shopware\Models\Shop\Shop')
+            ->findAll();
 
-	/**
-	 * Returns the Nosto accounts for the product mapped on the shop ID to which
-	 * they belong.
-	 *
-	 * The shops the product belongs to is determined by analyzing the products
-	 * categories and checking if the shop root category is present.
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param boolean $allStores if true Nosto accounts from all stores will be returned
-	 * @return NostoAccount[] the accounts mapped in the shop IDs.
-	 */
-	protected function getAccounts(\Shopware\Models\Article\Article $article, $allStores = false)
-	{
-		$data = array();
+        if ($allStores === true) {
+            $inShops = $allShops;
+        } else {
+            /** @var Shopware\Models\Category\Category $cat */
+            foreach ($article->getCategories() as $cat) {
+                /** @var \Shopware\Models\Shop\Shop $shop */
+                foreach ($allShops as $shop) {
+                    if (isset($inShops[$shop->getId()])) {
+                        continue;
+                    }
 
-		/** @var \Shopware\Models\Shop\Shop[] $inShops */
-		$inShops = array();
-		$allShops = Shopware()
-			->Models()
-			->getRepository('\Shopware\Models\Shop\Shop')
-			->findAll();
+                    $shopCatId = $shop->getCategory()->getId();
+                    if ($cat->getId() === $shopCatId
+                        || strpos($cat->getPath(), '|' . $shopCatId . '|') !== false
+                    ) {
+                        $inShops[$shop->getId()] = $shop;
+                    }
+                }
+            }
+        }
 
-		if ($allStores === true) {
-			$inShops = $allShops;
-		} else {
-			/** @var Shopware\Models\Category\Category $cat */
-			foreach ($article->getCategories() as $cat) {
-				foreach ($allShops as $shop) {
-					if (isset($inShops[$shop->getId()])) {
-						continue;
-					}
+        foreach ($inShops as $shop) {
+            $account = NostoComponentAccount::findAccount($shop);
+            if (!is_null($account)) {
+                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+                if ($nostoAccount->isConnectedToNosto()) {
+                    $data[$shop->getId()] = $nostoAccount;
+                }
+            }
+        }
 
-					$shopCatId = $shop->getCategory()->getId();
-					if ($cat->getId() === $shopCatId
-						|| strpos($cat->getPath(), '|' . $shopCatId . '|') !== false
-					) {
-						$inShops[$shop->getId()] = $shop;
-					}
-				}
-			}
-		}
+        return $data;
+    }
 
-		foreach ($inShops as $shop) {
-			$account = NostoComponentAccount::findAccount($shop);
-			if (!is_null($account)) {
-				$nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
-				if ($nostoAccount->isConnectedToNosto()) {
-					$data[$shop->getId()] = $nostoAccount;
-				}
-			}
-		}
+    /**
+     * Sends info to Nosto about a newly updated product.
+     *
+     * @param \Shopware\Models\Article\Article $article the product.
+     */
+    public function update(\Shopware\Models\Article\Article $article)
+    {
+        /* @var \Shopware\Models\Shop\Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
+        foreach ($this->getAccounts($article) as $shopId => $account) {
+            $shop = $repository->getActiveById($shopId);
+            if (is_null($shop)) {
+                continue;
+            }
+            $shop->registerResources();
+            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model->loadData($article, $shop);
+            if ($model->getProductId()) {
+                try {
+                    $op = new NostoOperationProduct($account);
+                    $op->addProduct($model);
+                    $op->upsert();
+                } catch (NostoException $e) {
+                    Shopware()->PluginLogger()->error($e);
+                }
+            }
+        }
+    }
 
-		return $data;
-	}
+    /**
+     * Sends info to Nosto about a deleted product.
+     *
+     * @param \Shopware\Models\Article\Article $article the product.
+     */
+    public function delete(\Shopware\Models\Article\Article $article)
+    {
+        foreach ($this->getAccounts($article, true) as $account) {
+            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model->assignId($article);
+            if ($model->getProductId()) {
+                try {
+                    $op = new NostoOperationProduct($account);
+                    $op->addProduct($model);
+                    $op->delete();
+                } catch (NostoException $e) {
+                    Shopware()->PluginLogger()->error($e);
+                }
+            }
+        }
+    }
 }

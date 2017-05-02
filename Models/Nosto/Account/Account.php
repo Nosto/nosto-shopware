@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,9 @@
 
 namespace Shopware\CustomModels\Nosto\Account;
 
-use Symfony\Component\Validator\Constraints as Assert,
-	Shopware\Components\Model\ModelEntity,
-	Doctrine\ORM\Mapping AS ORM;
+use Doctrine\ORM\Mapping as ORM;
+use Shopware\Components\Model\ModelEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Repository")
@@ -46,101 +46,101 @@ use Symfony\Component\Validator\Constraints as Assert,
  */
 class Account extends ModelEntity
 {
-	/**
-	 * @var integer $id
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="id", type="integer", nullable=false)
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="IDENTITY")
-	 */
-	private $id; //@codingStandardsIgnoreLine
+    /**
+     * @var integer $id
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id; //@codingStandardsIgnoreLine
 
-	/**
-	 * @var integer $shopId
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="shop_id", type="integer", nullable=false)
-	 */
-	private $shopId; //@codingStandardsIgnoreLine
+    /**
+     * @var integer $shopId
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="shop_id", type="integer", nullable=false)
+     */
+    private $shopId; //@codingStandardsIgnoreLine
 
-	/**
-	 * @var string $name
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="name", type="string", length=255, nullable=false)
-	 */
-	private $name; //@codingStandardsIgnoreLine
+    /**
+     * @var string $name
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     */
+    private $name; //@codingStandardsIgnoreLine
 
-	/**
-	 * @var string $data
-	 *
-	 * @ORM\Column(name="data", type="text", nullable=true)
-	 */
-	private $data; //@codingStandardsIgnoreLine
+    /**
+     * @var string $data
+     *
+     * @ORM\Column(name="data", type="text", nullable=true)
+     */
+    private $data; //@codingStandardsIgnoreLine
 
-	/**
-	 * @return int
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @param int $shopId
-	 * @return Account
-	 */
-	public function setShopId($shopId)
-	{
-		$this->shopId = $shopId;
-		return $this;
-	}
+    /**
+     * @return int
+     */
+    public function getShopId()
+    {
+        return $this->shopId;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getShopId()
-	{
-		return $this->shopId;
-	}
+    /**
+     * @param int $shopId
+     * @return Account
+     */
+    public function setShopId($shopId)
+    {
+        $this->shopId = $shopId;
+        return $this;
+    }
 
-	/**
-	 * @param string $name
-	 * @return Account
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-		return $this;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @param string $name
+     * @return Account
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-	/**
-	 * @param array $data
-	 * @return Account
-	 */
-	public function setData($data)
-	{
-		$this->data = json_encode($data);
-		return $this;
-	}
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return json_decode($this->data, true);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getData()
-	{
-		return json_decode($this->data, true);
-	}
+    /**
+     * @param array $data
+     * @return Account
+     */
+    public function setData($data)
+    {
+        $this->data = json_encode($data);
+        return $this;
+    }
 }

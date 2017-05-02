@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,101 +46,100 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderStatusInterface
 {
-	/**
-	 * @var string the order status code.
-	 */
-	protected $_code;
+    /**
+     * @var string the order status code.
+     */
+    protected $_code;
 
-	/**
-	 * @var string the order status label.
-	 */
-	protected $_label;
+    /**
+     * @var string the order status label.
+     */
+    protected $_label;
 
-	/**
-	 * Populates the order status with data from the order model.
-	 *
-	 * @param Shopware\Models\Order\Order $order the order model.
-	 */
-	public function loadData(Shopware\Models\Order\Order $order)
-	{
-		$description = $order->getOrderStatus()->getDescription();
-		$this->_code = $this->convertDescriptionToCode($description);
-		$this->_label = $description;
+    /**
+     * Populates the order status with data from the order model.
+     *
+     * @param Shopware\Models\Order\Order $order the order model.
+     */
+    public function loadData(Shopware\Models\Order\Order $order)
+    {
+        $description = $order->getOrderStatus()->getName();
+        $this->_code = $this->convertDescriptionToCode($description);
+        $this->_label = $description;
 
-		Enlight()->Events()->notify(
-			__CLASS__ . '_AfterLoad',
-			array(
-				'nostoOrderStatus' => $this,
-				'order'            => $order,
-			)
-		);
-	}
+        Shopware()->Events()->notify(
+            __CLASS__ . '_AfterLoad',
+            array(
+                'nostoOrderStatus' => $this,
+                'order' => $order,
+            )
+        );
+    }
 
-	/**
-	 * Converts a human readable status description to a machine readable code,
-	 * i.e. converts the description to a lower case alphanumeric string.
-	 *
-	 * @param string $description the description to convert.
-	 * @return string the status code.
-	 */
-	protected function convertDescriptionToCode($description)
-	{
-		$pattern = array('/[^a-zA-Z0-9]+/', '/_+/', '/^_+/', '/_+$/');
-		$replacement = array('_', '_', '', '');
-		return strtolower(preg_replace($pattern, $replacement, $description));
-	}
+    /**
+     * Converts a human readable status description to a machine readable code,
+     * i.e. converts the description to a lower case alphanumeric string.
+     *
+     * @param string $description the description to convert.
+     * @return string the status code.
+     */
+    protected function convertDescriptionToCode($description)
+    {
+        $pattern = array('/[^a-zA-Z0-9]+/', '/_+/', '/^_+/', '/_+$/');
+        $replacement = array('_', '_', '', '');
+        return strtolower(preg_replace($pattern, $replacement, $description));
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getCode()
-	{
-		return $this->_code;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getCode()
+    {
+        return $this->_code;
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getLabel()
-	{
-		return $this->_label;
-	}
+    /**
+     * Sets the code of the order.
+     *
+     * The code must be a non-empty string.
+     *
+     * Usage:
+     * $object->setCode('paid');
+     *
+     * @param string $code the code.
+     *
+     * @return $this Self for chaining
+     */
+    public function setCode($code)
+    {
+        $this->_code = $code;
 
-	/**
-	 * Sets the code of the order.
-	 *
-	 * The code must be a non-empty string.
-	 *
-	 * Usage:
-	 * $object->setCode('offen');
-	 *
-	 * @param string $code the code.
-	 *
-	 * @return $this Self for chaining
-	 */
-	public function setCode($code)
-	{
-		$this->_code = $code;
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getLabel()
+    {
+        return $this->_label;
+    }
 
-	/**
-	 * Sets the label of the order.
-	 *
-	 * The label must be a non-empty string.
-	 *
-	 * Usage:
-	 * $object->setLabel('Offen');
-	 *
-	 * @param string $label the label.
-	 *
-	 * @return $this Self for chaining
-	 */
-	public function setLabel($label)
-	{
-		$this->_label = $label;
+    /**
+     * Sets the label of the order.
+     *
+     * The label must be a non-empty string.
+     *
+     * Usage:
+     * $object->setLabel('Paid');
+     *
+     * @param string $label the label.
+     * @return $this Self for chaining
+     */
+    public function setLabel($label)
+    {
+        $this->_label = $label;
 
-		return $this;
-	}
+        return $this;
+    }
 }
