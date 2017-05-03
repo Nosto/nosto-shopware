@@ -124,6 +124,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         return self::format($priceWithTax);
     }
 
+    /**
+     * @param $price
+     * @return string
+     * @suppress PhanUndeclaredMethod
+     */
     public static function format($price)
     {
         /** @var NostoHelperPrice $helper */

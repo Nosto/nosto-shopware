@@ -38,6 +38,10 @@ namespace Shopware\CustomModels\Nosto\Account;
 
 use Shopware\Components\Model\ModelRepository;
 
+/**
+ * @package Shopware\CustomModels\Nosto\Account
+ * @@suppress PhanUnreferencedClass
+ */
 class Repository extends ModelRepository
 {
 }

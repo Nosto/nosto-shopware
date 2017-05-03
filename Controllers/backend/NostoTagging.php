@@ -66,17 +66,13 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      */
     public function loadSettingsAction()
     {
-        $this->View()->assign(
-            array(
-                'success' => true,
-                'data' => array(
-                    'postMessageOrigin' => Nosto::getEnvVariable(
-                        'NOSTO_IFRAME_ORIGIN_REGEXP',
-                        self::DEFAULT_IFRAME_ORIGIN_REGEXP
-                    )
-                )
+        $this->View()->assign('success', true);
+        $this->View()->assign('data', array(
+            'postMessageOrigin' => Nosto::getEnvVariable(
+                'NOSTO_IFRAME_ORIGIN_REGEXP',
+                self::DEFAULT_IFRAME_ORIGIN_REGEXP
             )
-        );
+        ));
     }
 
     /**
@@ -130,7 +126,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         foreach ($result as $row) {
             $params = array();
             $shop = $repository->getActiveById($row['id']);
-            if (is_null($shop)) {
+            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
             $shop->registerResources();
@@ -149,14 +145,16 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                 'shopId' => $shop->getId(),
                 'shopName' => $shop->getName(),
             );
-            if (!is_null($account)) {
+            if ($account instanceof \Shopware\CustomModels\Nosto\Account\Account) {
                 $accountData['id'] = $account->getId();
                 $accountData['name'] = $account->getName();
             }
             $data[] = $accountData;
         }
 
-        $this->View()->assign(array('success' => true, 'data' => $data, 'total' => count($data)));
+        $this->View()->assign('success', true);
+        $this->View()->assign('data', $data);
+        $this->View()->assign('total', count($data));
     }
 
     /**
@@ -214,7 +212,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             }
         }
 
-        $this->View()->assign(array('success' => $success, 'data' => $data));
+        $this->View()->assign('success', $success);
+        $this->View()->assign('data', $data);
     }
 
     /**
@@ -244,7 +243,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             NostoComponentAccount::removeAccount($account);
             $success = true;
             $data = array(
-                'url' => $helper->buildAccountIframeUrl(
+                'url' => NostoComponentAccount::buildAccountIframeUrl(
                     $shop,
                     $identity->locale,
                     null,
@@ -259,7 +258,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             );
         }
 
-        $this->View()->assign(array('success' => $success, 'data' => $data));
+        $this->View()->assign('success', $success);
+        $this->View()->assign('data', $data);
     }
 
     /**
@@ -287,6 +287,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             $data = array('redirect_url' => $client->getAuthorizationUrl());
         }
 
-        $this->View()->assign(array('success' => $success, 'data' => $data));
+        $this->View()->assign('success', $success);
+        $this->View()->assign('data', $data);
     }
 }

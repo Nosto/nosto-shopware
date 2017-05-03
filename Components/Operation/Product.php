@@ -56,7 +56,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
-            if (is_null($shop)) {
+            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
             $shop->registerResources();
@@ -141,7 +141,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
-            if (is_null($shop)) {
+            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
             $shop->registerResources();

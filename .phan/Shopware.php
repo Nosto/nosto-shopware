@@ -1,6 +1,6 @@
 <?php
 
-class Shopware extends Enlight_Application
+class Shopwarex extends Enlight_Application
 {
     /**
      * @return \Shopware\Components\Logger

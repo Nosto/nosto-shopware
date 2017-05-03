@@ -98,14 +98,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * @inheritdoc
+     * @suppress PhanTypeMismatchArgument
      */
     public function afterInit()
     {
-        NostoHttpRequest::buildUserAgent(
-            self::PLATFORM_NAME,
-            \Shopware::VERSION,
-            self::PLUGIN_VERSION
-        );
+        NostoHttpRequest::buildUserAgent(self::PLATFORM_NAME, \Shopware::VERSION, self::PLUGIN_VERSION);
         $this->registerCustomModels();
     }
 
@@ -295,7 +292,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             self::NEW_ENTITY_MANAGER_VERSION
         ) < 0
         ) {
-            $parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
+            $parentMenu = $this->Menu()->findOneBy(array('id', self::MENU_PARENT_ID));
         } else {
             $parentMenu = $this->Menu()->findOneBy(array('id' => self::MENU_PARENT_ID));
         }
@@ -1082,11 +1079,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * Event handler for `Enlight_Controller_Action_Frontend_Error_GenericError`.
-     *
      * Adds the recommendation elements for not found pages.
      *
      * @param Enlight_Controller_EventArgs $args the event arguments.
-     * @return string the path to the controller file.
      */
     public function onFrontEndErrorGenericError(Enlight_Controller_EventArgs $args)
     {

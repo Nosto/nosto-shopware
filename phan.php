@@ -40,13 +40,28 @@ return [
         'Controllers',
         'Models',
         'Views',
-        'Bootstrap.php',
         '.phan',
         'vendor/nosto/',
-        'vendor/shopware'
+        'vendor/shopware/',
+        'vendor/symfony/',
+        'vendor/doctrine/',
+        'vendor/zendframework/'
+    ],
+    'file_list' => [
+        'Bootstrap.php'
+    ],
+    'exclude_file_list' => [
+        'vendor/shopware/shopware/engine/Library/Zend/Validate/Hostname/Biz.php',
+        'vendor/shopware/shopware/engine/Library/Zend/Validate/Hostname/Cn.php',
+        'vendor/shopware/shopware/engine/Library/Zend/Validate/Hostname/Com.php',
+        'vendor/shopware/shopware/engine/Library/Zend/Validate/Hostname/Jp.php',
     ],
     "exclude_analysis_directory_list" => [
         'vendor/',
         '.phan'
     ],
+    'suppress_issue_types' => [
+        'PhanDeprecatedFunction',
+    ],
+    'scalar_implicit_cast' => true
 ];

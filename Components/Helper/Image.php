@@ -64,12 +64,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         $url = null;
 
         try {
-            /*
-             * Media service was introduced in Shopware 5.1
-             * @var MediaServiceInterface $mediaService
-             **/
-            $mediaService = Shopware()->Container()
-                ->get('shopware_media.media_service');
+            /** @var MediaServiceInterface $mediaService */
+            $mediaService = Shopware()->Container()->get('shopware_media.media_service');
         } catch (\Exception $error) {
             $mediaService = false;
         }
@@ -77,7 +73,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         foreach ($article->getImages() as $image) {
             if (is_null($url) || $image->getMain() === 1) {
                 $media = $image->getMedia();
-                if (is_null($media)) {
+                if ($media instanceof Shopware\Models\Media\Media === false) {
                     continue;
                 }
                 if ($mediaService instanceof MediaServiceInterface) {

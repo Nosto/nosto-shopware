@@ -200,6 +200,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
      * @return string the url.
+     * @suppress PhanUndeclaredMethod
      */
     public static function buildAccountIframeUrl(
         \Shopware\Models\Shop\Shop $shop,
