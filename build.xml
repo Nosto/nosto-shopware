@@ -144,13 +144,6 @@
         </exec>
     </target>
 
-    <target name="phpcpd">
-        <exec executable="./vendor/bin/phpcpd" passthru="true">
-            <arg value="--min-lines=1"/>
-            <arg value="app"/>
-        </exec>
-    </target>
-
     <target name="phpcbf">
         <exec executable="./vendor/bin/phpcbf" passthru="true">
             <arg value="--colors"/>
@@ -176,10 +169,12 @@
         </exec>
     </target>
 
-    <!-- ============================================  -->
-    <!-- (DEFAULT)  Target: dist                       -->
-    <!-- ============================================  -->
-    <target name="dist" depends="phpcbf, phpcs, phan, phpmd, phpcpd, build">
+    <target name="validate" depends="phpcbf, phpcs, phan, phpmd">
+        <echo msg="Package validated"/>
+    </target>
+
+    <target name="dist" depends="validate, build">
         <echo msg="All done"/>
     </target>
+
 </project>
