@@ -63,6 +63,15 @@
                     <span class="{$type|escape:'quotes'}">{$tag|escape:'htmlall':'UTF-8'}</span>
                 {/foreach}
             {/foreach}
+            {foreach from=$nostoProduct->getAlternateImageUrls() item=$alternateImageUrl}
+                <span class="alternate_image_url">{$alternateImageUrl|escape:'htmlall':'UTF-8'}</span>
+            {/foreach}
+            {if $nostoProduct->getReviewCount()}
+                <span class="review_count">{$nostoProduct->getReviewCount()|escape: 'htmlall':'UTF-8'}</span>
+            {/if}
+            {if $nostoProduct->getRatingValue()}
+                <span class="rating_value">{$nostoProduct->getRatingValue()|escape: 'htmlall':'UTF-8'}</span>
+            {/if}
         </div>
     {/if}
     {if isset($nostoCategory) && is_object($nostoCategory)}
