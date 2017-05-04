@@ -50,27 +50,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
     /**
      * @var string the product id for the line item.
      */
-    protected $_productId;
+    protected $productId;
 
     /**
      * @var int the quantity of the product in the cart.
      */
-    protected $_quantity;
+    protected $quantity;
 
     /**
      * @var string the name of the line item product.
      */
-    protected $_name;
+    protected $name;
 
     /**
      * @var string the line item unit price.
      */
-    protected $_unitPrice;
+    protected $unitPrice;
 
     /**
      * @var string the the 3-letter ISO code (ISO 4217) for the line item.
      */
-    protected $_currencyCode;
+    protected $currencyCode;
 
     /**
      * Loads the line item data from the basket model.
@@ -80,7 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
     {
-        $this->_productId = -1;
+        $this->productId = -1;
 
         if ($basket->getArticleId() > 0) {
             // If this is a product variation, we need to load the parent
@@ -90,14 +90,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
                 $basket->getArticleId()
             );
             if (!empty($article)) {
-                $this->_productId = $article->getMainDetail()->getNumber();
+                $this->productId = $article->getMainDetail()->getNumber();
             }
         }
 
-        $this->_name = $basket->getArticleName();
-        $this->_quantity = (int)$basket->getQuantity();
-        $this->_unitPrice = PriceHelper::format($basket->getPrice());
-        $this->_currencyCode = strtoupper($currencyCode);
+        $this->name = $basket->getArticleName();
+        $this->quantity = (int)$basket->getQuantity();
+        $this->unitPrice = PriceHelper::format($basket->getPrice());
+        $this->currencyCode = strtoupper($currencyCode);
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -116,7 +116,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function getProductId()
     {
-        return $this->_productId;
+        return $this->productId;
     }
 
     /**
@@ -132,7 +132,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function setProductId($id)
     {
-        $this->_productId = $id;
+        $this->productId = $id;
 
         return $this;
     }
@@ -144,7 +144,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function getQuantity()
     {
-        return $this->_quantity;
+        return $this->quantity;
     }
 
     /**
@@ -160,7 +160,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function setQuantity($quantity)
     {
-        $this->_quantity = $quantity;
+        $this->quantity = $quantity;
 
         return $this;
     }
@@ -172,7 +172,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -189,7 +189,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function setName($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
 
         return $this;
     }
@@ -201,7 +201,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function getUnitPrice()
     {
-        return $this->_unitPrice;
+        return $this->unitPrice;
     }
 
     /**
@@ -211,7 +211,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function getCurrencyCode()
     {
-        return $this->_currencyCode;
+        return $this->currencyCode;
     }
 
     /**
@@ -228,7 +228,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function setCurrencyCode($currency)
     {
-        $this->_currencyCode = $currency;
+        $this->currencyCode = $currency;
 
         return $this;
     }
@@ -247,7 +247,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem exte
      */
     public function setPrice($unitPrice)
     {
-        $this->_unitPrice = $unitPrice;
+        $this->unitPrice = $unitPrice;
 
         return $this;
     }

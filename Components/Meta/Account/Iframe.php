@@ -49,62 +49,62 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
     /**
      * @var string the admin user first name.
      */
-    protected $_firstName;
+    protected $firstName;
 
     /**
      * @var string the admin user last name.
      */
-    protected $_lastName;
+    protected $lastName;
 
     /**
      * @var string the admin user email address.
      */
-    protected $_email;
+    protected $email;
 
     /**
      * @var string the language ISO (ISO 639-1) code for oauth server locale.
      */
-    protected $_languageIsoCode = 'en';
+    protected $languageIsoCode = 'en';
 
     /**
      * @var string the language ISO (ISO 639-1) for the store view scope.
      */
-    protected $_languageIsoCodeShop = 'en';
+    protected $languageIsoCodeShop = 'en';
 
     /**
      * @var string unique ID that identifies the Shopware installation.
      */
-    protected $_uniqueId;
+    protected $uniqueId;
 
     /**
      * @var string preview url for the product page in the active store scope.
      */
-    protected $_previewUrlProduct;
+    protected $previewUrlProduct;
 
     /**
      * @var string preview url for the category page in the active store scope.
      */
-    protected $_previewUrlCategory;
+    protected $previewUrlCategory;
 
     /**
      * @var string preview url for the search page in the active store scope.
      */
-    protected $_previewUrlSearch;
+    protected $previewUrlSearch;
 
     /**
      * @var string preview url for the cart page in the active store scope.
      */
-    protected $_previewUrlCart;
+    protected $previewUrlCart;
 
     /**
      * @var string preview url for the front page in the active store scope.
      */
-    protected $_previewUrlFront;
+    protected $previewUrlFront;
 
     /**
      * @var string the name of the store Nosto is installed in or about to be installed.
      */
-    protected $_shopName;
+    protected $shopName;
 
     /**
      * Loads the iframe data from the shop model.
@@ -125,19 +125,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
         $plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
         if (!is_null($identity)) {
             list($firstName, $lastName) = explode(' ', $identity->name);
-            $this->_firstName = $firstName;
-            $this->_lastName = $lastName;
-            $this->_email = $identity->email;
+            $this->firstName = $firstName;
+            $this->lastName = $lastName;
+            $this->email = $identity->email;
         }
-        $this->_languageIsoCode = strtolower(substr($locale->getLocale(), 0, 2));
-        $this->_languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-        $this->_uniqueId = $plugin->getUniqueId();
-        $this->_previewUrlProduct = NostoComponentUrl::getProductPagePreviewUrl($shop);
-        $this->_previewUrlCategory = NostoComponentUrl::getCategoryPagePreviewUrl($shop);
-        $this->_previewUrlSearch = NostoComponentUrl::getSearchPagePreviewUrl($shop);
-        $this->_previewUrlCart = NostoComponentUrl::getCartPagePreviewUrl($shop);
-        $this->_previewUrlFront = NostoComponentUrl::getFrontPagePreviewUrl($shop);
-        $this->_shopName = Shopware()->App() . ' - ' . $shop->getName();
+        $this->languageIsoCode = strtolower(substr($locale->getLocale(), 0, 2));
+        $this->languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
+        $this->uniqueId = $plugin->getUniqueId();
+        $this->previewUrlProduct = NostoComponentUrl::getProductPagePreviewUrl($shop);
+        $this->previewUrlCategory = NostoComponentUrl::getCategoryPagePreviewUrl($shop);
+        $this->previewUrlSearch = NostoComponentUrl::getSearchPagePreviewUrl($shop);
+        $this->previewUrlCart = NostoComponentUrl::getCartPagePreviewUrl($shop);
+        $this->previewUrlFront = NostoComponentUrl::getFrontPagePreviewUrl($shop);
+        $this->shopName = Shopware()->App() . ' - ' . $shop->getName();
     }
 
     /**
@@ -158,7 +158,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getFirstName()
     {
-        return $this->_firstName;
+        return $this->firstName;
     }
 
     /**
@@ -168,7 +168,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getLastName()
     {
-        return $this->_lastName;
+        return $this->lastName;
     }
 
     /**
@@ -178,7 +178,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getEmail()
     {
-        return $this->_email;
+        return $this->email;
     }
 
     /**
@@ -188,7 +188,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getLanguageIsoCode()
     {
-        return $this->_languageIsoCode;
+        return $this->languageIsoCode;
     }
 
     /**
@@ -198,7 +198,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getLanguageIsoCodeShop()
     {
-        return $this->_languageIsoCodeShop;
+        return $this->languageIsoCodeShop;
     }
 
     /**
@@ -209,7 +209,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getUniqueId()
     {
-        return $this->_uniqueId;
+        return $this->uniqueId;
     }
 
     /**
@@ -241,7 +241,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getPreviewUrlProduct()
     {
-        return $this->_previewUrlProduct;
+        return $this->previewUrlProduct;
     }
 
     /**
@@ -253,7 +253,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getPreviewUrlCategory()
     {
-        return $this->_previewUrlCategory;
+        return $this->previewUrlCategory;
     }
 
     /**
@@ -265,7 +265,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getPreviewUrlSearch()
     {
-        return $this->_previewUrlSearch;
+        return $this->previewUrlSearch;
     }
 
     /**
@@ -277,7 +277,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getPreviewUrlCart()
     {
-        return $this->_previewUrlCart;
+        return $this->previewUrlCart;
     }
 
     /**
@@ -289,7 +289,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getPreviewUrlFront()
     {
-        return $this->_previewUrlFront;
+        return $this->previewUrlFront;
     }
 
     /**
@@ -299,7 +299,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe impl
      */
     public function getShopName()
     {
-        return $this->_shopName;
+        return $this->shopName;
     }
 
     /**

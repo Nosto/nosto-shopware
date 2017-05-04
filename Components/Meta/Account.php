@@ -47,52 +47,52 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
     /**
      * @var string the store name.
      */
-    protected $_title;
+    protected $title;
 
     /**
      * @var string the account name.
      */
-    protected $_name;
+    protected $name;
 
     /**
      * @var string the store front end url.
      */
-    protected $_frontPageUrl;
+    protected $frontPageUrl;
 
     /**
      * @var string the store currency ISO (ISO 4217) code.
      */
-    protected $_currencyCode;
+    protected $currencyCode;
 
     /**
      * @var string the store language ISO (ISO 639-1) code.
      */
-    protected $_languageCode;
+    protected $languageCode;
 
     /**
      * @var string the owner language ISO (ISO 639-1) code.
      */
-    protected $_ownerLanguageCode;
+    protected $ownerLanguageCode;
 
     /**
      * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner the account owner meta model.
      */
-    protected $_owner;
+    protected $owner;
 
     /**
      * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing the billing meta model.
      */
-    protected $_billing;
+    protected $billing;
 
     /**
      * @var string the API token used to identify an account creation.
      */
-    protected $_signUpApiToken = 'kIqtTZOTRTNJ1zPZgjkI4Ft572sfLrqjD4XewXqYrdGrqsgnYbWqGXR3Evxqmii1';
+    protected $signUpApiToken = 'kIqtTZOTRTNJ1zPZgjkI4Ft572sfLrqjD4XewXqYrdGrqsgnYbWqGXR3Evxqmii1';
 
     /**
      * @var array|stdClass the account details
      */
-    protected $_details;
+    protected $details;
 
     /**
      * Loads the meta data for the given shop.
@@ -110,18 +110,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
             $locale = $shop->getLocale();
         }
 
-        $this->_title = Shopware()->App() . ' - ' . $shop->getName();
-        $this->_name = substr(sha1(rand()), 0, 8);
-        $this->_frontPageUrl = $this->buildStoreUrl($shop);
-        $this->_currencyCode = strtoupper($shop->getCurrency()->getCurrency());
-        $this->_languageCode = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-        $this->_ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
+        $this->title = Shopware()->App() . ' - ' . $shop->getName();
+        $this->name = substr(sha1(rand()), 0, 8);
+        $this->frontPageUrl = $this->buildStoreUrl($shop);
+        $this->currencyCode = strtoupper($shop->getCurrency()->getCurrency());
+        $this->languageCode = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
+        $this->ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
 
-        $this->_owner = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner();
-        $this->_owner->loadData($identity);
+        $this->owner = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner();
+        $this->owner->loadData($identity);
 
-        $this->_billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
-        $this->_billing->loadData($shop);
+        $this->billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
+        $this->billing->loadData($shop);
     }
 
     /**
@@ -148,7 +148,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getTitle()
     {
-        return $this->_title;
+        return $this->title;
     }
 
     /**
@@ -158,7 +158,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function setTitle($title)
     {
-        $this->_title = $title;
+        $this->title = $title;
     }
 
     /**
@@ -170,7 +170,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -180,7 +180,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function setName($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
     }
 
     /**
@@ -202,7 +202,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getFrontPageUrl()
     {
-        return $this->_frontPageUrl;
+        return $this->frontPageUrl;
     }
 
     /**
@@ -212,7 +212,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function setFrontPageUrl($url)
     {
-        $this->_frontPageUrl = $url;
+        $this->frontPageUrl = $url;
     }
 
     /**
@@ -223,7 +223,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getCurrencyCode()
     {
-        return $this->_currencyCode;
+        return $this->currencyCode;
     }
 
     /**
@@ -233,7 +233,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function setCurrencyCode($code)
     {
-        $this->_currencyCode = $code;
+        $this->currencyCode = $code;
     }
 
     /**
@@ -244,7 +244,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getLanguageCode()
     {
-        return $this->_languageCode;
+        return $this->languageCode;
     }
 
     /**
@@ -254,7 +254,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function setLanguageCode($languageCode)
     {
-        $this->_languageCode = $languageCode;
+        $this->languageCode = $languageCode;
     }
 
     /**
@@ -265,7 +265,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getOwnerLanguageCode()
     {
-        return $this->_ownerLanguageCode;
+        return $this->ownerLanguageCode;
     }
 
     /**
@@ -275,7 +275,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function setOwnerLanguageCode($languageCode)
     {
-        $this->_ownerLanguageCode = $languageCode;
+        $this->ownerLanguageCode = $languageCode;
     }
 
     /**
@@ -285,7 +285,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getOwner()
     {
-        return $this->_owner;
+        return $this->owner;
     }
 
     /**
@@ -295,7 +295,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getBillingDetails()
     {
-        return $this->_billing;
+        return $this->billing;
     }
 
     /**
@@ -306,7 +306,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getSignUpApiToken()
     {
-        return $this->_signUpApiToken;
+        return $this->signUpApiToken;
     }
 
     /**
@@ -351,7 +351,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function getDetails()
     {
-        return $this->_details;
+        return $this->details;
     }
 
     /**
@@ -361,6 +361,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements 
      */
     public function setDetails($details)
     {
-        $this->_details = $details;
+        $this->details = $details;
     }
 }

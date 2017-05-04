@@ -49,17 +49,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
     /**
      * @var string the first name of the user who placed the order.
      */
-    protected $_firstName;
+    protected $firstName;
 
     /**
      * @var string the last name of the user who placed the order.
      */
-    protected $_lastName;
+    protected $lastName;
 
     /**
      * @var string the email address of the user who placed the order.
      */
-    protected $_email;
+    protected $email;
 
     /**
      * Loads the order buyer info from the customer model.
@@ -72,18 +72,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             /* @var \Shopware\Models\Customer\Address $address */
             $address = $customer->getDefaultBillingAddress();
             if ($address instanceof \Shopware\Models\Customer\Address) {
-                $this->_firstName = $address->getFirstname();
-                $this->_lastName = $address->getLastname();
+                $this->firstName = $address->getFirstname();
+                $this->lastName = $address->getLastname();
             }
         } else {
             /* @var \Shopware\Models\Customer\Billing $address */
             $address = $customer->getBilling();
             if ($address instanceof \Shopware\Models\Customer\Billing) {
-                $this->_firstName = $address->getFirstName();
-                $this->_lastName = $address->getLastName();
+                $this->firstName = $address->getFirstName();
+                $this->lastName = $address->getLastName();
             }
         }
-        $this->_email = $customer->getEmail();
+        $this->email = $customer->getEmail();
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -99,7 +99,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function getFirstName()
     {
-        return $this->_firstName;
+        return $this->firstName;
     }
 
     /**
@@ -115,7 +115,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function setFirstName($firstName)
     {
-        $this->_firstName = $firstName;
+        $this->firstName = $firstName;
 
         return $this;
     }
@@ -125,7 +125,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function getLastName()
     {
-        return $this->_lastName;
+        return $this->lastName;
     }
 
     /**
@@ -141,7 +141,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function setLastName($lastName)
     {
-        $this->_lastName = $lastName;
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -151,7 +151,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function getEmail()
     {
-        return $this->_email;
+        return $this->email;
     }
 
     /**
@@ -168,7 +168,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function setEmail($email)
     {
-        $this->_email = $email;
+        $this->email = $email;
 
         return $this;
     }

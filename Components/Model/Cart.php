@@ -48,7 +48,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
     /**
      * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] line items in the cart.
      */
-    protected $_lineItems = array();
+    protected $lineItems = array();
 
     /**
      * Loads the cart line items from the order baskets.
@@ -61,7 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
         foreach ($baskets as $basket) {
             $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
             $item->loadData($basket, $currency);
-            $this->_lineItems[] = $item;
+            $this->lineItems[] = $item;
         }
 
         Shopware()->Events()->notify(
@@ -79,7 +79,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
      */
     public function getLineItems()
     {
-        return $this->_lineItems;
+        return $this->lineItems;
     }
 
     /**
@@ -96,7 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart extends Shopw
      */
     public function setLineItems($lineItems)
     {
-        $this->_lineItems = $lineItems;
+        $this->lineItems = $lineItems;
 
         return $this;
     }

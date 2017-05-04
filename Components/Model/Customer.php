@@ -51,22 +51,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
     /**
      * @var string the customer first name.
      */
-    protected $_firstName;
+    protected $firstName;
 
     /**
      * @var string the customer last name.
      */
-    protected $_lastName;
+    protected $lastName;
 
     /**
      * @var string the customer email address.
      */
-    protected $_email;
+    protected $email;
 
     /**
      * @var string the customer reference.
      */
-    protected $_customerReference;
+    protected $customerReference;
 
     /**
      * Loads customer data from the logged in customer.
@@ -76,10 +76,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
         if ($customer->getBilling() instanceof \Shopware\Models\Customer\Billing) {
-            $this->_firstName = $customer->getBilling()->getFirstName();
-            $this->_lastName = $customer->getBilling()->getLastName();
+            $this->firstName = $customer->getBilling()->getFirstName();
+            $this->lastName = $customer->getBilling()->getLastName();
         }
-        $this->_email = $customer->getEmail();
+        $this->email = $customer->getEmail();
         try {
             $this->populateCustomerReference($customer);
         } catch (Exception $e) {
@@ -154,7 +154,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
         if (!$customerReference) {
             throw new NostoException('Could not fetch or generate customer reference');
         }
-        $this->_customerReference = $customerReference;
+        $this->customerReference = $customerReference;
     }
 
     /**
@@ -162,7 +162,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function getFirstName()
     {
-        return $this->_firstName;
+        return $this->firstName;
     }
 
     /**
@@ -179,7 +179,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function setFirstName($firstName)
     {
-        $this->_firstName = $firstName;
+        $this->firstName = $firstName;
 
         return $this;
     }
@@ -189,7 +189,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function getLastName()
     {
-        return $this->_lastName;
+        return $this->lastName;
     }
 
     /**
@@ -206,7 +206,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function setLastName($lastName)
     {
-        $this->_lastName = $lastName;
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -216,7 +216,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function getEmail()
     {
-        return $this->_email;
+        return $this->email;
     }
 
     /**
@@ -233,7 +233,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function setEmail($email)
     {
-        $this->_email = $email;
+        $this->email = $email;
 
         return $this;
     }
@@ -245,7 +245,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function getCustomerReference()
     {
-        return $this->_customerReference;
+        return $this->customerReference;
     }
 
     /**
@@ -255,6 +255,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends S
      */
     public function setCustomerReference($customerReference)
     {
-        $this->_customerReference = $customerReference;
+        $this->customerReference = $customerReference;
     }
 }

@@ -47,14 +47,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing imp
     /**
      * @var string the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
      */
-    protected $_countryCode;
+    protected $countryCode;
 
     /**
      * @param \Shopware\Models\Shop\Shop $shop
      */
     public function loadData(\Shopware\Models\Shop\Shop $shop)
     {
-        $this->_countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
+        $this->countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
     }
 
     /**
@@ -64,6 +64,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing imp
      */
     public function getCountry()
     {
-        return $this->_countryCode;
+        return $this->countryCode;
     }
 }

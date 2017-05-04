@@ -67,13 +67,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
     const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
 
-    private static $_productUpdated = false;
+    private static $productUpdated = false;
 
     /**
      * A list of custom database attributes
      * @var array
      */
-    private static $_customAttributes = array(
+    private static $customAttributes = array(
         '0.1.0' => array(
             's_order_attributes' => array(
                 'table' => 's_order_attributes',
@@ -201,7 +201,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function createMyAttributes($fromVersion = 'all')
     {
-        foreach (self::$_customAttributes as $version => $attributes) {
+        foreach (self::$customAttributes as $version => $attributes) {
             if ($fromVersion === 'all' || version_compare($version, $fromVersion, '>')) {
                 foreach ($attributes as $attr) {
                     $this->addMyAttribute($attr);
@@ -499,7 +499,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function dropMyAttributes()
     {
-        foreach (self::$_customAttributes as $version => $attributes) {
+        foreach (self::$customAttributes as $version => $attributes) {
             foreach ($attributes as $table => $attr) {
                 if ($attr['keepOnUninstall'] === false) {
                     $this->removeMyAttribute($attr);
@@ -1175,13 +1175,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @noinspection PhpUndefinedMethodInspection */
         $article = $args->getEntity();
 
-        if (self::$_productUpdated == false) {
+        if (self::$productUpdated == false) {
             if ($article instanceof \Shopware\Models\Article\Detail) {
                 $article = $article->getArticle();
             }
             $op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
             $op->create($article);
-            self::$_productUpdated = true;
+            self::$productUpdated = true;
         }
     }
 
@@ -1198,13 +1198,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @noinspection PhpUndefinedMethodInspection */
         $article = $args->getEntity();
 
-        if (self::$_productUpdated == false) {
+        if (self::$productUpdated == false) {
             if ($article instanceof \Shopware\Models\Article\Detail) {
                 $article = $article->getArticle();
             }
             $op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
             $op->update($article);
-            self::$_productUpdated = true;
+            self::$productUpdated = true;
         }
     }
 

@@ -48,17 +48,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
     /**
      * @var string the first name of the account owner.
      */
-    protected $_firstName;
+    protected $firstName;
 
     /**
      * @var string the last name of the account owner.
      */
-    protected $_lastName;
+    protected $lastName;
 
     /**
      * @var string the email address of the account owner.
      */
-    protected $_email;
+    protected $email;
 
     /**
      * Loads the data for the account owner.
@@ -69,11 +69,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
     {
         if (!is_null($identity)) {
             /** @noinspection PhpUndefinedFieldInspection */
-            $this->_email = $identity->email;
+            $this->email = $identity->email;
             /** @noinspection PhpUndefinedFieldInspection */
             list($firstName, $lastName) = explode(' ', $identity->name);
-            $this->_firstName = $firstName;
-            $this->_lastName = $lastName;
+            $this->firstName = $firstName;
+            $this->lastName = $lastName;
         }
     }
 
@@ -84,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
      */
     public function getFirstName()
     {
-        return $this->_firstName;
+        return $this->firstName;
     }
 
     /**
@@ -94,7 +94,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
      */
     public function getLastName()
     {
-        return $this->_lastName;
+        return $this->lastName;
     }
 
     /**
@@ -104,7 +104,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
      */
     public function getEmail()
     {
-        return $this->_email;
+        return $this->email;
     }
 
     /**
@@ -114,6 +114,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner imple
      */
     public function setEmail($email)
     {
-        $this->_email = $email;
+        $this->email = $email;
     }
 }

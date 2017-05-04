@@ -47,12 +47,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
     /**
      * @var string OAuth2 redirect url to where the OAuth2 server should redirect the user after authorizing.
      */
-    protected $_redirectUrl;
+    protected $redirectUrl;
 
     /**
      * @var string 2-letter ISO code (ISO 639-1) for the language the OAuth2 server uses for UI localization.
      */
-    protected $_languageCode = 'en';
+    protected $languageCode = 'en';
 
     /**
      * Loads the oauth meta data from the shop model.
@@ -68,7 +68,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
             $locale = $shop->getLocale();
         }
 
-        $this->_redirectUrl = Shopware()->Front()->Router()->assemble(
+        $this->redirectUrl = Shopware()->Front()->Router()->assemble(
             array(
                 'module' => 'frontend',
                 'controller' => 'nostotagging',
@@ -78,11 +78,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
         $defaults = array(
             '__shop' => $shop->getId()
         );
-        $this->_redirectUrl = NostoHttpRequest::replaceQueryParamsInUrl(
+        $this->redirectUrl = NostoHttpRequest::replaceQueryParamsInUrl(
             $defaults,
-            $this->_redirectUrl
+            $this->redirectUrl
         );
-        $this->_languageCode = strtolower(substr($locale->getLocale(), 0, 2));
+        $this->languageCode = strtolower(substr($locale->getLocale(), 0, 2));
     }
 
     /**
@@ -116,7 +116,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
      */
     public function getRedirectUrl()
     {
-        return $this->_redirectUrl;
+        return $this->redirectUrl;
     }
 
     /**
@@ -139,6 +139,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements No
      */
     public function getLanguageIsoCode()
     {
-        return $this->_languageCode;
+        return $this->languageCode;
     }
 }
