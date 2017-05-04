@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,9 @@
 
 namespace Shopware\CustomModels\Nosto\Setting;
 
-use Symfony\Component\Validator\Constraints as Assert,
-	Shopware\Components\Model\ModelEntity,
-	Doctrine\ORM\Mapping AS ORM;
+use Doctrine\ORM\Mapping as ORM;
+use Shopware\Components\Model\ModelEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Repository")
@@ -46,74 +46,74 @@ use Symfony\Component\Validator\Constraints as Assert,
  */
 class Setting extends ModelEntity
 {
-	/**
-	 * @var integer $id
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="id", type="integer", nullable=false)
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="IDENTITY")
-	 */
-	private $id; //@codingStandardsIgnoreLine
+    /**
+     * @var integer $id
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id; //@codingStandardsIgnoreLine
 
-	/**
-	 * @var string $name
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="name", type="string", length=255, nullable=false)
-	 */
-	private $name; //@codingStandardsIgnoreLine
+    /**
+     * @var string $name
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     */
+    private $name; //@codingStandardsIgnoreLine
 
-	/**
-	 * @var string $value
-	 *
-	 * @ORM\Column(name="value", type="text", nullable=true)
-	 */
-	private $value; //@codingStandardsIgnoreLine
+    /**
+     * @var string $value
+     *
+     * @ORM\Column(name="value", type="text", nullable=true)
+     */
+    private $value; //@codingStandardsIgnoreLine
 
-	/**
-	 * @return int
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param string $name
-	 * @return Setting
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-		return $this;
-	}
+    /**
+     * @param string $name
+     * @return Setting
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getValue()
-	{
-		return $this->value;
-	}
+    /**
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 
-	/**
-	 * @param string $value
-	 * @return Setting
-	 */
-	public function setValue($value)
-	{
-		$this->value = $value;
-		return $this;
-	}
+    /**
+     * @param string $value
+     * @return Setting
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+        return $this;
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,30 +43,31 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
-	/**
-	 * @var string the search term used on the search page.
-	 */
-	protected $_searchTerm;
+    /**
+     * @var string the search term used on the search page.
+     */
+    protected $searchTerm;
 
-	/**
-	 * Setter for the search term.
-	 *
-	 * @param string $term the term.
-	 */
-	public function setSearchTerm($term)
-	{
-		$this->_searchTerm = $term;
-	}
+    /**
+     * Returns the search term.
+     *
+     * @return string the term.
+     */
+    public function getSearchTerm()
+    {
+        return $this->searchTerm;
+    }
 
-	/**
-	 * Returns the search term.
-	 *
-	 * @return string the term.
-	 */
-	public function getSearchTerm()
-	{
-		return $this->_searchTerm;
-	}
+    /**
+     * Setter for the search term.
+     *
+     * @param string $term the term.
+     */
+    public function setSearchTerm($term)
+    {
+        $this->searchTerm = $term;
+    }
 }

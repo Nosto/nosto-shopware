@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,28 +42,29 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing implements NostoAccountMetaDataBillingDetailsInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing
+    implements NostoAccountMetaDataBillingDetailsInterface
 {
-	/**
-	 * @var string the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
-	 */
-	protected $_countryCode;
+    /**
+     * @var string the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
+     */
+    protected $countryCode;
 
-	/**
-	 * @param \Shopware\Models\Shop\Shop $shop
-	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop)
-	{
-		$this->_countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
-	}
+    /**
+     * @param \Shopware\Models\Shop\Shop $shop
+     */
+    public function loadData(\Shopware\Models\Shop\Shop $shop)
+    {
+        $this->countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
+    }
 
-	/**
-	 * The 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
-	 *
-	 * @return string the country ISO code.
-	 */
-	public function getCountry()
-	{
-		return $this->_countryCode;
-	}
+    /**
+     * The 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
+     *
+     * @return string the country ISO code.
+     */
+    public function getCountry()
+    {
+        return $this->countryCode;
+    }
 }

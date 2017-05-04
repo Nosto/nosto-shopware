@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use \Shopware\Models\Article\Article as Article;
-use \Shopware\Models\Shop\Shop as Shop;
+use Shopware\Models\Article\Article as Article;
+use Shopware\Models\Shop\Shop as Shop;
 
 /**
  * Helper class for prices
@@ -46,80 +46,93 @@ use \Shopware\Models\Shop\Shop as Shop;
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 {
 
-	const PRICE_TYPE_NORMAL = 'price';
-	const PRICE_TYPE_LIST = 'listPrice';
+    const PRICE_TYPE_NORMAL = 'price';
+    const PRICE_TYPE_LIST = 'listPrice';
 
-	/**
-	 * Calculates the price of an article including tax
-	 *
-	 * @param \Shopware\Models\Article\Article $article the article model.
-	 * @param \Shopware\Models\Shop\Shop $shop
-	 * @param string $type the type of price, i.e. "price" or "listPrice".
-	 * @return string the price formatted according to Nosto standards.
-	 */
-	public static function calcArticlePriceInclTax(Article $article, Shop $shop, $type = self::PRICE_TYPE_NORMAL)
-	{
-		/** @var NostoHelperPrice $helper */
-		$helper = Nosto::helper('price');
-		/** @var \Shopware\Models\Article\Price $price */
-		$price = $article->getMainDetail()->getPrices()->first();
-		if (!$price) {
-			return $helper->format(0);
-		}
-		// If the list price is not set, fall back on the normal price.
-		if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
-			$value = $price->getPseudoPrice();
-		} else {
-			$value = $price->getPrice();
-		}
-		$tax = $article->getTax()->getTax();
-		$priceWithTax = ($value*(1+($tax/100))*$shop->getCurrency()->getFactor());
-		return $helper->format($priceWithTax);
-	}
+    /**
+     * Generates a textual representation of price per unit
+     *
+     * @param \Shopware\Models\Article\Article $article
+     * @param \Shopware\Models\Shop\Shop $shop
+     * @return bool|string
+     * @throws Zend_Currency_Exception
+     */
+    public static function generatePricePerUnit(Article $article, Shop $shop)
+    {
+        $mainDetail = $article->getMainDetail();
+        $unit = $mainDetail->getUnit();
+        $price = self::calcArticlePriceInclTax(
+            $article,
+            $shop,
+            self::PRICE_TYPE_NORMAL
+        );
+        $purchaseUnit = (double)$mainDetail->getPurchaseUnit();
+        if ($unit && $price && $purchaseUnit > 0) {
+            $unitName = $unit->getName();
+            $referenceUnit = (double)$mainDetail->getReferenceUnit();
+            $referencePrice = $price / $purchaseUnit * $referenceUnit;
+            $zendCurrency = new Zend_Currency(
+                $shop->getCurrency()->getCurrency(),
+                $shop->getLocale()->getLocale()
+            );
+            $zendCurrency->setFormat(
+                array(
+                    'position' => ($shop->getCurrency()->getSymbolPosition() > 0
+                        ? $shop->getCurrency()->getSymbolPosition()
+                        : 8)
+                )
+            );
+            $priceString = $zendCurrency->toCurrency($referencePrice);
 
-	/**
-	 * Generates a textual representation of price per unit
-	 *
-	 * @param \Shopware\Models\Article\Article $article
-	 * @param \Shopware\Models\Shop\Shop $shop
-	 * @return bool|string
-	 * @throws Zend_Currency_Exception
-	 */
-	public static function generatePricePerUnit(Article $article, Shop $shop)
-	{
-		$mainDetail = $article->getMainDetail();
-		$unit = $mainDetail->getUnit();
-		$price = self::calcArticlePriceInclTax(
-			$article,
-			$shop,
-			self::PRICE_TYPE_NORMAL
-		);
-		$purchaseUnit = (double)$mainDetail->getPurchaseUnit();
-		if ($unit && $price && $purchaseUnit > 0) {
-			$unitName = $unit->getName();
-			$referenceUnit = (double)$mainDetail->getReferenceUnit();
-			$referencePrice = $price / $purchaseUnit * $referenceUnit;
-			$zendCurrency = new Zend_Currency(
-				$shop->getCurrency()->getCurrency(),
-				$shop->getLocale()->getLocale()
-			);
-			$zendCurrency->setFormat(
-				array(
-					'position' => ($shop->getCurrency()->getSymbolPosition() > 0
-						? $shop->getCurrency()->getSymbolPosition()
-						: 8)
-				)
-			);
-			$priceString = $zendCurrency->toCurrency($referencePrice);
+            return sprintf(
+                '%s * / %s %s',
+                $priceString,
+                $referenceUnit,
+                $unitName
+            );
+        }
 
-			return sprintf(
-				'%s * / %s %s',
-				$priceString,
-				$referenceUnit,
-				$unitName
-			);
-		}
+        return false;
+    }
 
-		return false;
-	}
+    /**
+     * Calculates the price of an article including tax
+     *
+     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param \Shopware\Models\Shop\Shop $shop
+     * @param string $type the type of price, i.e. "price" or "listPrice".
+     * @return string the price formatted according to Nosto standards.
+     */
+    public static function calcArticlePriceInclTax(
+        Article $article,
+        Shop $shop,
+        $type = self::PRICE_TYPE_NORMAL
+    ) {
+        /** @var \Shopware\Models\Article\Price $price */
+        $price = $article->getMainDetail()->getPrices()->first();
+        if (!$price) {
+            return self::format(0);
+        }
+        // If the list price is not set, fall back on the normal price.
+        if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
+            $value = $price->getPseudoPrice();
+        } else {
+            $value = $price->getPrice();
+        }
+        $tax = $article->getTax()->getTax();
+        $priceWithTax = ($value * (1 + ($tax / 100)) * $shop->getCurrency()->getFactor());
+        return self::format($priceWithTax);
+    }
+
+    /**
+     * @param $price
+     * @return string
+     * @suppress PhanUndeclaredMethod
+     */
+    public static function format($price)
+    {
+        /** @var NostoHelperPrice $helper */
+        $helper = Nosto::helper('price');
+        return $helper->format($price);
+    }
 }

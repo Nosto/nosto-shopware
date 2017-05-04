@@ -1,5 +1,4 @@
 vendor
-build/src
-build/package
+build
 .idea
 

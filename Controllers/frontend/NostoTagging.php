@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,192 +47,202 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
  */
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {
-	/**
-	 * Handles the redirect from Nosto oauth2 authorization server when an existing account is connected to a shop.
-	 * This is handled in the front end as the oauth2 server validates the "return_url" sent in the first step of the
-	 * authorization cycle, and requires it to be from the same domain that the account is configured for and only
-	 * redirects to that domain.
-	 */
-	public function oauthAction()
-	{
-		$shop = Shopware()->Shop();
-		$code = $this->Request()->getParam('code');
-		$error = $this->Request()->getParam('error');
+    /**
+     * Handles the redirect from Nosto oauth2 authorization server when an existing account is connected to a shop.
+     * This is handled in the front end as the oauth2 server validates the "return_url" sent in the first step of the
+     * authorization cycle, and requires it to be from the same domain that the account is configured for and only
+     * redirects to that domain.
+     */
+    public function oauthAction()
+    {
+        $shop = Shopware()->Shop();
+        $code = $this->Request()->getParam('code');
+        $error = $this->Request()->getParam('error');
 
-		if (!is_null($code)) {
-			try {
-				$account = NostoComponentAccount::findAccount($shop);
-				if (!is_null($account)) {
-					throw new NostoException(sprintf('Nosto account already exists for shop #%d.', $shop->getId()));
-				}
+        if (!is_null($code)) {
+            try {
+                $account = NostoComponentAccount::findAccount($shop);
+                if (!is_null($account)) {
+                    throw new NostoException(sprintf(
+                        'Nosto account already exists for shop #%d.',
+                        $shop->getId()
+                    ));
+                }
 
-				$meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
-				$meta->loadData($shop);
-				$nostoAccount = NostoAccount::syncFromNosto($meta, $code);
+                $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
+                $meta->loadData($shop);
+                $nostoAccount = NostoAccount::syncFromNosto($meta, $code);
 
-				$account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
-				Shopware()->Models()->persist($account);
-				Shopware()->Models()->flush($account);
+                $account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
+                Shopware()->Models()->persist($account);
+                Shopware()->Models()->flush($account);
 
-				$redirectParams = array(
-					'module' => 'backend',
-					'controller' => 'index',
-					'action' => 'index',
-					'openNosto' => $shop->getId(),
-					'messageType' => NostoMessage::TYPE_SUCCESS,
-					'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
-				);
-				$this->redirect($redirectParams, array('code' => 302));
-			} catch (NostoException $e) {
-				Shopware()->Pluginlogger()->error($e);
+                $redirectParams = array(
+                    'module' => 'backend',
+                    'controller' => 'index',
+                    'action' => 'index',
+                    'openNosto' => $shop->getId(),
+                    'messageType' => NostoMessage::TYPE_SUCCESS,
+                    'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                );
+                $this->redirect($redirectParams, array('code' => 302));
+            } catch (NostoException $e) {
+                Shopware()->PluginLogger()->error($e);
 
-				$redirectParams = array(
-					'module' => 'backend',
-					'controller' => 'index',
-					'action' => 'index',
-					'openNosto' => $shop->getId(),
-					'messageType' => NostoMessage::TYPE_ERROR,
-					'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
-				);
-				$this->redirect($redirectParams, array('code' => 302));
-			}
-		} elseif (!is_null($error)) {
-			$errorReason = $this->Request()->getParam('error_reason');
-			$errorDescription = $this->Request()->getParam('error_description');
+                $redirectParams = array(
+                    'module' => 'backend',
+                    'controller' => 'index',
+                    'action' => 'index',
+                    'openNosto' => $shop->getId(),
+                    'messageType' => NostoMessage::TYPE_ERROR,
+                    'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                );
+                $this->redirect($redirectParams, array('code' => 302));
+            }
+        } elseif (!is_null($error)) {
+            $errorReason = $this->Request()->getParam('error_reason');
+            $errorDescription = $this->Request()->getParam('error_description');
 
-			$logMessage = $error;
-			if (!is_null($errorReason)) {
-				$logMessage .= ' - '.$errorReason;
-			}
-			if (!is_null($errorDescription)) {
-				$logMessage .= ' - '.$errorDescription;
-			}
+            $logMessage = $error;
+            if (!is_null($errorReason)) {
+                $logMessage .= ' - ' . $errorReason;
+            }
+            if (!is_null($errorDescription)) {
+                $logMessage .= ' - ' . $errorDescription;
+            }
 
-			Shopware()->Pluginlogger()->error($logMessage);
+            Shopware()->PluginLogger()->error($logMessage);
 
-			$redirectParams = array(
-				'module' => 'backend',
-				'controller' => 'index',
-				'action' => 'index',
-				'openNosto' => $shop->getId(),
-				'messageType' => NostoMessage::TYPE_ERROR,
-				'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
-				'messageText' => $errorDescription,
-			);
-			$this->redirect($redirectParams, array('code' => 302));
-		} else {
-			throw new Zend_Controller_Action_Exception('Not Found', 404);
-		}
-	}
+            $redirectParams = array(
+                'module' => 'backend',
+                'controller' => 'index',
+                'action' => 'index',
+                'openNosto' => $shop->getId(),
+                'messageType' => NostoMessage::TYPE_ERROR,
+                'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                'messageText' => $errorDescription,
+            );
+            $this->redirect($redirectParams, array('code' => 302));
+        } else {
+            throw new Zend_Controller_Action_Exception('Not Found', 404);
+        }
+    }
 
-	/**
-	 * Exports products from the current shop.
-	 * Result can be limited by the `limit` and `offset` GET parameters.
-	 */
-	public function exportProductsAction()
-	{
-		$pageSize = (int)$this->Request()->getParam('limit', 100);
-		$currentOffset = (int)$this->Request()->getParam('offset', 0);
-		$id = $this->Request()->getParam('id', false);
+    /**
+     * Exports products from the current shop.
+     * Result can be limited by the `limit` and `offset` GET parameters.
+     */
+    public function exportProductsAction()
+    {
+        $pageSize = (int)$this->Request()->getParam('limit', 100);
+        $currentOffset = (int)$this->Request()->getParam('offset', 0);
+        $id = $this->Request()->getParam('id', false);
 
-		$builder = Shopware()->Models()->createQueryBuilder();
-		$result = $builder->select(array('articles.id'))
-			->from('\Shopware\Models\Article\Article', 'articles')
-			->innerJoin('\Shopware\Models\Article\Detail', 'details', \Doctrine\ORM\Query\Expr\Join::WITH, 'articles.mainDetailId = details.id')
-			->where('articles.active = 1');
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $result = $builder->select(array('articles.id'))
+            ->from(\Shopware\Models\Article\Article::class, 'articles')
+            ->innerJoin(
+                \Shopware\Models\Article\Detail::class,
+                'details',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                'articles.mainDetailId = details.id'
+            )
+            ->where('articles.active = 1');
 
-		if (!empty($id)) {
-			$result = $result->andWhere('details.number = :id')
-				->setParameter('id', $id)
-				->getQuery();
-		} else {
-			$result = $result->orderBy('articles.added', 'DESC')
-				->setFirstResult($currentOffset)
-				->setMaxResults($pageSize)
-				->getQuery();
-		}
+        if (!empty($id)) {
+            $result = $result->andWhere('details.number = :id')
+                ->setParameter('id', $id)
+                ->getQuery();
+        } else {
+            $result = $result->orderBy('articles.added', 'DESC')
+                ->setFirstResult($currentOffset)
+                ->setMaxResults($pageSize)
+                ->getQuery();
+        }
 
-		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        $result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$collection = new NostoExportProductCollection();
-		$category = Shopware()->Shop()->getCategory();
-		foreach ($result as $row) {
-			/** @var Shopware\Models\Article\Article $article */
-			$article = Shopware()->Models()->find('Shopware\Models\Article\Article', (int)$row['id']);
-			if (is_null($article) || !in_array($category, $article->getAllCategories())) {
-				continue;
-			}
-			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-			$model->loadData($article);
-			$collection[] = $model;
-		}
+        $collection = new NostoExportProductCollection();
+        $category = Shopware()->Shop()->getCategory();
+        foreach ($result as $row) {
+            /** @var Shopware\Models\Article\Article $article */
+            $article = Shopware()->Models()->find(
+                Shopware\Models\Article\Article::class,
+                (int)$row['id']
+            );
+            if (is_null($article) || !in_array($category, $article->getAllCategories())) {
+                continue;
+            }
+            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model->loadData($article);
+            $collection[] = $model;
+        }
 
-		$this->export($collection);
-	}
+        $this->export($collection);
+    }
 
-	/**
-	 * Exports completed orders from the current shop.
-	 * Result can be limited by the `limit` and `offset` GET parameters.
-	 */
-	public function exportOrdersAction()
-	{
-		$pageSize = (int)$this->Request()->getParam('limit', 100);
-		$currentOffset = (int)$this->Request()->getParam('offset', 0);
-		$id = $this->Request()->getParam('id', false);
+    /**
+     * Encrypts the export collection and outputs it to the browser.
+     *
+     * @param NostoExportCollectionInterface $collection the data collection to export.
+     */
+    protected function export(NostoExportCollectionInterface $collection)
+    {
+        $shop = Shopware()->Shop();
+        $account = NostoComponentAccount::findAccount($shop);
+        if (!is_null($account)) {
+            $cipherText = NostoExporter::export(
+                NostoComponentAccount::convertToNostoAccount($account),
+                $collection
+            );
+            echo $cipherText;
+        }
+        die();
+    }
 
-		$builder = Shopware()->Models()->createQueryBuilder();
-		$result = $builder->select(array('orders.number'))
-			->from('\Shopware\Models\Order\Order', 'orders')
-			->where('orders.status >= 0');
+    /**
+     * Exports completed orders from the current shop.
+     * Result can be limited by the `limit` and `offset` GET parameters.
+     */
+    public function exportOrdersAction()
+    {
+        $pageSize = (int)$this->Request()->getParam('limit', 100);
+        $currentOffset = (int)$this->Request()->getParam('offset', 0);
+        $id = $this->Request()->getParam('id', false);
 
-		if (!empty($id)) {
-			$result = $result->andWhere('orders.number = :id')
-				->setParameter('id', $id)
-				->getQuery();
-		} else {
-			$result = $result->orderBy('orders.orderTime', 'DESC')
-				->setFirstResult($currentOffset)
-				->setMaxResults($pageSize)
-				->getQuery();
-		}
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $result = $builder->select(array('orders.number'))
+            ->from(\Shopware\Models\Order\Order::class, 'orders')
+            ->where('orders.status >= 0');
 
-		$result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        if (!empty($id)) {
+            $result = $result->andWhere('orders.number = :id')
+                ->setParameter('id', $id)
+                ->getQuery();
+        } else {
+            $result = $result->orderBy('orders.orderTime', 'DESC')
+                ->setFirstResult($currentOffset)
+                ->setMaxResults($pageSize)
+                ->getQuery();
+        }
 
-		$collection = new NostoExportOrderCollection();
-		$shop = Shopware()->Shop()->getId();
-		foreach ($result as $row) {
-			/** @var Shopware\Models\Order\Order $order */
-			$order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
-				->findOneBy(array('number' => $row['number']));
-			if (is_null($order) || $order->getShop()->getId() != $shop) {
-				continue;
-			}
-			$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-			$model->disableSpecialLineItems();
-			$model->loadData($order);
-			$collection[] = $model;
-		}
+        $result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-		$this->export($collection);
-	}
+        $collection = new NostoExportOrderCollection();
+        $shop = Shopware()->Shop()->getId();
+        foreach ($result as $row) {
+            /** @var Shopware\Models\Order\Order $order */
+            $order = Shopware()->Models()->getRepository(Shopware\Models\Order\Order::class)
+                ->findOneBy(array('number' => $row['number']));
+            if (is_null($order) || $order->getShop()->getId() != $shop) {
+                continue;
+            }
+            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+            $model->disableSpecialLineItems();
+            $model->loadData($order);
+            $collection[] = $model;
+        }
 
-	/**
-	 * Encrypts the export collection and outputs it to the browser.
-	 *
-	 * @param NostoExportCollectionInterface $collection the data collection to export.
-	 */
-	protected function export(NostoExportCollectionInterface $collection)
-	{
-		$shop = Shopware()->Shop();
-		$account = NostoComponentAccount::findAccount($shop);
-		if (!is_null($account)) {
-			$cipherText = NostoExporter::export(
-				NostoComponentAccount::convertToNostoAccount($account),
-				$collection
-			);
-			echo $cipherText;
-		}
-		die();
-	}
-
+        $this->export($collection);
+    }
 }

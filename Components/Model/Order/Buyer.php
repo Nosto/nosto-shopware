@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,134 +44,134 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderBuyerInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    implements NostoOrderBuyerInterface
 {
-	/**
-	 * @var string the first name of the user who placed the order.
-	 */
-	protected $_firstName;
+    /**
+     * @var string the first name of the user who placed the order.
+     */
+    protected $firstName;
 
-	/**
-	 * @var string the last name of the user who placed the order.
-	 */
-	protected $_lastName;
+    /**
+     * @var string the last name of the user who placed the order.
+     */
+    protected $lastName;
 
-	/**
-	 * @var string the email address of the user who placed the order.
-	 */
-	protected $_email;
+    /**
+     * @var string the email address of the user who placed the order.
+     */
+    protected $email;
 
-	/**
-	 * Loads the order buyer info from the customer model.
-	 *
-	 * @param \Shopware\Models\Customer\Customer $customer the customer model.
-	 */
-	public function loadData(\Shopware\Models\Customer\Customer $customer)
-	{
-		if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
-			/* @var \Shopware\Models\Customer\Address $address */
-			$address = $customer->getDefaultBillingAddress();
-			if ($address instanceof \Shopware\Models\Customer\Address) {
-				$this->_firstName = $address->getFirstname();
-				$this->_lastName = $address->getLastname();
-			}
-		} else {
-			/* @var \Shopware\Models\Customer\Billing $address */
-			$address = $customer->getBilling();
-			if ($address instanceof \Shopware\Models\Customer\Billing) {
-				$this->_firstName = $address->getFirstname();
-				$this->_lastName = $address->getLastname();
-			}
-		}
-		$this->_email = $customer->getEmail();
+    /**
+     * Loads the order buyer info from the customer model.
+     *
+     * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     */
+    public function loadData(\Shopware\Models\Customer\Customer $customer)
+    {
+        if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
+            /* @var \Shopware\Models\Customer\Address $address */
+            $address = $customer->getDefaultBillingAddress();
+            if ($address instanceof \Shopware\Models\Customer\Address) {
+                $this->firstName = $address->getFirstname();
+                $this->lastName = $address->getLastname();
+            }
+        } else {
+            /* @var \Shopware\Models\Customer\Billing $address */
+            $address = $customer->getBilling();
+            if ($address instanceof \Shopware\Models\Customer\Billing) {
+                $this->firstName = $address->getFirstName();
+                $this->lastName = $address->getLastName();
+            }
+        }
+        $this->email = $customer->getEmail();
 
-		Enlight()->Events()->notify(
-			__CLASS__ . '_AfterLoad',
-			array(
-				'nostoOrderBuyer' => $this,
-				'customer'        => $customer,
-			)
-		);
-	}
+        Shopware()->Events()->notify(
+            __CLASS__ . '_AfterLoad',
+            array(
+                'nostoOrderBuyer' => $this,
+                'customer' => $customer,
+            )
+        );
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getFirstName()
-	{
-		return $this->_firstName;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getLastName()
-	{
-		return $this->_lastName;
-	}
+    /**
+     * Sets the firstname of the buyer.
+     *
+     * The name must be a non-empty string.
+     *
+     * Usage:
+     * $object->setFirstName('John');
+     *
+     * @param string $firstName the first name.
+     * @return $this Self for chaining
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getEmail()
-	{
-		return $this->_email;
-	}
+        return $this;
+    }
 
-	/**
-	 * Sets the firstname of the buyer.
-	 *
-	 * The name must be a non-empty string.
-	 *
-	 * Usage:
-	 * $object->setFirstName('John');
-	 *
-	 * @param string $firstName the firstname.
-	 *
-	 * @return $this Self for chaining
-	 */
-	public function setFirstName($firstName)
-	{
-		$this->_firstName = $firstName;
+    /**
+     * @inheritdoc
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
 
-		return $this;
-	}
+    /**
+     * Sets the lastname of the buyer.
+     *
+     * The name must be a non-empty string.
+     *
+     * Usage:
+     * $object->setLastName('Doe');
+     *
+     * @param string $lastName the last name.
+     * @return $this Self for chaining
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
 
-	/**
-	 * Sets the lastname of the buyer.
-	 *
-	 * The name must be a non-empty string.
-	 *
-	 * Usage:
-	 * $object->setLastName('Doe');
-	 *
-	 * @param string $lastName the lastname.
-	 *
-	 * @return $this Self for chaining
-	 */
-	public function setLastName($lastName)
-	{
-		$this->_lastName = $lastName;
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
 
-	/**
-	 * Sets the email of the buyer.
-	 *
-	 * The email must be a non-empty string.
-	 *
-	 * Usage:
-	 * $object->setEmail('john@doe.com');
-	 *
-	 * @param string $email the email.
-	 *
-	 * @return $this Self for chaining
-	 */
-	public function setEmail($email)
-	{
-		$this->_email = $email;
+    /**
+     * Sets the email of the buyer.
+     *
+     * The email must be a non-empty string.
+     *
+     * Usage:
+     * $object->setEmail('john@doe.com');
+     *
+     * @param string $email the email.
+     *
+     * @return $this Self for chaining
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
 
-		return $this;
-	}
+        return $this;
+    }
 }
