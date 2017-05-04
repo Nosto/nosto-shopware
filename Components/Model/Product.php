@@ -124,6 +124,94 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
     protected $brand; //@codingStandardsIgnoreLine
 
     /**
+     * @var string the default variation identifier of the shop
+     */
+    protected $variationId;
+
+    /**
+     * @var float the price paid for the supplier
+     */
+    protected $supplierCost;
+
+    /**
+     * @var int product stock
+     */
+    protected $inventoryLevel;
+
+    /**
+     * @var int the amount of reviews
+     */
+    protected $reviewCount;
+
+    /**
+     * @var float the value of the rating(s)
+     */
+    protected $ratingValue;
+
+    /**
+     * @var array alternative image urls
+     */
+    protected $alternateImageUrls = array();
+
+    /**
+     * @var string the condition of the product
+     */
+    protected $condition;
+
+    /**
+     * @var string the gender (target group) of the product
+     */
+    protected $gender;
+
+    /**
+     * @var string the the age group
+     */
+    protected $ageGroup;
+
+    /**
+     * @var string the barcode
+     */
+    protected $gtin;
+
+    /**
+     * @var array the first set of tags of the product
+     */
+    protected $tag1 = array();
+
+    /**
+     * @var array the second set of tags of the product
+     */
+    protected $tag2 = array();
+
+    /**
+     * @var array the third set of tags of the product
+     */
+    protected $tag3 = array();
+
+    /**
+     * @var string category used in Google's services
+     */
+    protected $googleCategory;
+
+    /**
+     * @var string the pricing measure of the product. Pricing measure for a
+     * 0.33 liter bottle for example is "0.33".
+     */
+    protected $unitPricingMeasure;
+
+    /**
+     * @var string the pricing base measure of the product. Pricing base measure
+     * for a 0.33l bottle is "1".
+     */
+    protected $unitPricingBaseMeasure;
+
+    /**
+     * @var string the pricing unit of the product. Pricing unit for a 0.33l
+     * bottle is "l" (litre).
+     */
+    protected $unitPricingUnit;
+
+    /**
      * @inheritdoc
      */
     public function getValidationRules()
@@ -174,6 +262,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
             $this->brand = '';
         }
 
+        $this->amendRatingsAndReviews($article, $shop);
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
@@ -205,6 +294,28 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
             );
         }
         $this->setProductId($mainDetail->getNumber());
+    }
+
+    /**
+     * Amends ratings and reviews
+     *
+     * @param Article $article the article model.
+     * @param Shop $shop the shop model.
+     */
+    protected function amendRatingsAndReviews(Article $article, Shop $shop)
+    {
+        $voteCount = 0;
+        $votes = array();
+        foreach ($article->getVotes() as $vote) {
+            ++$voteCount;
+            $votes[] = $vote->getPoints();
+        }
+        if ($voteCount > 0) {
+            $voteSum = array_sum($votes);
+            $voteAvg = round($voteSum/$voteCount, 1);
+            $this->setRatingValue($voteAvg);
+            $this->setReviewCount($voteCount);
+        }
     }
 
     /**
@@ -704,135 +815,218 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Sh
     }
 
     /**
-     * Returns the supplier cost
-     *
-     * @return float|null
+     * @return float
      */
     public function getSupplierCost()
     {
-        // TODO: Implement getSupplierCost() method.
+        return $this->supplierCost;
     }
 
     /**
-     * Returns the inventory level
-     *
-     * @return int|null
+     * @param float $supplierCost
+     */
+    public function setSupplierCost($supplierCost)
+    {
+        $this->supplierCost = $supplierCost;
+    }
+
+    /**
+     * @return int
      */
     public function getInventoryLevel()
     {
-        // TODO: Implement getInventoryLevel() method.
+        return $this->inventoryLevel;
     }
 
     /**
-     * Returns the count of reviews
-     *
-     * @return int|null
+     * @param int $inventoryLevel
+     */
+    public function setInventoryLevel($inventoryLevel)
+    {
+        $this->inventoryLevel = $inventoryLevel;
+    }
+
+    /**
+     * @return int
      */
     public function getReviewCount()
     {
-        // TODO: Implement getReviewCount() method.
+        return $this->reviewCount;
     }
 
     /**
-     * Returns the value of the rating(s)
-     *
-     * @return float|null
+     * @param int $reviewCount
+     */
+    public function setReviewCount($reviewCount)
+    {
+        $this->reviewCount = $reviewCount;
+    }
+
+    /**
+     * @return float
      */
     public function getRatingValue()
     {
-        // TODO: Implement getRatingValue() method.
+        return $this->ratingValue;
     }
 
     /**
-     * Returns the alternative images
-     *
-     * @return array|null
+     * @param float $ratingValue
+     */
+    public function setRatingValue($ratingValue)
+    {
+        $this->ratingValue = $ratingValue;
+    }
+
+    /**
+     * @return array
      */
     public function getAlternateImageUrls()
     {
-        // TODO: Implement getAlternateImageUrls() method.
+        return $this->alternateImageUrls;
     }
 
     /**
-     * Returns the condition
-     *
-     * @return string|null
+     * @param array $alternateImageUrls
+     */
+    public function setAlternateImageUrls($alternateImageUrls)
+    {
+        $this->alternateImageUrls = $alternateImageUrls;
+    }
+
+    /**
+     * @return string
      */
     public function getCondition()
     {
-        // TODO: Implement getCondition() method.
+        return $this->condition;
     }
 
     /**
-     * Returns the gender
-     *
-     * @return string|null
+     * @param string $condition
+     */
+    public function setCondition($condition)
+    {
+        $this->condition = $condition;
+    }
+
+    /**
+     * @return string
      */
     public function getGender()
     {
-        // TODO: Implement getGender() method.
+        return $this->gender;
     }
 
     /**
-     * Returns the age group
-     *
-     * @return string|null
+     * @param string $gender
+     */
+    public function setGender($gender)
+    {
+        $this->gender = $gender;
+    }
+
+    /**
+     * @return string
      */
     public function getAgeGroup()
     {
-        // TODO: Implement getAgeGroup() method.
+        return $this->ageGroup;
     }
 
     /**
-     * Returns the gtin / barcode
-     *
-     * @return string|null
+     * @param string $ageGroup
+     */
+    public function setAgeGroup($ageGroup)
+    {
+        $this->ageGroup = $ageGroup;
+    }
+
+    /**
+     * @return string
      */
     public function getGtin()
     {
-        // TODO: Implement getGtin() method.
+        return $this->gtin;
     }
 
     /**
-     * Returns the category used for Google's services
-     *
-     * @return string|null
+     * @param string $gtin
+     */
+    public function setGtin($gtin)
+    {
+        $this->gtin = $gtin;
+    }
+
+    /**
+     * @return string
      */
     public function getGoogleCategory()
     {
-        // TODO: Implement getGoogleCategory() method.
+        return $this->googleCategory;
     }
 
     /**
-     * Returns the pricing measure of the product. Pricing measure for a 0.33
-     * liter bottle for example is "0.33".
-     *
-     * @return float|null
+     * @param string $googleCategory
+     */
+    public function setGoogleCategory($googleCategory)
+    {
+        $this->googleCategory = $googleCategory;
+    }
+
+    /**
+     * @return string
      */
     public function getUnitPricingMeasure()
     {
-        // TODO: Implement getUnitPricingMeasure() method.
+        return $this->unitPricingMeasure;
     }
 
     /**
-     * Returns the pricing base measure of the product. Pricing base measure
-     * for a 0.33l bottle is "1".
-     *
-     * @return float|null
+     * @param string $unitPricingMeasure
+     */
+    public function setUnitPricingMeasure($unitPricingMeasure)
+    {
+        $this->unitPricingMeasure = $unitPricingMeasure;
+    }
+
+    /**
+     * @return string
      */
     public function getUnitPricingBaseMeasure()
     {
-        // TODO: Implement getUnitPricingBaseMeasure() method.
+        return $this->unitPricingBaseMeasure;
     }
 
     /**
-     * Returns the pricing unit of the product. Pricing unit for a 0.33l
-     * bottle is "l" (litre).
-     *
-     * @return string|null
+     * @param string $unitPricingBaseMeasure
+     */
+    public function setUnitPricingBaseMeasure($unitPricingBaseMeasure)
+    {
+        $this->unitPricingBaseMeasure = $unitPricingBaseMeasure;
+    }
+
+    /**
+     * @return string
      */
     public function getUnitPricingUnit()
     {
-        // TODO: Implement getUnitPricingUnit() method.
+        return $this->unitPricingUnit;
+    }
+
+    /**
+     * @param string $unitPricingUnit
+     */
+    public function setUnitPricingUnit($unitPricingUnit)
+    {
+        $this->unitPricingUnit = $unitPricingUnit;
+    }
+
+    /**
+     * @param string $alternateImageUrl
+     */
+    public function addAlternateImageUrls($alternateImageUrl)
+    {
+        $this->alternateImageUrls[] = $alternateImageUrl;
     }
 }

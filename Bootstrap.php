@@ -1081,9 +1081,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Event handler for `Enlight_Controller_Action_Frontend_Error_GenericError`.
      * Adds the recommendation elements for not found pages.
      *
-     * @param Enlight_Controller_EventArgs $args the event arguments.
+     * @param Enlight_Controller_EventArgs | Enlight_Event_EventArgs $args the event arguments.
      */
-    public function onFrontEndErrorGenericError(Enlight_Controller_EventArgs $args)
+    public function onFrontEndErrorGenericError($args)
     {
         if (!$this->shopHasConnectedAccount()) {
             return;
