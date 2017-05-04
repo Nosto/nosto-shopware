@@ -711,6 +711,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     protected function addCustomerTagging(Enlight_View_Default $view)
     {
         /** @var Shopware\Models\Customer\Customer $customer */
+        /** @noinspection PhpUndefinedFieldInspection */
         $customerId = (int)Shopware()->Session()->sUserId;
         $customer = Shopware()->Models()->find(
             Shopware\Models\Customer\Customer::class,
