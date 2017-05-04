@@ -52,7 +52,9 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCat
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoProductInterface, NostoValidatableInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    implements NostoProductInterface, NostoValidatableInterface
 {
     /**
      * @var string absolute url to the product page.

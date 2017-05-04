@@ -43,7 +43,8 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
     /**
      * @var string the full category path with categories separated by a `/` sign.

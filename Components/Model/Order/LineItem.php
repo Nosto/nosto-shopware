@@ -46,7 +46,9 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelpe
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderPurchasedItemInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    implements NostoOrderPurchasedItemInterface
 {
     /**
      * @var string the unique identifier of the purchased item.

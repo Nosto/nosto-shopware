@@ -44,7 +44,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe implements NostoAccountMetaDataIframeInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
+    implements NostoAccountMetaDataIframeInterface
 {
     /**
      * @var string the admin user first name.

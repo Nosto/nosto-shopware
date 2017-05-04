@@ -42,7 +42,8 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements NostoAccountMetaDataInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
+    implements NostoAccountMetaDataInterface
 {
     /**
      * @var string the store name.

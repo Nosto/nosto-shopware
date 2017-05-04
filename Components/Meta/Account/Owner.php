@@ -43,7 +43,8 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner implements NostoAccountMetaDataOwnerInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
+    implements NostoAccountMetaDataOwnerInterface
 {
     /**
      * @var string the first name of the account owner.

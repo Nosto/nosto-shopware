@@ -43,5 +43,8 @@
     <file>./Bootstrap.php</file>
     <exclude-pattern>*.js</exclude-pattern>
     <rule ref="PSR2">
+        <exclude name="Squiz.Classes.ValidClassName"/>
+        <exclude name="PSR1.Classes.ClassDeclaration"/>
+        <exclude name="PSR2.Classes.ClassDeclaration"/>
     </rule>
 </ruleset>

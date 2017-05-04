@@ -45,7 +45,9 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderInterface, NostoValidatableInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    implements NostoOrderInterface, NostoValidatableInterface
 {
     /**
      * @var string|int the unique order number identifying the order.
@@ -283,7 +285,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Shop
      * Usage:
      * $object->setPurchasedItems([new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem(), ...]);
      *
-     * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] $purchasedItems the purchased items.
+     * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] $purchasedItems the items.
      *
      * @return $this Self for chaining
      */

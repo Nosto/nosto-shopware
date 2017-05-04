@@ -196,7 +196,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
      * @param \Shopware\Models\Shop\Locale $locale the locale or null.
-     * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url for or null if account does not exist.
+     * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
      * @return string the url.

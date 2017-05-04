@@ -45,7 +45,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelpe
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
     /**
      * @var string the product id for the line item.

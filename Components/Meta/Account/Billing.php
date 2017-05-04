@@ -42,7 +42,8 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing implements NostoAccountMetaDataBillingDetailsInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing
+    implements NostoAccountMetaDataBillingDetailsInterface
 {
     /**
      * @var string the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.

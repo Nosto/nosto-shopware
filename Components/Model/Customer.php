@@ -46,7 +46,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as Custome
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
     /**
      * @var string the customer first name.

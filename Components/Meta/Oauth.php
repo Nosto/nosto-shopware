@@ -42,7 +42,8 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth implements NostoOAuthClientMetaDataInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
+    implements NostoOAuthClientMetaDataInterface
 {
     /**
      * @var string OAuth2 redirect url to where the OAuth2 server should redirect the user after authorizing.

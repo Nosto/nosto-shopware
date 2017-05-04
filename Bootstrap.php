@@ -1,4 +1,4 @@
-<?php
+<?php // @codingStandardsIgnoreLine
 /**
  * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
@@ -130,7 +130,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             'author' => 'Nosto Solutions Ltd',
             'supplier' => 'Nosto Solutions Ltd',
             'copyright' => 'Copyright (c) 2016, Nosto Solutions Ltd',
-            'description' => 'Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.',
+            'description' => 'Increase your conversion rate and average order value by delivering' .
+                'your customers personalized product recommendations throughout their shopping journey.',
             'support' => 'support@nosto.com',
             'link' => 'http://nosto.com'
         );
@@ -1051,9 +1052,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param Enlight_Event_EventArgs $args the event arguments.
      * @return string the path to the controller file.
      */
-    public function onControllerPathBackend(
-
-        /** @noinspection PhpUnusedParameterInspection */
+    public function onControllerPathBackend(/** @noinspection PhpUnusedParameterInspection */
         Enlight_Event_EventArgs $args
     ) {
         $this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');
@@ -1068,9 +1067,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param Enlight_Event_EventArgs $args the event arguments.
      * @return string the path to the controller file.
      */
-    public function onControllerPathFrontend(
-
-        /** @noinspection PhpUnusedParameterInspection */
+    public function onControllerPathFrontend(/** @noinspection PhpUnusedParameterInspection */
         Enlight_Event_EventArgs $args
     ) {
         $this->Application()->Template()->addTemplateDir($this->Path() . 'Views/');

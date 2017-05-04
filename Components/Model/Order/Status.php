@@ -44,7 +44,9 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base implements NostoOrderStatusInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    implements NostoOrderStatusInterface
 {
     /**
      * @var string the order status code.
