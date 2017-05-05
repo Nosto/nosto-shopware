@@ -265,6 +265,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         }
 
         $this->amendRatingsAndReviews($article, $shop);
+        $this->amendInventoryLevel($article);
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
@@ -318,6 +319,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
             $this->setRatingValue($voteAvg);
             $this->setReviewCount($voteCount);
         }
+    }
+
+    /**
+     * Amends inventory level
+     *
+     * @param Article $article the article model.
+     */
+    protected function amendInventoryLevel(Article $article)
+    {
+        $inventoryLevelSum = 0;
+        foreach ($article->getDetails() as $detail) {
+            $inventoryLevelSum += $detail->getInStock();
+        }
+        $this->setInventoryLevel($inventoryLevelSum);
     }
 
     /**
