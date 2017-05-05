@@ -229,7 +229,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
      */
     public function loadData(Article $article, Shop $shop = null)
     {
-
         if (is_null($shop)) {
             $shop = Shopware()->Shop();
         }
