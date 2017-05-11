@@ -267,9 +267,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
 
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
-
-        if ($article->getMainDetail())
-
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
