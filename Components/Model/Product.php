@@ -240,21 +240,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         }
         $this->url = $this->assembleProductUrl($article, $shop);
         $this->name = $article->getName();
-
-        $imageUrls = ImageHelper::getImageUrls($article, $shop);
-        if ($imageUrls) {
-            //first one of the array is always the main image.
-            $this->imageUrl = $imageUrls[0];
-
-            //rest of the images are the alternate images.
-            array_splice($imageUrls, 0, 1);
-            $this->alternateImageUrls = $imageUrls;
-
-        } else {
-            $this->imageUrl = null;
-            $this->alternateImageUrls = null;
-        }
-
+        $this->imageUrl = ImageHelper::getMainImageUrl($article, $shop);
+        $this->alternateImageUrls = ImageHelper::getAlternativeImageUrl($article, $shop);
         $this->currencyCode = $shop->getCurrency()->getCurrency();
         $this->price = PriceHelper::calcArticlePriceInclTax(
             $article,

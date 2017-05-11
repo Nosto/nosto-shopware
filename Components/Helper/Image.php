@@ -59,13 +59,36 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return string|null the url or null if image not found.
      */
-    public static function assembleImageUrl(Article $article, Shop $shop)
+    public static function getMainImageUrl(Article $article, Shop $shop)
     {
-        $imageUrls = getImageUrls($article, $shop);
+        $imageUrls = self::getImageUrls($article, $shop);
 
         if ($imageUrls){
             //first one of the array is always the main image.
             return $imageUrls[0];
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Get alternative image urls
+     *
+     * The url will always be for the original image, not the thumbnails.
+     *
+     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @return array|null the urls or null if no alternative urls found
+     */
+    public static function getAlternativeImageUrl(Article $article, Shop $shop)
+    {
+        $imageUrls = self::getImageUrls($article, $shop);
+
+        if ($imageUrls){
+            //remove the first one, the first one is main image
+            array_splice($imageUrls, 0, 1);
+            return $imageUrls;
         }
         else {
             return null;
@@ -108,11 +131,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
 
     /**
      * Get all the image urls. First one is the main image if there is any image.
+     *
      * @param \Shopware\Models\Article\Article $article the article model.
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return array All the image urls the product. First one is the main image.
      */
-    public static function getImageUrls(Article $article, Shop $shop)
+    private static function getImageUrls(Article $article, Shop $shop)
     {
         $imageUrls = [];
         $mainImageUrl = null;
