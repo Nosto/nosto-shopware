@@ -63,11 +63,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
     {
         $imageUrls = self::getImageUrls($article, $shop);
 
-        if ($imageUrls){
+        if ($imageUrls) {
             //first one of the array is always the main image.
             return $imageUrls[0];
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -81,16 +80,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return array|null the urls or null if no alternative urls found
      */
-    public static function getAlternativeImageUrl(Article $article, Shop $shop)
+    public static function getAlternativeImageUrls(Article $article, Shop $shop)
     {
         $imageUrls = self::getImageUrls($article, $shop);
 
-        if ($imageUrls){
+        if ($imageUrls) {
             //remove the first one, the first one is main image
             array_splice($imageUrls, 0, 1);
             return $imageUrls;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -103,9 +101,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      * @param \Shopware\Models\Shop\Shop $shop
      * @return null|string the url of the Image or null if image not found.
      */
-    private static function buildUrl(\Shopware\Models\Article\Image $image, MediaServiceInterface $mediaService,
-        Shop $shop)
-    {
+    private static function buildUrl(
+        \Shopware\Models\Article\Image $image,
+        MediaServiceInterface $mediaService,
+        Shop $shop
+    ) {
         $url = null;
 
         $media = $image->getMedia();
@@ -116,10 +116,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             $url = $mediaService->getUrl($media->getPath());
         } else {
             // Force SSL if it's enabled.
-            $secure = ($shop->getSecure() || (method_exists(
-                        $shop,
-                        'getAlwaysSecure'
-                    ) && $shop->getAlwaysSecure()));
+            $secure = (
+                $shop->getSecure()
+                || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure())
+            );
             $protocol = ($secure ? 'https://' : 'http://');
             $host = ($secure ? $shop->getSecureHost() : $shop->getHost());
             $path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
@@ -151,7 +151,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         /** @var Shopware\Models\Article\Image $image */
         foreach ($article->getImages() as $image) {
             $imageUrl = self::buildUrl($image, $mediaService, $shop);
-            if ($imageUrl !== null){
+            if ($imageUrl !== null) {
                 $imageUrls[] = $imageUrl;
                 if (is_null($mainImageUrl) || $image->getMain() === 1) {
                     $mainImageUrl = $imageUrl;
