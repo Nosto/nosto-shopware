@@ -240,7 +240,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         }
         $this->url = $this->assembleProductUrl($article, $shop);
         $this->name = $article->getName();
-        $this->imageUrl = ImageHelper::assembleImageUrl($article, $shop);
+        $this->imageUrl = ImageHelper::getMainImageUrl($article, $shop);
+        $this->alternateImageUrls = ImageHelper::getAlternativeImageUrls($article, $shop);
         $this->currencyCode = $shop->getCurrency()->getCurrency();
         $this->price = PriceHelper::calcArticlePriceInclTax(
             $article,
