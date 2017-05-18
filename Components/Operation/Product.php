@@ -59,7 +59,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
-            $shop->registerResources();
+            $shop->registerResources(Shopware()->Bootstrap());
             $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
@@ -144,7 +144,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
-            $shop->registerResources();
+            $shop->registerResources(Shopware()->Bootstrap());
             $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {

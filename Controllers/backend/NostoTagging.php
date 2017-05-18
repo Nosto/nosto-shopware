@@ -129,7 +129,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
-            $shop->registerResources();
+            $shop->registerResources(Shopware()->Bootstrap());
             $account = NostoComponentAccount::findAccount($shop);
             if (isset($oauthParams[$shop->getId()])) {
                 $params = $oauthParams[$shop->getId()];
@@ -179,7 +179,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $identity = Shopware()->Auth()->getIdentity();
 
         if (!is_null($shop)) {
-            $shop->registerResources();
+            $shop->registerResources(Shopware()->Bootstrap());
             try {
                 $account = NostoComponentAccount::createAccount(
                     $shop,
@@ -239,7 +239,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $identity = Shopware()->Auth()->getIdentity();
 
         if (!is_null($account) && !is_null($shop)) {
-            $shop->registerResources();
+            $shop->registerResources(Shopware()->Bootstrap());
             NostoComponentAccount::removeAccount($account);
             $success = true;
             $data = array(
@@ -279,7 +279,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $locale = Shopware()->Auth()->getIdentity()->locale;
 
         if (!is_null($shop)) {
-            $shop->registerResources();
+            $shop->registerResources(Shopware()->Bootstrap());
             $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
             $meta->loadData($shop, $locale);
             $client = new NostoOAuthClient($meta);
