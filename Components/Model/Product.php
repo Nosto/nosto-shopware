@@ -257,7 +257,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         $this->availability = $this->checkAvailability($article);
         $this->tags = TagHelper::buildProductTags($article, $shop);
         $this->categories = $this->buildCategoryPaths($article, $shop);
-        $this->supplierCost = $article->getMainDetail()->getPurchasePrice();
+        //purchase price is not available before version 5.2
+        if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
+            $this->supplierCost = $article->getMainDetail()->getPurchasePrice();
+        }
         $this->shortDescription = $article->getDescription();
         $this->description = $article->getDescriptionLong();
         if ($article->getSupplier() instanceof \Shopware\Models\Article\Supplier) {
