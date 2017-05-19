@@ -149,14 +149,16 @@
             <arg value="--colors"/>
             <arg value="--report-width=auto"/>
             <arg value="--standard=ruleset.xml"/>
+            <arg value="--ignore=vendor,build,.phan"/>
         </exec>
     </target>
 
     <target name="phpcs" depends="phpcbf">
         <exec executable="./vendor/bin/phpcs" passthru="true">
-            <arg value="--colors"/>
+            <arg value="-v"/>
             <arg value="--report-width=auto"/>
             <arg value="--standard=ruleset.xml"/>
+            <arg value="--ignore=vendor,build,.phan"/>
         </exec>
     </target>
 
