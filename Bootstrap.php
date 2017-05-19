@@ -288,7 +288,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function createMyMenu()
     {
-        if (version_compare(
+        if (
+            version_compare(
                 Shopware::VERSION,
                 self::NEW_ENTITY_MANAGER_VERSION
             ) < 0
