@@ -291,6 +291,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
      */
     public function amendArticleTranslation(\Shopware\Models\Article\Article $article, Shop $shop = null)
     {
+        /** @var \Doctrine\ORM\QueryBuilder|QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
             ->from(\Shopware\Models\Translation\Translation::class, 'translations')
