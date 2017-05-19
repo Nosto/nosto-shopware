@@ -257,7 +257,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         $this->availability = $this->checkAvailability($article);
         $this->tags = TagHelper::buildProductTags($article, $shop);
         $this->categories = $this->buildCategoryPaths($article, $shop);
-        $this->supplierCost = $article->getMainDetail()->getPurchasePrice();
+        //purchase price is not available before version 5.2
+        if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
+            $this->supplierCost = $article->getMainDetail()->getPurchasePrice();
+        }
         $this->shortDescription = $article->getDescription();
         $this->description = $article->getDescriptionLong();
         if ($article->getSupplier() instanceof \Shopware\Models\Article\Supplier) {
@@ -268,6 +271,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
 
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
+        $this->amendArticleTranslation($article, $shop);
+
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
@@ -276,6 +281,45 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
                 'shop' => $shop,
             )
         );
+    }
+
+    /**
+     * update Article fields to translated text based on the shop id.
+     *
+     * @param Article $article article to be updated
+     * @param Shop|null $shop sub shop id
+     */
+    public function amendArticleTranslation(\Shopware\Models\Article\Article $article, Shop $shop = null)
+    {
+        /** @var \Doctrine\ORM\QueryBuilder|QueryBuilder $builder */
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $builder = $builder->select(array('translations'))
+            ->from(\Shopware\Models\Translation\Translation::class, 'translations')
+            ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
+            ->andWhere('translations.type = \'article\'');
+
+        if ($shop !== null && $shop->getId() !== null) {
+            $builder = $builder->andWhere('translations.shopId = :shopId')
+                ->setParameter('shopId', $shop->getId());
+        }
+        $query = $builder->getQuery();
+        $result = $query->getOneOrNullResult();
+
+        if ($result instanceof \Shopware\Models\Translation\Translation && $result->getData()) {
+            $dataObject = unserialize($result->getData());
+            if (array_key_exists("txtArtikel", $dataObject)) {
+                $article->setName($dataObject["txtArtikel"]);
+                $this->setName($article->getName());
+            }
+            if (array_key_exists("txtshortdescription", $dataObject)) {
+                $article->setDescription($dataObject["txtshortdescription"]);
+                $this->setShortDescription($article->getDescription());
+            }
+            if (array_key_exists("txtlangbeschreibung", $dataObject)) {
+                $article->setDescriptionLong($dataObject["txtlangbeschreibung"]);
+                $this->setDescription($article->getDescriptionLong());
+            }
+        }
     }
 
     /**
@@ -317,7 +361,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         }
         if ($voteCount > 0) {
             $voteSum = array_sum($votes);
-            $voteAvg = round($voteSum/$voteCount, 1);
+            $voteAvg = round($voteSum / $voteCount, 1);
             $this->setRatingValue($voteAvg);
             $this->setReviewCount($voteCount);
         }

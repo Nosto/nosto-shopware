@@ -103,7 +103,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      */
     private static function buildUrl(
         \Shopware\Models\Article\Image $image,
-        MediaServiceInterface $mediaService,
+        MediaServiceInterface $mediaService = null,
         Shop $shop
     ) {
         $url = null;
@@ -145,7 +145,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             /** @var MediaServiceInterface $mediaService */
             $mediaService = Shopware()->Container()->get('shopware_media.media_service');
         } catch (\Exception $error) {
-            $mediaService = false;
+            $mediaService = null;
         }
 
         /** @var Shopware\Models\Article\Image $image */

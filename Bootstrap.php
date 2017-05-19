@@ -288,12 +288,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function createMyMenu()
     {
-        if (version_compare(
-            Shopware::VERSION,
-            self::NEW_ENTITY_MANAGER_VERSION
-        ) < 0
+        if (
+            version_compare(
+                Shopware::VERSION,
+                self::NEW_ENTITY_MANAGER_VERSION
+            ) < 0
         ) {
-            $parentMenu = $this->Menu()->findOneBy(array('id', self::MENU_PARENT_ID));
+            $parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
         } else {
             $parentMenu = $this->Menu()->findOneBy(array('id' => self::MENU_PARENT_ID));
         }
