@@ -53,7 +53,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const PLATFORM_NAME = 'shopware';
     const PLUGIN_VERSION = '1.1.9';
     const MENU_PARENT_ID = 23;  // Configuration
-    const NEW_ENTITY_MANAGER_VERSION = '5.2.0';
+    const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
     const PLATFORM_UI_VERSION = '1';
     const PAGE_TYPE_FRONT_PAGE = 'front';
@@ -284,6 +284,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * Run on install.
      *
+     * @suppress PhanTypeMismatchArgument
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
      */
     protected function createMyMenu()
@@ -718,14 +719,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             Shopware\Models\Customer\Customer::class,
             $customerId
         );
-        if (is_null($customer)) {
-            return;
+        if ($customer instanceof \Shopware\Models\Customer\Customer) {
+            $nostoCustomer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer();
+            $nostoCustomer->loadData($customer);
+
+            $view->assign('nostoCustomer', $nostoCustomer);
         }
-
-        $nostoCustomer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer();
-        $nostoCustomer->loadData($customer);
-
-        $view->assign('nostoCustomer', $nostoCustomer);
     }
 
     /**
@@ -858,7 +857,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @var Shopware\Models\Article\Article $article */
         $articleId = (int)Shopware()->Front()->Request()->getParam('sArticle');
         $article = Shopware()->Models()->find(\Shopware\Models\Article\Article::class, $articleId);
-        if (is_null($article)) {
+        if (!($article instanceof Shopware\Models\Article\Article)) {
             return;
         }
 
@@ -922,7 +921,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             Shopware\Models\Category\Category::class,
             $categoryId
         );
-        if (is_null($category)) {
+        if (!($category instanceof \Shopware\Models\Category\Category)) {
             return;
         }
         $nostoCategory = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category();
@@ -996,7 +995,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             return;
         }
 
-        if (is_null($order)) {
+        if (!($order instanceof \Shopware\Models\Order\Order)) {
             return;
         }
 
