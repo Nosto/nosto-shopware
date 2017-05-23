@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.2.0]
+- Fix language shop support issue
+- Add ratings, reviews, inventory level, purchase price, alternative images 
+- Fix the customer reference tag class
+- Cleaned up the extension code, bumped SDK, added Phan, PHPCS, PHPCBF, PHPMD
+
 ## [1.1.9]
 - Refactor utility methods to be static
 - Add visitor tagging hash
@@ -121,8 +127,9 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.9...develop
-[1.1.9]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...1.1.9
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.0...develop
+[1.2.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.9...1.2.0
+[1.1.9]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.8...1.1.9
 [1.1.8]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...1.1.8
 [1.1.7]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.6...1.1.7
 [1.1.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.5...1.1.6
