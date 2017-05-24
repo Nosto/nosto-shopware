@@ -50,6 +50,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     const PRICE_TYPE_LIST = 'listPrice';
 
     /**
+     * convert the price from main shop currency to sub shop currency
+     * @param float $priceInMainShopCurrency a price in main shop currency
+     * @param \Shopware\Models\Shop\Shop $shop
+     * @return mixed
+     */
+    public static function convertPriceCurrency($priceInMainShopCurrency, $shop){
+        //if it is 0, Shopware considering it 1
+        if ($shop->getCurrency()->getFactor() == 0){
+            return $priceInMainShopCurrency;
+        } else {
+            return $priceInMainShopCurrency * $shop->getCurrency()->getFactor();
+        }
+    }
+
+    /**
      * Generates a textual representation of price per unit
      *
      * @param \Shopware\Models\Article\Article $article
@@ -122,7 +137,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $value = $value * $priceRate;
         }
         $tax = $article->getTax()->getTax();
-        $priceWithTax = ($value * (1 + ($tax / 100)) * $shop->getCurrency()->getFactor());
+        $priceWithTax = $value * (1 + ($tax / 100));
+        //convert currency
+        $priceWithTax = self::convertPriceCurrency($priceWithTax, $shop);
         return self::format($priceWithTax);
     }
 
