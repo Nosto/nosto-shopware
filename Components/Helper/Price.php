@@ -118,10 +118,42 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $value = $price->getPseudoPrice();
         } else {
             $value = $price->getPrice();
+            $priceRate = self::getProductPriceRateAfterDiscount($article, $shop);
+            $value = $value * $priceRate;
         }
         $tax = $article->getTax()->getTax();
         $priceWithTax = ($value * (1 + ($tax / 100)) * $shop->getCurrency()->getFactor());
         return self::format($priceWithTax);
+    }
+
+    /**
+     * get a price rate after discount
+     *
+     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param \Shopware\Models\Shop\Shop $shop
+     * @return float a price rate after discount
+     */
+    private static function getProductPriceRateAfterDiscount($article, $shop){
+        //get the customer group discount
+        /** @var \Shopware\Models\Customer\Group $customerGroup */
+        $customerGroup = $shop->getCustomerGroup();
+        $priceRate = 1 - $customerGroup->getDiscount() / 100;
+
+        //handle the price group
+        if ($article->getPriceGroupActive()) {
+            $priceGroup = $article->getPriceGroup();
+            $discounts = $priceGroup->getDiscounts();
+            if ($discounts !== null && !$discounts->isEmpty()) {
+                foreach ($discounts as $discount) {
+                    //only handle the discount suitable for buying at least one item.
+                    if ($discount->getCustomerGroup() == $customerGroup && $discount->getStart() == 1) {
+                        $priceRate = $priceRate * (1 - $discount->getDiscount() / 100);
+                        break;
+                    }
+                }
+            }
+        }
+        return $priceRate;
     }
 
     /**
