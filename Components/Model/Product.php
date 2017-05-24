@@ -259,7 +259,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         $this->categories = $this->buildCategoryPaths($article, $shop);
         //purchase price is not available before version 5.2
         if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
-            $this->supplierCost = $article->getMainDetail()->getPurchasePrice();
+            $this->supplierCost = PriceHelper::convertCurrency($article->getMainDetail()->getPurchasePrice(), $shop);
         }
         $this->shortDescription = $article->getDescription();
         $this->description = $article->getDescriptionLong();

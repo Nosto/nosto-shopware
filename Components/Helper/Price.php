@@ -55,7 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param \Shopware\Models\Shop\Shop $shop
      * @return mixed
      */
-    public static function convertPriceCurrency($priceInMainShopCurrency, $shop){
+    public static function convertCurrency($priceInMainShopCurrency, Shop $shop){
         //if it is 0, Shopware considering it 1
         if ($shop->getCurrency()->getFactor() == 0){
             return $priceInMainShopCurrency;
@@ -139,7 +139,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         $tax = $article->getTax()->getTax();
         $priceWithTax = $value * (1 + ($tax / 100));
         //convert currency
-        $priceWithTax = self::convertPriceCurrency($priceWithTax, $shop);
+        $priceWithTax = self::convertCurrency($priceWithTax, $shop);
         return self::format($priceWithTax);
     }
 
@@ -150,7 +150,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param \Shopware\Models\Shop\Shop $shop
      * @return float a price rate after discount
      */
-    private static function getProductPriceRateAfterDiscount($article, $shop){
+    private static function getProductPriceRateAfterDiscount(Article $article, \Shopware\Models\Shop\Shop $shop){
         //get the customer group discount
         /** @var \Shopware\Models\Customer\Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
