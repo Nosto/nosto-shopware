@@ -55,7 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param \Shopware\Models\Shop\Shop $shop
      * @return mixed
      */
-    public static function convertCurrency($priceInMainShopCurrency, Shop $shop)
+    public static function convertToShopCurrency($priceInMainShopCurrency, Shop $shop)
     {
         //if it is 0, Shopware considering it 1
         if ($shop->getCurrency()->getFactor() == 0) {
@@ -125,7 +125,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         $type = self::PRICE_TYPE_NORMAL
     ) {
         /** @var \Shopware\Models\Article\Price $price */
-        $price = $article->getMainDetail()->getPrices()->first();
+        $price = self::getPrice($article, $shop);
         if (!$price) {
             return self::format(0);
         }
@@ -140,8 +140,34 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         $tax = $article->getTax()->getTax();
         $priceWithTax = $value * (1 + ($tax / 100));
         //convert currency
-        $priceWithTax = self::convertCurrency($priceWithTax, $shop);
+        $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
+
         return self::format($priceWithTax);
+    }
+
+    /**
+     * Get price object of the article for the shop
+     * @param Article $article
+     * @param Shop $shop
+     * @return null|\Shopware\Models\Article\Price
+     */
+    private static function getPrice(Article $article, Shop $shop)
+    {
+        $prices = $article->getMainDetail()->getPrices();
+        if ($prices == null) {
+            return null;
+        }
+
+        /* @var \Shopware\Models\Article\Price $price */
+        foreach ($prices as $price) {
+            if ($price->getCustomerGroup() == $shop->getCustomerGroup()
+                && $price->getFrom() == 1
+            ) {
+                return $price;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -172,6 +198,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                 }
             }
         }
+
         return $priceRate;
     }
 

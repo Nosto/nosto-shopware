@@ -257,10 +257,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         $this->availability = $this->checkAvailability($article);
         $this->tags = TagHelper::buildProductTags($article, $shop);
         $this->categories = $this->buildCategoryPaths($article, $shop);
-        //purchase price is not available before version 5.2
-        if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
-            $this->supplierCost = PriceHelper::convertCurrency($article->getMainDetail()->getPurchasePrice(), $shop);
-        }
         $this->shortDescription = $article->getDescription();
         $this->description = $article->getDescriptionLong();
         if ($article->getSupplier() instanceof \Shopware\Models\Article\Supplier) {
@@ -269,6 +265,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
             $this->brand = '';
         }
 
+        $this->amendSupplierCost($article, $shop);
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
         $this->amendArticleTranslation($article, $shop);
@@ -281,6 +278,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
                 'shop' => $shop,
             )
         );
+    }
+
+    /**
+     * get the supplier cost
+     *
+     * @param Article $article article to be updated
+     * @param Shop $shop sub shop
+     */
+    public function amendSupplierCost(\Shopware\Models\Article\Article $article, Shop $shop)
+    {
+        //purchase price is not available before version 5.2
+        if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
+            $suplierCost = $article->getMainDetail()->getPurchasePrice();
+            $this->supplierCost = PriceHelper::convertToShopCurrency($suplierCost, $shop);
+        }
     }
 
     /**
