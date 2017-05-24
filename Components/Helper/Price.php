@@ -160,7 +160,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 
         /* @var \Shopware\Models\Article\Price $price */
         foreach ($prices as $price) {
-            if ($price->getCustomerGroup() == $shop->getCustomerGroup()
+            if ($price->getCustomerGroup() != null
+                && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
                 && $price->getFrom() == 1
             ) {
                 return $price;
