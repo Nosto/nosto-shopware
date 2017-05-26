@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,79 +43,80 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
+    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
-	/**
-	 * @var string the full category path with categories separated by a `/` sign.
-	 */
-	protected $_categoryPath;
+    /**
+     * @var string the full category path with categories separated by a `/` sign.
+     */
+    protected $categoryPath;
 
-	/**
-	 * Loads the category data from a category model.
-	 *
-	 * @param \Shopware\Models\Category\Category $category the model.
-	 */
-	public function loadData(\Shopware\Models\Category\Category $category)
-	{
-		$this->_categoryPath = $this->buildCategoryPath($category);
+    /**
+     * Loads the category data from a category model.
+     *
+     * @param \Shopware\Models\Category\Category $category the model.
+     */
+    public function loadData(\Shopware\Models\Category\Category $category)
+    {
+        $this->categoryPath = $this->buildCategoryPath($category);
 
-		Enlight()->Events()->notify(
-			__CLASS__ . '_AfterLoad',
-			array(
-				'nostoCategory' => $this,
-				'category'      => $category,
-			)
-		);
-	}
+        Shopware()->Events()->notify(
+            __CLASS__ . '_AfterLoad',
+            array(
+                'nostoCategory' => $this,
+                'category' => $category,
+            )
+        );
+    }
 
-	/**
-	 * Builds the category path for the category, including all ancestors.
-	 *
-	 * Example:
-	 *
-	 * "Sports/Winter"
-	 *
-	 * @param Shopware\Models\Category\Category $category the category model.
-	 * @return string the path.
-	 */
-	public function buildCategoryPath($category)
-	{
-		$path = '';
-		if (!is_null($category->getPath())) {
-			$path .= $category->getName();
-			if ($category->getParent() && !is_null($category->getParent()->getPath())) {
-				$path = self::buildCategoryPath($category->getParent()).'/'.$path;
-			}
-		}
-		return $path;
-	}
+    /**
+     * Builds the category path for the category, including all ancestors.
+     *
+     * Example:
+     *
+     * "Sports/Winter"
+     *
+     * @param Shopware\Models\Category\Category $category the category model.
+     * @return string the path.
+     */
+    public function buildCategoryPath($category)
+    {
+        $path = '';
+        if (!is_null($category->getPath())) {
+            $path .= $category->getName();
+            if ($category->getParent() && !is_null($category->getParent()->getPath())) {
+                $path = self::buildCategoryPath($category->getParent()) . '/' . $path;
+            }
+        }
+        return $path;
+    }
 
-	/**
-	 * Returns the category path including all ancestors.
-	 *
-	 * @return string the path.
-	 */
-	public function getCategoryPath()
-	{
-		return $this->_categoryPath;
-	}
+    /**
+     * Returns the category path including all ancestors.
+     *
+     * @return string the path.
+     */
+    public function getCategoryPath()
+    {
+        return $this->categoryPath;
+    }
 
-	/**
-	 * Sets the category path.
-	 *
-	 * The category path must be a non-empty string.
-	 *
-	 * Usage:
-	 * $object->setCategoryPath('Sports/Winter');
-	 *
-	 * @param string $categoryPath the category path.
-	 *
-	 * @return $this Self for chaining
-	 */
-	public function setCategoryPath($categoryPath)
-	{
-		$this->_categoryPath = $categoryPath;
+    /**
+     * Sets the category path.
+     *
+     * The category path must be a non-empty string.
+     *
+     * Usage:
+     * $object->setCategoryPath('Sports/Winter');
+     *
+     * @param string $categoryPath the category path.
+     *
+     * @return $this Self for chaining
+     */
+    public function setCategoryPath($categoryPath)
+    {
+        $this->categoryPath = $categoryPath;
 
-		return $this;
-	}
+        return $this;
+    }
 }

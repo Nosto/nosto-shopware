@@ -1,11 +1,20 @@
 {
-    "name": "nosto/nosto-shopware-plugin",
-    "description": "Personalization for Shopware",
-    "license": "BSD-3-Clause",
-    "require": {
-        "nosto/php-sdk": "1.15.7"
-    },
-    "require-dev": {
-        "phing/phing": "2.*"
-    }
+  "name": "nosto/nosto-shopware-plugin",
+  "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
+  "license": [
+    "BSD-3-Clause"
+  ],
+  "version": "1.2.0",
+  "require": {
+    "php": ">=5.5.0",
+    "nosto/php-sdk": "1.16.3"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "2.8.1",
+    "etsy/phan": "0.8.0",
+    "phpmd/phpmd": "^2.5",
+    "sebastian/phpcpd": "2.0.4",
+    "phing/phing": "2.*",
+    "shopware/shopware": "5.2.2"
+  }
 }

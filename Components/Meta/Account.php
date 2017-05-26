@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,325 +42,326 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account implements NostoAccountMetaDataInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
+    implements NostoAccountMetaDataInterface
 {
-	/**
-	 * @var string the store name.
-	 */
-	protected $_title;
+    /**
+     * @var string the store name.
+     */
+    protected $title;
 
-	/**
-	 * @var string the account name.
-	 */
-	protected $_name;
+    /**
+     * @var string the account name.
+     */
+    protected $name;
 
-	/**
-	 * @var string the store front end url.
-	 */
-	protected $_frontPageUrl;
+    /**
+     * @var string the store front end url.
+     */
+    protected $frontPageUrl;
 
-	/**
-	 * @var string the store currency ISO (ISO 4217) code.
-	 */
-	protected $_currencyCode;
+    /**
+     * @var string the store currency ISO (ISO 4217) code.
+     */
+    protected $currencyCode;
 
-	/**
-	 * @var string the store language ISO (ISO 639-1) code.
-	 */
-	protected $_languageCode;
+    /**
+     * @var string the store language ISO (ISO 639-1) code.
+     */
+    protected $languageCode;
 
-	/**
-	 * @var string the owner language ISO (ISO 639-1) code.
-	 */
-	protected $_ownerLanguageCode;
+    /**
+     * @var string the owner language ISO (ISO 639-1) code.
+     */
+    protected $ownerLanguageCode;
 
-	/**
-	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner the account owner meta model.
-	 */
-	protected $_owner;
+    /**
+     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner the account owner meta model.
+     */
+    protected $owner;
 
-	/**
-	 * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing the billing meta model.
-	 */
-	protected $_billing;
+    /**
+     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing the billing meta model.
+     */
+    protected $billing;
 
-	/**
-	 * @var string the API token used to identify an account creation.
-	 */
-	protected $_signUpApiToken = 'kIqtTZOTRTNJ1zPZgjkI4Ft572sfLrqjD4XewXqYrdGrqsgnYbWqGXR3Evxqmii1';
+    /**
+     * @var string the API token used to identify an account creation.
+     */
+    protected $signUpApiToken = 'kIqtTZOTRTNJ1zPZgjkI4Ft572sfLrqjD4XewXqYrdGrqsgnYbWqGXR3Evxqmii1';
 
-	/**
-	 * @var array|stdClass the account details
-	 */
-	protected $_details;
+    /**
+     * @var array|stdClass the account details
+     */
+    protected $details;
 
-	/**
-	 * Loads the meta data for the given shop.
-	 *
-	 * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
-	 * @param \Shopware\Models\Shop\Locale $locale the locale or null.
-	 * @param stdClass|null $identity the user identity.
-	 */
-	public function loadData(\Shopware\Models\Shop\Shop $shop, \Shopware\Models\Shop\Locale $locale = null, $identity = null)
-	{
-		if (is_null($locale)) {
-			$locale = $shop->getLocale();
-		}
+    /**
+     * Loads the meta data for the given shop.
+     *
+     * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
+     * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+     * @param stdClass|null $identity the user identity.
+     */
+    public function loadData(
+        \Shopware\Models\Shop\Shop $shop,
+        \Shopware\Models\Shop\Locale $locale = null,
+        $identity = null
+    ) {
+        if (is_null($locale)) {
+            $locale = $shop->getLocale();
+        }
 
-		$this->_title = Shopware()->App().' - '.$shop->getName();
-		$this->_name = substr(sha1(rand()), 0, 8);
-		$this->_frontPageUrl = $this->buildStoreUrl($shop);
-		$this->_currencyCode = strtoupper($shop->getCurrency()->getCurrency());
-		$this->_languageCode = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
-		$this->_ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
+        $this->title = Shopware()->App() . ' - ' . $shop->getName();
+        $this->name = substr(sha1(rand()), 0, 8);
+        $this->frontPageUrl = $this->buildStoreUrl($shop);
+        $this->currencyCode = strtoupper($shop->getCurrency()->getCurrency());
+        $this->languageCode = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
+        $this->ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
 
-		$this->_owner = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner();
-		$this->_owner->loadData($identity);
+        $this->owner = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner();
+        $this->owner->loadData($identity);
 
-		$this->_billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
-		$this->_billing->loadData($shop);
-	}
+        $this->billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
+        $this->billing->loadData($shop);
+    }
 
-	/**
-	 * Adds required store selection params to the url.
-	 *
-	 * These params is `__shop`
-	 *
-	 * @param \Shopware\Models\Shop\Shop $shop the shop model.
-	 * @return string the url with added params.
-	 */
-	protected function buildStoreUrl(\Shopware\Models\Shop\Shop $shop)
-	{
-		$url = Shopware()->Front()->Router()->assemble(array('module' => 'frontend'));
-		$defaults = array(
-			'__shop' => $shop->getId()
-		);
-		return NostoHttpRequest::replaceQueryParamsInUrl($defaults, $url);
-	}
+    /**
+     * Adds required store selection params to the url.
+     *
+     * These params is `__shop`
+     *
+     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @return string the url with added params.
+     */
+    protected function buildStoreUrl(\Shopware\Models\Shop\Shop $shop)
+    {
+        $url = Shopware()->Front()->Router()->assemble(array('module' => 'frontend'));
+        $defaults = array(
+            '__shop' => $shop->getId()
+        );
+        return NostoHttpRequest::replaceQueryParamsInUrl($defaults, $url);
+    }
 
-	/**
-	 * Sets the store title.
-	 *
-	 * @param string $title the store title.
-	 */
-	public function setTitle($title)
-	{
-		$this->_title = $title;
-	}
+    /**
+     * The shops name for which the account is to be created for.
+     *
+     * @return string the name.
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-	/**
-	 * The shops name for which the account is to be created for.
-	 *
-	 * @return string the name.
-	 */
-	public function getTitle()
-	{
-		return $this->_title;
-	}
+    /**
+     * Sets the store title.
+     *
+     * @param string $title the store title.
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
-	/**
-	 * Sets the account name.
-	 *
-	 * @param string $name the account name.
-	 */
-	public function setName($name)
-	{
-		$this->_name = $name;
-	}
+    /**
+     * The name of the account to create.
+     * This has to follow the pattern of
+     * "[platform name]-[8 character lowercase alpha numeric string]".
+     *
+     * @return string the account name.
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * The name of the account to create.
-	 * This has to follow the pattern of
-	 * "[platform name]-[8 character lowercase alpha numeric string]".
-	 *
-	 * @return string the account name.
-	 */
-	public function getName()
-	{
-		return $this->_name;
-	}
+    /**
+     * Sets the account name.
+     *
+     * @param string $name the account name.
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	/**
-	 * The name of the platform the account is used on.
-	 * A list of valid platform names is issued by Nosto.
-	 *
-	 * @return string the platform names.
-	 */
-	public function getPlatform()
-	{
-		return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
-	}
+    /**
+     * The name of the platform the account is used on.
+     * A list of valid platform names is issued by Nosto.
+     *
+     * @return string the platform names.
+     */
+    public function getPlatform()
+    {
+        return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
+    }
 
-	/**
-	 * Sets the store front page url.
-	 *
-	 * @param string $url the front page url.
-	 */
-	public function setFrontPageUrl($url)
-	{
-		$this->_frontPageUrl = $url;
-	}
+    /**
+     * Absolute url to the front page of the shop for which the account is
+     * created for.
+     *
+     * @return string the url.
+     */
+    public function getFrontPageUrl()
+    {
+        return $this->frontPageUrl;
+    }
 
-	/**
-	 * Absolute url to the front page of the shop for which the account is
-	 * created for.
-	 *
-	 * @return string the url.
-	 */
-	public function getFrontPageUrl()
-	{
-		return $this->_frontPageUrl;
-	}
+    /**
+     * Sets the store front page url.
+     *
+     * @param string $url the front page url.
+     */
+    public function setFrontPageUrl($url)
+    {
+        $this->frontPageUrl = $url;
+    }
 
-	/**
-	 * Sets the store currency ISO (ISO 4217) code.
-	 *
-	 * @param string $code the currency ISO code.
-	 */
-	public function setCurrencyCode($code)
-	{
-		$this->_currencyCode = $code;
-	}
+    /**
+     * The 3-letter ISO code (ISO 4217) for the currency used by the shop for
+     * which the account is created for.
+     *
+     * @return string the currency ISO code.
+     */
+    public function getCurrencyCode()
+    {
+        return $this->currencyCode;
+    }
 
-	/**
-	 * The 3-letter ISO code (ISO 4217) for the currency used by the shop for
-	 * which the account is created for.
-	 *
-	 * @return string the currency ISO code.
-	 */
-	public function getCurrencyCode()
-	{
-		return $this->_currencyCode;
-	}
+    /**
+     * Sets the store currency ISO (ISO 4217) code.
+     *
+     * @param string $code the currency ISO code.
+     */
+    public function setCurrencyCode($code)
+    {
+        $this->currencyCode = $code;
+    }
 
-	/**
-	 * Sets the store language ISO (ISO 639-1) code.
-	 *
-	 * @param string $languageCode the language ISO code.
-	 */
-	public function setLanguageCode($languageCode)
-	{
-		$this->_languageCode = $languageCode;
-	}
+    /**
+     * The 2-letter ISO code (ISO 639-1) for the language used by the shop for
+     * which the account is created for.
+     *
+     * @return string the language ISO code.
+     */
+    public function getLanguageCode()
+    {
+        return $this->languageCode;
+    }
 
-	/**
-	 * The 2-letter ISO code (ISO 639-1) for the language used by the shop for
-	 * which the account is created for.
-	 *
-	 * @return string the language ISO code.
-	 */
-	public function getLanguageCode()
-	{
-		return $this->_languageCode;
-	}
+    /**
+     * Sets the store language ISO (ISO 639-1) code.
+     *
+     * @param string $languageCode the language ISO code.
+     */
+    public function setLanguageCode($languageCode)
+    {
+        $this->languageCode = $languageCode;
+    }
 
-	/**
-	 * Sets the owner language ISO (ISO 639-1) code.
-	 *
-	 * @param string $languageCode the language ISO code.
-	 */
-	public function setOwnerLanguageCode($languageCode)
-	{
-		$this->_ownerLanguageCode = $languageCode;
-	}
+    /**
+     * The 2-letter ISO code (ISO 639-1) for the language of the account owner
+     * who is creating the account.
+     *
+     * @return string the language ISO code.
+     */
+    public function getOwnerLanguageCode()
+    {
+        return $this->ownerLanguageCode;
+    }
 
-	/**
-	 * The 2-letter ISO code (ISO 639-1) for the language of the account owner
-	 * who is creating the account.
-	 *
-	 * @return string the language ISO code.
-	 */
-	public function getOwnerLanguageCode()
-	{
-		return $this->_ownerLanguageCode;
-	}
+    /**
+     * Sets the owner language ISO (ISO 639-1) code.
+     *
+     * @param string $languageCode the language ISO code.
+     */
+    public function setOwnerLanguageCode($languageCode)
+    {
+        $this->ownerLanguageCode = $languageCode;
+    }
 
-	/**
-	 * Meta data model for the account owner who is creating the account.
-	 *
-	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner the meta data model.
-	 */
-	public function getOwner()
-	{
-		return $this->_owner;
-	}
+    /**
+     * Meta data model for the account owner who is creating the account.
+     *
+     * @return Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner the meta data model.
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
 
-	/**
-	 * Meta data model for the account billing details.
-	 *
-	 * @return Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing the meta data model.
-	 */
-	public function getBillingDetails()
-	{
-		return $this->_billing;
-	}
+    /**
+     * Meta data model for the account billing details.
+     *
+     * @return Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing the meta data model.
+     */
+    public function getBillingDetails()
+    {
+        return $this->billing;
+    }
 
-	/**
-	 * The API token used to identify an account creation.
-	 * This token is platform specific and issued by Nosto.
-	 *
-	 * @return string the API token.
-	 */
-	public function getSignUpApiToken()
-	{
-		return $this->_signUpApiToken;
-	}
+    /**
+     * The API token used to identify an account creation.
+     * This token is platform specific and issued by Nosto.
+     *
+     * @return string the API token.
+     */
+    public function getSignUpApiToken()
+    {
+        return $this->signUpApiToken;
+    }
 
-	/**
-	 * Optional partner code for Nosto partners.
-	 * The code is issued by Nosto to partners only.
-	 *
-	 * @return string|null the partner code or null if none exist.
-	 */
-	public function getPartnerCode()
-	{
-		return null;
-	}
+    /**
+     * Optional partner code for Nosto partners.
+     * The code is issued by Nosto to partners only.
+     *
+     * @return string|null the partner code or null if none exist.
+     */
+    public function getPartnerCode()
+    {
+        return null;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getCurrencies()
-	{
-		return array();
-	}
+    /**
+     * @return array
+     */
+    public function getCurrencies()
+    {
+        return array();
+    }
 
-	/**
-	 * @return boolean
-	 */
-	public function getUseCurrencyExchangeRates()
-	{
-		return false;
-	}
+    /**
+     * @return boolean
+     */
+    public function getUseCurrencyExchangeRates()
+    {
+        return false;
+    }
 
-	/**
-	 * @return null
-	 */
-	public function getDefaultVariationId()
-	{
-		return null;
-	}
+    /**
+     * @return null
+     */
+    public function getDefaultVariationId()
+    {
+        return null;
+    }
 
-	/**
-	 * Returns the account details
-	 *
-	 * @return array|stdClass
-	 */
-	public function getDetails()
-	{
-		return $this->_details;
-	}
+    /**
+     * Returns the account details
+     *
+     * @return array|stdClass
+     */
+    public function getDetails()
+    {
+        return $this->details;
+    }
 
-	/**
-	 * Sets the account details
-	 *
-	 * @param array|stdClass $details
-	 */
-	public function setDetails($details)
-	{
-		$this->_details = $details;
-	}
-
-
-
+    /**
+     * Sets the account details
+     *
+     * @param array|stdClass $details
+     */
+    public function setDetails($details)
+    {
+        $this->details = $details;
+    }
 }

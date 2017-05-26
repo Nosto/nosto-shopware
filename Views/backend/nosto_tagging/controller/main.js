@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+//noinspection JSUnusedGlobalSymbols
 Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     /**
      * Extends the Enlight controller.
@@ -72,8 +73,9 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
         });
         me.mainWindow.show();
         me.mainWindow.setLoading(true);
+        //noinspection JSUnusedGlobalSymbols
         me.accountStore.load({
-            callback: function(records, op, success) {
+            callback: function (records, op, success) {
                 me.mainWindow.setLoading(false);
                 if (success) {
                     me.mainWindow.initAccountTabs();
@@ -94,7 +96,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
         Ext.Ajax.request({
             method: 'GET',
             url: '{url controller=NostoTagging action=loadSettings}',
-            success: function(response) {
+            success: function (response) {
                 var op = Ext.decode(response.responseText);
                 if (op.success && op.data) {
                     me.settings = op.data;
@@ -124,7 +126,8 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      * @param event Object
      * @return void
      */
-    receiveMessage: function(event) {
+    receiveMessage: function (event) {
+        //noinspection JSCheckFunctionSignatures
         var me = this,
             originRegexp = new RegExp(me.settings.postMessageOrigin),
             json,
@@ -138,11 +141,11 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             return;
         }
         // If the message does not start with '[Nosto]', then it is not for us.
-        if ((''+event.data).substr(0, 7) !== '[Nosto]') {
+        if (('' + event.data).substr(0, 7) !== '[Nosto]') {
             return;
         }
 
-        json = (''+event.data).substr(7);
+        json = ('' + event.data).substr(7);
         data = Ext.decode(json);
         if (typeof data === 'object' && data.type) {
             account = me.mainWindow.getActiveAccount();
@@ -153,12 +156,12 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                 case 'newAccount':
                     if (data.params && data.params.email) {
                         account.set('email', data.params.email);
-                        if(data.params.details) {
+                        if (data.params.details) {
                             account.set('details', JSON.stringify(data.params.details));
                         }
                     }
                     account.save({
-                        success: function(record, op) {
+                        success: function (record, op) {
                             // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
                                 accountData = op.resultSet.records[0].data;
@@ -175,7 +178,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
 
                 case 'removeAccount':
                     account.destroy({
-                        success: function(record, op) {
+                        success: function (record, op) {
                             // why can't we get the model data binding to work?
                             if (op.resultSet && op.resultSet.records) {
                                 accountData = op.resultSet.records[0].data;
@@ -197,7 +200,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         params: {
                             shopId: account.get('shopId')
                         },
-                        success: function(response) {
+                        success: function (response) {
                             op = Ext.decode(response.responseText);
                             if (op.success && op.data.redirect_url) {
                                 window.location.href = op.data.redirect_url;

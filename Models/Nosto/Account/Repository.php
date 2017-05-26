@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,10 @@ namespace Shopware\CustomModels\Nosto\Account;
 
 use Shopware\Components\Model\ModelRepository;
 
+/**
+ * @package Shopware\CustomModels\Nosto\Account
+ * @@suppress PhanUnreferencedClass
+ */
 class Repository extends ModelRepository
 {
 }

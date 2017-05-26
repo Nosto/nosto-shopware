@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,9 @@
 
 namespace Shopware\CustomModels\Nosto\Customer;
 
-use Symfony\Component\Validator\Constraints as Assert,
-	Shopware\Components\Model\ModelEntity,
-	Doctrine\ORM\Mapping AS ORM;
+use Doctrine\ORM\Mapping as ORM;
+use Shopware\Components\Model\ModelEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Repository")
@@ -46,76 +46,76 @@ use Symfony\Component\Validator\Constraints as Assert,
  */
 class Customer extends ModelEntity
 {
-	/**
-	 * @var integer $id
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="id", type="integer", nullable=false)
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="IDENTITY")
-	 */
-	private $id; //@codingStandardsIgnoreLine
+    /**
+     * @var integer $id
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id; //@codingStandardsIgnoreLine
 
-	/**
-	 * @var string $sessionId
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="session_id", type="string", length=255, nullable=false)
-	 */
-	private $sessionId; //@codingStandardsIgnoreLine
+    /**
+     * @var string $sessionId
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="session_id", type="string", length=255, nullable=false)
+     */
+    private $sessionId; //@codingStandardsIgnoreLine
 
-	/**
-	 * @var string $nostoId
-	 *
-	 * @Assert\NotBlank
-	 *
-	 * @ORM\Column(name="nosto_id", type="string", length=255, nullable=false)
-	 */
-	private $nostoId; //@codingStandardsIgnoreLine
+    /**
+     * @var string $nostoId
+     *
+     * @Assert\NotBlank
+     *
+     * @ORM\Column(name="nosto_id", type="string", length=255, nullable=false)
+     */
+    private $nostoId; //@codingStandardsIgnoreLine
 
-	/**
-	 * @return int
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getSessionId()
-	{
-		return $this->sessionId;
-	}
+    /**
+     * @return string
+     */
+    public function getSessionId()
+    {
+        return $this->sessionId;
+    }
 
-	/**
-	 * @param string $id
-	 * @return Customer
-	 */
-	public function setSessionId($id)
-	{
-		$this->sessionId = $id;
-		return $this;
-	}
+    /**
+     * @param string $id
+     * @return Customer
+     */
+    public function setSessionId($id)
+    {
+        $this->sessionId = $id;
+        return $this;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getNostoId()
-	{
-		return $this->nostoId;
-	}
+    /**
+     * @return string
+     */
+    public function getNostoId()
+    {
+        return $this->nostoId;
+    }
 
-	/**
-	 * @param string $id
-	 * @return Customer
-	 */
-	public function setNostoId($id)
-	{
-		$this->nostoId = $id;
-		return $this;
-	}
+    /**
+     * @param string $id
+     * @return Customer
+     */
+    public function setNostoId($id)
+    {
+        $this->nostoId = $id;
+        return $this;
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016, Nosto Solutions Ltd
+ * Copyright (c) 2017, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,45 +44,44 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
 {
-	/**
-	 * Sends an order confirmation API call to Nosto for an order.
-	 *
-	 * @param Shopware\Models\Order\Order $order the order model.
-	 *
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
-	 */
-	public function sendOrder(Shopware\Models\Order\Order $order)
-	{
-		$shop = $order->getShop();
-		if (is_null($shop)) {
-			return;
-		}
+    /**
+     * Sends an order confirmation API call to Nosto for an order.
+     *
+     * @param Shopware\Models\Order\Order $order the order model.
+     *
+     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
+     */
+    public function sendOrder(Shopware\Models\Order\Order $order)
+    {
+        $shop = $order->getShop();
+        if (is_null($shop)) {
+            return;
+        }
 
-		$account = NostoComponentAccount::findAccount($shop);
+        $account = NostoComponentAccount::findAccount($shop);
 
-		if (!is_null($account)) {
-			$nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
-			if ($nostoAccount->isConnectedToNosto()) {
-				try {
-					$attribute = Shopware()
-						->Models()
-						->getRepository('Shopware\Models\Attribute\Order')
-						->findOneBy(array('orderId' => $order->getId()));
-					if (
-						$attribute instanceof \Shopware\Models\Attribute\Order
-						&& method_exists($attribute, 'getNostoCustomerId')
-					) {
-						$customerId = $attribute->getNostoCustomerID();
-					} else {
-						$customerId = null;
-					}
-					$model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-					$model->loadData($order);
-					NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
-				} catch (NostoException $e) {
-					Shopware()->Pluginlogger()->error($e);
-				}
-			}
-		}
-	}
+        if (!is_null($account)) {
+            $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+            if ($nostoAccount->isConnectedToNosto()) {
+                try {
+                    $attribute = Shopware()
+                        ->Models()
+                        ->getRepository(Shopware\Models\Attribute\Order::class)
+                        ->findOneBy(array('orderId' => $order->getId()));
+                    if ($attribute instanceof \Shopware\Models\Attribute\Order
+                        && method_exists($attribute, 'getNostoCustomerId')
+                    ) {
+                        $customerId = $attribute->getNostoCustomerID();
+                    } else {
+                        $customerId = null;
+                    }
+                    $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+                    $model->loadData($order);
+                    NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
+                } catch (NostoException $e) {
+                    Shopware()->PluginLogger()->error($e);
+                }
+            }
+        }
+    }
 }
