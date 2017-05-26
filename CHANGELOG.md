@@ -5,11 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 
 ## [1.2.0]
-- Add support for customer group, price group
-- Fix language shop support issue
-- Add ratings, reviews, inventory level, purchase price, alternative images 
+- Add support for multi-store, customer groups and price groups
+- Add ratings, reviews, inventory level, supplier cost, alternative images 
 - Fix the customer reference tag class
-- Cleaned up the extension code, bumped SDK, added Phan, PHPCS, PHPCBF, PHPMD
+- Clean up the extension code, bump SDK, add Phan, PHPCS, PHPCBF, PHPMD
 
 ## [1.1.9]
 - Refactor utility methods to be static
