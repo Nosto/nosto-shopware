@@ -50,6 +50,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     const PRICE_TYPE_LIST = 'listPrice';
 
     /**
+     * convert the price from main shop currency to sub shop currency
+     * @param float $priceInMainShopCurrency a price in main shop currency
+     * @param \Shopware\Models\Shop\Shop $shop
+     * @return mixed
+     */
+    public static function convertToShopCurrency($priceInMainShopCurrency, Shop $shop)
+    {
+        //if it is 0, Shopware considering it 1
+        if ($shop->getCurrency()->getFactor() == 0) {
+            return $priceInMainShopCurrency;
+        } else {
+            return $priceInMainShopCurrency * $shop->getCurrency()->getFactor();
+        }
+    }
+
+    /**
      * Generates a textual representation of price per unit
      *
      * @param \Shopware\Models\Article\Article $article
@@ -109,7 +125,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         $type = self::PRICE_TYPE_NORMAL
     ) {
         /** @var \Shopware\Models\Article\Price $price */
-        $price = $article->getMainDetail()->getPrices()->first();
+        $price = self::getPrice($article, $shop);
         if (!$price) {
             return self::format(0);
         }
@@ -118,10 +134,87 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $value = $price->getPseudoPrice();
         } else {
             $value = $price->getPrice();
+            $priceRate = self::getProductPriceRateAfterDiscount($article, $shop);
+            $value = $value * $priceRate;
         }
         $tax = $article->getTax()->getTax();
-        $priceWithTax = ($value * (1 + ($tax / 100)) * $shop->getCurrency()->getFactor());
+        $priceWithTax = $value * (1 + ($tax / 100));
+        //convert currency
+        $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
+
         return self::format($priceWithTax);
+    }
+
+    /**
+     * Get price object of the article for the shop
+     * @param Article $article
+     * @param Shop $shop
+     * @return null|\Shopware\Models\Article\Price
+     */
+    private static function getPrice(Article $article, Shop $shop)
+    {
+        $prices = $article->getMainDetail()->getPrices();
+        if ($prices == null) {
+            return null;
+        }
+
+        $subShopPrice = null;
+        /* @var \Shopware\Models\Article\Price $price */
+        foreach ($prices as $price) {
+            if ($price->getFrom() == 1) {
+                if ($price->getCustomerGroup() != null
+                    && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
+                ) {
+                    $subShopPrice = $price;
+                    break;
+                } else if ($subShopPrice == null
+                    && $price->getCustomerGroup() != null
+                    && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
+                ) {
+                    //if there is no sub shop price, then use the main shop price
+                    $subShopPrice = $price;
+                }
+            }
+        }
+
+        //if there is none found, use the first one.
+        if ($subShopPrice == null) {
+            $subShopPrice = $prices->first();
+        }
+
+        return $subShopPrice;
+    }
+
+    /**
+     * get a price rate after discount
+     *
+     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param \Shopware\Models\Shop\Shop $shop
+     * @return float a price rate after discount
+     */
+    private static function getProductPriceRateAfterDiscount(Article $article, \Shopware\Models\Shop\Shop $shop)
+    {
+        //get the customer group discount
+        /** @var \Shopware\Models\Customer\Group $customerGroup */
+        $customerGroup = $shop->getCustomerGroup();
+        $priceRate = 1 - $customerGroup->getDiscount() / 100;
+
+        //handle the price group
+        if ($article->getPriceGroupActive()) {
+            $priceGroup = $article->getPriceGroup();
+            $discounts = $priceGroup->getDiscounts();
+            if ($discounts !== null && !$discounts->isEmpty()) {
+                foreach ($discounts as $discount) {
+                    //only handle the discount suitable for buying at least one item.
+                    if ($discount->getCustomerGroup() == $customerGroup && $discount->getStart() == 1) {
+                        $priceRate = $priceRate * (1 - $discount->getDiscount() / 100);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $priceRate;
     }
 
     /**
