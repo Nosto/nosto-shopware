@@ -158,17 +158,31 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             return null;
         }
 
+        $subShopPrice = null;
         /* @var \Shopware\Models\Article\Price $price */
         foreach ($prices as $price) {
-            if ($price->getCustomerGroup() != null
-                && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
-                && $price->getFrom() == 1
-            ) {
-                return $price;
+            if ($price->getFrom() == 1) {
+                if ($price->getCustomerGroup() != null
+                    && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
+                ) {
+                    $subShopPrice = $price;
+                    break;
+                } else if ($subShopPrice == null
+                    && $price->getCustomerGroup() != null
+                    && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
+                ) {
+                    //if there is no sub shop price, then use the main shop price
+                    $subShopPrice = $price;
+                }
             }
         }
 
-        return null;
+        //if there is none found, use the first one.
+        if ($subShopPrice == null) {
+            $subShopPrice = $prices->first();
+        }
+
+        return $subShopPrice;
     }
 
     /**
