@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 
 ## [1.2.0]
+- Add support for customer group, price group
 - Fix language shop support issue
 - Add ratings, reviews, inventory level, purchase price, alternative images 
 - Fix the customer reference tag class
