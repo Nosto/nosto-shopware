@@ -167,7 +167,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                 ) {
                     $subShopPrice = $price;
                     break;
-                } elseif ($subShopPrice == null
+                } else if ($subShopPrice == null
                     && $price->getCustomerGroup() != null
                     && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
                 ) {
@@ -206,10 +206,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             if ($discounts !== null && !$discounts->isEmpty()) {
                 foreach ($discounts as $discount) {
                     //only handle the discount suitable for buying at least one item.
-                    if ($discount->getCustomerGroup() != null
-                        && $discount->getCustomerGroup()->getId() == $customerGroup->getId()
-                        && $discount->getStart() == 1
-                    ) {
+                    if ($discount->getCustomerGroup() == $customerGroup && $discount->getStart() == 1) {
                         $priceRate = $priceRate * (1 - $discount->getDiscount() / 100);
                         break;
                     }
