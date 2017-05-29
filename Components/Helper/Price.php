@@ -167,7 +167,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                 ) {
                     $subShopPrice = $price;
                     break;
-                } else if ($subShopPrice == null
+                } elseif ($subShopPrice == null
                     && $price->getCustomerGroup() != null
                     && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
                 ) {

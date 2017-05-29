@@ -105,6 +105,7 @@
             <exclude name="**/tests/**"/>
             <exclude name="**/phing/**"/>
             <exclude name="**/build/**"/>
+            <exclude name="**/.phan/**"/>
             <exclude name="**/build.xml"/>
             <exclude name="**/ruleset.xml"/>
             <exclude name="**/*Gruntfile*"/>
