@@ -89,7 +89,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
             // If this is a product variation, we need to load the parent
             // article to fetch it's number and name.
             $article = Shopware()->Models()->find(
-                Shopware\Models\Article\Article::class,
+                "Shopware\Models\Article\Article",
                 $detail->getArticleId()
             );
             if (!empty($article)) {

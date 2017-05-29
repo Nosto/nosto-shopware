@@ -306,7 +306,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         /** @var \Doctrine\ORM\QueryBuilder|QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
-            ->from(\Shopware\Models\Translation\Translation::class, 'translations')
+            ->from("\Shopware\Models\Translation\Translation", 'translations')
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
             ->andWhere('translations.type = \'article\'');
 
@@ -430,7 +430,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
         /** @var \Shopware\Models\Article\Detail[] $details */
         $details = Shopware()
             ->Models()
-            ->getRepository(\Shopware\Models\Article\Detail::class)
+            ->getRepository("Shopware\Models\Article\Detail")
             ->findBy(array('articleId' => $article->getId()));
         foreach ($details as $detail) {
             if ($detail->getInStock() > 0) {
