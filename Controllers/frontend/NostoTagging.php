@@ -140,9 +140,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('articles.id'))
-            ->from("\Shopware\Models\Article\Article", 'articles')
+            ->from('\Shopware\Models\Article\Article', 'articles')
             ->innerJoin(
-                "\Shopware\Models\Article\Detail",
+                '\Shopware\Models\Article\Detail',
                 'details',
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 'articles.mainDetailId = details.id'
@@ -167,7 +167,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         foreach ($result as $row) {
             /** @var Shopware\Models\Article\Article $article */
             $article = Shopware()->Models()->find(
-                "Shopware\Models\Article\Article",
+                'Shopware\Models\Article\Article',
                 (int)$row['id']
             );
             if (is_null($article) || !in_array($category, $article->getAllCategories())) {
@@ -212,7 +212,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('orders.number'))
-            ->from("\Shopware\Models\Order\Order", 'orders')
+            ->from('\Shopware\Models\Order\Order', 'orders')
             ->where('orders.status >= 0');
 
         if (!empty($id)) {
@@ -232,7 +232,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $shop = Shopware()->Shop()->getId();
         foreach ($result as $row) {
             /** @var Shopware\Models\Order\Order $order */
-            $order = Shopware()->Models()->getRepository("Shopware\Models\Order\Order")
+            $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
                 ->findOneBy(array('number' => $row['number']));
             if (is_null($order) || $order->getShop()->getId() != $shop) {
                 continue;

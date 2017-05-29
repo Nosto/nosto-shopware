@@ -87,7 +87,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         if (!empty($sessionId) && !empty($nostoId)) {
             $customer = Shopware()
                 ->Models()
-                ->getRepository("Shopware\CustomModels\Nosto\Customer\Customer")
+                ->getRepository('Shopware\CustomModels\Nosto\Customer\Customer')
                 ->findOneBy(array('sessionId' => $sessionId));
             if (empty($customer)) {
                 $customer = new \Shopware\CustomModels\Nosto\Customer\Customer();
@@ -132,7 +132,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         }
         $customer = Shopware()
             ->Models()
-            ->getRepository("\Shopware\CustomModels\Nosto\Customer\Customer")
+            ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
             ->findOneBy(array('sessionId' => $sessionId));
         return !is_null($customer) ? $customer->getNostoId() : null;
     }

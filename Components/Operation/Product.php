@@ -53,7 +53,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     public function create(\Shopware\Models\Article\Article $article)
     {
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository("Shopware\Models\Shop\Shop");
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
@@ -93,7 +93,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         $inShops = array();
         $allShops = Shopware()
             ->Models()
-            ->getRepository("\Shopware\Models\Shop\Shop")
+            ->getRepository('\Shopware\Models\Shop\Shop')
             ->findAll();
 
         if ($allStores === true) {
@@ -138,7 +138,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     public function update(\Shopware\Models\Article\Article $article)
     {
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository("Shopware\Models\Shop\Shop");
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
