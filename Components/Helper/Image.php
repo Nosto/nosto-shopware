@@ -138,7 +138,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      */
     private static function getImageUrls(Article $article, Shop $shop)
     {
-        $imageUrls = [];
+        $imageUrls = array();
         $mainImageUrl = null;
 
         try {
