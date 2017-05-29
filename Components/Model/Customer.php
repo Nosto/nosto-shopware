@@ -132,7 +132,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
             )
         );
         $customerReference = null;
-        $entityRepository = Shopware()->Models()->getRepository(Shopware\Models\Attribute\Customer::class);
+        $entityRepository = Shopware()->Models()->getRepository('Shopware\Models\Attribute\Customer');
         /** @noinspection PhpUndefinedMethodInspection */
         $customerAttribute = $entityRepository
             ->findOneByCustomerId($customer->getId());

@@ -61,7 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('articles.id'))
-            ->from(\Shopware\Models\Article\Article::class, 'articles')
+            ->from('\Shopware\Models\Article\Article', 'articles')
             ->where('articles.active = 1')
             ->setFirstResult(0)
             ->setMaxResults(1)
@@ -113,7 +113,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('categories.id'))
-            ->from(Shopware\Models\Category\Category::class, 'categories')
+            ->from('Shopware\Models\Category\Category', 'categories')
             ->where('categories.active = 1 AND categories.parent = :parentId AND categories.blog = 0')
             ->setParameter(':parentId', $shop->getCategory()->getId())
             ->setFirstResult(0)

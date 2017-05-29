@@ -107,7 +107,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     {
         return Shopware()
             ->Models()
-            ->getRepository(\Shopware\CustomModels\Nosto\Account\Account::class)
+            ->getRepository('\Shopware\CustomModels\Nosto\Account\Account')
             ->findOneBy(array('shopId' => $shop->getId()));
     }
 

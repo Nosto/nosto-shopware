@@ -100,7 +100,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
     public function getAccountsAction()
     {
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
         if (method_exists($repository, 'getActiveShops')) {
             $result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
         } else {
@@ -114,7 +114,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $identity = Shopware()->Auth()->getIdentity();
         $setting = Shopware()
             ->Models()
-            ->getRepository(\Shopware\CustomModels\Nosto\Setting\Setting::class)
+            ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
             ->findOneBy(array('name' => 'oauthParams'));
         if (!is_null($setting)) {
             $oauthParams = json_decode($setting->getValue(), true);
@@ -174,7 +174,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             $details = json_decode($details);
         }
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
         $shop = $repository->getActiveById($shopId);
         $identity = Shopware()->Auth()->getIdentity();
 
@@ -230,11 +230,11 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $shopId = $this->Request()->getParam('shopId', null);
         /** @var \Shopware\CustomModels\Nosto\Account\Account $account */
         $account = Shopware()->Models()->find(
-            \Shopware\CustomModels\Nosto\Account\Account::class,
+            '\Shopware\CustomModels\Nosto\Account\Account',
             $accountId
         );
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
         $shop = $repository->getActiveById($shopId);
         $identity = Shopware()->Auth()->getIdentity();
 
@@ -274,7 +274,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $data = array();
         $shopId = $this->Request()->getParam('shopId', null);
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository(Shopware\Models\Shop\Shop::class);
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
         $shop = $repository->getActiveById($shopId);
         $locale = Shopware()->Auth()->getIdentity()->locale;
 
