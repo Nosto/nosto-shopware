@@ -163,16 +163,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         foreach ($prices as $price) {
             try {
                 if ($price->getFrom() == 1) {
-                    if ($price->getCustomerGroup() != null
-                        && $shop->getCustomerGroup() != null
+                    if ($price->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                        && $shop->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
                         && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
                     ) {
                         $subShopPrice = $price;
                         break;
                     } elseif ($subShopPrice == null
-                        && $price->getCustomerGroup() != null
-                        && $shop->getMain() != null
-                        && $shop->getMain()->getCustomerGroup() != null
+                        && $price->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                        && $shop->getMain() instanceof \Shopware\Models\Shop\Shop
+                        && $shop->getMain()->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
                         && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
                     ) {
                         //if there is no sub shop price, then use the main shop price
@@ -213,7 +213,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             if ($discounts !== null && !$discounts->isEmpty()) {
                 foreach ($discounts as $discount) {
                     //only handle the discount suitable for buying at least one item.
-                    if ($discount->getCustomerGroup() != null
+                    if ($discount->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
                         && $discount->getCustomerGroup()->getId() == $customerGroup->getId()
                         && $discount->getStart() == 1
                     ) {
