@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.2.1]
+- Fix a bug that cause php fatal error in certain sub shop setup. 
+
 ## [1.2.0]
 - Add support for multi-store, customer groups and price groups
 - Add ratings, reviews, inventory level, supplier cost, alternative images 
@@ -127,7 +130,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.0...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.1...develop
+[1.2.1]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.9...1.2.0
 [1.1.9]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.8...1.1.9
 [1.1.8]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.7...1.1.8

@@ -161,19 +161,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         $subShopPrice = null;
         /* @var \Shopware\Models\Article\Price $price */
         foreach ($prices as $price) {
-            if ($price->getFrom() == 1) {
-                if ($price->getCustomerGroup() != null
-                    && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
-                ) {
-                    $subShopPrice = $price;
-                    break;
-                } elseif ($subShopPrice == null
-                    && $price->getCustomerGroup() != null
-                    && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
-                ) {
-                    //if there is no sub shop price, then use the main shop price
-                    $subShopPrice = $price;
+            try {
+                if ($price->getFrom() == 1) {
+                    if ($price->getCustomerGroup() != null
+                        && $shop->getCustomerGroup() != null
+                        && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
+                    ) {
+                        $subShopPrice = $price;
+                        break;
+                    } elseif ($subShopPrice == null
+                        && $price->getCustomerGroup() != null
+                        && $shop->getMain() != null
+                        && $shop->getMain()->getCustomerGroup() != null
+                        && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
+                    ) {
+                        //if there is no sub shop price, then use the main shop price
+                        $subShopPrice = $price;
+                    }
                 }
+            } catch (Exception $e) {
+                Shopware()->PluginLogger()->error($e);
             }
         }
 
