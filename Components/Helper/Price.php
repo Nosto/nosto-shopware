@@ -161,19 +161,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         $subShopPrice = null;
         /* @var \Shopware\Models\Article\Price $price */
         foreach ($prices as $price) {
-            if ($price->getFrom() == 1) {
-                if ($price->getCustomerGroup() != null
-                    && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
-                ) {
-                    $subShopPrice = $price;
-                    break;
-                } elseif ($subShopPrice == null
-                    && $price->getCustomerGroup() != null
-                    && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
-                ) {
-                    //if there is no sub shop price, then use the main shop price
-                    $subShopPrice = $price;
+            try {
+                if ($price->getFrom() == 1) {
+                    if ($price->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                        && $shop->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                        && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
+                    ) {
+                        $subShopPrice = $price;
+                        break;
+                    } elseif ($subShopPrice == null
+                        && $price->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                        && $shop->getMain() instanceof \Shopware\Models\Shop\Shop
+                        && $shop->getMain()->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                        && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
+                    ) {
+                        //if there is no sub shop price, then use the main shop price
+                        $subShopPrice = $price;
+                    }
                 }
+            } catch (Exception $e) {
+                Shopware()->PluginLogger()->error($e);
             }
         }
 
@@ -206,7 +213,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             if ($discounts !== null && !$discounts->isEmpty()) {
                 foreach ($discounts as $discount) {
                     //only handle the discount suitable for buying at least one item.
-                    if ($discount->getCustomerGroup() != null
+                    if ($discount->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
                         && $discount->getCustomerGroup()->getId() == $customerGroup->getId()
                         && $discount->getStart() == 1
                     ) {
