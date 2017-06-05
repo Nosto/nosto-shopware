@@ -4,8 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.2.2]
+- Fix a bug to prevent two shopware sub shops connect to same nosto account
+
 ## [1.2.1]
-- Fix a bug that cause php fatal error in certain sub shop setup. 
+- Fix a bug that cause php fatal error in certain sub shop setup
 
 ## [1.2.0]
 - Add support for multi-store, customer groups and price groups
@@ -130,7 +133,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.1...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.2...develop
+[1.2.2]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.9...1.2.0
 [1.1.9]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.8...1.1.9
