@@ -78,6 +78,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                 /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
                 $existingAccount = Shopware()->Models()->getRepository("Shopware\CustomModels\Nosto\Account\Account")
                     ->findOneBy(array('name' => $account->getName()));
+
+                //If an account has been found, and the shop id is different from current shop, then it means
+                //the admin is trying to map same nosto account to two sub shops. It is not allowed.
                 if ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId()) {
                     //existing account has been used for mapping other sub shop
                     Shopware()->PluginLogger()->error("Same nosto account has been used for two sub shops");
