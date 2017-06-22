@@ -303,6 +303,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
      */
     public function amendArticleTranslation(\Shopware\Models\Article\Article $article, Shop $shop = null)
     {
+        if ($shop === null || $shop->getId() === null) {
+            return;
+        }
+
         /** @var \Doctrine\ORM\QueryBuilder|QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
@@ -310,10 +314,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
             ->andWhere('translations.type = \'article\'');
 
-        if ($shop !== null && $shop->getId() !== null) {
+        if (property_exists('\Shopware\Models\Translation\Translation', 'shopId')) {
             $builder = $builder->andWhere('translations.shopId = :shopId')
                 ->setParameter('shopId', $shop->getId());
+        } elseif (property_exists('\Shopware\Models\Translation\Translation', 'localeId')
+            && method_exists('Shopware\Models\Shop\Shop', 'getLocale')
+            && $shop->getLocale() !== null
+        ) {
+            $builder = $builder->andWhere('translations.localeId = :localeId')
+                ->setParameter('localeId', $shop->getLocale()->getId());
+        } else {
+            return;
         }
+
         $query = $builder->getQuery();
         $result = $query->getOneOrNullResult();
 
