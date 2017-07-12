@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.2.4]
+- Make order status handling compatible with Shopware < 5.1
+
 ## [1.2.3]
 - Fix a bug that cause php fatal error on shopware 4
 
@@ -136,8 +139,9 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.3...develop
-[1.2.2]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.2...1.2.3
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.4...develop
+[1.2.4]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.3...1.2.4
+[1.2.3]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.1.9...1.2.0
