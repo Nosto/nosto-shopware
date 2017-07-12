@@ -65,7 +65,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status
      */
     public function loadData(Shopware\Models\Order\Order $order)
     {
-        $description = $order->getOrderStatus()->getName();
+
+        $status = $order->getOrderStatus();
+        if (method_exists($status, 'getName')) {
+            $description = $status->getName();
+        } else {
+            $description = $status->getDescription();
+        }
         $this->code = $this->convertDescriptionToCode($description);
         $this->label = $description;
 
