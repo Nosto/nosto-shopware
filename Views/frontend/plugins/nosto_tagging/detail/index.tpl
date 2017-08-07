@@ -37,7 +37,7 @@
     <div class="nosto_element" id="nosto-page-product1"></div>
     <div class="nosto_element" id="nosto-page-product2"></div>
     <div class="nosto_element" id="nosto-page-product3"></div>
-    {if isset($nostoProduct) && is_object($nostoProduct)}
+    {if isset($nostoProduct) && $nostoProduct}
         <div class="nosto_product" style="display: none">
             <span class="url">{$nostoProduct->getUrl()|escape:'htmlall':'UTF-8'}</span>
             <span class="product_id">{$nostoProduct->getProductId()|escape:'htmlall':'UTF-8'}</span>
@@ -74,7 +74,7 @@
             {/if}
         </div>
     {/if}
-    {if isset($nostoCategory) && is_object($nostoCategory)}
+    {if isset($nostoCategory) && $nostoCategory}
         <div class="nosto_category"
              style="display:none">{$nostoCategory->getCategoryPath()|escape:'htmlall':'UTF-8'}</div>
     {/if}

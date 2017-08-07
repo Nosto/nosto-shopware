@@ -36,7 +36,7 @@
 {block name="frontend_index_content" append}
     <div class="nosto_element" id="thankyou-nosto-1"></div>
     <div class="nosto_element" id="thankyou-nosto-2"></div>
-    {if isset($nostoOrder) && is_object($nostoOrder)}
+    {if isset($nostoOrder) && $nostoOrder}
         <div class="nosto_purchase_order" style="display:none">
             <span class="order_number">{$nostoOrder->getOrderNumber()|escape:'htmlall':'UTF-8'}</span>
             <span class="order_status_code">{$nostoOrder->getOrderStatus()->getCode()|escape:'htmlall':'UTF-8'}</span>
