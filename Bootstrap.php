@@ -55,6 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
+    const SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION = '5.3.0';
     const PLATFORM_UI_VERSION = '1';
     const PAGE_TYPE_FRONT_PAGE = 'front';
     const PAGE_TYPE_CART = 'cart';

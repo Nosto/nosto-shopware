@@ -40,6 +40,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelpe
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -233,6 +234,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
             $shop = Shopware()->Shop();
         }
 
+//        die('aadf');
         try {
             $this->assignId($article);
         } catch (NostoException $e) {
@@ -378,14 +380,33 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
      */
     protected function amendRatingsAndReviews(Article $article, Shop $shop)
     {
+        //From shopware 5.3, it is possible to display product votes only in sub shop where they posted
+        $showSubshopReivewOnly = false;
+        $showSubshopReivewOnlySupported = version_compare(
+            Shopware::VERSION,
+            NostoBootstrap::SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION,
+            '>='
+        );
+        if ($showSubshopReivewOnlySupported) {
+            $showSubshopReivewOnly = Shopware()->Config()->get('displayOnlySubShopVotes');
+        }
+
         $voteCount = 0;
-        $votes = array();
+        $voteSum = 0;
         foreach ($article->getVotes() as $vote) {
+            if ($showSubshopReivewOnly) {
+                $shopForVote = $vote->getShop();
+                if ($shopForVote !== null
+                    && $shop !== null
+                    && $shopForVote->getId() != $shop->getId()
+                ) {
+                    continue;
+                }
+            }
             ++$voteCount;
-            $votes[] = $vote->getPoints();
+            $voteSum += $vote->getPoints();
         }
         if ($voteCount > 0) {
-            $voteSum = array_sum($votes);
             $voteAvg = round($voteSum / $voteCount, 1);
             $this->setRatingValue($voteAvg);
             $this->setReviewCount($voteCount);
