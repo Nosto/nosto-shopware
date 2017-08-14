@@ -36,6 +36,7 @@
 
 use Shopware\Models\Article\Article as Article;
 use Shopware\Models\Shop\Shop as Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
@@ -378,14 +379,33 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
      */
     protected function amendRatingsAndReviews(Article $article, Shop $shop)
     {
+        //From shopware 5.3, it is possible to display product votes only in sub shop where they posted
+        $showSubshopReviewOnly = false;
+        $showSubshopReivewOnlySupported = version_compare(
+            Shopware::VERSION,
+            NostoBootstrap::SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION,
+            '>='
+        );
+        if ($showSubshopReivewOnlySupported) {
+            $showSubshopReviewOnly = Shopware()->Config()->get('displayOnlySubShopVotes');
+        }
+
         $voteCount = 0;
-        $votes = array();
+        $voteSum = 0;
         foreach ($article->getVotes() as $vote) {
+            if ($showSubshopReviewOnly) {
+                $shopForVote = $vote->getShop();
+                if ($shopForVote !== null
+                    && $shop !== null
+                    && $shopForVote->getId() != $shop->getId()
+                ) {
+                    continue;
+                }
+            }
             ++$voteCount;
-            $votes[] = $vote->getPoints();
+            $voteSum += $vote->getPoints();
         }
         if ($voteCount > 0) {
-            $voteSum = array_sum($votes);
             $voteAvg = round($voteSum / $voteCount, 1);
             $this->setRatingValue($voteAvg);
             $this->setReviewCount($voteCount);
