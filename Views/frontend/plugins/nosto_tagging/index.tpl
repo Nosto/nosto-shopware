@@ -118,7 +118,7 @@
     {/if}
 {/block}
 {block name="frontend_index_content" append}
-    {if isset($nostoCustomer) && is_object($nostoCustomer)}
+    {if isset($nostoCustomer) && $nostoCustomer}
         <div class="nosto_customer" style="display:none">
             {if isset($nostoHcid) && !empty($nostoHcid)}
                 <span class="hcid">{$nostoHcid|escape:'htmlall':'UTF-8'}</span>
@@ -133,7 +133,7 @@
         {if isset($nostoHcid) && !empty($nostoHcid)}
             <span class="hcid">{$nostoHcid|escape:'htmlall':'UTF-8'}</span>
         {/if}
-        {if isset($nostoCart) && is_object($nostoCart)}
+        {if isset($nostoCart) && $nostoCart}
             {foreach from=$nostoCart->getLineItems() item=lineItem}
                 <div class="line_item">
                     <span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
@@ -145,7 +145,7 @@
             {/foreach}
         {/if}
     </div>
-    {if isset($nostoPageType) && is_scalar($nostoPageType)}
+    {if isset($nostoPageType) && is_string($nostoPageType)}
         <div class="nosto_page_type"
              style="display:none">{$nostoPageType|escape:'htmlall':'UTF-8'}</div>
     {/if}
