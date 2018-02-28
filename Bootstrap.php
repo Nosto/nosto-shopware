@@ -51,7 +51,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '1.2.5';
+    const PLUGIN_VERSION = '1.2.6';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -103,7 +103,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function afterInit()
     {
-        NostoHttpRequest::buildUserAgent(self::PLATFORM_NAME, \Shopware::VERSION, self::PLUGIN_VERSION);
+        NostoHttpRequest::buildUserAgent(self::PLATFORM_NAME, $this->getShopwareVersion(), self::PLUGIN_VERSION);
         $this->registerCustomModels();
     }
 
@@ -226,7 +226,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         self::validateMyAttribute($attribute);
         /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
-        if (version_compare(Shopware::VERSION, self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+        if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
             $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
             /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
             $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
@@ -290,7 +290,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function createMyMenu()
     {
-        $compareResult = version_compare(Shopware::VERSION, self::NEW_ENTITY_MANAGER_VERSION);
+        $compareResult = version_compare($this->getShopwareVersion(), self::NEW_ENTITY_MANAGER_VERSION);
         if ($compareResult < 0) {
             $parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
         } else {
@@ -306,6 +306,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 'class' => 'nosto--icon'
             )
         );
+    }
+
+    /**
+     * Returns the Shopware platform version
+     * @return mixed|string
+     * @throws NostoException in case version cannot be determined
+     */
+    protected function getShopwareVersion()
+    {
+        if (Shopware::VERSION !== null && Shopware::VERSION !== '___VERSION___') {
+            return Shopware::VERSION;
+        } elseif (Shopware()->Container()->getParameter('shopware.release.version')) {
+            return Shopware()->Container()->getParameter('shopware.release.version');
+        } elseif (Nosto::getEnvVariable('SHOPWARE_VERSION')) {
+            return Nosto::getEnvVariable('SHOPWARE_VERSION');
+        }
+
+        throw new NostoException('Could not determine shopware version');
     }
 
     /**
@@ -329,11 +347,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 'supportText' => 'E.g. frontpage-nosto-1, nosto-shopware-1',
                 'helpTitle' => 'Nosto recommendation slot',
                 'helpText' => '
-					Nosto slot div ID is the id attribute of the element where
-					Nosto recommendations are populated. It is recommended that
-					you create new recommendation slot for Shopping World elements
-					from Nosto settings. You must have matching slot created in Nosto
-					settings.',
+                    Nosto slot div ID is the id attribute of the element where
+                    Nosto recommendations are populated. It is recommended that
+                    you create new recommendation slot for Shopping World elements
+                    from Nosto settings. You must have matching slot created in Nosto
+                    settings.',
                 'defaultValue' => 'frontpage-nosto-1',
                 'allowBlank' => false
             )
@@ -515,12 +533,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @see self::$_customAttributes
      *
      * @param array $attribute
+     * @throws NostoException
      */
     private function removeMyAttribute(array $attribute)
     {
         self::validateMyAttribute($attribute);
         /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
-        if (version_compare(Shopware::VERSION, self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+        if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
             $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
             /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
             $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
