@@ -103,7 +103,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function afterInit()
     {
-        NostoHttpRequest::buildUserAgent(self::PLATFORM_NAME, \Shopware::VERSION, self::PLUGIN_VERSION);
+        NostoHttpRequest::buildUserAgent(self::PLATFORM_NAME, $this->getShopwareVersion(), self::PLUGIN_VERSION);
         $this->registerCustomModels();
     }
 
@@ -226,7 +226,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         self::validateMyAttribute($attribute);
         /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
-        if (version_compare(Shopware::VERSION, self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+        if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
             $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
             /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
             $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
@@ -317,11 +317,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         if (Shopware::VERSION !== null && Shopware::VERSION !== '___VERSION___') {
             return Shopware::VERSION;
-        } else {
+        } elseif (Shopware()->Container()->getParameter('shopware.release.version')) {
+            return Shopware()->Container()->getParameter('shopware.release.version');
+        } elseif (Nosto::getEnvVariable('SHOPWARE_VERSION')) {
             return Nosto::getEnvVariable('SHOPWARE_VERSION');
         }
 
-        throw new NostoException('Could not determine Shopware version');
+        throw new NostoException('Could not determine shopware version');
     }
 
     /**
@@ -537,7 +539,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         self::validateMyAttribute($attribute);
         /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
-        if (version_compare(Shopware::VERSION, self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+        if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
             $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
             /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
             $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
