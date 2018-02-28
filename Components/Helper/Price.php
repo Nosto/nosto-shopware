@@ -36,6 +36,7 @@
 
 use Shopware\Models\Article\Article as Article;
 use Shopware\Models\Shop\Shop as Shop;
+use Nosto\Helper\PriceHelper as NostoPriceHelper;
 
 /**
  * Helper class for prices
@@ -234,8 +235,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      */
     public static function format($price)
     {
-        /** @var NostoHelperPrice $helper */
-        $helper = Nosto::helper('price');
-        return $helper->format($price);
+        return NostoPriceHelper::format($price);
     }
 }

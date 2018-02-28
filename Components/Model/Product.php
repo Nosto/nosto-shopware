@@ -41,6 +41,9 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelpe
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
+use Nosto\Types\Product\ProductInterface as NostoProductInterface;
+use Nosto\Types\ValidatableInterface as NostoValidatableInterface;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -1136,5 +1139,89 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product
     public function addAlternateImageUrls($alternateImageUrl)
     {
         $this->alternateImageUrls[] = $alternateImageUrl;
+    }
+
+    /**
+     * Returns the currency code (ISO 4217) the product is sold in.
+     *
+     * @return string the currency ISO code.
+     */
+    public function getPriceCurrencyCode()
+    {
+        // TODO: Implement getPriceCurrencyCode() method.
+    }
+
+    /**
+     * Returns the first set of tags for the product.
+     *
+     * @return array|null first set of the tags
+     */
+    public function getTag1()
+    {
+        // TODO: Implement getTag1() method.
+    }
+
+    /**
+     * Returns the second set of tags for the product.
+     *
+     * @return array|null second set of the tags
+     */
+    public function getTag2()
+    {
+        // TODO: Implement getTag2() method.
+    }
+
+    /**
+     * Returns the third set of tags for the product.
+     *
+     * @return array|null third set of the tags
+     */
+    public function getTag3()
+    {
+        // TODO: Implement getTag3() method.
+    }
+
+    /**
+     * Returns the product variations
+     *
+     * @return \Nosto\Object\Product\SkuCollection
+     */
+    public function getSkus()
+    {
+        // TODO: Implement getSkus() method.
+    }
+
+    /**
+     * Returns the thumbnail URL for product image
+     *
+     * @return string
+     */
+    public function getThumbUrl()
+    {
+        // TODO: Implement getThumbUrl() method.
+    }
+
+    /**
+     * Returns the product variations if any exist.
+     *
+     * @return \Nosto\Types\Product\VariationInterface the variations.
+     */
+    public function getVariations()
+    {
+        // TODO: Implement getVariations() method.
+    }
+
+    /**
+     * Returns an array of validator rules for the object properties.
+     *
+     * Example:
+     *
+     * return array(array('url', 'productId'), 'required');
+     *
+     * @return mixed
+     */
+    public function validationRules()
+    {
+        // TODO: Implement validationRules() method.
     }
 }

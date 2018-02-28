@@ -34,10 +34,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-require_once __DIR__ . '/vendor/nosto/php-sdk/src/config.inc.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
+use Nosto\Nosto;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Object\Signup\Account as NostoAccount;
 
 /**
  * The plugin bootstrap class.
@@ -290,6 +293,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function createMyMenu()
     {
+        
         $compareResult = version_compare(Shopware::VERSION, self::NEW_ENTITY_MANAGER_VERSION);
         if ($compareResult < 0) {
             $parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
@@ -422,6 +426,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             'Enlight_Controller_Action_Frontend_Error_GenericError',
             'onFrontEndErrorGenericError'
         );
+    }
+
+    /**
+     * Registers dependencies / autoloader
+     */
+    public function registerMyComponents()
+    {
+        require_once $this->Path() . '/vendor/autoload.php';
     }
 
     /**
