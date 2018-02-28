@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## [1.2.6]
+- Add support for Shopware 5.4
+
 ## [1.2.5]
 - Add support for Shopware 5.3
 
@@ -142,7 +145,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.5...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.6...develop
+[1.2.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.4...1.2.5
 [1.2.4]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.2...1.2.3
