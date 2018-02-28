@@ -51,7 +51,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 {
 
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '1.2.5';
+    const PLUGIN_VERSION = '1.2.6';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -290,7 +290,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function createMyMenu()
     {
-        $compareResult = version_compare(Shopware::VERSION, self::NEW_ENTITY_MANAGER_VERSION);
+        $compareResult = version_compare($this->getShopwareVersion(), self::NEW_ENTITY_MANAGER_VERSION);
         if ($compareResult < 0) {
             $parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
         } else {
@@ -306,6 +306,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 'class' => 'nosto--icon'
             )
         );
+    }
+
+    /**
+     * Returns the Shopware platform version
+     * @return mixed|string
+     * @throws NostoException in case version cannot be determined
+     */
+    protected function getShopwareVersion()
+    {
+        if (Shopware::VERSION !== null && Shopware::VERSION !== '___VERSION___') {
+            return Shopware::VERSION;
+        } else {
+            return Nosto::getEnvVariable('SHOPWARE_VERSION');
+        }
+
+        throw new NostoException('Could not determine Shopware version');
     }
 
     /**
@@ -329,11 +345,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 'supportText' => 'E.g. frontpage-nosto-1, nosto-shopware-1',
                 'helpTitle' => 'Nosto recommendation slot',
                 'helpText' => '
-					Nosto slot div ID is the id attribute of the element where
-					Nosto recommendations are populated. It is recommended that
-					you create new recommendation slot for Shopping World elements
-					from Nosto settings. You must have matching slot created in Nosto
-					settings.',
+                    Nosto slot div ID is the id attribute of the element where
+                    Nosto recommendations are populated. It is recommended that
+                    you create new recommendation slot for Shopping World elements
+                    from Nosto settings. You must have matching slot created in Nosto
+                    settings.',
                 'defaultValue' => 'frontpage-nosto-1',
                 'allowBlank' => false
             )
@@ -515,6 +531,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @see self::$_customAttributes
      *
      * @param array $attribute
+     * @throws NostoException
      */
     private function removeMyAttribute(array $attribute)
     {
