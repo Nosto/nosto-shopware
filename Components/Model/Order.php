@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Object\Order\Order as NostoOrder;
+
 /**
  * Model for order information. This is used when compiling the info about an
  * order that is sent to Nosto.
@@ -45,92 +47,46 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
-    implements NostoOrderInterface, NostoValidatableInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends NostoOrder
 {
-    /**
-     * @var string|int the unique order number identifying the order.
-     */
-    protected $orderNumber;
-
-    /**
-     * @var string the date when the order was placed.
-     */
-    protected $createdDate;
-
-    /**
-     * @var string the payment provider used for order.
-     *
-     * Formatted according to "[provider name] [provider version]".
-     */
-    protected $paymentProvider;
-
-    /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer The user info of the buyer.
-     */
-    protected $buyerInfo;
-
-    /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] the items in the order.
-     */
-    protected $purchasedItems = array();
-
-    /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status the order status model.
-     */
-    protected $orderStatus;
-
-    /**
-     * @var bool if special line items like shipping cost should be included.
-     */
-    protected $includeSpecialLineItems = true;
-
-    /**
-     * @var string external order reference
-     */
-    protected $externalOrderRef;
-
-    /**
-     * @inheritdoc
-     */
-    public function getValidationRules()
-    {
-        return array();
-    }
+    private $includeSpecialLineItems = true;
 
     /**
      * Loads order details from the order model.
      *
      * @param \Shopware\Models\Order\Order $order the order model.
+     * @throws Enlight_Event_Exception
+     * @throws \Nosto\NostoException
      */
     public function loadData(\Shopware\Models\Order\Order $order)
     {
-        $this->orderNumber = $order->getNumber();
-        $this->createdDate = $order->getOrderTime()->format('Y-m-d');
+        $this->setOrderNumber($order->getNumber());
+        $this->setCreatedAt($order->getOrderTime());
         $payment = $order->getPayment();
         try {
-            $this->paymentProvider = $payment->getName();
+            $paymentProvider = $payment->getName();
             $paymentPlugin = $payment->getPlugin();
             if (!is_null($paymentPlugin) && $paymentPlugin->getVersion()) {
-                $this->paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+                $paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
             }
         } catch (Exception $e) {
-            $this->paymentProvider = 'unknown';
+            $paymentProvider = 'unknown';
         }
+        $this->setPaymentProvider($paymentProvider);
 
-        $this->orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
-        $this->orderStatus->loadData($order);
+        $orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
+        $orderStatus->loadData($order);
+        $this->setOrderStatus($orderStatus);
 
-        $this->buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
-        $this->buyerInfo->loadData($order->getCustomer());
-
+        $buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
+        $buyerInfo->loadData($order->getCustomer());
+        $this->setCustomer($buyerInfo);
         foreach ($order->getDetails() as $detail) {
             /** @var Shopware\Models\Order\Detail $detail */
             if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
                 $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
                 $item->loadData($detail);
-                $this->purchasedItems[] = $item;
+                $this->addPurchasedItems($item);
             }
         }
 
@@ -139,7 +95,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order
             if ($shippingCost > 0) {
                 $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
                 $item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
-                $this->purchasedItems[] = $item;
+                $this->addPurchasedItems($item);
             }
         }
 
@@ -159,187 +115,5 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order
     public function disableSpecialLineItems()
     {
         $this->includeSpecialLineItems = false;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getOrderNumber()
-    {
-        return $this->orderNumber;
-    }
-
-    /**
-     * Sets the ordernumber.
-     *
-     * The ordernumber must be a non-empty string.
-     *
-     * Usage:
-     * $object->setOrderNumber('123456');
-     *
-     * @param string $orderNumber the ordernumber.
-     *
-     * @return $this Self for chaining
-     */
-    public function setOrderNumber($orderNumber)
-    {
-        $this->orderNumber = $orderNumber;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getCreatedDate()
-    {
-        return $this->createdDate;
-    }
-
-    /**
-     * Sets the created date of the order.
-     *
-     * The created date must be a non-empty string in format Y-m-d.
-     *
-     * Usage:
-     * $object->setCreatedDate('2016-01-20');
-     *
-     * @param string $createdDate the created date.
-     *
-     * @return $this Self for chaining
-     */
-    public function setCreatedDate($createdDate)
-    {
-        $this->orderNumber = $createdDate;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getPaymentProvider()
-    {
-        return $this->paymentProvider;
-    }
-
-    /**
-     * Sets the payment provider of the order.
-     *
-     * The payment provider must be a non-empty string.
-     *
-     * Usage:
-     * $object->setPaymentProvider('invoice');
-     *
-     * @param string $paymentProvider the payment provider.
-     *
-     * @return $this Self for chaining
-     */
-    public function setPaymentProvider($paymentProvider)
-    {
-        $this->paymentProvider = $paymentProvider;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getBuyerInfo()
-    {
-        return $this->buyerInfo;
-    }
-
-    /**
-     * Sets the buyer information for the order.
-     *
-     * The buyer information must be an instance of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer.
-     *
-     * Usage:
-     * $object->setBuyerInfo(new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer());
-     *
-     * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer $buyerInfo the buyer info.
-     *
-     * @return $this Self for chaining
-     */
-    public function setBuyerInfo($buyerInfo)
-    {
-        $this->buyerInfo = $buyerInfo;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getPurchasedItems()
-    {
-        return $this->purchasedItems;
-    }
-
-    /**
-     * Sets the purchased items for the order.
-     *
-     * The line items must be an array of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
-     *
-     * Usage:
-     * $object->setPurchasedItems([new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem(), ...]);
-     *
-     * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem[] $purchasedItems the items.
-     *
-     * @return $this Self for chaining
-     */
-    public function setPurchasedItems($purchasedItems)
-    {
-        $this->purchasedItems = $purchasedItems;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getOrderStatus()
-    {
-        return $this->orderStatus;
-    }
-
-    /**
-     * Sets the order status.
-     *
-     * The order status must be an instance of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status.
-     *
-     * Usage:
-     * $object->setOrderStatus(new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status());
-     *
-     * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status $orderStatus the buyer info.
-     *
-     * @return $this Self for chaining
-     */
-    public function setOrderStatus($orderStatus)
-    {
-        $this->orderStatus = $orderStatus;
-
-        return $this;
-    }
-
-    /**
-     * Returns the external order reference
-     *
-     * @return string
-     */
-    public function getExternalOrderRef()
-    {
-        return $this->externalOrderRef;
-    }
-
-    /**
-     * Sets the external order reference
-     *
-     * @param string $externalOrderRef
-     */
-    public function setExternalOrderRef($externalOrderRef)
-    {
-        $this->externalOrderRef = $externalOrderRef;
     }
 }

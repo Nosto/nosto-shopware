@@ -34,6 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Object\Order\OrderStatus as NostoOrderStatus;
 /**
  * Model for order status information. This is used when compiling the info
  * about an order that is sent to Nosto.
@@ -44,24 +45,13 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
-    implements NostoOrderStatusInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status extends NostoOrderStatus
 {
-    /**
-     * @var string the order status code.
-     */
-    protected $code;
-
-    /**
-     * @var string the order status label.
-     */
-    protected $label;
-
     /**
      * Populates the order status with data from the order model.
      *
      * @param Shopware\Models\Order\Order $order the order model.
+     * @throws Enlight_Event_Exception
      */
     public function loadData(Shopware\Models\Order\Order $order)
     {
@@ -71,8 +61,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status
         } else {
             $description = $status->getDescription();
         }
-        $this->code = $this->convertDescriptionToCode($description);
-        $this->label = $description;
+        $this->setCode($this->convertDescriptionToCode($description));
+        $this->setLabel($description);
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -95,58 +85,5 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status
         $pattern = array('/[^a-zA-Z0-9]+/', '/_+/', '/^_+/', '/_+$/');
         $replacement = array('_', '_', '', '');
         return strtolower(preg_replace($pattern, $replacement, $description));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    /**
-     * Sets the code of the order.
-     *
-     * The code must be a non-empty string.
-     *
-     * Usage:
-     * $object->setCode('paid');
-     *
-     * @param string $code the code.
-     *
-     * @return $this Self for chaining
-     */
-    public function setCode($code)
-    {
-        $this->code = $code;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
-     * Sets the label of the order.
-     *
-     * The label must be a non-empty string.
-     *
-     * Usage:
-     * $object->setLabel('Paid');
-     *
-     * @param string $label the label.
-     * @return $this Self for chaining
-     */
-    public function setLabel($label)
-    {
-        $this->label = $label;
-
-        return $this;
     }
 }

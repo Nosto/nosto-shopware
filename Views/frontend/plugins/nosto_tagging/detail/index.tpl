@@ -44,7 +44,7 @@
             <span class="name">{$nostoProduct->getName()|escape:'htmlall':'UTF-8'}</span>
             <span class="image_url">{$nostoProduct->getImageUrl()|escape:'htmlall':'UTF-8'}</span>
             <span class="price">{$nostoProduct->getPrice()|escape:'htmlall':'UTF-8'}</span>
-            <span class="price_currency_code">{$nostoProduct->getCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
+            <span class="price_currency_code">{$nostoProduct->getPriceCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
             <span class="availability">{$nostoProduct->getAvailability()|escape:'htmlall':'UTF-8'}</span>
             {foreach from=$nostoProduct->getCategories() item=category}
                 <span class="category">{$category|escape:'htmlall':'UTF-8'}</span>
@@ -58,10 +58,14 @@
             {if $nostoProduct->getBrand()}
                 <span class="brand">{$nostoProduct->getBrand()|escape:'htmlall':'UTF-8'}</span>
             {/if}
-            {foreach from=$nostoProduct->getTags() key=type item=tags}
-                {foreach from=$tags item=tag}
-                    <span class="{$type|escape:'quotes'}">{$tag|escape:'htmlall':'UTF-8'}</span>
-                {/foreach}
+            {foreach from=$nostoProduct->getTag1() key=type item=tag}
+                <span class="tag1">{$tag|escape:'htmlall':'UTF-8'}</span>
+            {/foreach}
+            {foreach from=$nostoProduct->getTag2() key=type item=tag}
+                <span class="tag2">{$tag|escape:'htmlall':'UTF-8'}</span>
+            {/foreach}
+            {foreach from=$nostoProduct->getTag3() key=type item=tag}
+                <span class="tag3">{$tag|escape:'htmlall':'UTF-8'}</span>
             {/foreach}
             {foreach from=$nostoProduct->getAlternateImageUrls() item=$alternateImageUrl}
                 <span class="alternate_image_url">{$alternateImageUrl|escape:'htmlall':'UTF-8'}</span>

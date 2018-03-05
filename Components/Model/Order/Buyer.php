@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Object\Order\Buyer as NostoOrderBuyer;
+
 /**
  * Model for order buyer information. This is used when compiling the info about
  * an order that is sent to Nosto.
@@ -44,29 +46,13 @@
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
-    implements NostoOrderBuyerInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extends NostoOrderBuyer
 {
-    /**
-     * @var string the first name of the user who placed the order.
-     */
-    protected $firstName;
-
-    /**
-     * @var string the last name of the user who placed the order.
-     */
-    protected $lastName;
-
-    /**
-     * @var string the email address of the user who placed the order.
-     */
-    protected $email;
-
     /**
      * Loads the order buyer info from the customer model.
      *
      * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     * @throws Enlight_Event_Exception
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
@@ -74,18 +60,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer
             /* @var \Shopware\Models\Customer\Address $address */
             $address = $customer->getDefaultBillingAddress();
             if ($address instanceof \Shopware\Models\Customer\Address) {
-                $this->firstName = $address->getFirstname();
-                $this->lastName = $address->getLastname();
+                $this->setFirstName($address->getFirstname());
+                $this->setLastName($address->getLastname());
             }
         } else {
             /* @var \Shopware\Models\Customer\Billing $address */
             $address = $customer->getBilling();
             if ($address instanceof \Shopware\Models\Customer\Billing) {
-                $this->firstName = $address->getFirstName();
-                $this->lastName = $address->getLastName();
+                $this->setFirstName($address->getFirstName());
+                $this->setLastName($address->getLastName());
             }
         }
-        $this->email = $customer->getEmail();
+        $this->setEmail($customer->getEmail());
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -94,84 +80,5 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer
                 'customer' => $customer,
             )
         );
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getFirstName()
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * Sets the firstname of the buyer.
-     *
-     * The name must be a non-empty string.
-     *
-     * Usage:
-     * $object->setFirstName('John');
-     *
-     * @param string $firstName the first name.
-     * @return $this Self for chaining
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * Sets the lastname of the buyer.
-     *
-     * The name must be a non-empty string.
-     *
-     * Usage:
-     * $object->setLastName('Doe');
-     *
-     * @param string $lastName the last name.
-     * @return $this Self for chaining
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Sets the email of the buyer.
-     *
-     * The email must be a non-empty string.
-     *
-     * Usage:
-     * $object->setEmail('john@doe.com');
-     *
-     * @param string $email the email.
-     *
-     * @return $this Self for chaining
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
     }
 }
