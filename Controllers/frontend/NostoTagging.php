@@ -34,7 +34,11 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Object\AbstractCollection;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Nosto\Object\Product\ProductCollection;
+use Nosto\Object\Order\OrderCollection;
+use Nosto\Helper\ExportHelper;
 
 /**
  * Main frontend controller. Handles account connection via OAuth 2 and data
@@ -183,8 +187,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-        $collection = new NostoExportProductCollection();
+        $collection = new ProductCollection();
         $category = Shopware()->Shop()->getCategory();
+        $category->getName();
         foreach ($result as $row) {
             /** @var Shopware\Models\Article\Article $article */
             $article = Shopware()->Models()->find(
@@ -196,7 +201,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             }
             $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
             $model->loadData($article);
-            $collection[] = $model;
+            $collection->append($model);
         }
 
         $this->export($collection);
@@ -205,14 +210,14 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     /**
      * Encrypts the export collection and outputs it to the browser.
      *
-     * @param NostoExportCollectionInterface $collection the data collection to export.
+     * @param AbstractCollection $collection the data collection to export.
      */
-    protected function export(NostoExportCollectionInterface $collection)
+    protected function export(AbstractCollection $collection)
     {
         $shop = Shopware()->Shop();
         $account = NostoComponentAccount::findAccount($shop);
         if (!is_null($account)) {
-            $cipherText = NostoExporter::export(
+            $cipherText = (new ExportHelper())->export(
                 NostoComponentAccount::convertToNostoAccount($account),
                 $collection
             );
@@ -249,7 +254,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
-        $collection = new NostoExportOrderCollection();
+        $collection = new OrderCollection();
         $shop = Shopware()->Shop()->getId();
         foreach ($result as $row) {
             /** @var Shopware\Models\Order\Order $order */
@@ -261,7 +266,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
             $model->disableSpecialLineItems();
             $model->loadData($order);
-            $collection[] = $model;
+            $collection->append($model);
         }
 
         $this->export($collection);
