@@ -4,21 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "69cff975bce2f57defd8708f849eb836",
-    "content-hash": "05bc1cc13b632712287d161e63883573",
+    "content-hash": "c072e40f761f4e15d8d2af6db6cfec0d",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.2.2",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "07cfa0d115fa4d451fa50ad506d54b99b656bd1c"
+                "reference": "7e3a18b07cdf824caf67f1723e3d9728c4a4ca2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/07cfa0d115fa4d451fa50ad506d54b99b656bd1c",
-                "reference": "07cfa0d115fa4d451fa50ad506d54b99b656bd1c",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/7e3a18b07cdf824caf67f1723e3d9728c4a4ca2d",
+                "reference": "7e3a18b07cdf824caf67f1723e3d9728c4a4ca2d",
                 "shasum": ""
             },
             "require": {
@@ -52,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2018-03-06 14:04:17"
+            "time": "2018-03-08T10:24:34+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -144,7 +143,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2018-02-19 04:29:13"
+            "time": "2018-02-19T04:29:13+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -194,7 +193,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2016-09-01 10:05:43"
+            "time": "2016-09-01T10:05:43+00:00"
         }
     ],
     "packages-dev": [
@@ -249,7 +248,7 @@
                 "assertion",
                 "validation"
             ],
-            "time": "2016-03-22 14:34:51"
+            "time": "2016-03-22T14:34:51+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -317,7 +316,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2017-02-24 16:22:25"
+            "time": "2017-02-24T16:22:25+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -387,7 +386,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2015-12-31 16:37:02"
+            "time": "2015-12-31T16:37:02+00:00"
         },
         {
             "name": "doctrine/collections",
@@ -454,7 +453,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2017-01-03 10:49:41"
+            "time": "2017-01-03T10:49:41+00:00"
         },
         {
             "name": "doctrine/common",
@@ -527,7 +526,7 @@
                 "persistence",
                 "spl"
             ],
-            "time": "2015-12-25 13:18:31"
+            "time": "2015-12-25T13:18:31+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -598,7 +597,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2016-01-05 22:11:12"
+            "time": "2016-01-05T22:11:12+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -665,7 +664,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2017-07-22 12:18:28"
+            "time": "2017-07-22T12:18:28+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -719,7 +718,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2015-06-14 21:17:01"
+            "time": "2015-06-14T21:17:01+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -773,7 +772,7 @@
                 "lexer",
                 "parser"
             ],
-            "time": "2014-09-09 13:34:57"
+            "time": "2014-09-09T13:34:57+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -849,7 +848,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2016-01-05 21:34:58"
+            "time": "2016-01-05T21:34:58+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -901,7 +900,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2016-05-15 10:06:34"
+            "time": "2016-05-15T10:06:34+00:00"
         },
         {
             "name": "elasticsearch/elasticsearch",
@@ -955,19 +954,19 @@
                 "elasticsearch",
                 "search"
             ],
-            "time": "2016-06-03 21:09:29"
+            "time": "2016-06-03T21:09:29+00:00"
         },
         {
             "name": "etsy/phan",
             "version": "0.8.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/phan/phan.git",
+                "url": "https://github.com/etsy/phan.git",
                 "reference": "685bb56bf88a1485bb76a3e3cc2469357d1bd8e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/685bb56bf88a1485bb76a3e3cc2469357d1bd8e4",
+                "url": "https://api.github.com/repos/etsy/phan/zipball/685bb56bf88a1485bb76a3e3cc2469357d1bd8e4",
                 "reference": "685bb56bf88a1485bb76a3e3cc2469357d1bd8e4",
                 "shasum": ""
             },
@@ -1009,8 +1008,7 @@
                 "php",
                 "static"
             ],
-            "abandoned": "phan/phan",
-            "time": "2017-01-24 16:41:51"
+            "time": "2017-01-24T16:41:51+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1068,7 +1066,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2015-05-20 03:47:55"
+            "time": "2015-05-20T03:47:55+00:00"
         },
         {
             "name": "guzzlehttp/ringphp",
@@ -1119,7 +1117,7 @@
                 }
             ],
             "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
-            "time": "2015-05-20 03:37:09"
+            "time": "2015-05-20T03:37:09+00:00"
         },
         {
             "name": "guzzlehttp/streams",
@@ -1169,7 +1167,7 @@
                 "Guzzle",
                 "stream"
             ],
-            "time": "2014-10-12 19:18:40"
+            "time": "2014-10-12T19:18:40+00:00"
         },
         {
             "name": "league/flysystem",
@@ -1252,7 +1250,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2016-04-28 06:53:12"
+            "time": "2016-04-28T06:53:12+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1330,7 +1328,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2016-04-12 18:29:35"
+            "time": "2016-04-12T18:29:35+00:00"
         },
         {
             "name": "ongr/elasticsearch-dsl",
@@ -1379,7 +1377,7 @@
             ],
             "description": "Elasticsearch DSL library",
             "homepage": "http://ongr.io",
-            "time": "2016-05-03 01:24:48"
+            "time": "2016-05-03T01:24:48+00:00"
         },
         {
             "name": "oyejorge/less.php",
@@ -1441,7 +1439,7 @@
                 "php",
                 "stylesheet"
             ],
-            "time": "2015-12-30 05:47:36"
+            "time": "2015-12-30T05:47:36+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -1489,7 +1487,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2016-03-18 20:34:03"
+            "time": "2016-03-18T20:34:03+00:00"
         },
         {
             "name": "pdepend/pdepend",
@@ -1529,7 +1527,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Official version of pdepend to be handled with Composer",
-            "time": "2017-12-13 13:21:38"
+            "time": "2017-12-13T13:21:38+00:00"
         },
         {
             "name": "phing/phing",
@@ -1622,7 +1620,7 @@
                 "task",
                 "tool"
             ],
-            "time": "2018-01-25 13:18:09"
+            "time": "2018-01-25T13:18:09+00:00"
         },
         {
             "name": "phpmd/phpmd",
@@ -1688,7 +1686,7 @@
                 "phpmd",
                 "pmd"
             ],
-            "time": "2017-01-20 14:41:10"
+            "time": "2017-01-20T14:41:10+00:00"
         },
         {
             "name": "phpunit/php-timer",
@@ -1737,7 +1735,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2017-02-26 11:10:40"
+            "time": "2017-02-26T11:10:40+00:00"
         },
         {
             "name": "psr/log",
@@ -1784,7 +1782,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2016-10-10T12:19:37+00:00"
         },
         {
             "name": "react/promise",
@@ -1830,7 +1828,7 @@
                 "promise",
                 "promises"
             ],
-            "time": "2017-03-25 12:08:31"
+            "time": "2017-03-25T12:08:31+00:00"
         },
         {
             "name": "sebastian/finder-facade",
@@ -1869,7 +1867,7 @@
             ],
             "description": "FinderFacade is a convenience wrapper for Symfony's Finder component.",
             "homepage": "https://github.com/sebastianbergmann/finder-facade",
-            "time": "2017-11-18 17:31:49"
+            "time": "2017-11-18T17:31:49+00:00"
         },
         {
             "name": "sebastian/phpcpd",
@@ -1920,7 +1918,7 @@
             ],
             "description": "Copy/Paste Detector (CPD) for PHP code.",
             "homepage": "https://github.com/sebastianbergmann/phpcpd",
-            "time": "2016-04-17 19:32:49"
+            "time": "2016-04-17T19:32:49+00:00"
         },
         {
             "name": "sebastian/version",
@@ -1963,7 +1961,7 @@
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
-            "time": "2016-10-03 07:35:21"
+            "time": "2016-10-03T07:35:21+00:00"
         },
         {
             "name": "shopware/shopware",
@@ -2055,7 +2053,7 @@
                 "shop",
                 "shopware"
             ],
-            "time": "2016-07-13 09:09:31"
+            "time": "2016-07-13T09:09:31+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -2133,7 +2131,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2017-03-01 22:17:45"
+            "time": "2017-03-01T22:17:45+00:00"
         },
         {
             "name": "symfony/class-loader",
@@ -2186,7 +2184,7 @@
             ],
             "description": "Symfony ClassLoader Component",
             "homepage": "https://symfony.com",
-            "time": "2016-03-30 10:37:34"
+            "time": "2016-03-30T10:37:34+00:00"
         },
         {
             "name": "symfony/config",
@@ -2239,7 +2237,7 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "https://symfony.com",
-            "time": "2016-04-20 18:52:26"
+            "time": "2016-04-20T18:52:26+00:00"
         },
         {
             "name": "symfony/console",
@@ -2299,7 +2297,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-04-26 12:00:47"
+            "time": "2016-04-26T12:00:47+00:00"
         },
         {
             "name": "symfony/debug",
@@ -2356,7 +2354,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-28 21:47:46"
+            "time": "2018-02-28T21:47:46+00:00"
         },
         {
             "name": "symfony/dependency-injection",
@@ -2419,7 +2417,7 @@
             ],
             "description": "Symfony DependencyInjection Component",
             "homepage": "https://symfony.com",
-            "time": "2016-05-09 18:12:35"
+            "time": "2016-05-09T18:12:35+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -2479,7 +2477,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-19 10:44:15"
+            "time": "2016-07-19T10:44:15+00:00"
         },
         {
             "name": "symfony/filesystem",
@@ -2528,7 +2526,7 @@
             ],
             "description": "Symfony Filesystem Component",
             "homepage": "https://symfony.com",
-            "time": "2016-04-12 18:01:21"
+            "time": "2016-04-12T18:01:21+00:00"
         },
         {
             "name": "symfony/finder",
@@ -2577,7 +2575,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2016-03-10 10:53:53"
+            "time": "2016-03-10T10:53:53+00:00"
         },
         {
             "name": "symfony/form",
@@ -2651,7 +2649,7 @@
             ],
             "description": "Symfony Form Component",
             "homepage": "https://symfony.com",
-            "time": "2016-04-28 09:59:09"
+            "time": "2016-04-28T09:59:09+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -2704,7 +2702,7 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-17 13:54:30"
+            "time": "2016-07-17T13:54:30+00:00"
         },
         {
             "name": "symfony/http-kernel",
@@ -2786,7 +2784,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2016-05-09 21:45:36"
+            "time": "2016-05-09T21:45:36+00:00"
         },
         {
             "name": "symfony/intl",
@@ -2861,7 +2859,7 @@
                 "l10n",
                 "localization"
             ],
-            "time": "2016-07-30 07:22:48"
+            "time": "2016-07-30T07:22:48+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -2915,7 +2913,7 @@
                 "configuration",
                 "options"
             ],
-            "time": "2018-01-03 07:36:31"
+            "time": "2018-01-03T07:36:31+00:00"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -2971,7 +2969,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/polyfill-intl-icu",
@@ -3029,7 +3027,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -3088,7 +3086,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/property-access",
@@ -3148,7 +3146,7 @@
                 "property path",
                 "reflection"
             ],
-            "time": "2016-07-30 07:22:48"
+            "time": "2016-07-30T07:22:48+00:00"
         },
         {
             "name": "symfony/serializer",
@@ -3223,7 +3221,7 @@
             ],
             "description": "Symfony Serializer Component",
             "homepage": "https://symfony.com",
-            "time": "2017-07-06 07:39:51"
+            "time": "2017-07-06T07:39:51+00:00"
         },
         {
             "name": "symfony/translation",
@@ -3287,7 +3285,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-30 07:22:48"
+            "time": "2016-07-30T07:22:48+00:00"
         },
         {
             "name": "symfony/validator",
@@ -3360,7 +3358,7 @@
             ],
             "description": "Symfony Validator Component",
             "homepage": "https://symfony.com",
-            "time": "2016-04-14 08:48:44"
+            "time": "2016-04-14T08:48:44+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -3415,7 +3413,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2018-01-20 15:04:53"
+            "time": "2018-01-20T15:04:53+00:00"
         },
         {
             "name": "theseer/fdomdocument",
@@ -3455,7 +3453,7 @@
             ],
             "description": "The classes contained within this repository extend the standard DOM to use exceptions at all occasions of errors instead of PHP warnings or notices. They also add various custom methods and shortcuts for convenience and to simplify the usage of DOM.",
             "homepage": "https://github.com/theseer/fDOMDocument",
-            "time": "2017-06-30 11:53:12"
+            "time": "2017-06-30T11:53:12+00:00"
         },
         {
             "name": "zendframework/zend-escaper",
@@ -3499,7 +3497,7 @@
                 "escaper",
                 "zf2"
             ],
-            "time": "2015-06-03 14:05:37"
+            "time": "2015-06-03T14:05:37+00:00"
         }
     ],
     "aliases": [],
