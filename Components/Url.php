@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+
 /**
  * Url component. Used as a helper to manage url creation inside Shopware.
  *

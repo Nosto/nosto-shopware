@@ -36,6 +36,7 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
 
+use Nosto\Types\IframeInterface as NostoAccountMetaDataIframeInterface;
 /**
  * Meta-data class for information included in the plugin configuration iframe.
  *

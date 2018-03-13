@@ -35,7 +35,7 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
-
+use Nosto\Nosto;
 /**
  * Main backend controller. Handles account create/connect/delete requests
  * from the account configuration iframe.
