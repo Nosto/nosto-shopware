@@ -37,6 +37,7 @@
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
+use Nosto\Helper\IframeHelper;
 
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
@@ -221,6 +222,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         if (!isset($params['v'])) {
             $params['v'] = NostoTaggingBootstrap::PLATFORM_UI_VERSION;
         }
-        return Nosto::helper('iframe')->getUrl($meta, $nostoAccount, $params);
+        return IframeHelper::getUrl($meta, $nostoAccount, null, $params);
     }
 }
