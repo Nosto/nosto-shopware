@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Types\Signup\OwnerInterface as NostoAccountMetaDataOwnerInterface;
+
 /**
  * Meta-data class for account owner information sent to Nosto during account
  * create.
@@ -60,6 +62,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
      * @var string the email address of the account owner.
      */
     protected $email;
+
+    /**
+     * @var string the phone number of the account owner.
+     */
+    protected $phone;
+
+    /**
+     * @var string the post-code of the account owner.
+     */
+    protected $postCode;
+
+    /**
+     * @var string the country of the account owner.
+     */
+    protected $country;
+
+    /**
+     * @var boolean is the account owner opted in.
+     */
+    protected $optedIn;
 
     /**
      * Loads the data for the account owner.
@@ -116,5 +138,85 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
     public function setEmail($email)
     {
         $this->email = $email;
+    }
+
+    /**
+     * The phone number of the account owner
+     *
+     * @return string|null
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Setter for the phone number of the account owner
+     *
+     * @param string $phone the phone number
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+    }
+
+    /**
+     * The post code of the account owner
+     *
+     * @return string|null
+     */
+    public function getPostCode()
+    {
+        return $this->postCode;
+    }
+
+    /**
+     * Setter for the post code of the account owner
+     *
+     * @param string $postCode the post code
+     */
+    public function setPostCode($postCode)
+    {
+        $this->postCode = $postCode;
+    }
+
+    /**
+     * The country of the account owner
+     *
+     * @return string|null
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * Setter for the country of the account owner
+     *
+     * @param string $country the country of the account owner
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+    }
+
+    /**
+     * The opt-in status for the account owner
+     *
+     * @return boolean
+     */
+    public function getOptedIn()
+    {
+        return $this->optedIn;
+    }
+
+    /**
+     * Setter for the opt-in status for the account owner
+     *
+     * @param boolean $optedIn is the account owner opted in
+     */
+    public function setOptedIn($optedIn)
+    {
+        $this->optedIn = (bool)$optedIn;
     }
 }
