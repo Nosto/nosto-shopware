@@ -34,6 +34,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Types\OAuthInterface as NostoOAuthClientMetaDataInterface;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Request\Api\Token as NostoApiToken;
+
 /**
  * Meta-data class for handling OAuth 2 requests during account connect.
  *

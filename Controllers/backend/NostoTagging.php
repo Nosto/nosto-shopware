@@ -36,6 +36,8 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Nosto;
+use Nosto\NostoException;
+use Nosto\Helper\OAuthHelper as NostoOAuthClient;
 /**
  * Main backend controller. Handles account create/connect/delete requests
  * from the account configuration iframe.
@@ -200,8 +202,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                         $account,
                         $identity,
                         array(
-                            'message_type' => NostoMessage::TYPE_SUCCESS,
-                            'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
+                            'message_type' => Nosto::TYPE_SUCCESS,
+                            'message_code' => Nosto::CODE_ACCOUNT_CREATE
                         )
                     ),
                     'shopId' => $shop->getId(),
@@ -282,9 +284,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             $shop->registerResources(Shopware()->Bootstrap());
             $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
             $meta->loadData($shop, $locale);
-            $client = new NostoOAuthClient($meta);
             $success = true;
-            $data = array('redirect_url' => $client->getAuthorizationUrl());
+            $data = array('redirect_url' => NostoOAuthClient::getAuthorizationUrl($meta));
         }
 
         $this->View()->assign('success', $success);
