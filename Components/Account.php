@@ -38,6 +38,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
 use Nosto\Helper\IframeHelper;
+use Nosto\NostoException;
+use Nosto\Operation\AccountSignup;
 
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
@@ -83,8 +85,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
                 $shop->getId()
             ));
         }
-
-        $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account();
+        $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account(
+            Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME
+        );
         $meta->loadData($shop, $locale, $identity);
         if (!empty($details)) {
             $meta->setDetails($details);
@@ -93,11 +96,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         if ($validator->isValid($email)) {
             $meta->getOwner()->setEmail($email);
         }
+        $operation = new AccountSignup($meta);
+        $nostoAccount = $operation->create();
+        $shopwareAccount = self::convertToShopwareAccount($nostoAccount, $shop);
 
-        $nostoAccount = NostoAccount::create($meta);
-        $account = self::convertToShopwareAccount($nostoAccount, $shop);
-
-        return $account;
+        return $shopwareAccount ;
     }
 
     /**
@@ -122,7 +125,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @return \Shopware\CustomModels\Nosto\Account\Account the account model.
      */
     public static function convertToShopwareAccount(
-        \NostoAccount $nostoAccount,
+        NostoAccount $nostoAccount,
         \Shopware\Models\Shop\Shop $shop
     ) {
         $account = new \Shopware\CustomModels\Nosto\Account\Account();
@@ -222,6 +225,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         if (!isset($params['v'])) {
             $params['v'] = NostoTaggingBootstrap::PLATFORM_UI_VERSION;
         }
-        return IframeHelper::getUrl($meta, $nostoAccount, null, $params);
+        $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User();
+        $user->build($identity);
+        return IframeHelper::getUrl(
+            $meta,
+            $nostoAccount,
+            $user->build($identity),
+            $params);
     }
 }

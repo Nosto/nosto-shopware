@@ -34,6 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Types\Signup\BillingInterface as NostoAccountMetaDataBillingDetailsInterface;
 /**
  * Meta-data class for billing information sent to Nosto during account create.
  *
