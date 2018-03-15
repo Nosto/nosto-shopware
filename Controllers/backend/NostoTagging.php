@@ -98,6 +98,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *   },
      *   ...
      * ]
+     * @throws Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getAccountsAction()
     {
@@ -242,7 +245,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 
         if (!is_null($account) && !is_null($shop)) {
             $shop->registerResources(Shopware()->Bootstrap());
-            NostoComponentAccount::removeAccount($account);
+            NostoComponentAccount::removeAccount($account, $identity);
             $success = true;
             $data = array(
                 'url' => NostoComponentAccount::buildAccountIframeUrl(
@@ -251,8 +254,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     null,
                     $identity,
                     array(
-                        'message_type' => NostoMessage::TYPE_SUCCESS,
-                        'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
+                        'message_type' => Nosto::TYPE_SUCCESS,
+                        'message_code' => Nosto::CODE_ACCOUNT_DELETE
                     )
                 ),
                 'shopId' => $shop->getId(),
