@@ -167,6 +167,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Account model in the client
      * side application.
+     *
+     * @throws Exception
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function createAccountAction()
     {
@@ -226,6 +229,12 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Account model in the client
      * side application.
+
+     * @throws Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function deleteAccountAction()
     {
@@ -272,6 +281,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Main controller in the client
      * side application.
+     * @throws Exception
      */
     public function connectAccountAction()
     {
