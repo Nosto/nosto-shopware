@@ -39,6 +39,12 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Helper\ExportHelper;
+use Nosto\NostoException;
+use Nosto\Nosto;
+use Nosto\Operation\OAuth\AuthorizationCode;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Object\Signup\Account as NostoAccount;
+use Nosto\Request\Api\Token as NostoApiToken;
 
 /**
  * Main frontend controller. Handles account connection via OAuth 2 and data
@@ -51,11 +57,15 @@ use Nosto\Helper\ExportHelper;
  */
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {
+
     /**
      * Handles the redirect from Nosto oauth2 authorization server when an existing account is connected to a shop.
      * This is handled in the front end as the oauth2 server validates the "return_url" sent in the first step of the
      * authorization cycle, and requires it to be from the same domain that the account is configured for and only
      * redirects to that domain.
+     *
+     * @throws Exception
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function oauthAction()
     {
@@ -75,7 +85,34 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
                 $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
                 $meta->loadData($shop);
-                $nostoAccount = NostoAccount::syncFromNosto($meta, $code);
+
+                $oauthClient = new AuthorizationCode($meta);
+                $token = $oauthClient->authenticate($code);
+
+                if (empty($token->getAccessToken())) {
+                    throw new NostoException('No access token found when trying to sync account from Nosto');
+                }
+                if (empty($token->getMerchantName())) {
+                    throw new NostoException('No merchant name found when trying to sync account from Nosto');
+                }
+
+                $request = new NostoHttpRequest();
+                $request->setUrl(Nosto::getOAuthBaseUrl().'/exchange');
+                $request->setQueryParams(array('access_token' => $token->getAccessToken()));
+                $response = $request->get();
+                $result = $response->getJsonResult(true);
+                if ($response->getCode() !== 200) {
+                    Nosto::throwHttpException('Failed to sync account from Nosto.', $request, $response);
+                }
+                if (empty($result)) {
+                    throw new NostoException('Received invalid data from Nosto when trying to sync account');
+                }
+                $nostoAccount = new NostoAccount($token->getMerchantName());
+
+                $nostoAccount->setTokens(NostoApiToken::parseTokens($result, 'api_'));
+                if (!$nostoAccount->isConnectedToNosto()) {
+                    throw new NostoException('Failed to sync all account details from Nosto');
+                }
 
                 $account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
 
@@ -83,8 +120,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                 $existingAccount = Shopware()->Models()->getRepository("Shopware\CustomModels\Nosto\Account\Account")
                     ->findOneBy(array('name' => $account->getName()));
 
-                //If an account has been found, and the shop id is different from current shop, then it means
-                //the admin is trying to map same nosto account to two sub shops. It is not allowed.
+                // If an account has been found, and the shop id is different from current shop, then it means
+                // the admin is trying to map same nosto account to two sub shops. It is not allowed.
                 if ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId()) {
                     //existing account has been used for mapping other sub shop
                     Shopware()->PluginLogger()->error("Same nosto account has been used for two sub shops");
@@ -93,8 +130,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                         'controller' => 'index',
                         'action' => 'index',
                         'openNosto' => $shop->getId(),
-                        'messageType' => NostoMessage::TYPE_ERROR,
-                        'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                        'messageType' => Nosto::TYPE_ERROR,
+                        'messageCode' => Nosto::CODE_ACCOUNT_CONNECT,
                     );
                     $this->redirect($redirectParams, array('code' => 302));
                 } else {
@@ -106,8 +143,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                         'controller' => 'index',
                         'action' => 'index',
                         'openNosto' => $shop->getId(),
-                        'messageType' => NostoMessage::TYPE_SUCCESS,
-                        'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                        'messageType' => Nosto::TYPE_SUCCESS,
+                        'messageCode' => Nosto::CODE_ACCOUNT_CONNECT,
                     );
                     $this->redirect($redirectParams, array('code' => 302));
                 }
@@ -119,8 +156,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                     'controller' => 'index',
                     'action' => 'index',
                     'openNosto' => $shop->getId(),
-                    'messageType' => NostoMessage::TYPE_ERROR,
-                    'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                    'messageType' => Nosto::TYPE_ERROR,
+                    'messageCode' => Nosto::CODE_ACCOUNT_CONNECT,
                 );
                 $this->redirect($redirectParams, array('code' => 302));
             }
@@ -143,8 +180,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                 'controller' => 'index',
                 'action' => 'index',
                 'openNosto' => $shop->getId(),
-                'messageType' => NostoMessage::TYPE_ERROR,
-                'messageCode' => NostoMessage::CODE_ACCOUNT_CONNECT,
+                'messageType' => Nosto::TYPE_ERROR,
+                'messageCode' => Nosto::CODE_ACCOUNT_CONNECT,
                 'messageText' => $errorDescription,
             );
             $this->redirect($redirectParams, array('code' => 302));
@@ -156,6 +193,13 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     /**
      * Exports products from the current shop.
      * Result can be limited by the `limit` and `offset` GET parameters.
+     *
+     * @throws Enlight_Event_Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function exportProductsAction()
     {
@@ -211,6 +255,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Encrypts the export collection and outputs it to the browser.
      *
      * @param AbstractCollection $collection the data collection to export.
+     * @throws NostoException
      */
     protected function export(AbstractCollection $collection)
     {
@@ -229,6 +274,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     /**
      * Exports completed orders from the current shop.
      * Result can be limited by the `limit` and `offset` GET parameters.
+     *
+     * @throws Enlight_Event_Exception
+     * @throws NostoException
      */
     public function exportOrdersAction()
     {
