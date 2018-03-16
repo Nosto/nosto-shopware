@@ -43,6 +43,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\NostoException;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -148,7 +149,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             return;
         }
 
-        /** @var \Doctrine\ORM\QueryBuilder|QueryBuilder $builder */
+        /** @var \Doctrine\ORM\QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
             ->from('\Shopware\Models\Translation\Translation', 'translations')
