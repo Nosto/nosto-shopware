@@ -36,6 +36,7 @@
 
 use Nosto\Object\AbstractCollection;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware\Models\Category\Category;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Helper\ExportHelper;
@@ -203,51 +204,23 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      */
     public function exportProductsAction()
     {
-        $pageSize = (int)$this->Request()->getParam('limit', 100);
-        $currentOffset = (int)$this->Request()->getParam('offset', 0);
-        $id = $this->Request()->getParam('id', false);
-
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $result = $builder->select(array('articles.id'))
-            ->from('\Shopware\Models\Article\Article', 'articles')
-            ->innerJoin(
-                '\Shopware\Models\Article\Detail',
-                'details',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
-                'articles.mainDetailId = details.id'
-            )
-            ->where('articles.active = 1');
-
-        if (!empty($id)) {
-            $result = $result->andWhere('details.number = :id')
-                ->setParameter('id', $id)
-                ->getQuery();
-        } else {
-            $result = $result->orderBy('articles.added', 'DESC')
-                ->setFirstResult($currentOffset)
-                ->setMaxResults($pageSize)
-                ->getQuery();
-        }
-
-        $result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        $category = Shopware()->Shop()->getCategory();
+        $articlesIds = self::getActiveArticlesIdsByCategory($category);
 
         $collection = new ProductCollection();
-        $category = Shopware()->Shop()->getCategory();
-        $category->getName();
-        foreach ($result as $row) {
+        foreach ($articlesIds as $articleId) {
             /** @var Shopware\Models\Article\Article $article */
             $article = Shopware()->Models()->find(
                 'Shopware\Models\Article\Article',
-                (int)$row['id']
+                (int)$articleId['id']
             );
-            if (is_null($article) || !in_array($category, $article->getAllCategories())) {
-                continue;
-            }
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
-            $model->loadData($article);
-            $collection->append($model);
-        }
 
+            if (!is_null($article)) {
+                $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+                $model->loadData($article);
+                $collection->append($model);
+            }
+        }
         $this->export($collection);
     }
 
@@ -318,5 +291,49 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         }
 
         $this->export($collection);
+    }
+
+    /**
+     * Returns an array of articles id's that are active
+     * and has the same category id of the given shopware category
+     *
+     * @param \Shopware\Models\Category\Category $category
+     * @return array
+     */
+    private function getActiveArticlesIdsByCategory(Category $category)
+    {
+        $pageSize = (int)$this->Request()->getParam('limit', 100);
+        $currentOffset = (int)$this->Request()->getParam('offset', 0);
+        $id = $this->Request()->getParam('id', false);
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $result = $builder->select('articles.id')
+            ->from('\Shopware\Models\Article\Article', 'articles')
+            ->innerJoin(
+                '\Shopware\Models\Article\Detail',
+                'details',
+                \Doctrine\ORM\Query\Expr\Join::WITH,
+                'articles.mainDetailId = details.id'
+            )
+            ->innerJoin(
+                'articles.categories',
+                'c'
+            )
+            ->where('articles.active = 1')
+            ->andWhere('c.path LIKE :path')
+            // Since the path in the database is saved with || between
+            // the parents ids, we concatenate those and get all child
+            // categories from the given language.
+            ->setParameter('path', '%|'.(int)$category->getId().'|%');
+        if (!empty($id)) {
+            $result = $result->andWhere('details.number = :id')
+                ->setParameter('id', $id)
+                ->getQuery();
+        } else {
+            $result = $result->orderBy('articles.added', 'DESC')
+                ->setFirstResult($currentOffset)
+                ->setMaxResults($pageSize)
+                ->getQuery();
+        }
+        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
     }
 }
