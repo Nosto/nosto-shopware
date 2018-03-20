@@ -53,7 +53,7 @@ pipeline {
     stage('Phan Analysis') {
       steps {
         catchError {
-          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml"
+          sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
         }
       }
     }
