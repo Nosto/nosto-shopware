@@ -111,7 +111,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                         $shop->getId()
                     ));
                 }
-                $token = self::getAuthenticadedToken($shop, $code);
+                $token = self::getAuthenticatedToken($shop, $code);
                 $result = self::fireRequest($token);
                 $nostoAccount = new NostoAccount($token->getMerchantName());
                 $nostoAccount->setTokens(NostoApiToken::parseTokens($result, 'api_'));
@@ -260,7 +260,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * @return \Nosto\Object\NostoOAuthToken
      * @throws NostoException
      */
-    private function getAuthenticadedToken(Shopware\Models\Shop\DetachedShop $shop, $code)
+    private function getAuthenticatedToken(Shopware\Models\Shop\DetachedShop $shop, $code)
     {
         $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
         $meta->loadData($shop);
