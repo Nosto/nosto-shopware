@@ -36,6 +36,7 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Nosto\Object\Cart\LineItem as NostoLineItem;
+use Nosto\Helper\PriceHelper as NostoPriceHelper;
 
 /**
  * Model for order line item information. This is used when compiling the info
@@ -73,7 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
 
         $this->setName($detail->getArticleName());
         $this->setQuantity((int)$detail->getQuantity());
-        $this->setPrice(PriceHelper::format($detail->getPrice()));
+        $this->setPrice(NostoPriceHelper::format($detail->getPrice()));
         $this->setPriceCurrencyCode(strtoupper($detail->getOrder()->getCurrency()));
 
         Shopware()->Events()->notify(
@@ -98,7 +99,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
         $this->setProductId(-1);
         $this->setQuantity(1);
         $this->setName($name);
-        $this->setPrice(PriceHelper::format($price));
+        $this->setPrice(NostoPriceHelper::format($price));
         $this->setPriceCurrencyCode(strtoupper($currency));
     }
 }
