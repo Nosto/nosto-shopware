@@ -57,6 +57,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Nosto\NostoException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
+     * @suppress PhanDeprecatedFunction
+     * @suppress PhanUndeclaredMethod
      */
     public function sendOrder(Shopware\Models\Order\Order $order)
     {

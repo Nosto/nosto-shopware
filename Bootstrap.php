@@ -226,10 +226,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * For the structure of attribute
      * @see self::$_customAttributes
-     *
      * @param array $attribute
      * @throws Exception
      * @throws NostoException
+     * @suppress PhanDeprecatedFunction
      */
     private function addMyAttribute(array $attribute)
     {
@@ -551,7 +551,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * For the structure of attribute
      * @see self::$_customAttributes
-     *
+     * @suppress PhanDeprecatedFunction
      * @param array $attribute
      * @throws Exception
      * @throws NostoException
@@ -781,7 +781,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * something in the cart.
      *
      * @param Enlight_View_Default $view the view.
-     *
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @suppress PhanDeprecatedFunction
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
      */
     protected function addCartTagging(Enlight_View_Default $view)
@@ -815,9 +819,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * Returns a unique ID for this Shopware installation.
-     *
+     * @suppress PhanUndeclaredClassMethod
      * @return string
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getUniqueId()
     {
@@ -1187,7 +1190,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends an API order confirmation to Nosto.
      *
      * @param Enlight_Hook_HookArgs $args the hook arguments.
+     * @suppress PhanUndeclaredMethod
+     * @throws Enlight_Event_Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function onOrderSSaveOrderAfter(Enlight_Hook_HookArgs $args)
     {

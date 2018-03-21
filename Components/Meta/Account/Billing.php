@@ -35,6 +35,7 @@
  */
 
 use Nosto\Types\Signup\BillingInterface as NostoAccountMetaDataBillingDetailsInterface;
+
 /**
  * Meta-data class for billing information sent to Nosto during account create.
  *

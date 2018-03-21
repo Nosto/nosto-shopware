@@ -65,12 +65,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * Note that the account is not saved anywhere and it is up to the caller to handle it.
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop to create the account for.
-     * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
      * @param string|null $email (optional) the account owner email if different than the active admin user.
      * @param array|stdClass $details (optional) the account details.
      * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
      * @throws NostoException if the account cannot be created for any reason.
+     * @suppress PhanTypeMismatchArgument
      */
     public static function createAccount(
         \Shopware\Models\Shop\Shop $shop,
@@ -145,8 +146,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * Removes the account and tells Nosto about it.
      *
      * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to remove.
-     * @throws \Doctrine\ORM\OptimisticLockException
      * @throws NostoException
+     * @suppress PhanDeprecatedFunction
      */
     public static function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account, $identity)
     {
@@ -208,7 +209,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * Builds the Nosto account administration iframe url and returns it.
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
-     * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
      * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
@@ -239,6 +240,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
             $meta,
             $nostoAccount,
             $user->build($identity),
-            $params);
+            $params
+        );
     }
 }

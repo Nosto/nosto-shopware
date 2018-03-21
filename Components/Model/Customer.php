@@ -74,7 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * Loads customer data from the logged in customer.
      *
      * @param \Shopware\Models\Customer\Customer $customer the customer model.
-     * @throws Enlight_Event_Exception
+     * @suppress PhanDeprecatedFunction
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {

@@ -35,6 +35,7 @@
  */
 
 use Nosto\Object\Order\OrderStatus as NostoOrderStatus;
+
 /**
  * Model for order status information. This is used when compiling the info
  * about an order that is sent to Nosto.
@@ -51,7 +52,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
      * Populates the order status with data from the order model.
      *
      * @param Shopware\Models\Order\Order $order the order model.
-     * @throws Enlight_Event_Exception
+     * @suppress PhanDeprecatedFunction
      */
     public function loadData(Shopware\Models\Order\Order $order)
     {

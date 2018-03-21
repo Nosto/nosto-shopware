@@ -97,9 +97,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      * Assembles the product image url based on article.
      *
      * @param \Shopware\Models\Article\Image $image
-     * @param MediaServiceInterface $mediaService
+     * @param MediaServiceInterface|null $mediaService
      * @param \Shopware\Models\Shop\Shop $shop
-     * @return null|string the url of the Image or null if image not found.
+     * @return ?string the url of the Image or null if image not found.
      */
     private static function buildUrl(
         \Shopware\Models\Article\Image $image,

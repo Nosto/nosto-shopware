@@ -53,9 +53,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly created product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
-     * @throws Enlight_Event_Exception
      * @throws Exception
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @suppress PhanDeprecatedFunction
      */
     public function create(\Shopware\Models\Article\Article $article)
     {
@@ -142,10 +142,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly updated product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
-     * @throws Enlight_Event_Exception
-     * @throws Exception
      * @throws NostoException
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @suppress PhanDeprecatedFunction
      */
     public function update(\Shopware\Models\Article\Article $article)
     {
@@ -176,6 +175,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      *
      * @param \Shopware\Models\Article\Article $article the product.
      * @throws \Nosto\NostoException
+     * @suppress PhanDeprecatedFunction
      */
     public function delete(\Shopware\Models\Article\Article $article)
     {
@@ -185,7 +185,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             if ($model->getProductId()) {
                 try {
                     $op = new DeleteProduct($account);
-                    $products[] = $model->getProductId();
+                    $products = array($model->getProductId());
                     $op->setProductIds($products);
                     $op->delete();
                 } catch (NostoException $e) {

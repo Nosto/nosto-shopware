@@ -151,6 +151,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param Article $article
      * @param Shop $shop
      * @return null|\Shopware\Models\Article\Price
+     * @suppress PhanDeprecatedFunction
      */
     private static function getPrice(Article $article, Shop $shop)
     {

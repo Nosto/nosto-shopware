@@ -57,7 +57,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * Returns a product page preview url in the given shop.
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
-     * @return string the url.
+     * @return null|string the url.
      */
     public static function getProductPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
     {
@@ -109,7 +109,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * Returns a category page preview url in the given shop.
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
-     * @return string the url.
+     * @return null|string the url.
      */
     public static function getCategoryPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
     {
