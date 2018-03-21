@@ -65,7 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * All this is needed as we re-send the orders when anything changes, like
      * their status, and we need to know then which Nosto session the order
      * belonged to.
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @suppress PhanDeprecatedFunction
      */
     public static function persistSession()
     {
@@ -96,7 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
     /**
      * Returns the hashed session
      *
-     * @return null|string the Nosto ID.
+     * @return ?string the Nosto ID.
      */
     public static function getHcid()
     {
@@ -113,6 +113,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * Returns the Nosto session ID based on the current Shopware session ID.
      *
      * @return null|string the Nosto ID.
+     * @suppress PhanDeprecatedFunction
      */
     public static function getNostoId()
     {

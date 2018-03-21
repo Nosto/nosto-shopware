@@ -63,7 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
      * Loads the oauth meta data from the shop model.
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
-     * @param \Shopware\Models\Shop\Locale $locale the locale model or null.
+     * @param \Shopware\Models\Shop\Locale|null $locale the locale model or null.
      */
     public function loadData(
         \Shopware\Models\Shop\Shop $shop,

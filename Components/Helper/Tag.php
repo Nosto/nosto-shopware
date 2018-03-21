@@ -59,6 +59,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
      * @param \Shopware\Models\Article\Article $article
      * @param \Shopware\Models\Shop\Shop $shop
      * @return array
+     * @suppress PhanDeprecatedFunction
      */
     public static function buildProductTags(Article $article, Shop $shop)
     {

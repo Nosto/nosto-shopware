@@ -49,7 +49,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
     extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
     /**
-     * @var string the product id for the line item.
+     * @var integer the product id for the line item.
      */
     protected $productId;
 
@@ -64,7 +64,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
     protected $name;
 
     /**
-     * @var string the line item unit price.
+     * @var string|float the line item unit price.
      */
     protected $unitPrice;
 
@@ -78,10 +78,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
      *
      * @param Shopware\Models\Order\Basket $basket an order basket item.
      * @param string $currencyCode the line item currency code.
-     * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
     {
@@ -202,7 +198,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
     /**
      * Returns the unit price of the line item.
      *
-     * @return string the unit price.
+     * @return float the unit price.
      */
     public function getUnitPrice()
     {

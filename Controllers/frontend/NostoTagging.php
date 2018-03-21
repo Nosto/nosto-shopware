@@ -86,7 +86,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * redirects to that domain.
      *
      * @throws Exception
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @suppress PhanDeprecatedFunction
      */
     public function oauthAction()
     {
@@ -163,12 +163,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Exports products from the current shop.
      * Result can be limited by the `limit` and `offset` GET parameters.
      *
-     * @throws Enlight_Event_Exception
      * @throws NostoException
      * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function exportProductsAction()
     {

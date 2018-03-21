@@ -53,10 +53,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
      * Populates the order line item with data from the order detail model.
      *
      * @param \Shopware\Models\Order\Detail $detail the order detail model.
-     * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @suppress PhanTypeMismatchArgument
      */
     public function loadData(\Shopware\Models\Order\Detail $detail)
     {
@@ -94,6 +91,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
      * @param string $name the name of the item.
      * @param float|int|string $price the unit price of the item.
      * @param string $currency the 3-letter ISO code (ISO 4217) for the item currency.
+     * @suppress PhanTypeMismatchArgument
      */
     public function loadSpecialItemData($name, $price, $currency)
     {

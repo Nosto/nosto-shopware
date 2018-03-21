@@ -100,8 +100,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
      * Loads the meta data for the given shop.
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
-     * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
+     * @suppress PhanTypeMismatchArgumentInternal
+     * @suppress PhanDeprecatedFunction
      */
     public function loadData(
         \Shopware\Models\Shop\Shop $shop,

@@ -62,9 +62,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * Loads the model data from an article and shop.
      *
      * @param Article $article the article model.
-     * @param Shop $shop the shop the product is in.
-     * @throws Enlight_Event_Exception
+     * @param Shop|null $shop the shop the product is in.
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @suppress PhanTypeMismatchArgument
      */
     public function loadData(Article $article, Shop $shop = null)
     {

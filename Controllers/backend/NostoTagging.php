@@ -38,6 +38,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
 use Nosto\Nosto;
 use Nosto\NostoException;
 use Nosto\Helper\OAuthHelper as NostoOAuthClient;
+
 /**
  * Main backend controller. Handles account create/connect/delete requests
  * from the account configuration iframe.
@@ -101,6 +102,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * @throws Exception
      * @throws NostoException
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @suppress PhanDeprecatedFunction
      */
     public function getAccountsAction()
     {
@@ -170,6 +172,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * @throws Exception
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @suppress PhanDeprecatedFunction
      */
     public function createAccountAction()
     {
@@ -232,9 +235,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 
      * @throws Exception
      * @throws NostoException
-     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @suppress PhanDeprecatedFunction
      */
     public function deleteAccountAction()
     {
@@ -282,6 +284,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * This action should only be accessed by the Main controller in the client
      * side application.
      * @throws Exception
+     * @suppress PhanDeprecatedFunction
      */
     public function connectAccountAction()
     {
