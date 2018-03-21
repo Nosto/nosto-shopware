@@ -34,7 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
+use Nosto\Helper\PriceHelper as NostoPriceHelper;
 
 /**
  * Model for shopping cart line items. This is used when compiling the shopping
@@ -97,7 +97,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
 
         $this->name = $basket->getArticleName();
         $this->quantity = (int)$basket->getQuantity();
-        $this->unitPrice = PriceHelper::format($basket->getPrice());
+        $this->unitPrice = NostoPriceHelper::format($basket->getPrice());
         $this->currencyCode = strtoupper($currencyCode);
 
         Shopware()->Events()->notify(
