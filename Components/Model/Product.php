@@ -122,14 +122,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     }
 
     /**
-     * get the supplier cost
+     * Get the supplier cost
      *
      * @param Article $article article to be updated
      * @param Shop $shop sub shop
      */
     public function amendSupplierCost(\Shopware\Models\Article\Article $article, Shop $shop)
     {
-        //purchase price is not available before version 5.2
+        // Purchase price is not available before version 5.2
         if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
             $suplierCost = $article->getMainDetail()->getPurchasePrice();
             $this->setSupplierCost(PriceHelper::convertToShopCurrency($suplierCost, $shop));
@@ -137,7 +137,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     }
 
     /**
-     * update Article fields to translated text based on the shop id.
+     * Update Article fields to translated text based on the shop id.
      *
      * @param Article $article article to be updated
      * @param Shop|null $shop sub shop id

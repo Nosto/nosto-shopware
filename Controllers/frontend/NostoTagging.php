@@ -198,6 +198,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      *
      * @throws Enlight_Event_Exception
      * @throws NostoException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function exportOrdersAction()
     {

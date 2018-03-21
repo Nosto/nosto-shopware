@@ -78,6 +78,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
      *
      * @param Shopware\Models\Order\Basket $basket an order basket item.
      * @param string $currencyCode the line item currency code.
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
     {
