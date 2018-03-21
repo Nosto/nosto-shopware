@@ -36,7 +36,6 @@
 
 use Nosto\Object\AbstractCollection;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
-use Shopware\Models\Category\Category;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Object\Order\OrderCollection;
 use Nosto\Helper\ExportHelper;
@@ -58,6 +57,27 @@ use Nosto\Request\Api\Token as NostoApiToken;
  */
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {
+    /**
+     * @var \Shopware_Plugins_Frontend_NostoTagging_Controllers_Repository
+     */
+    private $controllersRepository;
+
+    /**
+     * Shopware_Controllers_Frontend_NostoTagging constructor.
+     * @param Enlight_Controller_Request_Request $request
+     * @param Enlight_Controller_Response_Response $response
+     * @throws Enlight_Event_Exception
+     * @throws Enlight_Exception
+     * @throws Exception
+     */
+    public function __construct(
+        Enlight_Controller_Request_Request $request,
+        Enlight_Controller_Response_Response $response
+    ) {
+        parent::__construct($request, $response);
+        $this->controllersRepository =
+            new Shopware_Plugins_Frontend_NostoTagging_Controllers_Repository();
+    }
 
     /**
      * Handles the redirect from Nosto oauth2 authorization server when an existing account is connected to a shop.
@@ -99,7 +119,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                     throw new NostoException('Failed to sync all account details from Nosto');
                 }
                 $account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
-                if (self::isAccountAlreadyRegistered($account)) {
+                if ($this->controllersRepository->isAccountAlreadyRegistered($account)) {
                     // Existing account has been used for mapping other sub shop
                     Shopware()->PluginLogger()->error("Same nosto account has been used for two sub shops");
                     $redirectParams['messageType'] = Nosto::TYPE_ERROR;
@@ -153,7 +173,16 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     public function exportProductsAction()
     {
         $category = Shopware()->Shop()->getCategory();
-        $articlesIds = self::getActiveArticlesIdsByCategory($category);
+        $pageSize = (int)$this->Request()->getParam('limit', 100);
+        $currentOffset = (int)$this->Request()->getParam('offset', 0);
+        $id = $this->Request()->getParam('id', false);
+        $articlesIds =
+            $this->controllersRepository->getActiveArticlesIdsByCategory(
+                $category,
+                $pageSize,
+                $currentOffset,
+                $id
+            );
 
         $collection = new ProductCollection();
         foreach ($articlesIds as $articleId) {
@@ -208,23 +237,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $currentOffset = (int)$this->Request()->getParam('offset', 0);
         $id = $this->Request()->getParam('id', false);
 
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $result = $builder->select(array('orders.number'))
-            ->from('\Shopware\Models\Order\Order', 'orders')
-            ->where('orders.status >= 0');
-
-        if (!empty($id)) {
-            $result = $result->andWhere('orders.number = :id')
-                ->setParameter('id', $id)
-                ->getQuery();
-        } else {
-            $result = $result->orderBy('orders.orderTime', 'DESC')
-                ->setFirstResult($currentOffset)
-                ->setMaxResults($pageSize)
-                ->getQuery();
-        }
-
-        $result = $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        $result = $this->controllersRepository
+            ->getCompletedOrders($pageSize, $currentOffset, $id);
 
         $collection = new OrderCollection();
         $shop = Shopware()->Shop()->getId();
@@ -242,50 +256,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         }
 
         $this->export($collection);
-    }
-
-    /**
-     * Returns an array of articles id's that are active
-     * and has the same category id of the given shopware category
-     *
-     * @param \Shopware\Models\Category\Category $category
-     * @return array
-     */
-    private function getActiveArticlesIdsByCategory(Category $category)
-    {
-        $pageSize = (int)$this->Request()->getParam('limit', 100);
-        $currentOffset = (int)$this->Request()->getParam('offset', 0);
-        $id = $this->Request()->getParam('id', false);
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $result = $builder->select('articles.id')
-            ->from('\Shopware\Models\Article\Article', 'articles')
-            ->innerJoin(
-                '\Shopware\Models\Article\Detail',
-                'details',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
-                'articles.mainDetailId = details.id'
-            )
-            ->innerJoin(
-                'articles.categories',
-                'c'
-            )
-            ->where('articles.active = 1')
-            ->andWhere('c.path LIKE :path')
-            // Since the path in the database is saved with || between
-            // the parents ids, we concatenate those and get all child
-            // categories from the given language.
-            ->setParameter('path', '%|'.(int)$category->getId().'|%');
-        if (!empty($id)) {
-            $result = $result->andWhere('details.number = :id')
-                ->setParameter('id', $id)
-                ->getQuery();
-        } else {
-            $result = $result->orderBy('articles.added', 'DESC')
-                ->setFirstResult($currentOffset)
-                ->setMaxResults($pageSize)
-                ->getQuery();
-        }
-        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
     }
 
     /**
@@ -331,26 +301,5 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             throw new NostoException('Received invalid data from Nosto when trying to sync account');
         }
         return $result;
-    }
-
-    /**
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account
-     * @return bool
-     */
-    private function isAccountAlreadyRegistered(\Shopware\CustomModels\Nosto\Account\Account $account)
-    {
-        /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
-        $existingAccount = Shopware()
-            ->Models()
-            ->getRepository("Shopware\CustomModels\Nosto\Account\Account")
-            ->findOneBy(array('name' => $account->getName()));
-
-        // If an account has been found, and the shop id is different from current shop, then it means
-        // the admin is trying to map same nosto account to two sub shops. It is not allowed.
-        if ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId()) {
-            return true;
-        }
-
-        return false;
     }
 }
