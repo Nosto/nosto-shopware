@@ -35,6 +35,8 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
+use Nosto\NostoException;
 
 /**
  * Order confirmation component. Used to send order information to Nosto.
@@ -49,6 +51,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      *
      * @param Shopware\Models\Order\Order $order the order model.
      *
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws \Nosto\NostoException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
      */
     public function sendOrder(Shopware\Models\Order\Order $order)
@@ -77,7 +84,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     }
                     $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
                     $model->loadData($order);
-                    NostoOrderConfirmation::send($model, $nostoAccount, $customerId);
+                    $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
+                    $orderConfirmation->send($model, $customerId);
                 } catch (NostoException $e) {
                     Shopware()->PluginLogger()->error($e);
                 }
