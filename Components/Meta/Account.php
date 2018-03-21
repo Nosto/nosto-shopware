@@ -35,7 +35,6 @@
  */
 
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
-use Nosto\Request\Api\Token;
 use Nosto\Object\Signup\Signup;
 
 /**
@@ -125,9 +124,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         $this->billing->loadData($shop);
     }
 
-    public function __construct(
-        $platform
-    ) {
+    /**
+     * Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account constructor.
+     * @param $platform
+     */
+    public function __construct($platform)
+    {
         parent::__construct(
             $platform,
             $signupApiToken = $this->signUpApiToken
