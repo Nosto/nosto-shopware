@@ -56,6 +56,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
      *
      * @param \Shopware\Models\Order\Order $order the order model.
      * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Nosto\NostoException
      */
     public function loadData(\Shopware\Models\Order\Order $order)

@@ -55,6 +55,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
      * Loads the cart line items from the order baskets.
      *
      * @param \Shopware\Models\Order\Basket[] $baskets the users basket items.
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function loadData(array $baskets)
     {

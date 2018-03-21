@@ -114,6 +114,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @param \Shopware\Models\Shop\Locale $locale the locale or null.
      * @param stdClass|null $identity the user identity.
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function loadData(
         \Shopware\Models\Shop\Shop $shop,

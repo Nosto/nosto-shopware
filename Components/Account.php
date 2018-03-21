@@ -212,9 +212,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
-     * @return string the url.
      * @suppress PhanUndeclaredMethod
      * @throws NostoException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @return string the url.
      */
     public static function buildAccountIframeUrl(
         \Shopware\Models\Shop\Shop $shop,

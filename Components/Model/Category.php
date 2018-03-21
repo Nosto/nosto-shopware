@@ -55,6 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      * Loads the category data from a category model.
      *
      * @param \Shopware\Models\Category\Category $category the model.
+     * @throws Enlight_Event_Exception
      */
     public function loadData(\Shopware\Models\Category\Category $category)
     {

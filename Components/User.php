@@ -41,6 +41,7 @@ use Nosto\Types\UserInterface;
 class Shopware_Plugins_Frontend_NostoTagging_Components_User
 {
     /**
+     * @param $identity
      * @return User
      */
     public function build($identity)

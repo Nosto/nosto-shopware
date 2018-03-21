@@ -36,6 +36,7 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
+use Nosto\NostoException;
 
 /**
  * Model for customer information. This is used when compiling the info about
@@ -73,6 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * Loads customer data from the logged in customer.
      *
      * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     * @throws Enlight_Event_Exception
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
@@ -110,6 +112,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * @throws NostoException if customer reference cannot be fetched or created
      *
      * @return void
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function populateCustomerReference(\Shopware\Models\Customer\Customer $customer)
     {

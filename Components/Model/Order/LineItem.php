@@ -53,6 +53,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
      * Populates the order line item with data from the order detail model.
      *
      * @param \Shopware\Models\Order\Detail $detail the order detail model.
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function loadData(\Shopware\Models\Order\Detail $detail)
     {
