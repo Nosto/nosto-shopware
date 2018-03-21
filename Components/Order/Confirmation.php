@@ -60,7 +60,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      */
     public function sendOrder(Shopware\Models\Order\Order $order)
     {
-        $shop = $order->getShop();
+        $shop = Shopware()->Shop();
         if (is_null($shop)) {
             return;
         }
