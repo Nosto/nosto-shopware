@@ -55,28 +55,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
      * Loads the cart line items from the order baskets.
      *
      * @param \Shopware\Models\Order\Basket[] $baskets the users basket items.
-     * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function loadData(array $baskets)
     {
-        $currency = Shopware()->Shop()->getCurrency()->getCurrency();
-        foreach ($baskets as $basket) {
-            $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
-            $item->loadData($basket, $currency);
-            $this->lineItems[] = $item;
+        try {
+            $currency = Shopware()->Shop()->getCurrency()->getCurrency();
+            foreach ($baskets as $basket) {
+                $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
+                $item->loadData($basket, $currency);
+                $this->lineItems[] = $item;
+            }
+            Shopware()->Events()->notify(
+                __CLASS__ . '_AfterLoad',
+                array(
+                    'nostoCart' => $this,
+                    'baskets' => $baskets,
+                    'currency' => $currency,
+                )
+            );
+        } catch (Exception $e) {
+            Shopware()->Container()->get('pluginlogger')->warning($e->getMessage());
         }
-
-        Shopware()->Events()->notify(
-            __CLASS__ . '_AfterLoad',
-            array(
-                'nostoCart' => $this,
-                'baskets' => $baskets,
-                'currency' => $currency,
-            )
-        );
     }
 
     /**
