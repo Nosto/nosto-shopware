@@ -75,7 +75,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
-                    Shopware()->PluginLogger()->error($e);
+                    $logger = Shopware()->Container()->get('pluginlogger');
+                    $logger->error($e);
                 }
             }
         }
@@ -142,6 +143,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly updated product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
+     * @throws Exception
      * @throws NostoException
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
@@ -164,7 +166,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
-                    Shopware()->PluginLogger()->error($e);
+                    $logger = Shopware()->Container()->get('pluginlogger');
+                    $logger->error($e);
                 }
             }
         }
@@ -175,7 +178,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      *
      * @param \Shopware\Models\Article\Article $article the product.
      * @throws \Nosto\NostoException
-     * @suppress PhanDeprecatedFunction
      */
     public function delete(\Shopware\Models\Article\Article $article)
     {
@@ -189,7 +191,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->setProductIds($products);
                     $op->delete();
                 } catch (NostoException $e) {
-                    Shopware()->PluginLogger()->error($e);
+                    $logger = Shopware()->Container()->get('pluginlogger');
+                    $logger->error($e);
                 }
             }
         }

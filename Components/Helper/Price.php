@@ -46,7 +46,6 @@ use Nosto\Helper\PriceHelper as NostoPriceHelper;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 {
-
     const PRICE_TYPE_NORMAL = 'price';
     const PRICE_TYPE_LIST = 'listPrice';
 
@@ -151,7 +150,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param Article $article
      * @param Shop $shop
      * @return null|\Shopware\Models\Article\Price
-     * @suppress PhanDeprecatedFunction
      */
     private static function getPrice(Article $article, Shop $shop)
     {
@@ -182,7 +180,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                     }
                 }
             } catch (Exception $e) {
-                Shopware()->PluginLogger()->error($e);
+                $logger = Shopware()->Container()->get('pluginlogger');
+                $logger->error($e);
             }
         }
 

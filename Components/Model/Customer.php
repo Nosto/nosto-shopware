@@ -74,7 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * Loads customer data from the logged in customer.
      *
      * @param \Shopware\Models\Customer\Customer $customer the customer model.
-     * @suppress PhanDeprecatedFunction
+     * @throws Enlight_Event_Exception
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
@@ -86,7 +86,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
         try {
             $this->populateCustomerReference($customer);
         } catch (Exception $e) {
-            Shopware()->PluginLogger()->error(
+            $logger = Shopware()->Container()->get('pluginlogger');
+            $logger->error(
                 sprintf(
                     'Could not populate customer reference. Error was: %s',
                     $e->getMessage()

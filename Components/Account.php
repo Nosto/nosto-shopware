@@ -146,8 +146,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * Removes the account and tells Nosto about it.
      *
      * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to remove.
+     * @param $identity
      * @throws NostoException
-     * @suppress PhanDeprecatedFunction
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public static function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account, $identity)
     {
@@ -160,7 +161,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
             $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User();
             $operation->delete($user->build($identity));
         } catch (NostoException $e) {
-            Shopware()->PluginLogger()->error($e);
+            $logger = Shopware()->Container()->get('pluginlogger');
+            $logger->error($e);
         }
     }
 
