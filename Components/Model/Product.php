@@ -195,7 +195,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      */
     public function assignId(\Shopware\Models\Article\Article $article)
     {
-
         $mainDetail = $article->getMainDetail();
         if ($mainDetail instanceof \Shopware\Models\Article\Detail === false) {
             throw new NostoException(
