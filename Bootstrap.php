@@ -42,6 +42,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponent
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\NostoException;
+use phpseclib\Crypt\Random as NostoCryptRandom;
 
 /**
  * The plugin bootstrap class.
@@ -832,7 +833,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if (is_null($setting)) {
             $setting = new \Shopware\CustomModels\Nosto\Setting\Setting();
             $setting->setName('uniqueId');
-            $setting->setValue(bin2hex(NostoCryptRandom::getRandomString(32)));
+            $setting->setValue(bin2hex(NostoCryptRandom::string(32)));
             Shopware()->Models()->persist($setting);
             Shopware()->Models()->flush($setting);
         }
