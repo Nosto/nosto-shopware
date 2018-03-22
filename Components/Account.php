@@ -158,7 +158,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         try {
             // Notify Nosto that the account was deleted.
             $operation = new UninstallAccount($nostoAccount);
-            $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User();
+            $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder();
             $operation->delete($user->build($identity));
         } catch (NostoException $e) {
             $logger = Shopware()->Container()->get('pluginlogger');
@@ -237,7 +237,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         if (!isset($params['v'])) {
             $params['v'] = NostoTaggingBootstrap::PLATFORM_UI_VERSION;
         }
-        $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User();
+        $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder();
         return IframeHelper::getUrl(
             $meta,
             $nostoAccount,

@@ -38,7 +38,7 @@ use Nosto\Object\User;
 use Nosto\NostoException;
 use Nosto\Types\UserInterface;
 
-class Shopware_Plugins_Frontend_NostoTagging_Components_User
+class Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder
 {
     /**
      * @param $identity
