@@ -45,6 +45,9 @@ use Nosto\Operation\OAuth\AuthorizationCode;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
+use Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository as AccountRepository;
+use Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository as ProductRepository;
+use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepository;
 
 /**
  * Main frontend controller. Handles account connection via OAuth 2 and data
@@ -58,25 +61,33 @@ use Nosto\Request\Api\Token as NostoApiToken;
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {
     /**
-     * @var \Shopware_Plugins_Frontend_NostoTagging_Controllers_Repository
+     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
      */
-    private $controllersRepository;
+    private $productRepository;
+
+    /**
+     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
+     */
+    private $accountRepository;
+
+    /**
+     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
+     */
+    private $orderRepository;
 
     /**
      * Shopware_Controllers_Frontend_NostoTagging constructor.
      * @param Enlight_Controller_Request_Request $request
      * @param Enlight_Controller_Response_Response $response
-     * @throws Enlight_Event_Exception
-     * @throws Enlight_Exception
-     * @throws Exception
      */
     public function __construct(
         Enlight_Controller_Request_Request $request,
         Enlight_Controller_Response_Response $response
     ) {
         parent::__construct($request, $response);
-        $this->controllersRepository =
-            new Shopware_Plugins_Frontend_NostoTagging_Controllers_Repository();
+        $this->productRepository = new ProductRepository();
+        $this->accountRepository = new AccountRepository();
+        $this->orderRepository = new OrderRepository();
     }
 
     /**
@@ -118,7 +129,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                     throw new NostoException('Failed to sync all account details from Nosto');
                 }
                 $account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
-                if ($this->controllersRepository->isAccountAlreadyRegistered($account)) {
+                if ($this->accountRepository->isAccountAlreadyRegistered($account)) {
                     // Existing account has been used for mapping other sub shop
                     $logger = Shopware()->Container()->get('pluginlogger');
                     $logger->error('Same nosto account has been used for two sub shops');
@@ -175,7 +186,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $currentOffset = (int)$this->Request()->getParam('offset', 0);
         $id = $this->Request()->getParam('id', false);
         $articlesIds =
-            $this->controllersRepository->getActiveArticlesIdsByCategory(
+            $this->productRepository->getActiveArticlesIdsByCategory(
                 $category,
                 $pageSize,
                 $currentOffset,
@@ -235,7 +246,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $currentOffset = (int)$this->Request()->getParam('offset', 0);
         $id = $this->Request()->getParam('id', false);
 
-        $result = $this->controllersRepository
+        $result = $this->orderRepository
             ->getCompletedOrders($pageSize, $currentOffset, $id);
 
         $collection = new OrderCollection();

@@ -36,7 +36,10 @@
 
 use Shopware\Models\Category\Category;
 
-class Shopware_Plugins_Frontend_NostoTagging_Controllers_Repository
+/**
+ * Class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
+ */
+class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
 {
     /**
      * Returns an array of articles id's that are active
@@ -83,54 +86,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Controllers_Repository
                 ->setMaxResults($pageSize)
                 ->getQuery();
         }
-        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-    }
-
-    /**
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account
-     * @return bool
-     */
-    public function isAccountAlreadyRegistered(
-        \Shopware\CustomModels\Nosto\Account\Account $account
-    ) {
-        /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
-        $existingAccount = Shopware()
-            ->Models()
-            ->getRepository("Shopware\CustomModels\Nosto\Account\Account")
-            ->findOneBy(array('name' => $account->getName()));
-
-        // If an account has been found, and the shop id is different from current shop, then it means
-        // the admin is trying to map same nosto account to two sub shops. It is not allowed.
-        if ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId()) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $pageSize
-     * @param $currentOffset
-     * @param $id
-     * @return array
-     */
-    public function getCompletedOrders($pageSize, $currentOffset, $id)
-    {
-        $builder = Shopware()->Models()->createQueryBuilder();
-        $result = $builder->select(array('orders.number'))
-            ->from('\Shopware\Models\Order\Order', 'orders')
-            ->where('orders.status >= 0');
-
-        if (!empty($id)) {
-            $result = $result->andWhere('orders.number = :id')
-                ->setParameter('id', $id)
-                ->getQuery();
-        } else {
-            $result = $result->orderBy('orders.orderTime', 'DESC')
-                ->setFirstResult($currentOffset)
-                ->setMaxResults($pageSize)
-                ->getQuery();
-        }
-
         return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
     }
 }
