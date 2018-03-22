@@ -5,10 +5,13 @@
   "license": [
     "BSD-3-Clause"
   ],
-  "version": "1.2.7",
+  "version": "1.2.8",
   "require": {
     "php": ">=5.5.0",
     "nosto/php-sdk": "1.16.3"
+  },
+  "extra": {
+    "installer-name": "NostoTagging"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "2.8.1",
