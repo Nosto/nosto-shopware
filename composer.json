@@ -1,10 +1,11 @@
 {
   "name": "nosto/nosto-shopware-plugin",
   "description": "Increase your conversion rate and average order value by delivering your customers personalized product recommendations throughout their shopping journey.",
+  "type": "shopware-frontend-plugin",
   "license": [
     "BSD-3-Clause"
   ],
-  "version": "1.2.6",
+  "version": "1.2.7",
   "require": {
     "php": ">=5.5.0",
     "nosto/php-sdk": "1.16.3"
