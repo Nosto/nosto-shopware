@@ -324,7 +324,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @return mixed|string
      * @throws NostoException in case version cannot be determined
      */
-    protected function getShopwareVersion()
+    public function getShopwareVersion()
     {
         if (Shopware::VERSION !== null && Shopware::VERSION !== '___VERSION___') {
             return Shopware::VERSION;

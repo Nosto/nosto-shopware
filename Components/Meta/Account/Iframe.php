@@ -222,7 +222,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
      */
     public function getVersionPlatform()
     {
-        return \Shopware::VERSION;
+        return Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion();
     }
 
     /**
