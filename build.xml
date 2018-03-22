@@ -38,6 +38,7 @@
 
     <property name="package" value="${phing.project.name}" override="true"/>
     <property name="zipbase" value="./build/src/" override="false"/>
+    <property name="zipbase" value="./build/src/" override="false"/>
     <property name="zipdirectory" value="Frontend" override="false"/>
     <property name="buildsrc" value="./build/src/Frontend/NostoTagging" override="false"/>
     <property name="buildroot" value="./build" override="true"/>
@@ -69,8 +70,8 @@
     <!-- We must replace some files in order to comply with Shopware's validation rules -->
     <target name="replacements">
         <copy
-                file="${buildstatic}/NostoCryptRandom.php"
-                todir="${buildsrc}/${vendordir}/nosto/php-sdk/src/libs/phpseclib/crypt"
+                file="${buildstatic}/Random.php"
+                todir="${buildsrc}/${vendordir}/phpseclib/phpseclib/phpseclib/Crypt/"
                 overwrite="true"
         />
     </target>
