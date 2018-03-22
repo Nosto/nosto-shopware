@@ -57,7 +57,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Nosto\NostoException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
-     * @suppress PhanDeprecatedFunction
      * @suppress PhanUndeclaredMethod
      */
     public function sendOrder(Shopware\Models\Order\Order $order)
@@ -66,9 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
         if (is_null($shop)) {
             return;
         }
-
         $account = NostoComponentAccount::findAccount($shop);
-
         if (!is_null($account)) {
             $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
             if ($nostoAccount->isConnectedToNosto()) {
@@ -89,7 +86,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);
                 } catch (NostoException $e) {
-                    Shopware()->PluginLogger()->error($e);
+                    $logger = Shopware()->Container()->get('pluginlogger');
+                    $logger->error($e);
                 }
             }
         }

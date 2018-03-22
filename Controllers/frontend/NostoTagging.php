@@ -86,7 +86,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * redirects to that domain.
      *
      * @throws Exception
-     * @suppress PhanDeprecatedFunction
      */
     public function oauthAction()
     {
@@ -121,7 +120,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                 $account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
                 if ($this->controllersRepository->isAccountAlreadyRegistered($account)) {
                     // Existing account has been used for mapping other sub shop
-                    Shopware()->PluginLogger()->error("Same nosto account has been used for two sub shops");
+                    $logger = Shopware()->Container()->get('pluginlogger');
+                    $logger->error('Same nosto account has been used for two sub shops');
                     $redirectParams['messageType'] = Nosto::TYPE_ERROR;
                     $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
                     $this->redirect($redirectParams, array('code' => 302));
@@ -133,7 +133,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                     $this->redirect($redirectParams, array('code' => 302));
                 }
             } catch (NostoException $e) {
-                Shopware()->PluginLogger()->error($e);
+                $logger = Shopware()->Container()->get('pluginlogger');
+                $logger->error($e);
                 $redirectParams['messageType'] = Nosto::TYPE_ERROR;
                 $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
                 $this->redirect($redirectParams, array('code' => 302));
@@ -149,7 +150,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             if (!is_null($errorDescription)) {
                 $logMessage .= ' - ' . $errorDescription;
             }
-            Shopware()->PluginLogger()->error($logMessage);
+            $logger = Shopware()->Container()->get('pluginlogger');
+            $logger->error($logMessage);
             $redirectParams['messageType'] = Nosto::TYPE_ERROR;
             $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
             $redirectParams[] = ['messageText' => $errorDescription];

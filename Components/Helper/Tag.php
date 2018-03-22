@@ -59,7 +59,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
      * @param \Shopware\Models\Article\Article $article
      * @param \Shopware\Models\Shop\Shop $shop
      * @return array
-     * @suppress PhanDeprecatedFunction
      */
     public static function buildProductTags(Article $article, Shop $shop)
     {
@@ -81,7 +80,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
                 $tags['tag2'] = array($pricePerUnit);
             }
         } catch (\Exception $e) {
-            Shopware()->PluginLogger()->warning(
+            $logger = Shopware()->Container()->get('pluginlogger');
+            $logger->warning(
                 sprintf(
                     'Could not create price per unit. Error was: %s (%s)',
                     $e->getMessage(),

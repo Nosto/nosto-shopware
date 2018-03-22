@@ -54,7 +54,6 @@ use phpseclib\Crypt\Random as NostoCryptRandom;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-
     const PLATFORM_NAME = 'shopware';
     const PLUGIN_VERSION = '1.2.6';
     const MENU_PARENT_ID = 23;  // Configuration
