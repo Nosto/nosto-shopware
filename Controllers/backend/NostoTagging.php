@@ -219,8 +219,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     'shopName' => $shop->getName(),
                 );
             } catch (NostoException $e) {
-                $logger = Shopware()->Container()->get('pluginlogger');
-                $logger->error($e);
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
 

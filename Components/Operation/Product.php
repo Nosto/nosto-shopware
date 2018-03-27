@@ -75,8 +75,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
-                    $logger = Shopware()->Container()->get('pluginlogger');
-                    $logger->error($e);
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
         }
@@ -166,8 +165,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
-                    $logger = Shopware()->Container()->get('pluginlogger');
-                    $logger->error($e);
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
         }
@@ -191,8 +189,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->setProductIds($products);
                     $op->delete();
                 } catch (NostoException $e) {
-                    $logger = Shopware()->Container()->get('pluginlogger');
-                    $logger->error($e);
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
         }

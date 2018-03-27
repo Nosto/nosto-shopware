@@ -86,8 +86,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);
                 } catch (NostoException $e) {
-                    $logger = Shopware()->Container()->get('pluginlogger');
-                    $logger->error($e);
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
         }

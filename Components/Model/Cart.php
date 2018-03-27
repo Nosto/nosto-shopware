@@ -74,7 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
                 )
             );
         } catch (Exception $e) {
-            Shopware()->Container()->get('pluginlogger')->warning($e->getMessage());
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
         }
     }
 
