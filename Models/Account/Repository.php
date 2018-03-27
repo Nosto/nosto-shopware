@@ -34,51 +34,29 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Order\Buyer as NostoOrderBuyer;
-
 /**
- * Model for order buyer information. This is used when compiling the info about
- * an order that is sent to Nosto.
- *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
- * Implements NostoOrderBuyerInterface.
- *
- * @package Shopware
- * @subpackage Plugins_Frontend
+ * Class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extends NostoOrderBuyer
+class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
 {
     /**
-     * Loads the order buyer info from the customer model.
-     *
-     * @param \Shopware\Models\Customer\Customer $customer the customer model.
-     * @throws Enlight_Event_Exception
+     * @param \Shopware\CustomModels\Nosto\Account\Account $account
+     * @return bool
      */
-    public function loadData(\Shopware\Models\Customer\Customer $customer)
-    {
-        if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
-            /* @var \Shopware\Models\Customer\Address $address */
-            $address = $customer->getDefaultBillingAddress();
-            if ($address instanceof \Shopware\Models\Customer\Address) {
-                $this->setFirstName($address->getFirstname());
-                $this->setLastName($address->getLastname());
-            }
-        } else {
-            /* @var \Shopware\Models\Customer\Billing $address */
-            $address = $customer->getBilling();
-            if ($address instanceof \Shopware\Models\Customer\Billing) {
-                $this->setFirstName($address->getFirstName());
-                $this->setLastName($address->getLastName());
-            }
-        }
-        $this->setEmail($customer->getEmail());
+    public function isAccountAlreadyRegistered(
+        \Shopware\CustomModels\Nosto\Account\Account $account
+    ) {
+        /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
+        $existingAccount = Shopware()
+            ->Models()
+            ->getRepository("Shopware\CustomModels\Nosto\Account\Account")
+            ->findOneBy(array('name' => $account->getName()));
 
-        Shopware()->Events()->notify(
-            __CLASS__ . '_AfterLoad',
-            array(
-                'nostoOrderBuyer' => $this,
-                'customer' => $customer,
-            )
-        );
+        // If an account has been found, and the shop id is different from current shop, then it means
+        // the admin is trying to map same nosto account to two sub shops. It is not allowed.
+        if ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId()) {
+            return true;
+        }
+        return false;
     }
 }

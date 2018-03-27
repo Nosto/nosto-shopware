@@ -50,7 +50,7 @@
         <exclude name="PSR2.Classes.ClassDeclaration"/>
     </rule>
     <rule ref="./vendor/wimg/php-compatibility/PHPCompatibility"/>
-    <config name="testVersion" value="5.4"/>
+    <config name="testVersion" value="5.6"/>
     <exclude-pattern>*/build/*</exclude-pattern>
     <exclude-pattern>*/tests/*</exclude-pattern>
     <exclude-pattern>*/vendor/*</exclude-pattern>

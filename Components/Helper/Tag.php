@@ -80,7 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
                 $tags['tag2'] = array($pricePerUnit);
             }
         } catch (\Exception $e) {
-            Shopware()->PluginLogger()->warning(
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
                 sprintf(
                     'Could not create price per unit. Error was: %s (%s)',
                     $e->getMessage(),

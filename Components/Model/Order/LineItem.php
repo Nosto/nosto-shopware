@@ -35,6 +35,8 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
+use Nosto\Object\Cart\LineItem as NostoLineItem;
+use Nosto\Helper\PriceHelper as NostoPriceHelper;
 
 /**
  * Model for order line item information. This is used when compiling the info
@@ -46,44 +48,17 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelpe
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
-    implements NostoOrderPurchasedItemInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem extends NostoLineItem
 {
-    /**
-     * @var string the unique identifier of the purchased item.
-     * If this item is for discounts or shipping cost, the id can be 0.
-     */
-    protected $productId;
-
-    /**
-     * @var int the quantity of the item included in the order.
-     */
-    protected $quantity;
-
-    /**
-     * @var string the name of the item included in the order.
-     */
-    protected $name;
-
-    /**
-     * @var float The unit price of the item included in the order.
-     */
-    protected $unitPrice;
-
-    /**
-     * @var string the 3-letter ISO code (ISO 4217) for the item currency.
-     */
-    protected $currencyCode;
-
     /**
      * Populates the order line item with data from the order detail model.
      *
      * @param \Shopware\Models\Order\Detail $detail the order detail model.
+     * @suppress PhanTypeMismatchArgument
      */
     public function loadData(\Shopware\Models\Order\Detail $detail)
     {
-        $this->productId = -1;
+        $this->setProductId(-1);
 
         if ($detail->getArticleId() > 0) {
             // If this is a product variation, we need to load the parent
@@ -93,14 +68,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
                 $detail->getArticleId()
             );
             if (!empty($article)) {
-                $this->productId = $article->getMainDetail()->getNumber();
+                $this->setProductId($article->getMainDetail()->getNumber());
             }
         }
 
-        $this->name = $detail->getArticleName();
-        $this->quantity = (int)$detail->getQuantity();
-        $this->unitPrice = PriceHelper::format($detail->getPrice());
-        $this->currencyCode = strtoupper($detail->getOrder()->getCurrency());
+        $this->setName($detail->getArticleName());
+        $this->setQuantity((int)$detail->getQuantity());
+        $this->setPrice(NostoPriceHelper::format($detail->getPrice()));
+        $this->setPriceCurrencyCode(strtoupper($detail->getOrder()->getCurrency()));
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -117,146 +92,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem
      * @param string $name the name of the item.
      * @param float|int|string $price the unit price of the item.
      * @param string $currency the 3-letter ISO code (ISO 4217) for the item currency.
+     * @suppress PhanTypeMismatchArgument
      */
     public function loadSpecialItemData($name, $price, $currency)
     {
-        $this->productId = -1;
-        $this->quantity = 1;
-        $this->name = $name;
-        $this->unitPrice = PriceHelper::format($price);
-        $this->currencyCode = strtoupper($currency);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getProductId()
-    {
-        return $this->productId;
-    }
-
-    /**
-     * Sets the product ID for the given cart item.
-     * The product ID must be an integer above zero.
-     *
-     * Usage:
-     * $object->setProductId(1);
-     *
-     * @param int $id the product ID.
-     *
-     * @return $this Self for chaining
-     */
-    public function setProductId($id)
-    {
-        $this->productId = $id;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
-     * Sets the quantity for the given cart item.
-     * The quantity must be an integer above zero.
-     *
-     * Usage:
-     * $object->setQuantity(1);
-     *
-     * @param int $quantity the quantity.
-     *
-     * @return $this Self for chaining
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Sets cart items name.
-     *
-     * The name must be a non-empty string.
-     *
-     * Usage:
-     * $object->setName('My product');
-     *
-     * @param string $name the name.
-     *
-     * @return $this Self for chaining
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUnitPrice()
-    {
-        return $this->unitPrice;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getCurrencyCode()
-    {
-        return $this->currencyCode;
-    }
-
-    /**
-     * Sets the currency code (ISO 4217) the cart item is sold in.
-     *
-     * The currency must be in ISO 4217 format
-     *
-     * Usage:
-     * $object->setCurrency('USD');
-     *
-     * @param string $currency the currency code.
-     *
-     * @return $this Self for chaining
-     */
-    public function setCurrencyCode($currency)
-    {
-        $this->currencyCode = $currency;
-
-        return $this;
-    }
-
-    /**
-     * Sets the unit price of the cart item.
-     *
-     * The price must be a numeric value
-     *
-     * Usage:
-     * $object->setPrice(99.99);
-     *
-     * @param double $unitPrice the price.
-     *
-     * @return $this Self for chaining
-     */
-    public function setPrice($unitPrice)
-    {
-        $this->unitPrice = $unitPrice;
-
-        return $this;
+        $this->setProductId(-1);
+        $this->setQuantity(1);
+        $this->setName($name);
+        $this->setPrice(NostoPriceHelper::format($price));
+        $this->setPriceCurrencyCode(strtoupper($currency));
     }
 }

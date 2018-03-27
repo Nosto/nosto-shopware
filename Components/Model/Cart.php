@@ -58,21 +58,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
      */
     public function loadData(array $baskets)
     {
-        $currency = Shopware()->Shop()->getCurrency()->getCurrency();
-        foreach ($baskets as $basket) {
-            $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
-            $item->loadData($basket, $currency);
-            $this->lineItems[] = $item;
+        try {
+            $currency = Shopware()->Shop()->getCurrency()->getCurrency();
+            foreach ($baskets as $basket) {
+                $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
+                $item->loadData($basket, $currency);
+                $this->lineItems[] = $item;
+            }
+            Shopware()->Events()->notify(
+                __CLASS__ . '_AfterLoad',
+                array(
+                    'nostoCart' => $this,
+                    'baskets' => $baskets,
+                    'currency' => $currency,
+                )
+            );
+        } catch (Exception $e) {
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
         }
-
-        Shopware()->Events()->notify(
-            __CLASS__ . '_AfterLoad',
-            array(
-                'nostoCart' => $this,
-                'baskets' => $baskets,
-                'currency' => $currency,
-            )
-        );
     }
 
     /**

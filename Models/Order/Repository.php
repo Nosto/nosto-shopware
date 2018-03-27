@@ -34,51 +34,35 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Order\Buyer as NostoOrderBuyer;
-
 /**
- * Model for order buyer information. This is used when compiling the info about
- * an order that is sent to Nosto.
- *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
- * Implements NostoOrderBuyerInterface.
- *
- * @package Shopware
- * @subpackage Plugins_Frontend
+ * Class Shopware_Plugins_Frontend_NostoTagging_Components_Models_Order_Repository
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extends NostoOrderBuyer
+class Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
 {
     /**
-     * Loads the order buyer info from the customer model.
-     *
-     * @param \Shopware\Models\Customer\Customer $customer the customer model.
-     * @throws Enlight_Event_Exception
+     * @param $pageSize
+     * @param $currentOffset
+     * @param $id
+     * @return array
      */
-    public function loadData(\Shopware\Models\Customer\Customer $customer)
+    public function getCompletedOrders($pageSize, $currentOffset, $id)
     {
-        if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
-            /* @var \Shopware\Models\Customer\Address $address */
-            $address = $customer->getDefaultBillingAddress();
-            if ($address instanceof \Shopware\Models\Customer\Address) {
-                $this->setFirstName($address->getFirstname());
-                $this->setLastName($address->getLastname());
-            }
-        } else {
-            /* @var \Shopware\Models\Customer\Billing $address */
-            $address = $customer->getBilling();
-            if ($address instanceof \Shopware\Models\Customer\Billing) {
-                $this->setFirstName($address->getFirstName());
-                $this->setLastName($address->getLastName());
-            }
-        }
-        $this->setEmail($customer->getEmail());
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $result = $builder->select(array('orders.number'))
+            ->from('\Shopware\Models\Order\Order', 'orders')
+            ->where('orders.status >= 0');
 
-        Shopware()->Events()->notify(
-            __CLASS__ . '_AfterLoad',
-            array(
-                'nostoOrderBuyer' => $this,
-                'customer' => $customer,
-            )
-        );
+        if (!empty($id)) {
+            $result = $result->andWhere('orders.number = :id')
+                ->setParameter('id', $id)
+                ->getQuery();
+        } else {
+            $result = $result->orderBy('orders.orderTime', 'DESC')
+                ->setFirstResult($currentOffset)
+                ->setMaxResults($pageSize)
+                ->getQuery();
+        }
+
+        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
     }
 }
