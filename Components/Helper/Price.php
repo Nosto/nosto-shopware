@@ -180,8 +180,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                     }
                 }
             } catch (Exception $e) {
-                $logger = Shopware()->Container()->get('pluginlogger');
-                $logger->error($e);
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
 

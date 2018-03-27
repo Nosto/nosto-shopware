@@ -1228,8 +1228,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 $orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
                 $orderConfirmation->sendOrder($order);
             } catch (NostoException $e) {
-                $logger = Shopware()->Container()->get('pluginlogger');
-                $logger->warning($e);
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             }
         }
     }

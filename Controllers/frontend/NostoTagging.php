@@ -131,8 +131,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                 $account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
                 if ($this->accountRepository->isAccountAlreadyRegistered($account)) {
                     // Existing account has been used for mapping other sub shop
-                    $logger = Shopware()->Container()->get('pluginlogger');
-                    $logger->error('Same nosto account has been used for two sub shops');
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
+                        'Same nosto account has been used for two sub shops'
+                    );
                     $redirectParams['messageType'] = Nosto::TYPE_ERROR;
                     $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
                     $this->redirect($redirectParams, array('code' => 302));
@@ -144,8 +145,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                     $this->redirect($redirectParams, array('code' => 302));
                 }
             } catch (NostoException $e) {
-                $logger = Shopware()->Container()->get('pluginlogger');
-                $logger->error($e);
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 $redirectParams['messageType'] = Nosto::TYPE_ERROR;
                 $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
                 $this->redirect($redirectParams, array('code' => 302));
@@ -161,8 +161,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             if (!is_null($errorDescription)) {
                 $logMessage .= ' - ' . $errorDescription;
             }
-            $logger = Shopware()->Container()->get('pluginlogger');
-            $logger->error($logMessage);
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($logMessage);
             $redirectParams['messageType'] = Nosto::TYPE_ERROR;
             $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
             $redirectParams[] = ['messageText' => $errorDescription];
