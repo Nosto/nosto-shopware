@@ -38,6 +38,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
 use Nosto\Object\Customer as Customer;
 use Nosto\NostoException;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
 
 /**
  * Model for customer information. This is used when compiling the info about
@@ -64,6 +65,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
             $this->setLastName($customer->getDefaultBillingAddress()->getLastName());
         }
         $this->setEmail($customer->getEmail());
+        $emailHelper = new EmailHelper();
+        $this->setMarketingPermission(
+            $emailHelper->isEmailOptedIn($customer->getEmail())
+        );
         try {
             $this->populateCustomerReference($customer);
         } catch (Exception $e) {
