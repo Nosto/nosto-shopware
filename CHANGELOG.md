@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [2.0.0]
+- Bump SDK to 3.3.1
+- Fix shopware platfom version detection
+- Handle Opt-In for Customer and Buyer
 
 ## [1.2.6]
 - Add support for Shopware 5.4
@@ -145,7 +148,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.6...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.0...develop
+[2.0.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.6...2.0.0
 [1.2.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.4...1.2.5
 [1.2.4]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.3...1.2.4
