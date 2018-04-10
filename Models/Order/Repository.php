@@ -34,39 +34,35 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Types\Signup\BillingInterface as NostoAccountMetaDataBillingDetailsInterface;
-
 /**
- * Meta-data class for billing information sent to Nosto during account create.
- *
- * Implements NostoAccountMetaDataBillingDetailsInterface.
- *
- * @package Shopware
- * @subpackage Plugins_Frontend
+ * Class Shopware_Plugins_Frontend_NostoTagging_Components_Models_Order_Repository
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing
-    implements NostoAccountMetaDataBillingDetailsInterface
+class Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
 {
     /**
-     * @var string the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
+     * @param $pageSize
+     * @param $currentOffset
+     * @param $id
+     * @return array
      */
-    protected $countryCode;
-
-    /**
-     * @param \Shopware\Models\Shop\Shop $shop
-     */
-    public function loadData(\Shopware\Models\Shop\Shop $shop)
+    public function getCompletedOrders($pageSize, $currentOffset, $id)
     {
-        $this->countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
-    }
+        $builder = Shopware()->Models()->createQueryBuilder();
+        $result = $builder->select(array('orders.number'))
+            ->from('\Shopware\Models\Order\Order', 'orders')
+            ->where('orders.status >= 0');
 
-    /**
-     * The 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
-     *
-     * @return string the country ISO code.
-     */
-    public function getCountry()
-    {
-        return $this->countryCode;
+        if (!empty($id)) {
+            $result = $result->andWhere('orders.number = :id')
+                ->setParameter('id', $id)
+                ->getQuery();
+        } else {
+            $result = $result->orderBy('orders.orderTime', 'DESC')
+                ->setFirstResult($currentOffset)
+                ->setMaxResults($pageSize)
+                ->getQuery();
+        }
+
+        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
     }
 }

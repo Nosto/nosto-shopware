@@ -35,6 +35,9 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Nosto\Nosto;
+use Nosto\NostoException;
+use Nosto\Helper\OAuthHelper as NostoOAuthClient;
 
 /**
  * Main backend controller. Handles account create/connect/delete requests
@@ -96,6 +99,10 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *   },
      *   ...
      * ]
+     * @throws Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @suppress PhanDeprecatedFunction
      */
     public function getAccountsAction()
     {
@@ -162,6 +169,10 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Account model in the client
      * side application.
+     *
+     * @throws Exception
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @suppress PhanDeprecatedFunction
      */
     public function createAccountAction()
     {
@@ -200,15 +211,15 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                         $account,
                         $identity,
                         array(
-                            'message_type' => NostoMessage::TYPE_SUCCESS,
-                            'message_code' => NostoMessage::CODE_ACCOUNT_CREATE
+                            'message_type' => Nosto::TYPE_SUCCESS,
+                            'message_code' => Nosto::CODE_ACCOUNT_CREATE
                         )
                     ),
                     'shopId' => $shop->getId(),
                     'shopName' => $shop->getName(),
                 );
             } catch (NostoException $e) {
-                Shopware()->PluginLogger()->error($e);
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
 
@@ -221,6 +232,11 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Account model in the client
      * side application.
+
+     * @throws Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @suppress PhanDeprecatedFunction
      */
     public function deleteAccountAction()
     {
@@ -240,7 +256,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 
         if (!is_null($account) && !is_null($shop)) {
             $shop->registerResources(Shopware()->Bootstrap());
-            NostoComponentAccount::removeAccount($account);
+            NostoComponentAccount::removeAccount($account, $identity);
             $success = true;
             $data = array(
                 'url' => NostoComponentAccount::buildAccountIframeUrl(
@@ -249,8 +265,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     null,
                     $identity,
                     array(
-                        'message_type' => NostoMessage::TYPE_SUCCESS,
-                        'message_code' => NostoMessage::CODE_ACCOUNT_DELETE
+                        'message_type' => Nosto::TYPE_SUCCESS,
+                        'message_code' => Nosto::CODE_ACCOUNT_DELETE
                     )
                 ),
                 'shopId' => $shop->getId(),
@@ -267,6 +283,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Main controller in the client
      * side application.
+     * @throws Exception
+     * @suppress PhanDeprecatedFunction
      */
     public function connectAccountAction()
     {
@@ -282,9 +300,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             $shop->registerResources(Shopware()->Bootstrap());
             $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
             $meta->loadData($shop, $locale);
-            $client = new NostoOAuthClient($meta);
             $success = true;
-            $data = array('redirect_url' => $client->getAuthorizationUrl());
+            $data = array('redirect_url' => NostoOAuthClient::getAuthorizationUrl($meta));
         }
 
         $this->View()->assign('success', $success);

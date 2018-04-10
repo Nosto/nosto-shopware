@@ -34,16 +34,17 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Object\Signup\Signup;
+
 /**
  * Meta-data class for account information sent to Nosto during account create.
- *
- * Implements NostoAccountMetaDataInterface.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
-    implements NostoAccountMetaDataInterface
+    extends Signup
 {
     /**
      * @var string the store name.
@@ -99,8 +100,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
      * Loads the meta data for the given shop.
      *
      * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
-     * @param \Shopware\Models\Shop\Locale $locale the locale or null.
+     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
+     * @suppress PhanTypeMismatchArgumentInternal
+     * @suppress PhanDeprecatedFunction
      */
     public function loadData(
         \Shopware\Models\Shop\Shop $shop,
@@ -117,12 +120,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         $this->currencyCode = strtoupper($shop->getCurrency()->getCurrency());
         $this->languageCode = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
         $this->ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
-
         $this->owner = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner();
         $this->owner->loadData($identity);
-
         $this->billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
         $this->billing->loadData($shop);
+    }
+
+    /**
+     * Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account constructor.
+     * @param $platform
+     */
+    public function __construct($platform)
+    {
+        parent::__construct(
+            $platform,
+            $signupApiToken = $this->signUpApiToken
+        );
     }
 
     /**
@@ -297,17 +310,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     public function getBillingDetails()
     {
         return $this->billing;
-    }
-
-    /**
-     * The API token used to identify an account creation.
-     * This token is platform specific and issued by Nosto.
-     *
-     * @return string the API token.
-     */
-    public function getSignUpApiToken()
-    {
-        return $this->signUpApiToken;
     }
 
     /**

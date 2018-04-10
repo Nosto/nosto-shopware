@@ -36,6 +36,7 @@
 
 use Shopware\Models\Article\Article as Article;
 use Shopware\Models\Shop\Shop as Shop;
+use Nosto\Helper\PriceHelper as NostoPriceHelper;
 
 /**
  * Helper class for prices
@@ -45,7 +46,6 @@ use Shopware\Models\Shop\Shop as Shop;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 {
-
     const PRICE_TYPE_NORMAL = 'price';
     const PRICE_TYPE_LIST = 'listPrice';
 
@@ -127,7 +127,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         /** @var \Shopware\Models\Article\Price $price */
         $price = self::getPrice($article, $shop);
         if (!$price) {
-            return self::format(0);
+            return NostoPriceHelper::format(0);
         }
         // If the list price is not set, fall back on the normal price.
         if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
@@ -142,7 +142,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         //convert currency
         $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
 
-        return self::format($priceWithTax);
+        return NostoPriceHelper::format($priceWithTax);
     }
 
     /**
@@ -180,7 +180,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                     }
                 }
             } catch (Exception $e) {
-                Shopware()->PluginLogger()->error($e);
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
 
@@ -193,7 +193,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     }
 
     /**
-     * get a price rate after discount
+     * Get a price rate after discount
      *
      * @param \Shopware\Models\Article\Article $article the article model.
      * @param \Shopware\Models\Shop\Shop $shop
@@ -201,18 +201,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      */
     private static function getProductPriceRateAfterDiscount(Article $article, \Shopware\Models\Shop\Shop $shop)
     {
-        //get the customer group discount
+        // Get the customer group discount
         /** @var \Shopware\Models\Customer\Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
         $priceRate = 1 - $customerGroup->getDiscount() / 100;
 
-        //handle the price group
+        // Handle the price group
         if ($article->getPriceGroupActive()) {
             $priceGroup = $article->getPriceGroup();
             $discounts = $priceGroup->getDiscounts();
             if ($discounts !== null && !$discounts->isEmpty()) {
                 foreach ($discounts as $discount) {
-                    //only handle the discount suitable for buying at least one item.
+                    // Only handle the discount suitable for buying at least one item.
                     if ($discount->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
                         && $discount->getCustomerGroup()->getId() == $customerGroup->getId()
                         && $discount->getStart() == 1
@@ -231,11 +231,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param $price
      * @return string
      * @suppress PhanUndeclaredMethod
+     * @deprecated
      */
     public static function format($price)
     {
-        /** @var NostoHelperPrice $helper */
-        $helper = Nosto::helper('price');
-        return $helper->format($price);
+        return NostoPriceHelper::format($price);
     }
 }

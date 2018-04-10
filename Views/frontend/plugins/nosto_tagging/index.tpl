@@ -140,7 +140,7 @@
                     <span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
                     <span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
                     <span class="unit_price">{$lineItem->getUnitPrice()|escape:'htmlall':'UTF-8'}</span>
-                    <span class="price_currency_code">{$lineItem->getCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
+                    <span class="price_currency_code">{$lineItem->getPriceCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
                 </div>
             {/foreach}
         {/if}

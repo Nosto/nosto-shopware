@@ -34,10 +34,15 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-require_once __DIR__ . '/vendor/nosto/php-sdk/src/config.inc.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
+use Nosto\Nosto;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Object\Signup\Account as NostoAccount;
+use Nosto\NostoException;
+use phpseclib\Crypt\Random as NostoCryptRandom;
 
 /**
  * The plugin bootstrap class.
@@ -49,9 +54,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponent
  */
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '1.2.6';
+    const PLUGIN_VERSION = '2.0.0';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -200,6 +204,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param string $fromVersion default all
      *
      * @return boolean
+     * @throws Exception
      */
     protected function createMyAttributes($fromVersion = 'all')
     {
@@ -210,7 +215,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 }
             }
         }
-
         return true;
     }
 
@@ -219,33 +223,38 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * For the structure of attribute
      * @see self::$_customAttributes
-     *
      * @param array $attribute
+     * @throws Exception
+     * @suppress PhanDeprecatedFunction
      */
     private function addMyAttribute(array $attribute)
     {
-        self::validateMyAttribute($attribute);
-        /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
-        if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
-            $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-            /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
-            $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
-            $attributeService->update(
-                $attribute['table'],
-                $fieldName,
-                $attribute['type']
+        try {
+            /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
+            self::validateMyAttribute($attribute);
+            if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+                $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
+                /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+                $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
+                $attributeService->update(
+                    $attribute['table'],
+                    $fieldName,
+                    $attribute['type']
+                );
+            } else {
+                Shopware()->Models()->addAttribute(
+                    $attribute['table'],
+                    $attribute['prefix'],
+                    $attribute['field'],
+                    $attribute['oldType']
+                );
+            }
+            Shopware()->Models()->generateAttributeModels(
+                array($attribute['table'])
             );
-        } else {
-            Shopware()->Models()->addAttribute(
-                $attribute['table'],
-                $attribute['prefix'],
-                $attribute['field'],
-                $attribute['oldType']
-            );
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
         }
-        Shopware()->Models()->generateAttributeModels(
-            array($attribute['table'])
-        );
     }
 
     /**
@@ -290,22 +299,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function createMyMenu()
     {
-        $compareResult = version_compare($this->getShopwareVersion(), self::NEW_ENTITY_MANAGER_VERSION);
-        if ($compareResult < 0) {
-            $parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
-        } else {
-            $parentMenu = $this->Menu()->findOneBy(array('id' => self::MENU_PARENT_ID));
+        try {
+            $compareResult = version_compare($this->getShopwareVersion(), self::NEW_ENTITY_MANAGER_VERSION);
+            if ($compareResult < 0) {
+                $parentMenu = $this->Menu()->findOneBy('id', self::MENU_PARENT_ID);
+            } else {
+                $parentMenu = $this->Menu()->findOneBy(array('id' => self::MENU_PARENT_ID));
+            }
+            $this->createMenuItem(
+                array(
+                    'label' => 'Nosto',
+                    'controller' => 'NostoTagging',
+                    'action' => 'Index',
+                    'active' => 1,
+                    'parent' => $parentMenu,
+                    'class' => 'nosto--icon'
+                )
+            );
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
         }
-        $this->createMenuItem(
-            array(
-                'label' => 'Nosto',
-                'controller' => 'NostoTagging',
-                'action' => 'Index',
-                'active' => 1,
-                'parent' => $parentMenu,
-                'class' => 'nosto--icon'
-            )
-        );
     }
 
     /**
@@ -313,7 +326,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @return mixed|string
      * @throws NostoException in case version cannot be determined
      */
-    protected function getShopwareVersion()
+    public function getShopwareVersion()
     {
         if (Shopware::VERSION !== null && Shopware::VERSION !== '___VERSION___') {
             return Shopware::VERSION;
@@ -443,6 +456,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
+     * Registers dependencies / autoloader
+     */
+    public function registerMyComponents()
+    {
+        require_once $this->Path() . '/vendor/autoload.php';
+    }
+
+    /**
      * Clears following Shopware caches
      * - proxy cache
      * - template cache
@@ -514,6 +535,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Run on uninstall.
      *
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::uninstall
+     * @throws Exception
      */
     protected function dropMyAttributes()
     {
@@ -531,32 +553,36 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * For the structure of attribute
      * @see self::$_customAttributes
-     *
+     * @suppress PhanDeprecatedFunction
      * @param array $attribute
-     * @throws NostoException
+     * @throws Exception
      */
     private function removeMyAttribute(array $attribute)
     {
-        self::validateMyAttribute($attribute);
-        /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
-        if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
-            $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-            /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
-            $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
-            $attributeService->delete(
-                $attribute['table'],
-                $fieldName
+        try {
+            /* Shopware()->Models()->removeAttribute will be removed in Shopware 5.3.0 */
+            self::validateMyAttribute($attribute);
+            if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
+                $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
+                /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+                $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
+                $attributeService->delete(
+                    $attribute['table'],
+                    $fieldName
+                );
+            } else {
+                Shopware()->Models()->removeAttribute(
+                    $attribute['table'],
+                    $attribute['prefix'],
+                    $attribute['field']
+                );
+            }
+            Shopware()->Models()->generateAttributeModels(
+                array($attribute['table'])
             );
-        } else {
-            Shopware()->Models()->removeAttribute(
-                $attribute['table'],
-                $attribute['prefix'],
-                $attribute['field']
-            );
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
         }
-        Shopware()->Models()->generateAttributeModels(
-            array($attribute['table'])
-        );
     }
 
     /**
@@ -656,6 +682,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the cart tagging to all pages.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
     {
@@ -689,7 +719,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     protected function shopHasConnectedAccount()
     {
         $shop = Shopware()->Shop();
-        return NostoComponentAccount::accountExistsAndIsConnected($shop);
+        try {
+            return NostoComponentAccount::accountExistsAndIsConnected($shop);
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
+        }
+        return false;
     }
 
     /**
@@ -704,15 +739,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     protected function addEmbedScript(Enlight_View_Default $view)
     {
         $shop = Shopware()->Shop();
-        $nostoAccount = NostoComponentAccount::convertToNostoAccount(
-            NostoComponentAccount::findAccount($shop)
-        );
-        if ($nostoAccount instanceof NostoAccount) {
-            $view->assign('nostoAccountName', $nostoAccount->getName());
-            $view->assign(
-                'nostoServerUrl',
-                Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com')
+        try {
+            $nostoAccount = NostoComponentAccount::convertToNostoAccount(
+                NostoComponentAccount::findAccount($shop)
             );
+            if ($nostoAccount instanceof NostoAccount) {
+                $view->assign('nostoAccountName', $nostoAccount->getName());
+                $view->assign(
+                    'nostoServerUrl',
+                    Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com')
+                );
+            }
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
         }
     }
 
@@ -724,6 +763,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @param Enlight_View_Default $view the view.
      *
+     * @throws Enlight_Event_Exception
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
      */
     protected function addCustomerTagging(Enlight_View_Default $view)
@@ -750,7 +790,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * something in the cart.
      *
      * @param Enlight_View_Default $view the view.
-     *
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @suppress PhanDeprecatedFunction
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
      */
     protected function addCartTagging(Enlight_View_Default $view)
@@ -784,6 +828,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * Returns a unique ID for this Shopware installation.
+     * @suppress PhanUndeclaredClassMethod
+     * @return string
      */
     public function getUniqueId()
     {
@@ -795,7 +841,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if (is_null($setting)) {
             $setting = new \Shopware\CustomModels\Nosto\Setting\Setting();
             $setting->setName('uniqueId');
-            $setting->setValue(bin2hex(NostoCryptRandom::getRandomString(32)));
+            $setting->setValue(bin2hex(NostoCryptRandom::string(32)));
             Shopware()->Models()->persist($setting);
             Shopware()->Models()->flush($setting);
         }
@@ -844,6 +890,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the product page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function onPostDispatchFrontendDetail(Enlight_Controller_ActionEventArgs $args)
     {
@@ -866,6 +914,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @param Enlight_View_Default $view the view.
      *
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\NonUniqueResultException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendDetail
      */
     protected function addProductTagging(Enlight_View_Default $view)
@@ -904,6 +954,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the category page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+     * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontendListing(Enlight_Controller_ActionEventArgs $args)
     {
@@ -927,6 +978,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @param Enlight_View_Default $view the view.
      *
+     * @throws Enlight_Event_Exception
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendListing
      */
     protected function addCategoryTagging(Enlight_View_Default $view)
@@ -953,23 +1005,31 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the order thank you page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
     {
-        if (!$this->shopHasConnectedAccount()) {
-            return;
-        }
 
-        $view = $args->getSubject()->View();
-        $view->addTemplateDir($this->Path() . 'Views/');
-        if ($this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'cart')) {
-            $view->extendsTemplate('frontend/plugins/nosto_tagging/checkout/cart.tpl');
-            $this->addPageTypeTagging($view, self::PAGE_TYPE_CART);
-        }
-        if ($this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'finish')) {
-            $view->extendsTemplate('frontend/plugins/nosto_tagging/checkout/finish.tpl');
-            $this->addOrderTagging($view);
-            $this->addPageTypeTagging($view, self::PAGE_TYPE_ORDER);
+        try {
+            if (!$this->shopHasConnectedAccount()) {
+                return;
+            }
+            $view = $args->getSubject()->View();
+            $view->addTemplateDir($this->Path() . 'Views/');
+            if ($this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'cart')) {
+                $view->extendsTemplate('frontend/plugins/nosto_tagging/checkout/cart.tpl');
+                $this->addPageTypeTagging($view, self::PAGE_TYPE_CART);
+            }
+            if ($this->validateEvent($args->getSubject(), 'frontend', 'checkout', 'finish')) {
+                $view->extendsTemplate('frontend/plugins/nosto_tagging/checkout/finish.tpl');
+                $this->addOrderTagging($view);
+                $this->addPageTypeTagging($view, self::PAGE_TYPE_ORDER);
+            }
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
         }
     }
 
@@ -980,6 +1040,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @param Enlight_View_Default $view the view.
      *
+     * @throws Enlight_Event_Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendCheckout
      */
     protected function addOrderTagging(Enlight_View_Default $view)
@@ -1128,6 +1193,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends an API order confirmation to Nosto.
      *
      * @param Enlight_Hook_HookArgs $args the hook arguments.
+     * @suppress PhanUndeclaredMethod
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function onOrderSSaveOrderAfter(Enlight_Hook_HookArgs $args)
     {
@@ -1154,8 +1224,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 }
             }
 
-            $orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
-            $orderConfirmation->sendOrder($order);
+            try {
+                $orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
+                $orderConfirmation->sendOrder($order);
+            } catch (NostoException $e) {
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
+            }
         }
     }
 
@@ -1165,6 +1239,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends an API order confirmation to Nosto.
      *
      * @param Enlight_Event_EventArgs $args
+     * @throws Enlight_Event_Exception
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function onPostUpdateOrder(Enlight_Event_EventArgs $args)
     {
@@ -1172,8 +1250,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @noinspection PhpUndefinedMethodInspection */
         $order = $args->getEntity();
 
-        $orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
-        $orderConfirmation->sendOrder($order);
+        try {
+            $orderConfirmation = new Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation();
+            $orderConfirmation->sendOrder($order);
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
+        }
     }
 
     /**
@@ -1182,6 +1264,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends a product `create` API call to Nosto for the added article.
      *
      * @param Enlight_Event_EventArgs $args
+     * @throws Enlight_Event_Exception
+     * @throws Exception
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function onPostPersistArticle(Enlight_Event_EventArgs $args)
     {
@@ -1205,6 +1290,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends a product `update` API call to Nosto for the updated article.
      *
      * @param Enlight_Event_EventArgs $args
+     * @throws Enlight_Event_Exception
+     * @throws Exception
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function onPostUpdateArticle(Enlight_Event_EventArgs $args)
     {
@@ -1216,9 +1304,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             if ($article instanceof \Shopware\Models\Article\Detail) {
                 $article = $article->getArticle();
             }
-            $op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
-            $op->update($article);
-            self::$productUpdated = true;
+            try {
+                $op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
+                $op->update($article);
+                self::$productUpdated = true;
+            } catch (NostoException $e) {
+                $this->getLogger()->warning($e->getMessage());
+            }
         }
     }
 
@@ -1234,8 +1326,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @var Shopware\Models\Article\Article $article */
         /** @noinspection PhpUndefinedMethodInspection */
         $article = $args->getEntity();
+        try {
+            $op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
+            $op->delete($article);
+        } catch (NostoException $e) {
+            $this->getLogger()->warning($e->getMessage());
+        }
+    }
 
-        $op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
-        $op->delete($article);
+    /**
+     * @return \Shopware\Components\Logger
+     */
+    public function getLogger()
+    {
+        return Shopware()->Container()->get('pluginlogger');
     }
 }

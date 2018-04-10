@@ -34,39 +34,29 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Types\Signup\BillingInterface as NostoAccountMetaDataBillingDetailsInterface;
-
 /**
- * Meta-data class for billing information sent to Nosto during account create.
- *
- * Implements NostoAccountMetaDataBillingDetailsInterface.
- *
- * @package Shopware
- * @subpackage Plugins_Frontend
+ * Class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing
-    implements NostoAccountMetaDataBillingDetailsInterface
+class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
 {
     /**
-     * @var string the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
+     * @param \Shopware\CustomModels\Nosto\Account\Account $account
+     * @return bool
      */
-    protected $countryCode;
+    public function isAccountAlreadyRegistered(
+        \Shopware\CustomModels\Nosto\Account\Account $account
+    ) {
+        /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
+        $existingAccount = Shopware()
+            ->Models()
+            ->getRepository("Shopware\CustomModels\Nosto\Account\Account")
+            ->findOneBy(array('name' => $account->getName()));
 
-    /**
-     * @param \Shopware\Models\Shop\Shop $shop
-     */
-    public function loadData(\Shopware\Models\Shop\Shop $shop)
-    {
-        $this->countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
-    }
-
-    /**
-     * The 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
-     *
-     * @return string the country ISO code.
-     */
-    public function getCountry()
-    {
-        return $this->countryCode;
+        // If an account has been found, and the shop id is different from current shop, then it means
+        // the admin is trying to map same nosto account to two sub shops. It is not allowed.
+        if ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId()) {
+            return true;
+        }
+        return false;
     }
 }

@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Object\Signup\Owner as Owner;
+
 /**
  * Meta-data class for account owner information sent to Nosto during account
  * create.
@@ -44,23 +46,8 @@
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
-    implements NostoAccountMetaDataOwnerInterface
+    extends Owner
 {
-    /**
-     * @var string the first name of the account owner.
-     */
-    protected $firstName;
-
-    /**
-     * @var string the last name of the account owner.
-     */
-    protected $lastName;
-
-    /**
-     * @var string the email address of the account owner.
-     */
-    protected $email;
-
     /**
      * Loads the data for the account owner.
      *
@@ -70,51 +57,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
     {
         if (!is_null($identity)) {
             /** @noinspection PhpUndefinedFieldInspection */
-            $this->email = $identity->email;
+            $this->setEmail($identity->email);
             /** @noinspection PhpUndefinedFieldInspection */
             list($firstName, $lastName) = explode(' ', $identity->name);
-            $this->firstName = $firstName;
-            $this->lastName = $lastName;
+            $this->setFirstName($firstName);
+            $this->setLastName($lastName);
         }
-    }
-
-    /**
-     * The first name of the account owner.
-     *
-     * @return string the first name.
-     */
-    public function getFirstName()
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * The last name of the account owner.
-     *
-     * @return string the last name.
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * The email address of the account owner.
-     *
-     * @return string the email address.
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Setter for the account owner's email address.
-     *
-     * @param string $email the email address.
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
     }
 }

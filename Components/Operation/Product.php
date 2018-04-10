@@ -35,6 +35,10 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Nosto\Object\Signup\Account as NostoAccount;
+use Nosto\Operation\DeleteProduct;
+use Nosto\Operation\UpsertProduct;
+use Nosto\NostoException;
 
 /**
  * Product operation component. Used for communicating create/update/delete
@@ -49,6 +53,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly created product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
+     * @throws Exception
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @suppress PhanDeprecatedFunction
      */
     public function create(\Shopware\Models\Article\Article $article)
     {
@@ -64,11 +71,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
                 try {
-                    $op = new NostoOperationProduct($account);
+                    $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
-                    Shopware()->PluginLogger()->error($e);
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
         }
@@ -84,6 +91,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @param \Shopware\Models\Article\Article $article the article model.
      * @param boolean $allStores if true Nosto accounts from all stores will be returned
      * @return NostoAccount[] the accounts mapped in the shop IDs.
+     * @throws \Nosto\NostoException
      */
     protected function getAccounts(\Shopware\Models\Article\Article $article, $allStores = false)
     {
@@ -134,6 +142,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly updated product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
+     * @throws Exception
+     * @throws NostoException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @suppress PhanDeprecatedFunction
      */
     public function update(\Shopware\Models\Article\Article $article)
     {
@@ -149,11 +161,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
                 try {
-                    $op = new NostoOperationProduct($account);
+                    $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
-                    Shopware()->PluginLogger()->error($e);
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
         }
@@ -163,6 +175,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a deleted product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
+     * @throws \Nosto\NostoException
      */
     public function delete(\Shopware\Models\Article\Article $article)
     {
@@ -171,11 +184,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             $model->assignId($article);
             if ($model->getProductId()) {
                 try {
-                    $op = new NostoOperationProduct($account);
-                    $op->addProduct($model);
+                    $op = new DeleteProduct($account);
+                    $products = array($model->getProductId());
+                    $op->setProductIds($products);
                     $op->delete();
                 } catch (NostoException $e) {
-                    Shopware()->PluginLogger()->error($e);
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
         }

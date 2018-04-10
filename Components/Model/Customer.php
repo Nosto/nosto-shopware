@@ -36,6 +36,9 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
+use Nosto\Object\Customer as Customer;
+use Nosto\NostoException;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
 
 /**
  * Model for customer information. This is used when compiling the info about
@@ -47,44 +50,29 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as Custome
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    extends Customer
 {
-    /**
-     * @var string the customer first name.
-     */
-    protected $firstName;
-
-    /**
-     * @var string the customer last name.
-     */
-    protected $lastName;
-
-    /**
-     * @var string the customer email address.
-     */
-    protected $email;
-
-    /**
-     * @var string the customer reference.
-     */
-    protected $customerReference;
-
     /**
      * Loads customer data from the logged in customer.
      *
      * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     * @throws Enlight_Event_Exception
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
-        if ($customer->getBilling() instanceof \Shopware\Models\Customer\Billing) {
-            $this->firstName = $customer->getBilling()->getFirstName();
-            $this->lastName = $customer->getBilling()->getLastName();
+        if ($customer->getDefaultBillingAddress() instanceof \Shopware\Models\Customer\Address) {
+            $this->setFirstName($customer->getDefaultBillingAddress()->getFirstname());
+            $this->setLastName($customer->getDefaultBillingAddress()->getLastName());
         }
-        $this->email = $customer->getEmail();
+        $this->setEmail($customer->getEmail());
+        $emailHelper = new EmailHelper();
+        $this->setMarketingPermission(
+            $emailHelper->isEmailOptedIn($customer->getEmail())
+        );
         try {
             $this->populateCustomerReference($customer);
         } catch (Exception $e) {
-            Shopware()->PluginLogger()->error(
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
                 sprintf(
                     'Could not populate customer reference. Error was: %s',
                     $e->getMessage()
@@ -110,6 +98,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * @throws NostoException if customer reference cannot be fetched or created
      *
      * @return void
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function populateCustomerReference(\Shopware\Models\Customer\Customer $customer)
     {
@@ -155,107 +144,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
         if (!$customerReference) {
             throw new NostoException('Could not fetch or generate customer reference');
         }
-        $this->customerReference = $customerReference;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFirstName()
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * Sets the firstname of the customer.
-     *
-     * The name must be a non-empty string.
-     *
-     * Usage:
-     * $object->setFirstName('John');
-     *
-     * @param string $firstName the firstname.
-     *
-     * @return $this Self for chaining
-     */
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * Sets the lastname of the customer.
-     *
-     * The name must be a non-empty string.
-     *
-     * Usage:
-     * $object->setLastName('Doe');
-     *
-     * @param string $lastName the lastname.
-     *
-     * @return $this Self for chaining
-     */
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Sets the email of the customer.
-     *
-     * The email must be a non-empty string.
-     *
-     * Usage:
-     * $object->setEmail('john@doe.com');
-     *
-     * @param string $email the email.
-     *
-     * @return $this Self for chaining
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Returns the customer reference attribute
-     *
-     * @return string
-     */
-    public function getCustomerReference()
-    {
-        return $this->customerReference;
-    }
-
-    /**
-     * Sets the customer reference attribute
-     *
-     * @param string $customerReference
-     */
-    public function setCustomerReference($customerReference)
-    {
-        $this->customerReference = $customerReference;
+        $this->setCustomerReference($customerReference);
     }
 }

@@ -34,60 +34,32 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Article\Article as Article;
-use Shopware\Models\Shop\Shop as Shop;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as NostoProduct;
 
 /**
- * Helper class for tags
+ * Helper class for Email operations
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
+class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email
 {
+
     /**
-     * Builds the default tag list for a product.
+     * Returns true if email is subscribed to the newsletter.
      *
-     * Also includes the custom "add-to-cart" tag if the product can be added to
-     * the shopping cart directly without any action from the user, e.g. the
-     * product cannot have any variations or  choices. This tag is then used in
-     * the recommendations to render the "Add to cart" button for the product
-     * when it is recommended to a user.
-     *
-     * @param \Shopware\Models\Article\Article $article
-     * @param \Shopware\Models\Shop\Shop $shop
-     * @return array
+     * @param string $email
+     * @return bool
      */
-    public static function buildProductTags(Article $article, Shop $shop)
+    public function isEmailOptedIn($email)
     {
-        $tags = array();
+        $subscription = Shopware()
+            ->Models()
+            ->getRepository('Shopware\Models\Newsletter\Address')
+            ->findOneBy(array('email' => $email));
 
-        // If the product does not have any variants, then it can be added to
-        // the shopping cart directly from the recommendations.
-        $configuratorSet = $article->getConfiguratorSet();
-        if (empty($configuratorSet)) {
-            $tags['tag1'] = array(NostoProduct::ADD_TO_CART);
+        if (!is_null($subscription) && $subscription->getAdded()) {
+            return true;
         }
-
-        try {
-            $pricePerUnit = PriceHelper::generatePricePerUnit(
-                $article,
-                $shop
-            );
-            if ($pricePerUnit) {
-                $tags['tag2'] = array($pricePerUnit);
-            }
-        } catch (\Exception $e) {
-            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
-                sprintf(
-                    'Could not create price per unit. Error was: %s (%s)',
-                    $e->getMessage(),
-                    $e->getCode()
-                )
-            );
-        }
-        return $tags;
+        return false;
     }
 }
