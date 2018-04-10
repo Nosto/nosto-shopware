@@ -84,7 +84,6 @@
         <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/package.json"/>
         <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/composer.json"/>
         <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/src/.env.example"/>
-        <delete dir="${buildsrc}/${vendordir}/composer"/>
         <delete file="${buildsrc}/composer.json"/>
         <delete file="${buildsrc}/composer.lock"/>
     </target>

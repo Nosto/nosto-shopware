@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1]
+- Fix builder deleting composer autoloader
+
 ## [2.0.0]
 - Bump SDK to 3.3.1
 - Fix shopware platfom version detection
@@ -148,7 +151,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.0...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.1...develop
+[2.0.1]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.6...2.0.0
 [1.2.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.4...1.2.5
