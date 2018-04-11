@@ -87,6 +87,8 @@
         <delete file="${buildsrc}/${vendordir}/nosto/php-sdk/phan.php"/>
         <delete file="${buildsrc}/composer.json"/>
         <delete file="${buildsrc}/composer.lock"/>
+        <delete file="${buildsrc}/Dockerfile"/>
+        <delete file="${buildsrc}/Jenkinsfile"/>
     </target>
 
     <target name="updatedependencies">
