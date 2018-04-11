@@ -278,10 +278,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $oauthClient = new AuthorizationCode($meta);
         $token = $oauthClient->authenticate($code);
 
-        if (empty($token->getAccessToken())) {
+        $accessToken = $token->getAccessToken();
+        if (empty($accessToken)) {
             throw new NostoException('No access token found when trying to sync account from Nosto');
         }
-        if (empty($token->getMerchantName())) {
+        $merchantName = $token->getMerchantName();
+        if (empty($merchantName)) {
             throw new NostoException('No merchant name found when trying to sync account from Nosto');
         }
         return $token;
