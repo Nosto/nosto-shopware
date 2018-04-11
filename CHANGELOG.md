@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2]
+- Fix PHP backwards compatibility
+
 ## [2.0.1]
 - Fix builder deleting composer autoloader
 
@@ -151,7 +154,8 @@ recommendations
 - Initial beta-release
 
 
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.1...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.2...develop
+[2.0.2]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.6...2.0.0
 [1.2.6]: https://github.com/nosto/nosto-shopware-plugin/compare/1.2.5...1.2.6

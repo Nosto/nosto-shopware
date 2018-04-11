@@ -107,9 +107,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             'module' => 'backend',
             'controller' => 'index',
             'action' => 'index',
-            'openNosto' => $shop->getId(),
-            'messageType' => '',
-            'messageCode' => ''
+            'openNosto' => $shop->getId()
         );
 
         if (!is_null($code)) {
@@ -164,7 +162,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($logMessage);
             $redirectParams['messageType'] = Nosto::TYPE_ERROR;
             $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
-            $redirectParams[] = ['messageText' => $errorDescription];
+            $redirectParams['messageText'] = $errorDescription;
             $this->redirect($redirectParams, array('code' => 302));
         } else {
             throw new Zend_Controller_Action_Exception('Not Found', 404);
@@ -280,10 +278,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $oauthClient = new AuthorizationCode($meta);
         $token = $oauthClient->authenticate($code);
 
-        if (empty($token->getAccessToken())) {
+        $accessToken = $token->getAccessToken();
+        if (empty($accessToken)) {
             throw new NostoException('No access token found when trying to sync account from Nosto');
         }
-        if (empty($token->getMerchantName())) {
+        $merchantName = $token->getMerchantName();
+        if (empty($merchantName)) {
             throw new NostoException('No merchant name found when trying to sync account from Nosto');
         }
         return $token;
