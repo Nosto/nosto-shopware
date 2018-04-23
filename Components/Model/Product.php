@@ -41,6 +41,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelpe
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku as NostoSku;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\NostoException;
@@ -65,6 +66,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Shop|null $shop the shop the product is in.
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanTypeMismatchArgument
+     * @throws Enlight_Event_Exception
      */
     public function loadData(Article $article, Shop $shop = null)
     {
@@ -110,6 +112,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
         $this->amendArticleTranslation($article, $shop);
+        $this->setSkus($this->amendSkus($article, $shop));
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -119,6 +122,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 'shop' => $shop,
             )
         );
+    }
+
+    /**
+     * Add Sku variations to the current article
+     * @param Article $article
+     * @return \Nosto\Object\Product\SkuCollection
+     */
+    public function amendSkus(\Shopware\Models\Article\Article $article, Shop $shop)
+    {
+        $skuCollection = new Nosto\Object\Product\SkuCollection();
+        foreach ($article->getDetails() as $detail) {
+            $sku = new NostoSku();
+            $sku->loadData($detail, $shop);
+            $skuCollection->append($sku);
+        }
+        return $skuCollection;
     }
 
     /**
