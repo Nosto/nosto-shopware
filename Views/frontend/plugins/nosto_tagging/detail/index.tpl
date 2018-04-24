@@ -87,6 +87,15 @@
                         <span class="image_url">{$sku->getImageUrl()|escape:'htmlall':'UTF-8'}</span>
                         <span class="gtin">{$sku->getGtin()|escape:'htmlall':'UTF-8'}</span>
                         <span class="availability">{$sku->getAvailability()|escape:'htmlall':'UTF-8'}</span>
+                        {if $sku->getCustomFields() and $sku->getCustomFields()|is_array}
+                            <span class="custom_fields">
+                                {foreach from=$sku->getCustomFields() key=key item=value}
+                                    <span class="{$key|escape:'htmlall':'UTF-8'}">
+                                        {$value|escape:'htmlall':'UTF-8'}
+                                    </span>
+                                {/foreach}
+                            </span>
+                        {/if}
                     </span>
                 {/foreach}
             {/if}
