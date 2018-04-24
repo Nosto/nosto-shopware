@@ -34,34 +34,43 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware\Models\Article\Detail as Detail;
 use Nosto\Object\Product\Sku as NostoSku;
 use Shopware\Models\Shop\Shop as Shop;
-
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoSku
 {
     /**
+     * Loads the SKU Information
      *
-     * @param Detail $detail
+     * @param Detail $detail Article Detail to load the SKU information
+     * @param Shop|null $shop the shop the product belongs to
      */
-    public function loadData(Detail $detail, Shop $shop)
+    public function loadData(Detail $detail, Shop $shop = null)
     {
-        $this->setUrl($detail->getId());// TODO: assemble the URL
+        if (is_null($shop)) {
+            $shop = Shopware()->Shop();
+        }
+
+        $this->setUrl($this->assembleDetailUrl($detail, $shop));
         $this->setId($detail->getId());
         $this->setName($detail->getArticle()->getName());
         $this->setImageUrl($this->getDetailImageUrl($detail));
-        $prices = $detail->getPrices()->first();
-        $this->setPrice($prices->getPrice());
-        $this->setListPrice($prices->getPseudoPrice());
-        $this->setAvailability($detail->getInStock());
+        $this->setPrice(floatval(PriceHelper::calcDetailPriceInclTax(
+            $detail,
+            $shop,
+            PriceHelper::PRICE_TYPE_NORMAL
+        )));
+        $this->setListPrice(floatval(PriceHelper::calcDetailPriceInclTax(
+            $detail,
+            $shop,
+            PriceHelper::PRICE_TYPE_LIST
+        )));
+        $this->setAvailable($this->isDetailAvailable($detail));
         $this->setGtin($detail->getSupplierNumber());
-
-        $customFields = array();
-        foreach ($detail->getAttribute() as $attribute) {
-            $customFields[] = $attribute;
-        }
-        $this->setCustomFields($customFields);
+        $this->setCustomFields($this->getDetailCustomFields($detail));
     }
 
     /**
@@ -88,5 +97,75 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         // Fallback to article main image
         $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
         return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
+    }
+
+    /**
+     * Assembles the product url based on article and shop.
+     *
+     * @param Detail $detail the Article Detail model.
+     * @param Shop $shop the shop model.
+     * @return string the url.
+     */
+    protected function assembleDetailUrl(Detail $detail, Shop $shop)
+    {
+        $url = Shopware()->Front()->Router()->assemble(
+            array(
+                'module' => 'frontend',
+                'controller' => 'detail',
+                'sArticle' => $detail->getArticle()->getId(),
+                'number' => $detail->getNumber(),
+                // Force SSL if it's enabled.
+                'forceSecure' => true,
+            )
+        );
+        // Always add the "__shop" parameter so that the crawler can distinguish
+        // between products in different shops even if the host and path of the
+        // shops match.
+        return NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
+    }
+
+    /**
+     * Checks if the detail has stock.
+     *
+     * @param Detail $detail the article detail model.
+     * @return bool
+     */
+    protected function isDetailAvailable(Detail $detail)
+    {
+        if ($detail->getInStock() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns an array of custom fields for the given detail
+     * excluding standard and empty properties
+     *
+     * @param Detail $detail
+     * @return array
+     */
+    protected function getDetailCustomFields(Detail $detail)
+    {
+        $ignoredProperties = array(
+            'id',
+            'articleDetailId',
+            'articleDetail',
+            'articleId',
+            'article'
+        );
+        $propertiesAndValues = Nosto\Helper\SerializationHelper::getProperties(
+            $detail->getAttribute()
+        );
+        $customFields = array();
+        foreach ($propertiesAndValues as $property => $value) {
+            if (!is_null($value)
+                && $value !== ''
+                && !in_array($property, $ignoredProperties)
+            ) {
+                $customFields[$property] = $value;
+            }
+        }
+        return $customFields;
     }
 }
