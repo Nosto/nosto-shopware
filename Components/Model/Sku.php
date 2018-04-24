@@ -42,6 +42,14 @@ use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoSku
 {
+    protected static $ignoredCustomFieldsProperties = array(
+        'id',
+        'articleDetailId',
+        'articleDetail',
+        'articleId',
+        'article'
+    );
+
     /**
      * Loads the SKU Information
      *
@@ -147,13 +155,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function getDetailCustomFields(Detail $detail)
     {
-        $ignoredProperties = array(
-            'id',
-            'articleDetailId',
-            'articleDetail',
-            'articleId',
-            'article'
-        );
         $propertiesAndValues = Nosto\Helper\SerializationHelper::getProperties(
             $detail->getAttribute()
         );
@@ -161,7 +162,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         foreach ($propertiesAndValues as $property => $value) {
             if (!is_null($value)
                 && $value !== ''
-                && !in_array($property, $ignoredProperties)
+                && !in_array($property, self::$ignoredCustomFieldsProperties)
             ) {
                 $customFields[$property] = $value;
             }
