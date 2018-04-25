@@ -36,6 +36,7 @@
 
 use Shopware\Bundle\MediaBundle\MediaServiceInterface as MediaServiceInterface;
 use Shopware\Models\Article\Article as Article;
+use Shopware\Models\Article\Detail as Detail;
 use Shopware\Models\Shop\Shop as Shop;
 
 /**
@@ -166,4 +167,31 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         }
         return $imageUrls;
     }
+
+    /**
+     * Returns the URL for the given detail
+     * If no image is assigned, will return the parent
+     * article's main image
+     *
+     * @param Detail $detail
+     * @return null|string URL of detail image
+     */
+    public static function getDetailImageUrl(Detail $detail)
+    {
+        $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+        $detailImage = Shopware()
+            ->Models()
+            ->getRepository('Shopware\Models\Article\Image')
+            ->findOneBy(array('articleDetail' => $detail));
+
+        if (!is_null($detailImage)) {
+            $imagePath = $detailImage->getParent()->getMedia()->getPath();
+            return $mediaService->getUrl($imagePath);
+        }
+
+        // Fallback to article main image
+        $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
+        return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
+    }
+
 }

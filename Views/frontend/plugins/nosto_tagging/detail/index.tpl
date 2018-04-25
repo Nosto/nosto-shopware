@@ -76,6 +76,29 @@
             {if $nostoProduct->getRatingValue()}
                 <span class="rating_value">{$nostoProduct->getRatingValue()|escape: 'htmlall':'UTF-8'}</span>
             {/if}
+            {if $nostoProduct->getSkus()}
+                {foreach from=$nostoProduct->getSkus() item=sku}
+                    <span class="nosto_sku">
+                        <span class="id">{$sku->getId()|escape:'htmlall':'UTF-8'}</span>
+                        <span class="name">{$sku->getName()|escape:'htmlall':'UTF-8'}</span>
+                        <span class="price">{$sku->getPrice()|escape:'htmlall':'UTF-8'}</span>
+                        <span class="list_price">{$sku->getListPrice()|escape:'htmlall':'UTF-8'}</span>
+                        <span class="url">{$sku->getUrl()|escape:'htmlall':'UTF-8'}</span>
+                        <span class="image_url">{$sku->getImageUrl()|escape:'htmlall':'UTF-8'}</span>
+                        <span class="gtin">{$sku->getGtin()|escape:'htmlall':'UTF-8'}</span>
+                        <span class="availability">{$sku->getAvailability()|escape:'htmlall':'UTF-8'}</span>
+                        {if $sku->getCustomFields() and $sku->getCustomFields()|is_array}
+                            <span class="custom_fields">
+                                {foreach from=$sku->getCustomFields() key=key item=value}
+                                    <span class="{$key|escape:'htmlall':'UTF-8'}">
+                                        {$value|escape:'htmlall':'UTF-8'}
+                                    </span>
+                                {/foreach}
+                            </span>
+                        {/if}
+                    </span>
+                {/foreach}
+            {/if}
         </div>
     {/if}
     {if isset($nostoCategory) && $nostoCategory}
