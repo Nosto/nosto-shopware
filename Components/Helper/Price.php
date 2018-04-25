@@ -152,7 +152,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param \Shopware\Models\Article\Detail $detail the Article Detail model.
      * @param \Shopware\Models\Shop\Shop $shop
      * @param string $type the type of price, i.e. "price" or "listPrice".
-     * @return string the price formatted according to Nosto standards.
+     * @return float the price formatted according to Nosto standards.
      */
     public static function calcDetailPriceInclTax(
         Detail $detail,
@@ -162,7 +162,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         /** @var \Shopware\Models\Article\Price $price */
         $price = self::getDetailPrice($detail, $shop);
         if (!$price) {
-            return NostoPriceHelper::format(0);
+            return floatval(NostoPriceHelper::format(0));
         }
         // If the list price is not set, fall back on the normal price.
         if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
@@ -177,7 +177,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         // Convert currency
         $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
 
-        return NostoPriceHelper::format($priceWithTax);
+        return floatval(NostoPriceHelper::format($priceWithTax));
     }
 
     /**

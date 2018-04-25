@@ -74,16 +74,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         $this->setImageUrl(
             Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image::getDetailImageUrl($detail)
         );
-        $this->setPrice(floatval(PriceHelper::calcDetailPriceInclTax(
+        $this->setPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,
             $shop,
             PriceHelper::PRICE_TYPE_NORMAL
-        )));
-        $this->setListPrice(floatval(PriceHelper::calcDetailPriceInclTax(
+        ));
+        $this->setListPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,
             $shop,
             PriceHelper::PRICE_TYPE_LIST
-        )));
+        ));
         $this->setAvailable($this->isDetailAvailable($detail));
         $this->setGtin($detail->getSupplierNumber());
         $this->setCustomFields($this->getDetailCustomFields($detail));
