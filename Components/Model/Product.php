@@ -35,6 +35,7 @@
  */
 
 use Shopware\Models\Article\Article as Article;
+use Shopware\Models\Article\Detail as Detail;
 use Shopware\Models\Shop\Shop as Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
@@ -288,13 +289,35 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Shop $shop the shop model.
      * @return string the url.
      */
-    protected function assembleProductUrl(Article $article, Shop $shop)
+    public static function assembleProductUrl(Article $article, Shop $shop, Detail $detail = null)
+    {
+        $urlParams = array(
+            'module' => 'frontend',
+            'controller' => 'detail',
+            'sArticle' => $article->getId(),
+            // Force SSL if it's enabled.
+            'forceSecure' => true,
+        );
+
+        if ($detail) {
+            $urlParams += ['number' => $detail->getNumber()];
+        }
+        $url = Shopware()->Front()->Router()->assemble($urlParams);
+
+        // Always add the "__shop" parameter so that the crawler can distinguish
+        // between products in different shops even if the host and path of the
+        // shops match.
+        return NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
+    }
+
+    public static function assembleDetailUrl(Detail $detail, Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(
                 'module' => 'frontend',
                 'controller' => 'detail',
-                'sArticle' => $article->getId(),
+                'sArticle' => $detail->getArticle()->getId(),
+                'number' => $detail->getNumber(),
                 // Force SSL if it's enabled.
                 'forceSecure' => true,
             )

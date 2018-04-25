@@ -62,7 +62,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
             $shop = Shopware()->Shop();
         }
 
-        $this->setUrl($this->assembleDetailUrl($detail, $shop));
+        $this->setUrl(
+            Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product::assembleProductUrl(
+                $detail->getArticle(), $shop, $detail
+            )
+        );
         $this->setId($detail->getId());
         $this->setName($detail->getArticle()->getName());
         $this->setImageUrl($this->getDetailImageUrl($detail));
@@ -105,31 +109,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         // Fallback to article main image
         $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
         return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
-    }
-
-    /**
-     * Assembles the product url based on article and shop.
-     *
-     * @param Detail $detail the Article Detail model.
-     * @param Shop $shop the shop model.
-     * @return string the url.
-     */
-    protected function assembleDetailUrl(Detail $detail, Shop $shop)
-    {
-        $url = Shopware()->Front()->Router()->assemble(
-            array(
-                'module' => 'frontend',
-                'controller' => 'detail',
-                'sArticle' => $detail->getArticle()->getId(),
-                'number' => $detail->getNumber(),
-                // Force SSL if it's enabled.
-                'forceSecure' => true,
-            )
-        );
-        // Always add the "__shop" parameter so that the crawler can distinguish
-        // between products in different shops even if the host and path of the
-        // shops match.
-        return NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
     }
 
     /**
