@@ -112,7 +112,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
         $this->amendArticleTranslation($article, $shop);
-        $this->setSkus($this->amendSkus($article, $shop));
+        $this->setSkus($this->buildSkus($article, $shop));
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -129,7 +129,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Article $article
      * @return \Nosto\Object\Product\SkuCollection
      */
-    public function amendSkus(\Shopware\Models\Article\Article $article, Shop $shop)
+    public function buildSkus(\Shopware\Models\Article\Article $article, Shop $shop)
     {
         $skuCollection = new Nosto\Object\Product\SkuCollection();
         foreach ($article->getDetails() as $detail) {
