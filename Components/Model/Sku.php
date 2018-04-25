@@ -64,12 +64,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
 
         $this->setUrl(
             Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product::assembleProductUrl(
-                $detail->getArticle(), $shop, $detail
+                $detail->getArticle(),
+                $shop,
+                $detail
             )
         );
         $this->setId($detail->getId());
         $this->setName($detail->getArticle()->getName());
-        $this->setImageUrl($this->getDetailImageUrl($detail));
+        $this->setImageUrl(
+            Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image::getDetailImageUrl($detail)
+        );
         $this->setPrice(floatval(PriceHelper::calcDetailPriceInclTax(
             $detail,
             $shop,
@@ -83,32 +87,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         $this->setAvailable($this->isDetailAvailable($detail));
         $this->setGtin($detail->getSupplierNumber());
         $this->setCustomFields($this->getDetailCustomFields($detail));
-    }
-
-    /**
-     * Returns the URL for the given detail
-     * If no image is assigned, will return the parent
-     * article's main image
-     *
-     * @param Detail $detail
-     * @return null|string URL of detail image
-     */
-    protected function getDetailImageUrl(Detail $detail)
-    {
-        $mediaService = Shopware()->Container()->get('shopware_media.media_service');
-        $detailImage = Shopware()
-            ->Models()
-            ->getRepository('Shopware\Models\Article\Image')
-            ->findOneBy(array('articleDetail' => $detail));
-
-        if (!is_null($detailImage)) {
-            $imagePath = $detailImage->getParent()->getMedia()->getPath();
-            return $mediaService->getUrl($imagePath);
-        }
-
-        // Fallback to article main image
-        $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
-        return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
     }
 
     /**
