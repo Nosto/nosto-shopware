@@ -80,6 +80,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
         $this->setPrice(floatval(NostoPriceHelper::format($basket->getPrice())));
         $this->setPriceCurrencyCode(strtoupper($currencyCode));
 
+        $articleDetail = Shopware()
+            ->Models()
+            ->getRepository('Shopware\Models\Article\Detail')
+            ->findOneBy(array('articleId' => $basket->getArticleId()));
+
+        if (!empty($articleDetail)) {
+            $this->setSkuId($articleDetail->getId());
+        }
+
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
