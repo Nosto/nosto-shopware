@@ -77,6 +77,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
         $this->setPrice(NostoPriceHelper::format($detail->getPrice()));
         $this->setPriceCurrencyCode(strtoupper($detail->getOrder()->getCurrency()));
 
+        $articleDetail = Shopware()
+            ->Models()
+            ->getRepository('Shopware\Models\Article\Detail')
+            ->findOneBy(array('number' => $detail->getArticleNumber()));
+
+        if (!empty($articleDetail)) {
+            $this->setSkuId($articleDetail->getId());
+        }
+
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
