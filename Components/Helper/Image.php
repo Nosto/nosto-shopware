@@ -183,15 +183,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             ->Models()
             ->getRepository('Shopware\Models\Article\Image')
             ->findOneBy(array('articleDetail' => $detail));
-
-        if (!is_null($detailImage)) {
+        try{
             $imagePath = $detailImage->getParent()->getMedia()->getPath();
             return $mediaService->getUrl($imagePath);
+        } catch (\Exception $e) {
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
+        }
+        // Fallback to article main image
+        if (!empty($detail->getArticle()->getImages()->first()->getMedia())) {
+            $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
+            return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
         }
 
-        // Fallback to article main image
-        $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
-        return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
+        return '';
     }
 
 }
