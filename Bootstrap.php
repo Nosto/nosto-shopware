@@ -71,6 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const SERVICE_ATTRIBUTE_CRUD = 'shopware_attribute.crud_service';
     const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
     const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
+    const CONFIG_SEND_CUSTOMER_DATA = 'sendCustomerData';
 
     private static $productUpdated = false;
 
@@ -135,7 +136,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             'author' => 'Nosto Solutions Ltd',
             'supplier' => 'Nosto Solutions Ltd',
             'copyright' => 'Copyright (c) 2016, Nosto Solutions Ltd',
-            'description' => 'Increase your conversion rate and average order value by delivering' .
+            'description' => 'Increase your conversion rate and average order value by delivering ' .
                 'your customers personalized product recommendations throughout their shopping journey.',
             'support' => 'support@nosto.com',
             'link' => 'http://nosto.com'
@@ -168,11 +169,32 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $this->createMyMenu();
         $this->createMyEmotions();
         $this->registerMyEvents();
+        $this->createConfiguration();
         $this->clearShopwareCache();
-
         return true;
     }
 
+    /**
+     * Initialises Nosto Plugin backend settings
+     * Run on installation
+     *
+     */
+    public function createConfiguration()
+    {
+        $form = $this->Form();
+        $form->setElement(
+            'checkbox',
+            self::CONFIG_SEND_CUSTOMER_DATA,
+            [
+                'label' => 'Enable Sending Customer Tagging',
+                'value' => 1,
+                'scope' => Shopware\Models\Config\Element::SCOPE_SHOP,
+                'description' => 'Enable Sending Customer Tagging To Nosto',
+                'required' => true
+            ]
+        );
+    }
+    
     /**
      * Creates needed db tables used by the plugin models.
      *

@@ -57,26 +57,34 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
-        if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
-            /* @var \Shopware\Models\Customer\Address $address */
-            $address = $customer->getDefaultBillingAddress();
-            if ($address instanceof \Shopware\Models\Customer\Address) {
-                $this->setFirstName($address->getFirstname());
-                $this->setLastName($address->getLastname());
+        $customerDataAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
+        if ($customerDataAllowed) {
+            if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
+                /* @var \Shopware\Models\Customer\Address $address */
+                $address = $customer->getDefaultBillingAddress();
+                if ($address instanceof \Shopware\Models\Customer\Address) {
+                    $this->setFirstName($address->getFirstname());
+                    $this->setLastName($address->getLastname());
+                }
+            } else {
+                /* @var \Shopware\Models\Customer\Billing $address */
+                $address = $customer->getBilling();
+                if ($address instanceof \Shopware\Models\Customer\Billing) {
+                    $this->setFirstName($address->getFirstName());
+                    $this->setLastName($address->getLastName());
+                }
             }
-        } else {
-            /* @var \Shopware\Models\Customer\Billing $address */
-            $address = $customer->getBilling();
-            if ($address instanceof \Shopware\Models\Customer\Billing) {
-                $this->setFirstName($address->getFirstName());
-                $this->setLastName($address->getLastName());
-            }
+            $this->setEmail($customer->getEmail());
+            $emailHelper = new EmailHelper();
+            $this->setMarketingPermission(
+                $emailHelper->isEmailOptedIn($customer->getEmail())
+            );
         }
-        $this->setEmail($customer->getEmail());
-        $emailHelper = new EmailHelper();
-        $this->setMarketingPermission(
-            $emailHelper->isEmailOptedIn($customer->getEmail())
-        );
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
