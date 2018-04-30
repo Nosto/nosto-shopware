@@ -114,7 +114,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             return null;
         }
         if ($mediaService instanceof MediaServiceInterface) {
-            $url = $mediaService->getUrl($media->getPath());
+            try {
+                $url = $mediaService->getUrl($media->getPath());
+            } catch (\Exception $e) {
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            }
         } else {
             // Force SSL if it's enabled.
             $secure = (
@@ -183,15 +187,33 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             ->Models()
             ->getRepository('Shopware\Models\Article\Image')
             ->findOneBy(array('articleDetail' => $detail));
-
-        if (!is_null($detailImage)) {
-            $imagePath = $detailImage->getParent()->getMedia()->getPath();
-            return $mediaService->getUrl($imagePath);
+        if ($detailImage) {
+            try {
+                if ($detailImage->getParent()
+                    && $detailImage->getParent()->getMedia()
+                    && $detailImage->getParent()->getMedia()->getPath()
+                ) {
+                    $imagePath = $detailImage->getParent()->getMedia()->getPath();
+                    return $mediaService->getUrl($imagePath);
+                }
+            } catch (\Exception $e) {
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            }
+            try {
+                // Fallback to article main image
+                if (null !== $detail->getArticle()
+                    && null !== $detail->getArticle()->getImages()
+                    && null !== $detail->getArticle()->getImages()->first()
+                    && null !== $detail->getArticle()->getImages()->first()->getMedia()
+                ) {
+                    $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
+                    return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
+                }
+            } catch (\Exception $e) {
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            }
         }
-
-        // Fallback to article main image
-        $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
-        return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
+        return '';
     }
 
 }
