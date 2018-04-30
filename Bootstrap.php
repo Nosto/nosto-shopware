@@ -71,7 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const SERVICE_ATTRIBUTE_CRUD = 'shopware_attribute.crud_service';
     const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
     const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
-    const CONFIG_SEND_CUSTOMER_DATA = 'sendCustomerData';
+    const CONFIG_SEND_CUSTOMER_DATA = 'send_customer_data';
 
     private static $productUpdated = false;
 
@@ -797,10 +797,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             'Shopware\Models\Customer\Customer',
             $customerId
         );
-        if ($customer instanceof \Shopware\Models\Customer\Customer) {
+        $customerDataAllowed = $this
+                ->Config()
+                ->get(self::CONFIG_SEND_CUSTOMER_DATA);
+        if ($customerDataAllowed && $customer instanceof \Shopware\Models\Customer\Customer) {
             $nostoCustomer = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer();
             $nostoCustomer->loadData($customer);
-
             $view->assign('nostoCustomer', $nostoCustomer);
         }
     }
