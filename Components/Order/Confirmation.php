@@ -65,7 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
             $shop = Shopware()->Shop();
         } catch (Exception $e) {
             // Shopware throws an exception if service does not exist
-            return;
+            $shop = $order->getShop();
         }
         
         if (is_null($shop)) {
