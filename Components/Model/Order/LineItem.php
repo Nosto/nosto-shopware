@@ -55,20 +55,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
      *
      * @param \Shopware\Models\Order\Detail $detail the order detail model.
      * @suppress PhanTypeMismatchArgument
+     * @throws Enlight_Event_Exception
      */
     public function loadData(\Shopware\Models\Order\Detail $detail)
     {
         $this->setProductId(-1);
-
         if ($detail->getArticleId() > 0) {
             // If this is a product variation, we need to load the parent
             // article to fetch it's number and name.
-            $article = Shopware()->Models()->find(
-                'Shopware\Models\Article\Article',
-                $detail->getArticleId()
-            );
-            if (!empty($article)) {
-                $this->setProductId($article->getMainDetail()->getNumber());
+            try {
+                $articleDetail = Shopware()
+                    ->Models()
+                    ->getRepository(\Shopware\Models\Article\Detail::class)
+                    ->findOneBy(array('articleId' => $detail->getArticleId()));
+                if ($articleDetail !== null) {
+                    $this->setProductId($articleDetail->getNumber());
+                }
+            } catch (\Exception $e) {
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
 
@@ -76,15 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
         $this->setQuantity((int)$detail->getQuantity());
         $this->setPrice(NostoPriceHelper::format($detail->getPrice()));
         $this->setPriceCurrencyCode(strtoupper($detail->getOrder()->getCurrency()));
-
-        $articleDetail = Shopware()
-            ->Models()
-            ->getRepository('Shopware\Models\Article\Detail')
-            ->findOneBy(array('number' => $detail->getArticleNumber()));
-
-        if (!empty($articleDetail)) {
-            $this->setSkuId($articleDetail->getId());
-        }
+        $this->setSkuId($detail->getArticleNumber());
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
