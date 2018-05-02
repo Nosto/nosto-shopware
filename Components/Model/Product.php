@@ -233,7 +233,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 )
             );
         }
-        $this->setProductId($mainDetail->getNumber());
+        try {
+            $articleDetail = Shopware()
+                ->Models()
+                ->getRepository(\Shopware\Models\Article\Detail::class)
+                ->findOneBy(array('articleId' => $mainDetail->getArticleId()));
+            if (!empty($articleDetail)) {
+                $this->setProductId($articleDetail->getNumber());
+            }
+        } catch (\Exception $e) {
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+        }
     }
 
     /**

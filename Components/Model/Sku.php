@@ -69,7 +69,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
                 $detail
             )
         );
-        $this->setId($detail->getId());
+        $this->setId($detail->getNumber());
         $this->setName($detail->getArticle()->getName());
         $this->setImageUrl(
             Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image::getDetailImageUrl($detail)
