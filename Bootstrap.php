@@ -72,6 +72,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
     const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
     const CONFIG_SEND_CUSTOMER_DATA = 'send_customer_data';
+    const CONFIG_SKU_TAGGING= 'sku_tagging';
+
 
     private static $productUpdated = false;
 
@@ -190,6 +192,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 'value' => 1,
                 'scope' => Shopware\Models\Config\Element::SCOPE_SHOP,
                 'description' => 'Enable Sending Customer Tagging To Nosto',
+                'required' => true
+            ]
+        );
+
+        $form->setElement(
+            'checkbox',
+            self::CONFIG_SKU_TAGGING,
+            [
+                'label' => 'Enable SKU Tagging',
+                'value' => 1,
+                'scope' => Shopware\Models\Config\Element::SCOPE_SHOP,
+                'description' => 'Enable SKU Tagging',
                 'required' => true
             ]
         );

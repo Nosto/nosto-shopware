@@ -85,7 +85,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
             ->getRepository('Shopware\Models\Article\Detail')
             ->findOneBy(array('articleId' => $basket->getArticleId()));
 
-        if (!empty($articleDetail)) {
+        $skuTaggingAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SKU_TAGGING);
+        if ($skuTaggingAllowed && !empty($articleDetail)) {
             $this->setSkuId($articleDetail->getId());
         }
 
