@@ -34,9 +34,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Article\Article as Article;
-use Shopware\Models\Article\Detail as Detail;
-use Shopware\Models\Shop\Shop as Shop;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
+use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
@@ -78,16 +78,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      */
     public function loadData(Article $article, Shop $shop = null)
     {
-        if (is_null($shop)) {
+        if ($shop === null) {
             $shop = Shopware()->Shop();
         }
 
         try {
             $this->assignId($article);
         } catch (NostoException $e) {
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             return;
         }
-        $this->setUrl($this->assembleProductUrl($article, $shop));
+        $this->setUrl(self::assembleProductUrl($article, $shop));
         $this->setName($article->getName());
         $this->setImageUrl(ImageHelper::getMainImageUrl($article, $shop));
         $this->setAlternateImageUrls(ImageHelper::getAlternativeImageUrls($article, $shop));
@@ -103,8 +104,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             PriceHelper::PRICE_TYPE_LIST
         ));
         $this->setAvailability($this->checkAvailability($article));
-        $tags = TagHelper::buildProductTags($article, $shop);
-        foreach ($tags as $tagType => $values) {
+        foreach (TagHelper::buildProductTags($article, $shop) as $tagType => $values) {
             $setterMethod = sprintf('set%s', ucfirst($tagType));
             $this->$setterMethod($values);
         }
@@ -138,7 +138,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             array(
                 'nostoProduct' => $this,
                 'article' => $article,
-                'shop' => $shop,
+                'shop' => $shop
             )
         );
     }
@@ -180,6 +180,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     /**
      * Add Sku variations to the current article
      * @param Article $article
+     * @param Shop $shop
      * @return \Nosto\Object\Product\SkuCollection
      */
     public function buildSkus(\Shopware\Models\Article\Article $article, Shop $shop)
@@ -202,7 +203,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     public function amendSupplierCost(\Shopware\Models\Article\Article $article, Shop $shop)
     {
         // Purchase price is not available before version 5.2
-        if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
+        if (method_exists($article->getMainDetail(), 'getPurchasePrice')) {
             $suplierCost = $article->getMainDetail()->getPurchasePrice();
             $this->setSupplierCost(PriceHelper::convertToShopCurrency($suplierCost, $shop));
         }
@@ -224,15 +225,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         /** @var \Doctrine\ORM\QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
-            ->from('\Shopware\Models\Translation\Translation', 'translations')
+            ->from(\Shopware\Models\Translation\Translation::class, 'translations')
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
             ->andWhere('translations.type = \'article\'');
 
-        if (property_exists('\Shopware\Models\Translation\Translation', 'shopId')) {
+        if (property_exists(\Shopware\Models\Translation\Translation::class, 'shopId')) {
             $builder = $builder->andWhere('translations.shopId = :shopId')
                 ->setParameter('shopId', $shop->getId());
-        } elseif (property_exists('\Shopware\Models\Translation\Translation', 'localeId')
-            && method_exists('Shopware\Models\Shop\Shop', 'getLocale')
+        } elseif (property_exists(\Shopware\Models\Translation\Translation::class, 'localeId')
+            && method_exists(Shopware\Models\Shop\Shop::class, 'getLocale')
             && $shop->getLocale() !== null
         ) {
             $builder = $builder->andWhere('translations.localeId = :localeId')
@@ -246,12 +247,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
 
         if ($result instanceof \Shopware\Models\Translation\Translation && $result->getData()) {
             $dataObject = unserialize($result->getData());
-            if (array_key_exists("txtArtikel", $dataObject)) {
-                $article->setName($dataObject["txtArtikel"]);
+            if (array_key_exists('txtArtikel', $dataObject)) {
+                $article->setName($dataObject['txtArtikel']);
                 $this->setName($article->getName());
             }
-            if (array_key_exists("txtlangbeschreibung", $dataObject)) {
-                $article->setDescriptionLong($dataObject["txtlangbeschreibung"]);
+            if (array_key_exists('txtlangbeschreibung', $dataObject)) {
+                $article->setDescriptionLong($dataObject['txtlangbeschreibung']);
                 $this->setDescription($article->getDescriptionLong());
             }
         }
@@ -314,8 +315,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             if ($showSubshopReviewOnly) {
                 $shopForVote = $vote->getShop();
                 if ($shopForVote !== null
-                    && $shop !== null
-                    && $shopForVote->getId() != $shop->getId()
+                    && $shopForVote->getId() !== $shop->getId()
                 ) {
                     continue;
                 }
@@ -349,6 +349,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      *
      * @param Article $article the article model.
      * @param Shop $shop the shop model.
+     * @param null|Detail $detail the detail model.
      * @return string the url.
      */
     public static function assembleProductUrl(Article $article, Shop $shop, Detail $detail = null)
@@ -372,6 +373,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         return NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
     }
 
+    /**
+     * Assemble the URL for the given Detail
+     *
+     * @param Detail $detail
+     * @param Shop $shop
+     * @return string
+     */
     public static function assembleDetailUrl(Detail $detail, Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
@@ -381,7 +389,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 'sArticle' => $detail->getArticle()->getId(),
                 'number' => $detail->getNumber(),
                 // Force SSL if it's enabled.
-                'forceSecure' => true,
+                'forceSecure' => true
             )
         );
         // Always add the "__shop" parameter so that the crawler can distinguish
@@ -403,7 +411,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         /** @var \Shopware\Models\Article\Detail[] $details */
         $details = Shopware()
             ->Models()
-            ->getRepository('Shopware\Models\Article\Detail')
+            ->getRepository(\Shopware\Models\Article\Detail::class)
             ->findBy(array('articleId' => $article->getId()));
         foreach ($details as $detail) {
             if ($detail->getInStock() > 0) {
