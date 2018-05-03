@@ -62,7 +62,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
     public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
     {
         $this->setProductId('-1');
-
         if ($basket->getArticleId() > 0) {
             // If this is a product variation, we need to load the parent
             // article to fetch it's number and name.
@@ -71,7 +70,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
                 $basket->getArticleId()
             );
             if (!empty($article)) {
-                $this->setProductId($article->getMainDetail()->getNumber());
+                $detailNumber = Shopware()
+                    ->Models()
+                    ->getRepository(\Shopware\Models\Article\Detail::class)
+                    ->findOneBy(array('number' => $basket->getOrderNumber()));
+                if (!empty($detailNumber)) {
+                    $this->setProductId($detailNumber->getNumber());
+                } else {
+                    // If detail number not found, fallback to parent
+                    $this->setProductId($article->getMainDetail()->getNumber());
+                }
             }
         }
 
@@ -85,7 +93,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
             ->getRepository('Shopware\Models\Article\Detail')
             ->findOneBy(array('articleId' => $basket->getArticleId()));
 
-        if (!empty($articleDetail)) {
+        $skuTaggingAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SKU_TAGGING);
+        if ($skuTaggingAllowed && !empty($articleDetail)) {
             $this->setSkuId($articleDetail->getId());
         }
 

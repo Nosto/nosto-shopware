@@ -113,7 +113,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
         $this->amendArticleTranslation($article, $shop);
-        $this->setSkus($this->buildSkus($article, $shop));
+        $skuTaggingAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SKU_TAGGING);
+
+        if ($skuTaggingAllowed) {
+            $this->setSkus($this->buildSkus($article, $shop));
+        }
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
@@ -224,7 +233,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 )
             );
         }
-        $this->setProductId($mainDetail->getNumber());
+        try {
+            $articleDetail = Shopware()
+                ->Models()
+                ->getRepository(\Shopware\Models\Article\Detail::class)
+                ->findOneBy(array('articleId' => $mainDetail->getArticleId()));
+            if (!empty($articleDetail)) {
+                $this->setProductId($articleDetail->getNumber());
+            }
+        } catch (\Exception $e) {
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+        }
     }
 
     /**
