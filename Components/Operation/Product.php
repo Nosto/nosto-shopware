@@ -53,14 +53,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly created product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
+     * @throws \Enlight_Event_Exception
      * @throws Exception
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Nosto\NostoException
      * @suppress PhanDeprecatedFunction
      */
     public function create(\Shopware\Models\Article\Article $article)
     {
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        $repository = Shopware()->Models()->getRepository(\Shopware\Models\Shop\Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
@@ -101,7 +103,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         $inShops = array();
         $allShops = Shopware()
             ->Models()
-            ->getRepository('\Shopware\Models\Shop\Shop')
+            ->getRepository(\Shopware\Models\Shop\Shop::class)
             ->findAll();
 
         if ($allStores === true) {
@@ -127,7 +129,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 
         foreach ($inShops as $shop) {
             $account = NostoComponentAccount::findAccount($shop);
-            if (!is_null($account)) {
+            if ($account !== null) {
                 $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
                 if ($nostoAccount->isConnectedToNosto()) {
                     $data[$shop->getId()] = $nostoAccount;
@@ -142,6 +144,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly updated product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
+     * @throws \Enlight_Event_Exception
      * @throws Exception
      * @throws NostoException
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -150,7 +153,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     public function update(\Shopware\Models\Article\Article $article)
     {
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        $repository = Shopware()->Models()->getRepository(\Shopware\Models\Shop\Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
@@ -183,10 +186,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
             $model->assignId($article);
             if ($model->getProductId()) {
+                $op = new DeleteProduct($account);
+                $products = array($model->getProductId());
+                $op->setProductIds($products);
                 try {
-                    $op = new DeleteProduct($account);
-                    $products = array($model->getProductId());
-                    $op->setProductIds($products);
                     $op->delete();
                 } catch (NostoException $e) {
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());

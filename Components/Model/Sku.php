@@ -54,7 +54,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     public function loadData(Detail $detail, Shop $shop = null)
     {
-        if ($shop === null ) {
+        if ($shop === null) {
             $shop = Shopware()->Shop();
         }
 

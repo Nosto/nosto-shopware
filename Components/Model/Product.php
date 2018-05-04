@@ -313,6 +313,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $voteSum = 0;
         foreach ($article->getVotes() as $vote) {
             if ($showSubshopReviewOnly) {
+                /** @var \Shopware\Models\Shop\Shop $shopForVote */
                 $shopForVote = $vote->getShop();
                 if ($shopForVote !== null
                     && $shopForVote->getId() !== $shop->getId()
