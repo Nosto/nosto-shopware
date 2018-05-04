@@ -40,20 +40,11 @@ use Nosto\Object\Product\Sku as NostoSku;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
 
+/**
+ * Class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku
+ */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoSku
 {
-    /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
-     */
-    private $customFieldsHelper;
-
-    /**
-     * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku constructor.
-     */
-    public function __construct()
-    {
-        $this->customFieldsHelper = new CustomFieldsHelper();
-    }
 
     /**
      * Loads the SKU Information
@@ -63,7 +54,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     public function loadData(Detail $detail, Shop $shop = null)
     {
-        if (is_null($shop)) {
+        if ($shop === null ) {
             $shop = Shopware()->Shop();
         }
 
@@ -103,10 +94,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function isDetailAvailable(Detail $detail)
     {
-        if ($detail->getInStock() > 0) {
-            return true;
-        }
-        return false;
+        return $detail->getInStock() > 0;
     }
 
     /**
@@ -116,7 +104,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function amendDetailSettingsCustomFields(Detail $detail)
     {
-        $settingsCustomFields = $this->customFieldsHelper->getDetailSettingsCustomFields($detail);
+        $settingsCustomFields = CustomFieldsHelper::getDetailSettingsCustomFields($detail);
         if (!empty($settingsCustomFields)) {
             foreach ($settingsCustomFields as $key => $customField) {
                 $this->addCustomField($key, $customField);
@@ -131,7 +119,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function amendDetailFreeTextCustomFields(Detail $detail)
     {
-        $freeTextsFields = $this->customFieldsHelper->getFreeTextCustomFields($detail);
+        $freeTextsFields = CustomFieldsHelper::getFreeTextCustomFields($detail);
         if (!empty($freeTextsFields)) {
             foreach ($freeTextsFields as $key => $customField) {
                 $this->addCustomField($key, $customField);
