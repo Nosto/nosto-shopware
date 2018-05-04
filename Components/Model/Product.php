@@ -359,7 +359,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             'controller' => 'detail',
             'sArticle' => $article->getId(),
             // Force SSL if it's enabled.
-            'forceSecure' => true,
+            'forceSecure' => true
         );
 
         if ($detail) {
@@ -367,31 +367,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         }
         $url = Shopware()->Front()->Router()->assemble($urlParams);
 
-        // Always add the "__shop" parameter so that the crawler can distinguish
-        // between products in different shops even if the host and path of the
-        // shops match.
-        return NostoHttpRequest::replaceQueryParamInUrl('__shop', $shop->getId(), $url);
-    }
-
-    /**
-     * Assemble the URL for the given Detail
-     *
-     * @param Detail $detail
-     * @param Shop $shop
-     * @return string
-     */
-    public static function assembleDetailUrl(Detail $detail, Shop $shop)
-    {
-        $url = Shopware()->Front()->Router()->assemble(
-            array(
-                'module' => 'frontend',
-                'controller' => 'detail',
-                'sArticle' => $detail->getArticle()->getId(),
-                'number' => $detail->getNumber(),
-                // Force SSL if it's enabled.
-                'forceSecure' => true
-            )
-        );
         // Always add the "__shop" parameter so that the crawler can distinguish
         // between products in different shops even if the host and path of the
         // shops match.
