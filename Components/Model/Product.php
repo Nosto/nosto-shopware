@@ -42,6 +42,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelpe
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku as NostoSku;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams as ProductStreamsRepo;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
@@ -61,6 +62,20 @@ use Nosto\NostoException;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends NostoProduct
 {
+    /**
+     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
+     */
+    private $customFieldsHelper;
+
+    /**
+     * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->customFieldsHelper = new CustomFieldsHelper();
+    }
+
     /**
      * Loads the model data from an article and shop.
      *
@@ -114,6 +129,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
         $this->amendArticleTranslation($article, $shop);
+        $this->amendSettingsCustomFields($article);
+        $this->amendFreeTextCustomFields($article);
         $skuTaggingAllowed = Shopware()
             ->Plugins()
             ->Frontend()
@@ -135,6 +152,40 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         );
     }
 
+    /**
+     * Add product section 'Settings' as Custom Fields in the product tagging.
+     *
+     * @param Article $article
+     */
+    protected function amendSettingsCustomFields(Article $article)
+    {
+        $settingsCustomFields = $this->customFieldsHelper->getDetailSettingsCustomFields(
+            $article->getMainDetail()
+        );
+        if (!empty($settingsCustomFields)) {
+            foreach ($settingsCustomFields as $key => $customField) {
+                $this->addCustomField($key, $customField);
+            }
+        }
+    }
+
+    /**
+     * Add product section 'Free Text Fields' as Custom Fields in the product tagging.
+     *
+     * @param Article $article
+     */
+    protected function amendFreeTextCustomFields(Article $article)
+    {
+        $freeTextsFields = $this->customFieldsHelper->getFreeTextCustomFields(
+            $article->getMainDetail()
+        );
+        if (!empty($freeTextsFields)) {
+            foreach ($freeTextsFields as $key => $customField) {
+                $this->addCustomField($key, $customField);
+            }
+        }
+    }
+    
     /**
      * Add Sku variations to the current article
      * @param Article $article

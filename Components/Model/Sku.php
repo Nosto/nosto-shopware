@@ -35,20 +35,25 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
-use Shopware\Models\Article\Detail as Detail;
+use Shopware\Models\Article\Detail;
 use Nosto\Object\Product\Sku as NostoSku;
-use Shopware\Models\Shop\Shop as Shop;
-use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
 
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoSku
 {
-    protected static $ignoredCustomFieldsProperties = array(
-        'id',
-        'articleDetailId',
-        'articleDetail',
-        'articleId',
-        'article'
-    );
+    /**
+     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
+     */
+    private $customFieldsHelper;
+
+    /**
+     * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku constructor.
+     */
+    public function __construct()
+    {
+        $this->customFieldsHelper = new CustomFieldsHelper();
+    }
 
     /**
      * Loads the SKU Information
@@ -86,7 +91,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         ));
         $this->setAvailable($this->isDetailAvailable($detail));
         $this->setGtin($detail->getSupplierNumber());
-        $this->setCustomFields($this->getDetailCustomFields($detail));
+        $this->amendDetailFreeTextCustomFields($detail);
+        $this->amendDetailSettingsCustomFields($detail);
     }
 
     /**
@@ -104,26 +110,32 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
     }
 
     /**
-     * Returns an array of custom fields for the given detail
-     * excluding standard and empty properties
+     * Add product section 'Settings' as Custom Fields in the SKU tagging.
      *
      * @param Detail $detail
-     * @return array
      */
-    protected function getDetailCustomFields(Detail $detail)
+    protected function amendDetailSettingsCustomFields(Detail $detail)
     {
-        $propertiesAndValues = Nosto\Helper\SerializationHelper::getProperties(
-            $detail->getAttribute()
-        );
-        $customFields = array();
-        foreach ($propertiesAndValues as $property => $value) {
-            if (!is_null($value)
-                && $value !== ''
-                && !in_array($property, self::$ignoredCustomFieldsProperties)
-            ) {
-                $customFields[$property] = $value;
+        $settingsCustomFields = $this->customFieldsHelper->getDetailSettingsCustomFields($detail);
+        if (!empty($settingsCustomFields)) {
+            foreach ($settingsCustomFields as $key => $customField) {
+                $this->addCustomField($key, $customField);
             }
         }
-        return $customFields;
+    }
+
+    /**
+     * Add product section 'Free Text Fields' as Custom Fields in the SKU tagging.
+     *
+     * @param Detail $detail
+     */
+    protected function amendDetailFreeTextCustomFields(Detail $detail)
+    {
+        $freeTextsFields = $this->customFieldsHelper->getFreeTextCustomFields($detail);
+        if (!empty($freeTextsFields)) {
+            foreach ($freeTextsFields as $key => $customField) {
+                $this->addCustomField($key, $customField);
+            }
+        }
     }
 }
