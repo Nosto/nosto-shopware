@@ -65,14 +65,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_Product
      */
     public function getProductStreamsSelectionName(Article $article)
     {
-        $builder = $this->conn->createQueryBuilder();
-        return $builder
-            ->select('streams.name')
-            ->from('s_product_streams_selection', 'selection')
-            ->innerJoin('selection', 's_product_streams', 'streams', 'selection.stream_id = streams.id')
-            ->where('article_id = :articleId')
-            ->setParameter(':articleId', $article->getId())
-            ->execute()
-            ->fetchAll();
+        try {
+            $builder = $this->conn->createQueryBuilder();
+            return $builder
+                ->select('streams.name')
+                ->from('s_product_streams_selection', 'selection')
+                ->innerJoin('selection', 's_product_streams', 'streams', 'selection.stream_id = streams.id')
+                ->where('article_id = :articleId')
+                ->setParameter(':articleId', $article->getId())
+                ->execute()
+                ->fetchAll();
+        } catch (\Exception $e) {
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            return array();
+        }
     }
 }
