@@ -43,6 +43,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelpe
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku as NostoSku;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams as ProductStreamsRepo;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\NostoException;
@@ -390,6 +391,55 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             // Only include categories that are under the shop's root category.
             if (strpos($category->getPath(), '|' . $shopCatId . '|') !== false) {
                 $paths[] = $helper->buildCategoryPath($category);
+            }
+        }
+        $isProductStreamsAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(NostoBootstrap::CONFIG_PRODUCT_STREAMS);
+        if ($isProductStreamsAllowed) {
+            $paths = $this->generateRelatedProductStreams($article, $paths);
+            $paths = $this->generateRelatedProductSelectionStreams($article, $paths);
+        }
+        return $paths;
+    }
+
+    /**
+     * Add Product Streams to a given array of category paths
+     *
+     * @param Article $article
+     * @param array $paths
+     * @return array
+     */
+    public function generateRelatedProductStreams(Article $article, array $paths)
+    {
+        $productStreams = $article->getRelatedProductStreams();
+        if ($productStreams !== null) {
+            foreach ($productStreams as $productStream) {
+                $paths[] = $productStream->getName();
+            }
+        }
+        return $paths;
+    }
+
+    /**
+     * Add Product Selection Streams to a given array of category paths
+     *
+     * @param Article $article
+     * @param array $paths
+     * @return array
+     */
+    public function generateRelatedProductSelectionStreams(Article $article, array $paths)
+    {
+        $productStreams = new ProductStreamsRepo();
+        $productStreamsSelection = $productStreams->getProductStreamsSelectionName($article);
+        if (!empty($productStreamsSelection)) {
+            foreach ($productStreamsSelection as $selection) {
+                if (array_key_exists('name', $selection)) {
+                    $paths[] = $selection['name'];
+                }
             }
         }
         return $paths;

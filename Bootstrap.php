@@ -73,6 +73,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
     const CONFIG_SEND_CUSTOMER_DATA = 'send_customer_data';
     const CONFIG_SKU_TAGGING= 'sku_tagging';
+    const CONFIG_PRODUCT_STREAMS = 'product_streams';
 
 
     private static $productUpdated = false;
@@ -204,6 +205,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 'value' => 1,
                 'scope' => Shopware\Models\Config\Element::SCOPE_SHOP,
                 'description' => 'Enable SKU Tagging',
+                'required' => true
+            ]
+        );
+
+        $form->setElement(
+            'checkbox',
+            self::CONFIG_PRODUCT_STREAMS,
+            [
+                'label' => 'Enable Product Streams Support',
+                'value' => 0,
+                'scope' => Shopware\Models\Config\Element::SCOPE_SHOP,
+                'description' => 'Add Product Streams To Category Paths',
                 'required' => true
             ]
         );
