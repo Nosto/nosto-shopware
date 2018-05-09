@@ -34,7 +34,6 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Nosto\Object\Cart\LineItem as NostoLineItem;
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
 
@@ -72,6 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
                     $this->setProductId($articleDetail->getNumber());
                 }
             } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
@@ -86,7 +86,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoOrderLineItem' => $this,
-                'detail' => $detail,
+                'detail' => $detail
             )
         );
     }
