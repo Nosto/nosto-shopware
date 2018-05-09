@@ -36,7 +36,7 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
-use Nosto\Object\Customer as Customer;
+use Nosto\Object\Customer;
 use Nosto\NostoException;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
 
@@ -62,7 +62,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
     {
         if ($customer->getDefaultBillingAddress() instanceof \Shopware\Models\Customer\Address) {
             $this->setFirstName($customer->getDefaultBillingAddress()->getFirstname());
-            $this->setLastName($customer->getDefaultBillingAddress()->getLastName());
+            $this->setLastName($customer->getDefaultBillingAddress()->getLastname());
         }
         $this->setEmail($customer->getEmail());
         $emailHelper = new EmailHelper();
@@ -84,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoCustomer' => $this,
-                'customer' => $customer,
+                'customer' => $customer
             )
         );
     }
@@ -95,10 +95,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      *
      * @param \Shopware\Models\Customer\Customer $customer
      *
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
      * @throws NostoException if customer reference cannot be fetched or created
      *
      * @return void
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\ORMException
      */
     public function populateCustomerReference(\Shopware\Models\Customer\Customer $customer)
     {
@@ -121,7 +123,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
             )
         );
         $customerReference = null;
-        $entityRepository = Shopware()->Models()->getRepository('Shopware\Models\Attribute\Customer');
+        $entityRepository = Shopware()->Models()->getRepository(\Shopware\Models\Attribute\Customer::class);
         /** @noinspection PhpUndefinedMethodInspection */
         $customerAttribute = $entityRepository
             ->findOneByCustomerId($customer->getId());
