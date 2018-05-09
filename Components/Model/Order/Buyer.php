@@ -57,6 +57,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $customerDataAllowed = Shopware()
             ->Plugins()
             ->Frontend()
@@ -64,7 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             ->Config()
             ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
         if ($customerDataAllowed) {
-            if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
+            if (method_exists(\Shopware\Models\Customer\Customer::class, 'getDefaultBillingAddress')) {
                 /* @var \Shopware\Models\Customer\Address $address */
                 $address = $customer->getDefaultBillingAddress();
                 if ($address instanceof \Shopware\Models\Customer\Address) {
@@ -73,7 +74,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                 }
             } else {
                 /* @var \Shopware\Models\Customer\Billing $address */
+                /** @noinspection PhpDeprecationInspection */
                 $address = $customer->getBilling();
+                /** @noinspection PhpDeprecationInspection */
                 if ($address instanceof \Shopware\Models\Customer\Billing) {
                     $this->setFirstName($address->getFirstName());
                     $this->setLastName($address->getLastName());
@@ -89,7 +92,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoOrderBuyer' => $this,
-                'customer' => $customer,
+                'customer' => $customer
             )
         );
     }
