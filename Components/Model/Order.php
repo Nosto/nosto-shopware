@@ -56,9 +56,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
      *
      * @param \Shopware\Models\Order\Order $order the order model.
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      * @throws \Nosto\NostoException
      */
     public function loadData(\Shopware\Models\Order\Order $order)
@@ -69,11 +66,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         try {
             $paymentProvider = $payment->getName();
             $paymentPlugin = $payment->getPlugin();
-            if (!is_null($paymentPlugin) && $paymentPlugin->getVersion()) {
+            if ($paymentPlugin !== null && $paymentPlugin->getVersion()) {
                 $paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
             }
         } catch (Exception $e) {
             $paymentProvider = 'unknown';
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
         $this->setPaymentProvider($paymentProvider);
 
@@ -106,7 +104,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoOrder' => $this,
-                'order' => $order,
+                'order' => $order
             )
         );
     }
