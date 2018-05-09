@@ -35,7 +35,7 @@
  */
 
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
-use Nosto\Object\Cart\LineItem as LineItem;
+use Nosto\Object\Cart\LineItem;
 
 /**
  * Model for shopping cart line items. This is used when compiling the shopping
@@ -54,6 +54,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
      *
      * @param Shopware\Models\Order\Basket $basket an order basket item.
      * @param string $currencyCode the line item currency code.
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
      * @throws Enlight_Event_Exception
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -66,7 +67,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
             // If this is a product variation, we need to load the parent
             // article to fetch it's number and name.
             $article = Shopware()->Models()->find(
-                'Shopware\Models\Article\Article',
+                \Shopware\Models\Article\Article::class,
                 $basket->getArticleId()
             );
             if (!empty($article)) {
@@ -85,14 +86,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
 
         $this->setName($basket->getArticleName());
         $this->setQuantity((int)$basket->getQuantity());
-        $this->setPrice(floatval(NostoPriceHelper::format($basket->getPrice())));
+        $this->setPrice((float)NostoPriceHelper::format($basket->getPrice()));
         $this->setPriceCurrencyCode(strtoupper($currencyCode));
 
         $articleDetail = Shopware()
             ->Models()
-            ->getRepository('Shopware\Models\Article\Detail')
+            ->getRepository(\Shopware\Models\Article\Detail::class)
             ->findOneBy(array('articleId' => $basket->getArticleId()));
-
+        /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()
             ->Plugins()
             ->Frontend()
@@ -108,7 +109,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
             array(
                 'nostoCartLineItem' => $this,
                 'basket' => $basket,
-                'currency' => $currencyCode,
+                'currency' => $currencyCode
             )
         );
     }
