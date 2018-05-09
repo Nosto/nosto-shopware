@@ -44,15 +44,6 @@ use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 {
-    /*
-     * Constructor
-     *
-     * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
-     */
-    public function __construct()
-    {
-    }
-
     /**
      * Returns a product page preview url in the given shop.
      *
@@ -63,7 +54,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('articles.id'))
-            ->from('\Shopware\Models\Article\Article', 'articles')
+            ->from(\Shopware\Models\Article\Article::class, 'articles')
             ->where('articles.active = 1')
             ->setFirstResult(0)
             ->setMaxResults(1)
@@ -76,7 +67,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             array(
                 'module' => 'frontend',
                 'controller' => 'detail',
-                'sArticle' => $result[0]['id'],
+                'sArticle' => $result[0]['id']
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
@@ -115,7 +106,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('categories.id'))
-            ->from('Shopware\Models\Category\Category', 'categories')
+            ->from(Shopware\Models\Category\Category::class, 'categories')
             ->where('categories.active = 1 AND categories.parent = :parentId AND categories.blog = 0')
             ->setParameter(':parentId', $shop->getCategory()->getId())
             ->setFirstResult(0)
@@ -129,7 +120,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             array(
                 'module' => 'frontend',
                 'controller' => 'cat',
-                'sCategory' => $result[0]['id'],
+                'sCategory' => $result[0]['id']
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
@@ -147,7 +138,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             array(
                 'module' => 'frontend',
                 'controller' => 'checkout',
-                'action' => 'cart',
+                'action' => 'cart'
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
@@ -164,7 +155,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
         $url = Shopware()->Front()->Router()->assemble(
             array(
                 'module' => 'frontend',
-                'controller' => 'search',
+                'controller' => 'search'
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url, array('sSearch' => 'nosto'));
@@ -180,7 +171,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(
-                'module' => 'frontend',
+                'module' => 'frontend'
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
