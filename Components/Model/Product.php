@@ -68,15 +68,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     private $customFieldsHelper;
 
     /**
-     * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $this->customFieldsHelper = new CustomFieldsHelper();
-    }
-
-    /**
      * Loads the model data from an article and shop.
      *
      * @param Article $article the article model.
@@ -159,7 +150,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      */
     protected function amendSettingsCustomFields(Article $article)
     {
-        $settingsCustomFields = $this->customFieldsHelper->getDetailSettingsCustomFields(
+        $settingsCustomFields = CustomFieldsHelper::getDetailSettingsCustomFields(
             $article->getMainDetail()
         );
         if (!empty($settingsCustomFields)) {
@@ -176,7 +167,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      */
     protected function amendFreeTextCustomFields(Article $article)
     {
-        $freeTextsFields = $this->customFieldsHelper->getFreeTextCustomFields(
+        $freeTextsFields = CustomFieldsHelper::getFreeTextCustomFields(
             $article->getMainDetail()
         );
         if (!empty($freeTextsFields)) {

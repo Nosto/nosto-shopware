@@ -71,7 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
      * @param Detail $detail
      * @return array
      */
-    public function getDetailSettingsCustomFields(Detail $detail)
+    public static function getDetailSettingsCustomFields(Detail $detail)
     {
         // Iterates through the $productCustomFields array and
         // dynamically execute the methods in the Detail object.
@@ -90,7 +90,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
      * @param Detail $detail
      * @return array
      */
-    public function getFreeTextCustomFields(Detail $detail)
+    public static function getFreeTextCustomFields(Detail $detail)
     {
         /** @var Detail $detail */
         $propertiesAndValues = Nosto\Helper\SerializationHelper::getProperties(
