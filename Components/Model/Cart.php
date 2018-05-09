@@ -70,10 +70,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
                 array(
                     'nostoCart' => $this,
                     'baskets' => $baskets,
-                    'currency' => $currency,
+                    'currency' => $currency
                 )
             );
         } catch (Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
         }
     }
