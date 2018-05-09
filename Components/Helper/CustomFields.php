@@ -46,11 +46,11 @@ use Shopware\Models\Article\Detail;
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
 {
     public static $productCustomFields = array(
-        'CUSTOM_FIELD_WEIGHT' => 'getWeight',
-        'CUSTOM_FIELD_HEIGHT' => 'getHeight',
-        'CUSTOM_FIELD_LENGTH' => 'getLen',
-        'CUSTOM_FIELD_WIDTH' => 'getWidth',
-        'CUSTOM_FIELD_FREE_SHIPPING' => 'getShippingFree'
+        'weight' => 'weight',
+        'height' => 'height',
+        'length' => 'len',
+        'width' => 'width',
+        'free_shipping' => 'shippingfree'
     );
 
     /**
@@ -77,8 +77,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
         // dynamically execute the methods in the Detail object.
         $settingsCustomFields = array();
         foreach (self::$productCustomFields as $key => $productCustomField) {
-            if(!empty($detail->{$productCustomField}())) {
-                $settingsCustomFields[$key] = $detail->{$productCustomField}();
+            $method = sprintf('get%s', $productCustomField);
+            if (method_exists($detail, $method)
+               && !empty($detail->{$method}())
+               && $detail->{$method}() != 0
+            ) {
+                $settingsCustomFields[$key] = $detail->{$method}();
             }
         }
         return $settingsCustomFields;
