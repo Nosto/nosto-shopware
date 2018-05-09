@@ -53,6 +53,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
      *
      * @param Shopware\Models\Order\Order $order the order model.
      * @suppress PhanDeprecatedFunction
+     * @throws Enlight_Event_Exception
      */
     public function loadData(Shopware\Models\Order\Order $order)
     {
@@ -60,6 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
         if (method_exists($status, 'getName')) {
             $description = $status->getName();
         } else {
+            /** @noinspection PhpDeprecationInspection */
             $description = $status->getDescription();
         }
         $this->setCode($this->convertDescriptionToCode($description));
@@ -69,7 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoOrderStatus' => $this,
-                'order' => $order,
+                'order' => $order
             )
         );
     }
