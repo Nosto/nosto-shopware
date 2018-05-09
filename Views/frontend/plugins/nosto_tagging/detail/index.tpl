@@ -76,6 +76,15 @@
             {if $nostoProduct->getRatingValue()}
                 <span class="rating_value">{$nostoProduct->getRatingValue()|escape: 'htmlall':'UTF-8'}</span>
             {/if}
+            {if $nostoProduct->getCustomFields() and $nostoProduct->getCustomFields()|is_array}
+                <span class="custom_fields">
+                    {foreach from=$nostoProduct->getCustomFields() key=key item=value}
+                        <span class="{$key|escape:'htmlall':'UTF-8'}">
+                            {$value|escape:'htmlall':'UTF-8'}
+                        </span>
+                    {/foreach}
+                </span>
+            {/if}
             {if $nostoProduct->getSkus()}
                 {foreach from=$nostoProduct->getSkus() item=sku}
                     <span class="nosto_sku">
