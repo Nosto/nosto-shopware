@@ -55,7 +55,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
-     * @throws \Nosto\NostoException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
      * @suppress PhanUndeclaredMethod
      */
@@ -67,26 +66,25 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
             // Shopware throws an exception if service does not exist.
             // This would be the case when using Shopware API or cli
             $shop = $order->getShop();
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
-
-        if (is_null($shop)) {
+        if ($shop === null) {
             return;
         }
         $account = NostoComponentAccount::findAccount($shop);
-        if (!is_null($account)) {
+        if ($account !== null) {
             $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
             if ($nostoAccount->isConnectedToNosto()) {
                 try {
                     $attribute = Shopware()
                         ->Models()
-                        ->getRepository('Shopware\Models\Attribute\Order')
+                        ->getRepository(\Shopware\Models\Attribute\Order::class)
                         ->findOneBy(array('orderId' => $order->getId()));
+                    $customerId = null;
                     if ($attribute instanceof \Shopware\Models\Attribute\Order
                         && method_exists($attribute, 'getNostoCustomerId')
                     ) {
-                        $customerId = $attribute->getNostoCustomerID();
-                    } else {
-                        $customerId = null;
+                        $customerId = $attribute->getNostoCustomerId();
                     }
                     $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
                     $model->loadData($order);
