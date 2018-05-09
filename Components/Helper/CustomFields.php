@@ -45,11 +45,13 @@ use Shopware\Models\Article\Detail;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
 {
-    const CUSTOM_FIELD_WEIGHT = 'weight';
-    const CUSTOM_FIELD_HEIGHT = 'height';
-    const CUSTOM_FIELD_LENGTH = 'length';
-    const CUSTOM_FIELD_WIDTH = 'width';
-    const CUSTOM_FIELD_FREE_SHIPPING = 'free_shipping';
+    public static $productCustomFields = array(
+        'CUSTOM_FIELD_WEIGHT' => 'getWeight',
+        'CUSTOM_FIELD_HEIGHT' => 'getHeight',
+        'CUSTOM_FIELD_LENGTH' => 'getLen',
+        'CUSTOM_FIELD_WIDTH' => 'getWidth',
+        'CUSTOM_FIELD_FREE_SHIPPING' => 'getShippingFree'
+    );
 
     /**
      * @var array Built in Shopware properties that should not be tagged
@@ -61,7 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
         'articleId',
         'article'
     );
-
+    public static $test = 'getWidth';
     /**
      * Returns an array with defined properties in the settings
      * panel of the variant/main product
@@ -71,24 +73,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
      */
     public function getDetailSettingsCustomFields(Detail $detail)
     {
+        // Iterates through the $productCustomFields array and
+        // dynamically execute the methods in the Detail object.
         $settingsCustomFields = array();
-
-        if (!empty($detail->getWeight())) {
-            $settingsCustomFields[self::CUSTOM_FIELD_WEIGHT] = $detail->getWeight();
+        foreach (self::$productCustomFields as $key => $productCustomField) {
+            if(!empty($detail->{$productCustomField}())) {
+                $settingsCustomFields[$key] = $detail->{$productCustomField}();
+            }
         }
-        if (!empty($detail->getWidth())) {
-            $settingsCustomFields[self::CUSTOM_FIELD_WIDTH] = $detail->getWidth();
-        }
-        if (!empty($detail->getShippingFree())) {
-            $settingsCustomFields[self::CUSTOM_FIELD_FREE_SHIPPING] = $detail->getShippingFree();
-        }
-        if (!empty($detail->getHeight())) {
-            $settingsCustomFields[self::CUSTOM_FIELD_HEIGHT] = $detail->getHeight();
-        }
-        if (!empty($detail->getLen())) {
-            $settingsCustomFields[self::CUSTOM_FIELD_LENGTH] = $detail->getLen();
-        }
-
         return $settingsCustomFields;
     }
 
