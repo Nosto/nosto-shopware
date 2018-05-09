@@ -65,7 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoCategory' => $this,
-                'category' => $category,
+                'category' => $category
             )
         );
     }
@@ -83,10 +83,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
     public function buildCategoryPath($category)
     {
         $path = '';
-        if (!is_null($category->getPath())) {
+        if ($category->getPath() !== null) {
             $path .= $category->getName();
-            if ($category->getParent() && !is_null($category->getParent()->getPath())) {
-                $path = self::buildCategoryPath($category->getParent()) . '/' . $path;
+            if ($category->getParent() && $category->getParent()->getPath() !== null) {
+                $path = $this->buildCategoryPath($category->getParent()) . '/' . $path;
             }
         }
         return $path;
