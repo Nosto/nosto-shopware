@@ -63,11 +63,6 @@ use Nosto\NostoException;
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends NostoProduct
 {
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
-     */
-    private $customFieldsHelper;
-
-    /**
      * Loads the model data from an article and shop.
      *
      * @param Article $article the article model.

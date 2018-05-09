@@ -56,7 +56,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @throws \Enlight_Event_Exception
      * @throws Exception
      * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Nosto\NostoException
      * @suppress PhanDeprecatedFunction
      */
     public function create(\Shopware\Models\Article\Article $article)
@@ -93,7 +92,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @param \Shopware\Models\Article\Article $article the article model.
      * @param boolean $allStores if true Nosto accounts from all stores will be returned
      * @return NostoAccount[] the accounts mapped in the shop IDs.
-     * @throws \Nosto\NostoException
      */
     protected function getAccounts(\Shopware\Models\Article\Article $article, $allStores = false)
     {
@@ -146,7 +144,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @param \Shopware\Models\Article\Article $article the product.
      * @throws \Enlight_Event_Exception
      * @throws Exception
-     * @throws NostoException
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
      */
