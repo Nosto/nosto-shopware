@@ -66,8 +66,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * their status, and we need to know then which Nosto session the order
      * belonged to.
      * @suppress PhanDeprecatedFunction
-     * @throws Enlight_Exception
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public static function persistSession()
@@ -101,7 +99,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * Returns the hashed session
      *
      * @return string|null the Nosto ID.
-     * @throws Enlight_Exception
      */
     public static function getHcid()
     {
@@ -117,7 +114,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      *
      * @return null|string the Nosto ID.
      * @suppress PhanDeprecatedFunction
-     * @throws Enlight_Exception
      */
     public static function getNostoId()
     {

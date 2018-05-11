@@ -66,6 +66,7 @@ class Random
             // method 1. prior to PHP 5.3 this would call rand() on windows hence the function_exists('class_alias') call.
             // ie. class_alias is a function that was introduced in PHP 5.3
             if (extension_loaded('mcrypt') && function_exists('class_alias')) {
+                /** @noinspection PhpDeprecationInspection */
                 return @mcrypt_create_iv($length);
             }
             // method 2. openssl_random_pseudo_bytes was introduced in PHP 5.3.0 but prior to PHP 5.3.4 there was,
@@ -105,6 +106,7 @@ class Random
             // not doing. regardless, this'll only be called if this PHP script couldn't open /dev/urandom due to open_basedir
             // restrictions or some such
             if (extension_loaded('mcrypt')) {
+                /** @noinspection PhpDeprecationInspection */
                 return @mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
             }
         }
@@ -244,6 +246,7 @@ if (!function_exists('phpseclib_safe_serialize')) {
      *
      * @param mixed $arr
      * @access public
+     * @return string
      */
     function phpseclib_safe_serialize(&$arr)
     {

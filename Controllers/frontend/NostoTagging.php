@@ -181,7 +181,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Exports products from the current shop.
      * Result can be limited by the `limit` and `offset` GET parameters.
      *
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
      * @throws Enlight_Event_Exception
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException

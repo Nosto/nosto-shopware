@@ -67,9 +67,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      *
      * @param Article $article the article model.
      * @param Shop|null $shop the shop the product is in.
+     * @throws Enlight_Event_Exception
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanTypeMismatchArgument
-     * @throws Enlight_Event_Exception
      */
     public function loadData(Article $article, Shop $shop = null)
     {
