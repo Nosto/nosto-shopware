@@ -110,10 +110,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         \Shopware\Models\Shop\Locale $locale = null,
         $identity = null
     ) {
-        if (is_null($locale)) {
+        if ($locale === null) {
             $locale = $shop->getLocale();
         }
-
+        /** @noinspection PhpDeprecationInspection */
         $this->title = Shopware()->App() . ' - ' . $shop->getName();
         $this->name = substr(sha1(rand()), 0, 8);
         $this->frontPageUrl = $this->buildStoreUrl($shop);

@@ -34,7 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Signup\Owner as Owner;
+use Nosto\Object\Signup\Owner;
 
 /**
  * Meta-data class for account owner information sent to Nosto during account
@@ -55,7 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
      */
     public function loadData($identity = null)
     {
-        if (!is_null($identity)) {
+        if ($identity !== null) {
             /** @noinspection PhpUndefinedFieldInspection */
             $this->setEmail($identity->email);
             /** @noinspection PhpUndefinedFieldInspection */

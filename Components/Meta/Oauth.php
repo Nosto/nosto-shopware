@@ -69,7 +69,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
         \Shopware\Models\Shop\Shop $shop,
         \Shopware\Models\Shop\Locale $locale = null
     ) {
-        if (is_null($locale)) {
+        if ($locale === null) {
             $locale = $shop->getLocale();
         }
 
