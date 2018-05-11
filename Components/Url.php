@@ -86,7 +86,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     protected static function addPreviewUrlQueryParams(
         \Shopware\Models\Shop\Shop $shop,
         $url,
-        $params = array()
+        array $params = array()
     ) {
         $defaults = array(
             '__shop' => $shop->getId(),

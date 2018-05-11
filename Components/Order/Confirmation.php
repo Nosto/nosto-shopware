@@ -52,9 +52,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      * @param Shopware\Models\Order\Order $order the order model.
      *
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
      * @suppress PhanUndeclaredMethod
      */
@@ -66,6 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
             // Shopware throws an exception if service does not exist.
             // This would be the case when using Shopware API or cli
             $shop = $order->getShop();
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
         if ($shop === null) {
@@ -75,6 +73,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
         if ($account !== null) {
             $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
             if ($nostoAccount->isConnectedToNosto()) {
+                /** @noinspection BadExceptionsProcessingInspection */
                 try {
                     $attribute = Shopware()
                         ->Models()
@@ -91,6 +90,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);
                 } catch (NostoException $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }

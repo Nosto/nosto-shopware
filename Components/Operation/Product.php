@@ -67,6 +67,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
             $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
             $model->loadData($article, $shop);
@@ -76,6 +77,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
@@ -156,6 +158,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             if ($shop instanceof Shopware\Models\Shop\Shop === false) {
                 continue;
             }
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
             $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
             $model->loadData($article, $shop);
@@ -165,6 +168,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op->addProduct($model);
                     $op->upsert();
                 } catch (NostoException $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
@@ -189,6 +193,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                 try {
                     $op->delete();
                 } catch (NostoException $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }

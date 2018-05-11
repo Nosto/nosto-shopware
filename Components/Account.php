@@ -150,6 +150,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
             $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder();
             $operation->delete($user->build($identity));
         } catch (NostoException $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
     }
@@ -166,6 +167,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         $nostoAccount = new NostoAccount($account->getName());
         foreach ($account->getData() as $key => $items) {
             if ($key === 'apiTokens') {
+                /**@var array $items */
                 foreach ($items as $name => $value) {
                     $nostoAccount->addApiToken(new NostoApiToken($name, $value));
                 }
