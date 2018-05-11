@@ -62,6 +62,8 @@ use Nosto\NostoException;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends NostoProduct
 {
+    const TXT_ARTICLE = 'txtArtikel';
+    const TXT_LANG_DESCRIPTION = 'txtlangbeschreibung';
     /**
      * Loads the model data from an article and shop.
      *
@@ -245,11 +247,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         if ($result instanceof \Shopware\Models\Translation\Translation && $result->getData()) {
             $dataObject = unserialize($result->getData());
             if (array_key_exists('txtArtikel', $dataObject)) {
-                $article->setName($dataObject['txtArtikel']);
+                $article->setName($dataObject[self::TXT_ARTICLE]);
                 $this->setName($article->getName());
             }
-            if (array_key_exists('txtlangbeschreibung', $dataObject)) {
-                $article->setDescriptionLong($dataObject['txtlangbeschreibung']);
+            if (array_key_exists(self::TXT_LANG_DESCRIPTION, $dataObject)) {
+                $article->setDescriptionLong($dataObject[self::TXT_LANG_DESCRIPTION]);
                 $this->setDescription($article->getDescriptionLong());
             }
         }
