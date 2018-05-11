@@ -49,7 +49,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('orders.number'))
-            ->from('\Shopware\Models\Order\Order', 'orders')
+            ->from(\Shopware\Models\Order\Order::class, 'orders')
             ->where('orders.status >= 0');
 
         if (!empty($id)) {

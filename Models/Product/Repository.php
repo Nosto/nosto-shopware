@@ -45,6 +45,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
      * Returns an array of articles id's that are active
      * and has the same category id of the given shopware category
      *
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param \Shopware\Models\Category\Category $category
      * @param $pageSize
      * @param $currentOffset
@@ -59,9 +60,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
     ) {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select('articles.id')
-            ->from('\Shopware\Models\Article\Article', 'articles')
+            ->from(\Shopware\Models\Article\Article::class, 'articles')
             ->innerJoin(
-                '\Shopware\Models\Article\Detail',
+                \Shopware\Models\Article\Detail::class,
                 'details',
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 'articles.mainDetailId = details.id'
