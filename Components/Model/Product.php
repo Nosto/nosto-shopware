@@ -80,6 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         try {
             $this->assignId($article);
         } catch (NostoException $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             return;
         }
@@ -117,6 +118,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendArticleTranslation($article, $shop);
         $this->amendSettingsCustomFields($article);
         $this->amendFreeTextCustomFields($article);
+        /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()
             ->Plugins()
             ->Frontend()
@@ -281,6 +283,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 $this->setProductId($articleDetail->getNumber());
             }
         } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
     }
@@ -414,6 +417,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 $paths[] = $helper->buildCategoryPath($category);
             }
         }
+        /** @noinspection PhpUndefinedMethodInspection */
         $isProductStreamsAllowed = Shopware()
             ->Plugins()
             ->Frontend()

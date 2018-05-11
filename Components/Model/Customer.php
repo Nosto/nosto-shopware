@@ -72,6 +72,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
         try {
             $this->populateCustomerReference($customer);
         } catch (Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
                 sprintf(
                     'Could not populate customer reference. Error was: %s',

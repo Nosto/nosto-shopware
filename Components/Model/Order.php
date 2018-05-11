@@ -71,6 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
             }
         } catch (Exception $e) {
             $paymentProvider = 'unknown';
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
         $this->setPaymentProvider($paymentProvider);

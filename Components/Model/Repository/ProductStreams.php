@@ -76,6 +76,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_Product
                 ->execute()
                 ->fetchAll();
         } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             return array();
         }
