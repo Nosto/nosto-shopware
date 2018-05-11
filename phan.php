@@ -39,11 +39,11 @@ return [
         '.phan',
         'vendor'
     ],
-    "exclude_analysis_directory_list" => [
+    'exclude_analysis_directory_list' => [
         '.phan',
         'vendor'
     ],
-    "file_list" => [
+    'file_list' => [
         'Bootstrap.php'
     ]
 ];

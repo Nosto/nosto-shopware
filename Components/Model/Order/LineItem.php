@@ -94,6 +94,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
     /**
      * Loads a special item, e.g. shipping cost.
      *
+     * @noinspection PhpMissingParentCallCommonInspection
      * @param string $name the name of the item.
      * @param float|int|string $price the unit price of the item.
      * @param string $currency the 3-letter ISO code (ISO 4217) for the item currency.

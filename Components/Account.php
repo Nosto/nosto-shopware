@@ -55,6 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * Note that the account is not saved anywhere and it is up to the caller to handle it.
      *
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param \Shopware\Models\Shop\Shop $shop the shop to create the account for.
      * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
@@ -91,6 +92,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         }
         $operation = new AccountSignup($meta);
         $nostoAccount = $operation->create();
+        /** @noinspection PhpParamsInspection */
         return self::convertToShopwareAccount($nostoAccount, $shop);
     }
 
@@ -198,6 +200,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     /**
      * Builds the Nosto account administration iframe url and returns it.
      *
+     * @noinspection MoreThanThreeArgumentsInspection
      * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
      * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
      * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url
