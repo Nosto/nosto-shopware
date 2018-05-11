@@ -34,8 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Article\Article as Article;
-use Shopware\Models\Shop\Shop as Shop;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as NostoProduct;
 
@@ -80,6 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
                 $tags['tag2'] = array($pricePerUnit);
             }
         } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
                 sprintf(
                     'Could not create price per unit. Error was: %s (%s)',

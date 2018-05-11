@@ -53,11 +53,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer
     public static function generateCustomerReference(\Shopware\Models\Customer\Customer $customer)
     {
         $hash = md5($customer->getId() . $customer->getEmail());
-        $uuid = uniqid(
+        return uniqid(
             substr($hash, 0, 8),
             true
         );
-
-        return $uuid;
     }
 }

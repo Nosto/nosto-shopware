@@ -34,10 +34,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Bundle\MediaBundle\MediaServiceInterface as MediaServiceInterface;
-use Shopware\Models\Article\Article as Article;
-use Shopware\Models\Article\Detail as Detail;
-use Shopware\Models\Shop\Shop as Shop;
+use Shopware\Bundle\MediaBundle\MediaServiceInterface;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
+use Shopware\Models\Shop\Shop;
 
 /**
  * Helper class for images
@@ -67,9 +67,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         if ($imageUrls) {
             //first one of the array is always the main image.
             return $imageUrls[0];
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -89,9 +88,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             //remove the first one, the first one is main image
             array_splice($imageUrls, 0, 1);
             return $imageUrls;
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**
@@ -100,7 +98,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      * @param \Shopware\Models\Article\Image $image
      * @param MediaServiceInterface|null $mediaService
      * @param \Shopware\Models\Shop\Shop $shop
-     * @return ?string the url of the Image or null if image not found.
+     * @return null|?string the url of the Image or null if image not found.
      */
     private static function buildUrl(
         \Shopware\Models\Article\Image $image,
@@ -113,10 +111,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         if ($media instanceof Shopware\Models\Media\Media === false) {
             return null;
         }
-        if ($mediaService instanceof MediaServiceInterface) {
+        if ($mediaService !== null) {
             try {
                 $url = $mediaService->getUrl($media->getPath());
             } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         } else {
@@ -126,7 +125,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
                 || (method_exists($shop, 'getAlwaysSecure') && $shop->getAlwaysSecure())
             );
             $protocol = ($secure ? 'https://' : 'http://');
+            /** @noinspection PhpUndefinedMethodInspection */
             $host = ($secure ? $shop->getSecureHost() : $shop->getHost());
+            /** @noinspection PhpUndefinedMethodInspection */
             $path = ($secure ? $shop->getSecureBaseUrl() : $shop->getBaseUrl());
             $file = '/' . ltrim($media->getPath(), '/');
             $url = $protocol . $host . $path . $file;
@@ -149,7 +150,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         try {
             /** @var MediaServiceInterface $mediaService */
             $mediaService = Shopware()->Container()->get('shopware_media.media_service');
-        } catch (\Exception $error) {
+        } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             $mediaService = null;
         }
 
@@ -158,7 +161,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             $imageUrl = self::buildUrl($image, $mediaService, $shop);
             if ($imageUrl !== null) {
                 $imageUrls[] = $imageUrl;
-                if (is_null($mainImageUrl) || $image->getMain() === 1) {
+                if ($mainImageUrl === null || $image->getMain() === 1) {
                     $mainImageUrl = $imageUrl;
                 }
             }
@@ -185,10 +188,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');
         $detailImage = Shopware()
             ->Models()
-            ->getRepository('Shopware\Models\Article\Image')
+            ->getRepository(\Shopware\Models\Article\Image::class)
             ->findOneBy(array('articleDetail' => $detail));
         if ($detailImage) {
             try {
+                /** @var \Shopware\Models\Article\Image $detailImage */
                 if ($detailImage->getParent()
                     && $detailImage->getParent()->getMedia()
                     && $detailImage->getParent()->getMedia()->getPath()
@@ -197,19 +201,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
                     return $mediaService->getUrl($imagePath);
                 }
             } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
             try {
                 // Fallback to article main image
-                if (null !== $detail->getArticle()
-                    && null !== $detail->getArticle()->getImages()
-                    && null !== $detail->getArticle()->getImages()->first()
-                    && null !== $detail->getArticle()->getImages()->first()->getMedia()
+                if ($detail->getArticle() !== null
+                    && $detail->getArticle()->getImages() !== null
+                    && $detail->getArticle()->getImages()->first() !== null
+                    && $detail->getArticle()->getImages()->first()->getMedia() !== null
                 ) {
                     $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
                     return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
                 }
             } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }

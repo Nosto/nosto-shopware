@@ -54,12 +54,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email
     {
         $subscription = Shopware()
             ->Models()
-            ->getRepository('Shopware\Models\Newsletter\Address')
+            ->getRepository(\Shopware\Models\Newsletter\Address::class)
             ->findOneBy(array('email' => $email));
 
-        if (!is_null($subscription) && $subscription->getAdded()) {
-            return true;
-        }
-        return false;
+        return ($subscription !== null && $subscription->getAdded());
     }
 }
