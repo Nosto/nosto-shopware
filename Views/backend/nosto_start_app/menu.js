@@ -34,7 +34,7 @@
  */
 
 //{block name="backend/index/view/menu" append}
-//noinspection JSUnusedGlobalSymbols
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
 Ext.define('Shopware.apps.NostoStartApp.Menu', {
     override: 'Shopware.apps.Index.view.Menu',
 
