@@ -56,7 +56,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
     /**
      * Loads the category data from a category model.
      *
-     * @param \Shopware\Models\Category\Category $category the model.
+     * @param Category $category the model.
      * @throws Enlight_Event_Exception
      */
     public function loadData(Category $category)
@@ -79,7 +79,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      *
      * "Sports/Winter"
      *
-     * @param Shopware\Models\Category\Category $category the category model.
+     * @param Category $category the category model.
      * @return string the path.
      */
     public function buildCategoryPath($category)

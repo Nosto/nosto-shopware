@@ -39,6 +39,11 @@ use Nosto\Object\Cart\LineItem;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Shopware\Models\Order\Basket;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
 
 /**
  * Model for shopping cart line items. This is used when compiling the shopping
@@ -55,15 +60,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
     /**
      * Loads the line item data from the basket model.
      *
-     * @param Shopware\Models\Order\Basket $basket an order basket item.
+     * @param Basket $basket an order basket item.
      * @param string $currencyCode the line item currency code.
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws ORMInvalidArgumentException
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
-    public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
+    public function loadData(Basket $basket, $currencyCode)
     {
         $this->setProductId('-1');
         if ($basket->getArticleId() > 0) {

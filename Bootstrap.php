@@ -46,6 +46,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search as NostoSearchModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart as NostoCartModel;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Models\Customer\Customer as CustomerModel;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Attribute\Order as OrderAttribute;
@@ -54,13 +56,18 @@ use Shopware\CustomModels\Nosto\Setting\Setting;
 use Shopware\CustomModels\Nosto\Account\Account;
 use Nosto\Object\Signup\Account as NostoAccount;
 use phpseclib\Crypt\Random as NostoCryptRandom;
+use Doctrine\ORM\TransactionRequiredException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
 use Shopware\Models\Category\Category;
+use Doctrine\ORM\Tools\ToolsException;
 use Shopware\Components\CacheManager;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
 use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
+use Doctrine\ORM\ORMException;
 use Nosto\NostoException;
 use Nosto\Nosto;
 
@@ -127,7 +134,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     /**
      * @inheritdoc
      * @suppress PhanTypeMismatchArgument
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     public function afterInit()
     {
@@ -185,7 +192,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     /**
      * @inheritdoc
      * @throws \Exception
-     * @throws \Doctrine\ORM\Tools\ToolsException
+     * @throws ToolsException
      */
     public function install()
     {
@@ -250,7 +257,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Run on install.
      *
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
-     * @throws \Doctrine\ORM\Tools\ToolsException
+     * @throws ToolsException
      */
     protected function createMyTables()
     {
@@ -306,7 +313,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             self::validateMyAttribute($attribute);
             if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
                 $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-                /** @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+                /** @var CrudService $attributeService */
                 $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
                 $attributeService->update(
                     $attribute['table'],
@@ -392,7 +399,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     /**
      * Returns the Shopware platform version
      * @return mixed|string
-     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws NostoException in case version cannot be determined
      */
     public function getShopwareVersion()
@@ -541,7 +548,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     private function clearShopwareCache()
     {
-        /** @var \Shopware\Components\CacheManager $cacheManager */
+        /** @var CacheManager $cacheManager */
         $cacheManager = $this->get('shopware.cache_manager');
         if ($cacheManager instanceof CacheManager) {
             if (method_exists($cacheManager, 'clearProxyCache')) {
@@ -636,7 +643,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             self::validateMyAttribute($attribute);
             if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
                 $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-                /** @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+                /** @var CrudService $attributeService */
                 $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
                 $attributeService->delete(
                     $attribute['table'],
@@ -666,7 +673,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * e.g. if the backend is loaded as a part of the OAuth cycle.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws OptimisticLockException
      */
     public function onPostDispatchBackendIndex(Enlight_Controller_ActionEventArgs $args)
     {
@@ -756,9 +763,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the cart tagging to all pages.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
@@ -838,9 +845,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param Enlight_View_Default $view the view.
      *
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
      */
     protected function addCustomerTagging(Enlight_View_Default $view)
@@ -906,7 +913,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Returns a unique ID for this Shopware installation.
      * @suppress PhanUndeclaredClassMethod
      * @return string
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws OptimisticLockException
      */
     public function getUniqueId()
     {
@@ -968,9 +975,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the product page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws OptimisticLockException
+     * @throws ORMException
+     * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontendDetail(Enlight_Controller_ActionEventArgs $args)
@@ -995,10 +1002,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param Enlight_View_Default $view the view.
      *
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws OptimisticLockException
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws TransactionRequiredException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendDetail
      */
     protected function addProductTagging(Enlight_View_Default $view)
@@ -1036,9 +1043,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the category page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontendListing(Enlight_Controller_ActionEventArgs $args)
@@ -1064,14 +1071,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param Enlight_View_Default $view the view.
      *
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendListing
      */
     protected function addCategoryTagging(Enlight_View_Default $view)
     {
-        /** @var Shopware\Models\Category\Category $category */
+        /** @var Category $category */
         $categoryId = (int)Shopware()->Front()->Request()->getParam('sCategory');
         $category = Shopware()->Models()->find(
             Category::class,
@@ -1279,14 +1286,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends an API order confirmation to Nosto.
      *
      * @param Enlight_Hook_HookArgs $args the hook arguments.
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws OptimisticLockException
      * @suppress PhanUndeclaredMethod
      */
     public function onOrderSSaveOrderAfter(Enlight_Hook_HookArgs $args)
     {
         /** @var sOrder $sOrder */
         $sOrder = $args->getSubject();
-        /** @var \Shopware\Models\Order\Order $order */
+        /** @var Order $order */
         $order = Shopware()
             ->Models()
             ->getRepository(Order::class)
@@ -1328,7 +1335,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function onPostUpdateOrder(Enlight_Event_EventArgs $args)
     {
-        /** @var Shopware\Models\Order\Order $order */
+        /** @var Order $order */
         /** @noinspection PhpUndefinedMethodInspection */
         $order = $args->getEntity();
 
@@ -1350,7 +1357,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function onPostPersistArticle(Enlight_Event_EventArgs $args)
     {
-        /** @var Shopware\Models\Article\Article $article */
+        /** @var Article $article */
         /** @noinspection PhpUndefinedMethodInspection */
         $article = $args->getEntity();
 
@@ -1374,7 +1381,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function onPostUpdateArticle(Enlight_Event_EventArgs $args)
     {
-        /** @var Shopware\Models\Article\Article $article */
+        /** @var Article $article */
         /** @noinspection PhpUndefinedMethodInspection */
         $article = $args->getEntity();
 
@@ -1401,7 +1408,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function onPostRemoveArticle(Enlight_Event_EventArgs $args)
     {
-        /** @var Shopware\Models\Article\Article $article */
+        /** @var Article $article */
         /** @noinspection PhpUndefinedMethodInspection */
         $article = $args->getEntity();
         try {

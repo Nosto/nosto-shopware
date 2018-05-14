@@ -35,6 +35,7 @@
  */
 
 use Shopware\CustomModels\Nosto\Customer\Customer;
+use Doctrine\ORM\OptimisticLockException;
 
 /**
  * Customer component. Used as a helper to manage the Nosto user session inside
@@ -68,7 +69,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * their status, and we need to know then which Nosto session the order
      * belonged to.
      * @suppress PhanDeprecatedFunction
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws OptimisticLockException
      */
     public static function persistSession()
     {

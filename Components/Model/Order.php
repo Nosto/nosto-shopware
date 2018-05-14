@@ -39,12 +39,14 @@ use Shopware\Models\Order\Order;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem as OrderLineItem;
+use Nosto\NostoException;
+use Shopware\Models\Order\Detail;
 
 /**
  * Model for order information. This is used when compiling the info about an
  * order that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Extends NostoOrder.
  * Implements NostoOrderInterface.
  * Implements NostoValidatableModelInterface.
  *
@@ -58,9 +60,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
     /**
      * Loads order details from the order model.
      *
-     * @param \Shopware\Models\Order\Order $order the order model.
+     * @param Order $order the order model.
      * @throws Enlight_Event_Exception
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
     public function loadData(Order $order)
     {
@@ -88,7 +90,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         $buyerInfo->loadData($order->getCustomer());
         $this->setCustomer($buyerInfo);
         foreach ($order->getDetails() as $detail) {
-            /** @var Shopware\Models\Order\Detail $detail */
+            /** @var Detail $detail */
             if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
                 $item = new OrderLineItem();
                 $item->loadData($detail);

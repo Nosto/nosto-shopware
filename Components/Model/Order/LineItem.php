@@ -37,6 +37,7 @@
 use Nosto\Object\Cart\LineItem as NostoLineItem;
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
 use Shopware\Models\Article\Detail;
+use Shopware\Models\Order\Detail as OrderDetail;
 
 /**
  * Model for order line item information. This is used when compiling the info
@@ -53,11 +54,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
     /**
      * Populates the order line item with data from the order detail model.
      *
-     * @param \Shopware\Models\Order\Detail $detail the order detail model.
+     * @param OrderDetail $detail the order detail model.
      * @suppress PhanTypeMismatchArgument
      * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Order\Detail $detail)
+    public function loadData(OrderDetail $detail)
     {
         $this->setProductId(-1);
         if ($detail->getArticleId() > 0) {

@@ -42,6 +42,9 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelpe
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Attribute\Customer as CustomerAttribute;
 use Shopware\Models\Customer\Customer as CustomerModel;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 /**
  * Model for customer information. This is used when compiling the info about
@@ -58,10 +61,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
     /**
      * Loads customer data from the logged in customer.
      *
-     * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     * @param CustomerModel $customer the customer model.
      * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Customer\Customer $customer)
+    public function loadData(CustomerModel $customer)
     {
         if ($customer->getDefaultBillingAddress() instanceof Address) {
             $this->setFirstName($customer->getDefaultBillingAddress()->getFirstname());
@@ -97,14 +100,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * Returns the customer reference for Nosto.
      * If no customer reference is found for the user a new is created.
      *
-     * @param \Shopware\Models\Customer\Customer $customer
+     * @param CustomerModel $customer
      *
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
      * @throws NostoException if customer reference cannot be fetched or created
-     *
+     * @throws ORMInvalidArgumentException
+     * @throws OptimisticLockException
+     * @throws ORMException
      * @return void
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\ORMException
      */
     public function populateCustomerReference(CustomerModel $customer)
     {

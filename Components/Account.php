@@ -47,6 +47,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account as MetaAccoun
 use Shopware\CustomModels\Nosto\Account\Account as AccountCustomModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe as Iframe;
 use Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder as UserBuilder;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
@@ -62,12 +64,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * Note that the account is not saved anywhere and it is up to the caller to handle it.
      *
      * @noinspection MoreThanThreeArgumentsInspection
-     * @param \Shopware\Models\Shop\Shop $shop the shop to create the account for.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
+     * @param Shop $shop the shop to create the account for.
+     * @param Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
      * @param string|null $email (optional) the account owner email if different than the active admin user.
      * @param array|stdClass $details (optional) the account details.
-     * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
+     * @return AccountCustomModel the newly created account.
      * @throws NostoException if the account cannot be created for any reason.
      * @suppress PhanTypeMismatchArgument
      */
@@ -105,8 +107,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     /**
      * Finds a Nosto account for the given shop and returns it.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop to get the account for.
-     * @return null|Shopware\CustomModels\Nosto\Account\Account|object
+     * @param Shop $shop the shop to get the account for.
+     * @return null|AccountCustomModel|object
      */
     public static function findAccount(Shop $shop)
     {
@@ -117,11 +119,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     }
 
     /**
-     * Converts a `NostoAccount` into a `\Shopware\CustomModels\Nosto\Account\Account` model.
+     * Converts a `NostoAccount` into a `AccountCustomModel` model.
      *
      * @param NostoAccount $nostoAccount the account to convert.
-     * @param \Shopware\Models\Shop\Shop $shop the shop the account belongs to.
-     * @return \Shopware\CustomModels\Nosto\Account\Account the account model.
+     * @param Shop $shop the shop the account belongs to.
+     * @return AccountCustomModel the account model.
      */
     public static function convertToShopwareAccount(
         NostoAccount $nostoAccount,
@@ -142,10 +144,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     /**
      * Removes the account and tells Nosto about it.
      *
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to remove.
+     * @param AccountCustomModel $account the account to remove.
      * @param $identity
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws OptimisticLockException
+     * @throws ORMInvalidArgumentException
      */
     public static function removeAccount(AccountCustomModel $account, $identity)
     {
@@ -164,9 +166,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     }
 
     /**
-     * Converts a `\Shopware\CustomModels\Nosto\Account\Account` model into a `NostoAccount`.
+     * Converts a `AccountCustomModel` model into a `NostoAccount`.
      *
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account the account model.
+     * @param AccountCustomModel $account the account model.
      * @return NostoAccount the nosto account.
      */
     public static function convertToNostoAccount(AccountCustomModel $account)
@@ -189,7 +191,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * Connected here means that we have the API tokens exchanged during account creation or OAuth.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop to check the account for.
+     * @param Shop $shop the shop to check the account for.
      * @return bool true if account exists and is connected to Nosto, false otherwise.
      */
     public static function accountExistsAndIsConnected(Shop $shop)
@@ -206,9 +208,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * Builds the Nosto account administration iframe url and returns it.
      *
      * @noinspection MoreThanThreeArgumentsInspection
-     * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
-     * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url
+     * @param Shop $shop the shop to get the url for.
+     * @param Locale|null $locale the locale or null.
+     * @param AccountCustomModel|null $account the account to get the url
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
      * @suppress PhanUndeclaredMethod

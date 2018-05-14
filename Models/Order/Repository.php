@@ -35,6 +35,7 @@
  */
 
 use Shopware\Models\Order\Order;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Models_Order_Repository
@@ -65,6 +66,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
                 ->getQuery();
         }
 
-        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        return $result->getResult(AbstractQuery::HYDRATE_ARRAY);
     }
 }

@@ -42,12 +42,12 @@ use Shopware\CustomModels\Nosto\Account\Account;
 class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
 {
     /**
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account
+     * @param Account $account
      * @return bool
      */
     public function isAccountAlreadyRegistered(Account $account)
     {
-        /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
+        /** @var Account $existingAccount */
         $existingAccount = Shopware()
             ->Models()
             ->getRepository(Account::class)

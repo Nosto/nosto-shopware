@@ -40,9 +40,14 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
 use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepository;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as ProductModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
 use Nosto\Operation\OAuth\AuthorizationCode;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Object\Order\OrderCollection;
@@ -67,17 +72,17 @@ use Nosto\Nosto;
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
+     * @var ProductRepository
      */
     private $productRepository;
 
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
+     * @var AccountRepository
      */
     private $accountRepository;
 
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
+     * @var OrderRepository
      */
     private $orderRepository;
 
@@ -188,10 +193,10 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Result can be limited by the `limit` and `offset` GET parameters.
      *
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
     public function exportProductsAction()
     {
@@ -209,7 +214,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $collection = new ProductCollection();
         foreach ($articlesIds as $articleId) {
-            /** @var Shopware\Models\Article\Article $article */
+            /** @var Article $article */
             $article = Shopware()->Models()->find(
                 Article::class,
                 (int)$articleId['id']
@@ -260,14 +265,14 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $collection = new OrderCollection();
         $shop = Shopware()->Shop()->getId();
         foreach ($result as $row) {
-            /** @var Shopware\Models\Order\Order $order */
+            /** @var Order $order */
             $order = Shopware()->Models()->getRepository(Order::class)
                 ->findOneBy(array('number' => $row['number']));
             if ($order === null || $order->getShop()->getId() != $shop) {
                 continue;
             }
             try {
-                $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+                $model = new NostoOrderModel();
                 $model->disableSpecialLineItems();
                 $model->loadData($order);
                 $collection->append($model);
@@ -283,7 +288,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     /**
      * @param $shop
      * @param $code
-     * @return \Nosto\Object\NostoOAuthToken
+     * @return NostoOAuthToken
      * @throws NostoException
      */
     private function getAuthenticatedToken(DetachedShop $shop, $code)
@@ -306,7 +311,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     }
 
     /**
-     * @param \Nosto\Object\NostoOAuthToken $token
+     * @param NostoOAuthToken $token
      * @throws NostoException
      * @return array|stdClass
      */

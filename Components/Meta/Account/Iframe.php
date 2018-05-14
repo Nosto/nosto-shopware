@@ -36,6 +36,8 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
 use Nosto\Types\IframeInterface as NostoAccountMetaDataIframeInterface;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Shop\Locale;
 
 /**
  * Meta-data class for information included in the plugin configuration iframe.
@@ -111,14 +113,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
     /**
      * Loads the iframe data from the shop model.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
+     * @param Shop $shop the shop model.
+     * @param Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
      * @suppress PhanDeprecatedFunction
      */
     public function loadData(
-        \Shopware\Models\Shop\Shop $shop,
-        \Shopware\Models\Shop\Locale $locale = null,
+        Shop $shop,
+        Locale $locale = null,
         $identity = null
     ) {
         if ($locale === null) {

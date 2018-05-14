@@ -37,6 +37,7 @@
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Shop\Shop;
+use Shopware\Models\Category\Category;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
@@ -52,6 +53,8 @@ use Shopware\Models\Article\Supplier;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Nosto\Object\Product\SkuCollection;
 use Shopware\Models\Translation\Translation;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -74,7 +77,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Article $article the article model.
      * @param Shop|null $shop the shop the product is in.
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      * @suppress PhanTypeMismatchArgument
      */
     public function loadData(Article $article, Shop $shop = null)
@@ -184,7 +187,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * Add Sku variations to the current article
      * @param Article $article
      * @param Shop $shop
-     * @return \Nosto\Object\Product\SkuCollection
+     * @return SkuCollection
      */
     public function buildSkus(Article $article, Shop $shop)
     {
@@ -217,7 +220,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      *
      * @param Article $article article to be updated
      * @param Shop|null $shop sub shop id
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function amendArticleTranslation(Article $article, Shop $shop = null)
     {
@@ -225,7 +228,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             return;
         }
 
-        /** @var \Doctrine\ORM\QueryBuilder $builder */
+        /** @var QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
             ->from(Translation::class, 'translations')
@@ -266,7 +269,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      *
      * This method exists in order to expose a public API to change the ID.
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param Article $article the article model.
      * @throws NostoException
      */
     public function assignId(Article $article)
@@ -388,7 +391,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      */
     protected function checkAvailability(Article $article)
     {
-        /** @var \Shopware\Models\Article\Detail[] $details */
+        /** @var Detail[] $details */
         $details = Shopware()
             ->Models()
             ->getRepository(Detail::class)
@@ -416,7 +419,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $paths = array();
         $helper = new NostoCategory();
         $shopCatId = $shop->getCategory()->getId();
-        /** @var Shopware\Models\Category\Category $category */
+        /** @var Category $category */
         foreach ($article->getCategories() as $category) {
             // Only include categories that are under the shop's root category.
             if (strpos($category->getPath(), '|' . $shopCatId . '|') !== false) {

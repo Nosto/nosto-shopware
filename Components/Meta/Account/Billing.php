@@ -35,6 +35,7 @@
  */
 
 use Nosto\Types\Signup\BillingInterface as NostoAccountMetaDataBillingDetailsInterface;
+use Shopware\Models\Shop\Shop;
 
 /**
  * Meta-data class for billing information sent to Nosto during account create.
@@ -53,9 +54,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing
     protected $countryCode;
 
     /**
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Shop $shop
      */
-    public function loadData(\Shopware\Models\Shop\Shop $shop)
+    public function loadData(Shop $shop)
     {
         $this->countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
     }

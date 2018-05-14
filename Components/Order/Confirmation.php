@@ -36,8 +36,9 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
-use Shopware\Models\Attribute\Order;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as OrderModel;
+use Shopware\Models\Attribute\Order as OrderAttribute;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
+use Shopware\Models\Order\Order as OrderModel;
 
 /**
  * Order confirmation component. Used to send order information to Nosto.
@@ -50,12 +51,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
     /**
      * Sends an order confirmation API call to Nosto for an order.
      *
-     * @param Shopware\Models\Order\Order $order the order model.
+     * @param OrderModel $order the order model.
      *
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
      * @suppress PhanUndeclaredMethod
      */
-    public function sendOrder(Shopware\Models\Order\Order $order)
+    public function sendOrder(OrderModel $order)
     {
         try {
             $shop = Shopware()->Shop();
@@ -77,15 +78,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                 try {
                     $attribute = Shopware()
                         ->Models()
-                        ->getRepository(Order::class)
+                        ->getRepository(OrderAttribute::class)
                         ->findOneBy(array('orderId' => $order->getId()));
                     $customerId = null;
-                    if ($attribute instanceof Order
+                    if ($attribute instanceof OrderAttribute
                         && method_exists($attribute, 'getNostoCustomerId')
                     ) {
                         $customerId = $attribute->getNostoCustomerId();
                     }
-                    $model = new OrderModel();
+                    $model = new NostoOrderModel();
                     $model->loadData($order);
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);

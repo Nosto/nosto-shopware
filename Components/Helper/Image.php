@@ -37,8 +37,9 @@
 use Shopware\Bundle\MediaBundle\MediaServiceInterface;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
-use Shopware\Models\Shop\Shop;
 use Shopware\Models\Article\Image;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Media\Media;
 
 /**
  * Helper class for images
@@ -57,8 +58,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      *
      * The url will always be for the original image, not the thumbnails.
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Article $article the article model.
+     * @param Shop $shop the shop model.
      * @return string|null the url or null if image not found.
      */
     public static function getMainImageUrl(Article $article, Shop $shop)
@@ -77,8 +78,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      *
      * The url will always be for the original image, not the thumbnails.
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Article $article the article model.
+     * @param Shop $shop the shop model.
      * @return array|null the urls or null if no alternative urls found
      */
     public static function getAlternativeImageUrls(Article $article, Shop $shop)
@@ -96,20 +97,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
     /**
      * Assembles the product image url based on article.
      *
-     * @param \Shopware\Models\Article\Image $image
+     * @param Image $image
      * @param MediaServiceInterface|null $mediaService
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Shop $shop
      * @return null|?string the url of the Image or null if image not found.
      */
     private static function buildUrl(
-        \Shopware\Models\Article\Image $image,
+        Image $image,
         MediaServiceInterface $mediaService = null,
         Shop $shop
     ) {
         $url = null;
 
         $media = $image->getMedia();
-        if ($media instanceof Shopware\Models\Media\Media === false) {
+        if ($media instanceof Media === false) {
             return null;
         }
         if ($mediaService !== null) {
@@ -139,8 +140,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
     /**
      * Get all the image urls. First one is the main image if there is any image.
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Article $article the article model.
+     * @param Shop $shop the shop model.
      * @return array All the image urls the product. First one is the main image.
      */
     private static function getImageUrls(Article $article, Shop $shop)
@@ -168,7 +169,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             }
         }
 
-        //move main image to the beginning of the array.
+        // Move main image to the beginning of the array.
         if ($mainImageUrl !== null) {
             $imageUrls = array_diff($imageUrls, array($mainImageUrl));
             array_unshift($imageUrls, $mainImageUrl);
@@ -193,7 +194,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
             ->findOneBy(array('articleDetail' => $detail));
         if ($detailImage) {
             try {
-                /** @var \Shopware\Models\Article\Image $detailImage */
+                /** @var Image $detailImage */
                 if ($detailImage->getParent()
                     && $detailImage->getParent()->getMedia()
                     && $detailImage->getParent()->getMedia()->getPath()

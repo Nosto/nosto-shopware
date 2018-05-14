@@ -41,6 +41,12 @@ use Shopware\Models\Shop\Shop;
 use Shopware\CustomModels\Nosto\Setting\Setting;
 use Shopware\CustomModels\Nosto\Account\Account;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
+use Shopware\Models\Shop\Repository;
+use Doctrine\ORM\TransactionRequiredException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Main backend controller. Handles account create/connect/delete requests
@@ -104,23 +110,23 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *   ...
      * ]
      * @throws Exception
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMInvalidArgumentException
+     * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
      */
     public function getAccountsAction()
     {
-        /** @var \Shopware\Models\Shop\Repository $repository */
+        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         if (method_exists($repository, 'getActiveShops')) {
-            $result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+            $result = $repository->getActiveShops(AbstractQuery::HYDRATE_ARRAY);
         } else {
             // SW 4.0 does not have the `getActiveShops` method, so we fall back
             // on manually building the query.
             $result = $repository->createQueryBuilder('shop')
                 ->where('shop.active = 1')
                 ->getQuery()
-                ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+                ->getResult(AbstractQuery::HYDRATE_ARRAY);
         }
         /** @noinspection PhpUndefinedMethodInspection */
         $identity = Shopware()->Auth()->getIdentity();
@@ -177,7 +183,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * This action should only be accessed by the Account model in the client
      * side application.
      *
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws ORMInvalidArgumentException
      * @throws Exception
      * @suppress PhanDeprecatedFunction
      */
@@ -191,7 +197,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         if ($details) {
             $details = json_decode($details);
         }
-        /** @var \Shopware\Models\Shop\Repository $repository */
+        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */
@@ -244,10 +250,10 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * This action should only be accessed by the Account model in the client
      * side application.
      * @throws Exception
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws TransactionRequiredException
+     * @throws ORMException
+     * @throws ORMInvalidArgumentException
+     * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
      */
     public function deleteAccountAction()
@@ -261,7 +267,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             Account::class,
             $accountId
         );
-        /** @var \Shopware\Models\Shop\Repository $repository */
+        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */
@@ -304,7 +310,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $success = false;
         $data = array();
         $shopId = $this->Request()->getParam('shopId', null);
-        /** @var \Shopware\Models\Shop\Repository $repository */
+        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */

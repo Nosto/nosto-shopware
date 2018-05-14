@@ -37,6 +37,8 @@
 use Shopware\Models\Category\Category;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
@@ -48,7 +50,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
      * and has the same category id of the given shopware category
      *
      * @noinspection MoreThanThreeArgumentsInspection
-     * @param \Shopware\Models\Category\Category $category
+     * @param Category $category
      * @param $pageSize
      * @param $currentOffset
      * @param $id
@@ -66,7 +68,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
             ->innerJoin(
                 Detail::class,
                 'details',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
+                Join::WITH,
                 'articles.mainDetailId = details.id'
             )
             ->innerJoin(
@@ -89,6 +91,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
                 ->setMaxResults($pageSize)
                 ->getQuery();
         }
-        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        return $result->getResult(AbstractQuery::HYDRATE_ARRAY);
     }
 }

@@ -56,10 +56,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
     /**
      * Loads the order buyer info from the customer model.
      *
-     * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     * @param Customer $customer the customer model.
      * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Customer\Customer $customer)
+    public function loadData(Customer $customer)
     {
         /** @noinspection PhpUndefinedMethodInspection */
         $customerDataAllowed = Shopware()
@@ -70,14 +70,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             ->get(Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
         if ($customerDataAllowed) {
             if (method_exists(Customer::class, 'getDefaultBillingAddress')) {
-                /** @var \Shopware\Models\Customer\Address $address */
+                /** @var Address $address */
                 $address = $customer->getDefaultBillingAddress();
                 if ($address instanceof Address) {
                     $this->setFirstName($address->getFirstname());
                     $this->setLastName($address->getLastname());
                 }
             } else {
-                /** @var \Shopware\Models\Customer\Billing $address */
+                /** @var Billing $address */
                 /** @noinspection PhpDeprecationInspection */
                 $address = $customer->getBilling();
                 /** @noinspection PhpDeprecationInspection */

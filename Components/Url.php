@@ -38,6 +38,7 @@ use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Category\Category;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Url component. Used as a helper to manage url creation inside Shopware.
@@ -50,7 +51,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns a product page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return null|string the url.
      */
     public static function getProductPagePreviewUrl(Shop $shop)
@@ -81,7 +82,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      *
      * These params are `__shop` and `nostodebug`.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @param string $url the url.
      * @param array $params (optional) additional params to add to the url.
      * @return string the url with added params.
@@ -102,7 +103,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns a category page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return null|string the url.
      */
     public static function getCategoryPagePreviewUrl(Shop $shop)
@@ -115,7 +116,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             ->setFirstResult(0)
             ->setMaxResults(1)
             ->getQuery()
-            ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
         if (empty($result)) {
             return null;
         }
@@ -132,7 +133,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns the shopping cart preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return string the url.
      */
     public static function getCartPagePreviewUrl(Shop $shop)
@@ -150,7 +151,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns the search page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return string the url.
      */
     public static function getSearchPagePreviewUrl(Shop $shop)
@@ -167,7 +168,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns the front page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return string the url.
      */
     public static function getFrontPagePreviewUrl(Shop $shop)

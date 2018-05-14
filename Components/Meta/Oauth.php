@@ -35,8 +35,11 @@
  */
 
 use Nosto\Types\OAuthInterface as NostoOAuthClientMetaDataInterface;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBoostrap;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Request\Api\Token as NostoApiToken;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Shop\Locale;
 
 /**
  * Meta-data class for handling OAuth 2 requests during account connect.
@@ -62,12 +65,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
     /**
      * Loads the oauth meta data from the shop model.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale model or null.
+     * @param Shop $shop the shop model.
+     * @param Locale|null $locale the locale model or null.
      */
     public function loadData(
-        \Shopware\Models\Shop\Shop $shop,
-        \Shopware\Models\Shop\Locale $locale = null
+        Shop $shop,
+        Locale $locale = null
     ) {
         if ($locale === null) {
             $locale = $shop->getLocale();
@@ -98,7 +101,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
      */
     public function getClientId()
     {
-        return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
+        return NostoBoostrap::PLATFORM_NAME;
     }
 
     /**
@@ -109,7 +112,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
      */
     public function getClientSecret()
     {
-        return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
+        return NostoBoostrap::PLATFORM_NAME;
     }
 
     /**

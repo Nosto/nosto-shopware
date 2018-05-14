@@ -56,8 +56,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
      * the recommendations to render the "Add to cart" button for the product
      * when it is recommended to a user.
      *
-     * @param \Shopware\Models\Article\Article $article
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Article $article
+     * @param Shop $shop
      * @return array
      */
     public static function buildProductTags(Article $article, Shop $shop)

@@ -41,6 +41,9 @@ use Nosto\Operation\UpsertProduct;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
+use Shopware\Models\Shop\Repository;
+use Shopware\Models\Category\Category;
+use Nosto\NostoException;
 
 /**
  * Product operation component. Used for communicating create/update/delete
@@ -54,13 +57,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     /**
      * Sends info to Nosto about a newly created product.
      *
-     * @param \Shopware\Models\Article\Article $article the product.
+     * @param Article $article the product.
      * @throws Exception
      * @suppress PhanDeprecatedFunction
      */
     public function create(Article $article)
     {
-        /** @var \Shopware\Models\Shop\Repository $repository */
+        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
@@ -91,7 +94,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * The shops the product belongs to is determined by analyzing the products
      * categories and checking if the shop root category is present.
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param Article $article the article model.
      * @param boolean $allStores if true Nosto accounts from all stores will be returned
      * @return NostoAccount[] the accounts mapped in the shop IDs.
      */
@@ -99,7 +102,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     {
         $data = array();
 
-        /** @var \Shopware\Models\Shop\Shop[] $inShops */
+        /** @var Shop[] $inShops */
         $inShops = array();
         $allShops = Shopware()
             ->Models()
@@ -109,9 +112,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         if ($allStores === true) {
             $inShops = $allShops;
         } else {
-            /** @var Shopware\Models\Category\Category $cat */
+            /** @var Category $cat */
             foreach ($article->getCategories() as $cat) {
-                /** @var \Shopware\Models\Shop\Shop $shop */
+                /** @var Shop $shop */
                 foreach ($allShops as $shop) {
                     if (isset($inShops[$shop->getId()])) {
                         continue;
@@ -149,7 +152,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      */
     public function update(Article $article)
     {
-        /** @var \Shopware\Models\Shop\Repository $repository */
+        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
@@ -176,8 +179,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     /**
      * Sends info to Nosto about a deleted product.
      *
-     * @param \Shopware\Models\Article\Article $article the product.
-     * @throws \Nosto\NostoException
+     * @param Article $article the product.
+     * @throws NostoException
      */
     public function delete(Article $article)
     {
