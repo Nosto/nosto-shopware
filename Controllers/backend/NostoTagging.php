@@ -36,7 +36,6 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Nosto;
-use Nosto\NostoException;
 use Nosto\Helper\OAuthHelper as NostoOAuthClient;
 use Shopware\Models\Shop\Shop;
 use Shopware\CustomModels\Nosto\Setting\Setting;
@@ -180,7 +179,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
      * @throws Exception
-     * @throws \Doctrine\ORM\OptimisticLockException
      * @suppress PhanDeprecatedFunction
      */
     public function createAccountAction()
@@ -230,7 +228,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     'shopId' => $shop->getId(),
                     'shopName' => $shop->getName()
                 );
-            } catch (NostoException $e) {
+            } catch (\Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }

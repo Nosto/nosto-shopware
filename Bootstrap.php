@@ -736,10 +736,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the cart tagging to all pages.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws Enlight_Event_Exception
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
     {
@@ -948,11 +948,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the product page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontendDetail(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1018,10 +1017,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the category page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws Enlight_Event_Exception
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontendListing(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1075,7 +1074,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the order thank you page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
-     * @throws Enlight_Event_Exception
      */
     public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1096,7 +1094,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 $this->addOrderTagging($view);
                 $this->addPageTypeTagging($view, self::PAGE_TYPE_ORDER);
             }
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
     }
@@ -1329,9 +1327,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends a product `create` API call to Nosto for the added article.
      *
      * @param Enlight_Event_EventArgs $args
-     * @throws Enlight_Event_Exception
      * @throws Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function onPostPersistArticle(Enlight_Event_EventArgs $args)
     {
@@ -1392,7 +1388,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         try {
             $op = new Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product();
             $op->delete($article);
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
     }

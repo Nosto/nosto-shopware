@@ -36,7 +36,6 @@
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
-use Nosto\NostoException;
 use Shopware\Models\Attribute\Order;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as OrderModel;
 
@@ -53,7 +52,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      *
      * @param Shopware\Models\Order\Order $order the order model.
      *
-     * @throws Enlight_Event_Exception
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
      * @suppress PhanUndeclaredMethod
      */
@@ -91,7 +89,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $model->loadData($order);
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }

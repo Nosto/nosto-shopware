@@ -38,7 +38,6 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
-use Nosto\NostoException;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
@@ -56,9 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly created product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
-     * @throws \Enlight_Event_Exception
      * @throws Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
      */
     public function create(Article $article)
@@ -79,7 +76,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
@@ -147,9 +144,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * Sends info to Nosto about a newly updated product.
      *
      * @param \Shopware\Models\Article\Article $article the product.
-     * @throws \Enlight_Event_Exception
      * @throws Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
      */
     public function update(Article $article)
@@ -170,7 +165,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
@@ -195,7 +190,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                 $op->setProductIds($products);
                 try {
                     $op->delete();
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }

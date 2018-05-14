@@ -247,8 +247,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Exports completed orders from the current shop.
      * Result can be limited by the `limit` and `offset` GET parameters.
      *
-     * @throws Enlight_Event_Exception
-     * @throws NostoException
      */
     public function exportOrdersAction()
     {
@@ -268,10 +266,15 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             if ($order === null || $order->getShop()->getId() != $shop) {
                 continue;
             }
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-            $model->disableSpecialLineItems();
-            $model->loadData($order);
-            $collection->append($model);
+            try {
+                $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+                $model->disableSpecialLineItems();
+                $model->loadData($order);
+                $collection->append($model);
+            } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            }
         }
 
         $this->export($collection);
@@ -305,7 +308,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     /**
      * @param \Nosto\Object\NostoOAuthToken $token
      * @throws NostoException
-     * @throws \Nosto\Request\Http\Exception\AbstractHttpException
      * @return array|stdClass
      */
     private function fireRequest(NostoOAuthToken $token)
