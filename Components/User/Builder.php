@@ -48,7 +48,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder
     public function build($identity)
     {
         $metaData = new User();
-        if ($identity !== null) {
+        if ($identity !== null && property_exists($identity, 'name')) {
             list($firstName, $lastName) = explode(' ', $identity->name);
             $metaData->setFirstName($firstName);
             $metaData->setLastName($lastName);
