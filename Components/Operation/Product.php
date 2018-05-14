@@ -60,7 +60,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      */
     public function create(Article $article)
     {
-        /* @var \Shopware\Models\Shop\Repository $repository */
+        /** @var \Shopware\Models\Shop\Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
@@ -149,7 +149,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      */
     public function update(Article $article)
     {
-        /* @var \Shopware\Models\Shop\Repository $repository */
+        /** @var \Shopware\Models\Shop\Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);

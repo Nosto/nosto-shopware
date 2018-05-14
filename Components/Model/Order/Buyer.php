@@ -70,14 +70,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             ->get(Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
         if ($customerDataAllowed) {
             if (method_exists(Customer::class, 'getDefaultBillingAddress')) {
-                /* @var \Shopware\Models\Customer\Address $address */
+                /** @var \Shopware\Models\Customer\Address $address */
                 $address = $customer->getDefaultBillingAddress();
                 if ($address instanceof Address) {
                     $this->setFirstName($address->getFirstname());
                     $this->setLastName($address->getLastname());
                 }
             } else {
-                /* @var \Shopware\Models\Customer\Billing $address */
+                /** @var \Shopware\Models\Customer\Billing $address */
                 /** @noinspection PhpDeprecationInspection */
                 $address = $customer->getBilling();
                 /** @noinspection PhpDeprecationInspection */

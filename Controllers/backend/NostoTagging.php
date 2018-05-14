@@ -110,7 +110,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      */
     public function getAccountsAction()
     {
-        /* @var \Shopware\Models\Shop\Repository $repository */
+        /** @var \Shopware\Models\Shop\Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         if (method_exists($repository, 'getActiveShops')) {
             $result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
@@ -191,7 +191,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         if ($details) {
             $details = json_decode($details);
         }
-        /* @var \Shopware\Models\Shop\Repository $repository */
+        /** @var \Shopware\Models\Shop\Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */
@@ -261,7 +261,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             Account::class,
             $accountId
         );
-        /* @var \Shopware\Models\Shop\Repository $repository */
+        /** @var \Shopware\Models\Shop\Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */
@@ -304,7 +304,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $success = false;
         $data = array();
         $shopId = $this->Request()->getParam('shopId', null);
-        /* @var \Shopware\Models\Shop\Repository $repository */
+        /** @var \Shopware\Models\Shop\Repository $repository */
         $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */

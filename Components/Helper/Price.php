@@ -221,7 +221,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         $subShopPrice = null;
         foreach ($prices as $price) {
             try {
-                /* @var \Shopware\Models\Article\Price $price */
+                /** @var \Shopware\Models\Article\Price $price */
                 if ($price->getFrom() == 1) {
                     if ($price->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
                         && $shop->getCustomerGroup() instanceof \Shopware\Models\Customer\Group

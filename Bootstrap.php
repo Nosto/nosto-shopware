@@ -306,7 +306,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             self::validateMyAttribute($attribute);
             if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
                 $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-                /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+                /** @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
                 $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
                 $attributeService->update(
                     $attribute['table'],
@@ -541,7 +541,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     private function clearShopwareCache()
     {
-        /* @var \Shopware\Components\CacheManager $cacheManager */
+        /** @var \Shopware\Components\CacheManager $cacheManager */
         $cacheManager = $this->get('shopware.cache_manager');
         if ($cacheManager instanceof CacheManager) {
             if (method_exists($cacheManager, 'clearProxyCache')) {
@@ -636,7 +636,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             self::validateMyAttribute($attribute);
             if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
                 $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-                /* @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
+                /** @var \Shopware\Bundle\AttributeBundle\Service\CrudService $attributeService */
                 $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
                 $attributeService->delete(
                     $attribute['table'],
