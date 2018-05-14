@@ -34,6 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware\Models\Newsletter\Address;
 
 /**
  * Helper class for Email operations
@@ -43,7 +44,6 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email
 {
-
     /**
      * Returns true if email is subscribed to the newsletter.
      *
@@ -54,7 +54,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email
     {
         $subscription = Shopware()
             ->Models()
-            ->getRepository(\Shopware\Models\Newsletter\Address::class)
+            ->getRepository(Address::class)
             ->findOneBy(array('email' => $email));
 
         return ($subscription !== null && $subscription->getAdded());

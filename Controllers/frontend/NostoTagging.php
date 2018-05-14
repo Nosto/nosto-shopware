@@ -38,13 +38,19 @@ use Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository as AccountR
 use Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository as ProductRepository;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepository;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as ProductModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
 use Nosto\Operation\OAuth\AuthorizationCode;
 use Nosto\Object\Product\ProductCollection;
 use Nosto\Object\Order\OrderCollection;
+use Shopware\Models\Shop\DetachedShop;
 use Nosto\Object\AbstractCollection;
+use Shopware\Models\Article\Article;
+use Nosto\Object\NostoOAuthToken;
+use Shopware\Models\Order\Order;
 use Nosto\Helper\ExportHelper;
 use Nosto\NostoException;
 use Nosto\Nosto;
@@ -205,12 +211,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         foreach ($articlesIds as $articleId) {
             /** @var Shopware\Models\Article\Article $article */
             $article = Shopware()->Models()->find(
-                \Shopware\Models\Article\Article::class,
+                Article::class,
                 (int)$articleId['id']
             );
 
             if ($article !== null) {
-                $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+                $model = new ProductModel();
                 $model->loadData($article);
                 $collection->append($model);
             }
@@ -257,7 +263,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $shop = Shopware()->Shop()->getId();
         foreach ($result as $row) {
             /** @var Shopware\Models\Order\Order $order */
-            $order = Shopware()->Models()->getRepository(\Shopware\Models\Order\Order::class)
+            $order = Shopware()->Models()->getRepository(Order::class)
                 ->findOneBy(array('number' => $row['number']));
             if ($order === null || $order->getShop()->getId() != $shop) {
                 continue;
@@ -277,9 +283,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * @return \Nosto\Object\NostoOAuthToken
      * @throws NostoException
      */
-    private function getAuthenticatedToken(Shopware\Models\Shop\DetachedShop $shop, $code)
+    private function getAuthenticatedToken(DetachedShop $shop, $code)
     {
-        $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
+        $meta = new MetaOauth();
         $meta->loadData($shop);
 
         $oauthClient = new AuthorizationCode($meta);
@@ -302,7 +308,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * @throws \Nosto\Request\Http\Exception\AbstractHttpException
      * @return array|stdClass
      */
-    private function fireRequest(\Nosto\Object\NostoOAuthToken $token)
+    private function fireRequest(NostoOAuthToken $token)
     {
         $request = new NostoHttpRequest();
         $request->setUrl(Nosto::getOAuthBaseUrl().'/exchange');

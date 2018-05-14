@@ -35,6 +35,9 @@
  */
 
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Category\Category;
 
 /**
  * Url component. Used as a helper to manage url creation inside Shopware.
@@ -50,11 +53,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return null|string the url.
      */
-    public static function getProductPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getProductPagePreviewUrl(Shop $shop)
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('articles.id'))
-            ->from(\Shopware\Models\Article\Article::class, 'articles')
+            ->from(Article::class, 'articles')
             ->where('articles.active = 1')
             ->setFirstResult(0)
             ->setMaxResults(1)
@@ -84,7 +87,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * @return string the url with added params.
      */
     protected static function addPreviewUrlQueryParams(
-        \Shopware\Models\Shop\Shop $shop,
+        Shop $shop,
         $url,
         array $params = array()
     ) {
@@ -102,11 +105,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return null|string the url.
      */
-    public static function getCategoryPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getCategoryPagePreviewUrl(Shop $shop)
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('categories.id'))
-            ->from(Shopware\Models\Category\Category::class, 'categories')
+            ->from(Category::class, 'categories')
             ->where('categories.active = 1 AND categories.parent = :parentId AND categories.blog = 0')
             ->setParameter(':parentId', $shop->getCategory()->getId())
             ->setFirstResult(0)
@@ -132,7 +135,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return string the url.
      */
-    public static function getCartPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getCartPagePreviewUrl(Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(
@@ -150,7 +153,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return string the url.
      */
-    public static function getSearchPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getSearchPagePreviewUrl(Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(
@@ -167,7 +170,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      * @param \Shopware\Models\Shop\Shop $shop the shop model.
      * @return string the url.
      */
-    public static function getFrontPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getFrontPagePreviewUrl(Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(

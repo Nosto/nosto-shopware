@@ -39,6 +39,9 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as Custome
 use Nosto\Object\Customer;
 use Nosto\NostoException;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
+use Shopware\Models\Customer\Address;
+use Shopware\Models\Attribute\Customer as CustomerAttribute;
+use Shopware\Models\Customer\Customer as CustomerModel;
 
 /**
  * Model for customer information. This is used when compiling the info about
@@ -60,7 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      */
     public function loadData(\Shopware\Models\Customer\Customer $customer)
     {
-        if ($customer->getDefaultBillingAddress() instanceof \Shopware\Models\Customer\Address) {
+        if ($customer->getDefaultBillingAddress() instanceof Address) {
             $this->setFirstName($customer->getDefaultBillingAddress()->getFirstname());
             $this->setLastName($customer->getDefaultBillingAddress()->getLastname());
         }
@@ -103,7 +106,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\ORMException
      */
-    public function populateCustomerReference(\Shopware\Models\Customer\Customer $customer)
+    public function populateCustomerReference(CustomerModel $customer)
     {
         $getReferenceMethod = str_replace(
             '_',
@@ -124,12 +127,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
             )
         );
         $customerReference = null;
-        $entityRepository = Shopware()->Models()->getRepository(\Shopware\Models\Attribute\Customer::class);
+        $entityRepository = Shopware()->Models()->getRepository(CustomerAttribute::class);
         /** @noinspection PhpUndefinedMethodInspection */
         $customerAttribute = $entityRepository
             ->findOneByCustomerId($customer->getId());
         if (!empty($customerAttribute)
-            && $customerAttribute instanceof Shopware\Models\Attribute\Customer
+            && $customerAttribute instanceof CustomerAttribute
             && method_exists($customerAttribute, $getReferenceMethod)
         ) {
             $customerReference = $customerAttribute->$getReferenceMethod();

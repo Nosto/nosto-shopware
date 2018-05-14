@@ -35,6 +35,8 @@
  */
 
 use Shopware\Models\Category\Category;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
@@ -60,9 +62,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
     ) {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select('articles.id')
-            ->from(\Shopware\Models\Article\Article::class, 'articles')
+            ->from(Article::class, 'articles')
             ->innerJoin(
-                \Shopware\Models\Article\Detail::class,
+                Detail::class,
                 'details',
                 \Doctrine\ORM\Query\Expr\Join::WITH,
                 'articles.mainDetailId = details.id'

@@ -36,6 +36,7 @@
 
 use Nosto\Object\Cart\LineItem as NostoLineItem;
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
+use Shopware\Models\Article\Detail;
 
 /**
  * Model for order line item information. This is used when compiling the info
@@ -65,7 +66,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
             try {
                 $articleDetail = Shopware()
                     ->Models()
-                    ->getRepository(\Shopware\Models\Article\Detail::class)
+                    ->getRepository(Detail::class)
                     ->findOneBy(array('articleId' => $detail->getArticleId()));
                 if ($articleDetail !== null) {
                     $this->setProductId($articleDetail->getNumber());

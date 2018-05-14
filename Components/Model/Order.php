@@ -35,6 +35,10 @@
  */
 
 use Nosto\Object\Order\Order as NostoOrder;
+use Shopware\Models\Order\Order;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem as OrderLineItem;
 
 /**
  * Model for order information. This is used when compiling the info about an
@@ -58,7 +62,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
      * @throws Enlight_Event_Exception
      * @throws \Nosto\NostoException
      */
-    public function loadData(\Shopware\Models\Order\Order $order)
+    public function loadData(Order $order)
     {
         $this->setOrderNumber($order->getNumber());
         $this->setCreatedAt($order->getOrderTime());
@@ -76,17 +80,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         }
         $this->setPaymentProvider($paymentProvider);
 
-        $orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
+        $orderStatus = new OrderStatus();
         $orderStatus->loadData($order);
         $this->setOrderStatus($orderStatus);
 
-        $buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
+        $buyerInfo = new OrderBuyer();
         $buyerInfo->loadData($order->getCustomer());
         $this->setCustomer($buyerInfo);
         foreach ($order->getDetails() as $detail) {
             /** @var Shopware\Models\Order\Detail $detail */
             if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
-                $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+                $item = new OrderLineItem();
                 $item->loadData($detail);
                 $this->addPurchasedItems($item);
             }
@@ -95,7 +99,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         if ($this->includeSpecialLineItems) {
             $shippingCost = $order->getInvoiceShipping();
             if ($shippingCost > 0) {
-                $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+                $item = new OrderLineItem();
                 $item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
                 $this->addPurchasedItems($item);
             }

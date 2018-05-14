@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware\CustomModels\Nosto\Account\Account;
+
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
  */
@@ -43,13 +45,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
      * @param \Shopware\CustomModels\Nosto\Account\Account $account
      * @return bool
      */
-    public function isAccountAlreadyRegistered(
-        \Shopware\CustomModels\Nosto\Account\Account $account
-    ) {
+    public function isAccountAlreadyRegistered(Account $account)
+    {
         /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
         $existingAccount = Shopware()
             ->Models()
-            ->getRepository(\Shopware\CustomModels\Nosto\Account\Account::class)
+            ->getRepository(Account::class)
             ->findOneBy(array('name' => $account->getName()));
 
         // If an account has been found, and the shop id is different from current shop, then it means

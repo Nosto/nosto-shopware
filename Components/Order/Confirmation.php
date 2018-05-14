@@ -37,6 +37,8 @@
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
 use Nosto\NostoException;
+use Shopware\Models\Attribute\Order;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as OrderModel;
 
 /**
  * Order confirmation component. Used to send order information to Nosto.
@@ -77,15 +79,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                 try {
                     $attribute = Shopware()
                         ->Models()
-                        ->getRepository(\Shopware\Models\Attribute\Order::class)
+                        ->getRepository(Order::class)
                         ->findOneBy(array('orderId' => $order->getId()));
                     $customerId = null;
-                    if ($attribute instanceof \Shopware\Models\Attribute\Order
+                    if ($attribute instanceof Order
                         && method_exists($attribute, 'getNostoCustomerId')
                     ) {
                         $customerId = $attribute->getNostoCustomerId();
                     }
-                    $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+                    $model = new OrderModel();
                     $model->loadData($order);
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);

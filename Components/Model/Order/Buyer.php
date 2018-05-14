@@ -36,6 +36,10 @@
 
 use Nosto\Object\Order\Buyer as NostoOrderBuyer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
+use Shopware\Models\Customer\Customer;
+use Shopware\Models\Customer\Address;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use /** @noinspection PhpDeprecationInspection */ Shopware\Models\Customer\Billing;
 
 /**
  * Model for order buyer information. This is used when compiling the info about
@@ -63,12 +67,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             ->Frontend()
             ->NostoTagging()
             ->Config()
-            ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
+            ->get(Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
         if ($customerDataAllowed) {
-            if (method_exists(\Shopware\Models\Customer\Customer::class, 'getDefaultBillingAddress')) {
+            if (method_exists(Customer::class, 'getDefaultBillingAddress')) {
                 /* @var \Shopware\Models\Customer\Address $address */
                 $address = $customer->getDefaultBillingAddress();
-                if ($address instanceof \Shopware\Models\Customer\Address) {
+                if ($address instanceof Address) {
                     $this->setFirstName($address->getFirstname());
                     $this->setLastName($address->getLastname());
                 }
@@ -77,7 +81,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                 /** @noinspection PhpDeprecationInspection */
                 $address = $customer->getBilling();
                 /** @noinspection PhpDeprecationInspection */
-                if ($address instanceof \Shopware\Models\Customer\Billing) {
+                if ($address instanceof Billing) {
                     $this->setFirstName($address->getFirstName());
                     $this->setLastName($address->getLastName());
                 }

@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware\Models\Category\Category;
+
 /**
  * Model for product category information. This is used when compiling the info
  * about categories that is sent to Nosto.
@@ -57,7 +59,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      * @param \Shopware\Models\Category\Category $category the model.
      * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Category\Category $category)
+    public function loadData(Category $category)
     {
         $this->categoryPath = $this->buildCategoryPath($category);
 

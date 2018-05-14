@@ -48,6 +48,10 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductSt
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\NostoException;
+use Shopware\Models\Article\Supplier;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Nosto\Object\Product\SkuCollection;
+use Shopware\Models\Translation\Translation;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -108,7 +112,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         }
         $this->setCategories($this->buildCategoryPaths($article, $shop));
         $this->setDescription($article->getDescriptionLong());
-        if ($article->getSupplier() instanceof \Shopware\Models\Article\Supplier) {
+        if ($article->getSupplier() instanceof Supplier) {
             $brand = $article->getSupplier()->getName();
         } else {
             $brand = '';
@@ -126,7 +130,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             ->Frontend()
             ->NostoTagging()
             ->Config()
-            ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SKU_TAGGING);
+            ->get(Bootstrap::CONFIG_SKU_TAGGING);
 
         if ($skuTaggingAllowed) {
             $this->setSkus($this->buildSkus($article, $shop));
@@ -182,9 +186,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Shop $shop
      * @return \Nosto\Object\Product\SkuCollection
      */
-    public function buildSkus(\Shopware\Models\Article\Article $article, Shop $shop)
+    public function buildSkus(Article $article, Shop $shop)
     {
-        $skuCollection = new Nosto\Object\Product\SkuCollection();
+        $skuCollection = new SkuCollection();
         foreach ($article->getDetails() as $detail) {
             $sku = new NostoSku();
             $sku->loadData($detail, $shop);
@@ -199,7 +203,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Article $article article to be updated
      * @param Shop $shop sub shop
      */
-    public function amendSupplierCost(\Shopware\Models\Article\Article $article, Shop $shop)
+    public function amendSupplierCost(Article $article, Shop $shop)
     {
         // Purchase price is not available before version 5.2
         if (method_exists($article->getMainDetail(), 'getPurchasePrice')) {
@@ -215,7 +219,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Shop|null $shop sub shop id
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function amendArticleTranslation(\Shopware\Models\Article\Article $article, Shop $shop = null)
+    public function amendArticleTranslation(Article $article, Shop $shop = null)
     {
         if ($shop === null || $shop->getId() === null) {
             return;
@@ -224,15 +228,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         /** @var \Doctrine\ORM\QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
-            ->from(\Shopware\Models\Translation\Translation::class, 'translations')
+            ->from(Translation::class, 'translations')
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
             ->andWhere('translations.type = \'article\'');
 
-        if (property_exists(\Shopware\Models\Translation\Translation::class, 'shopId')) {
+        if (property_exists(Translation::class, 'shopId')) {
             $builder = $builder->andWhere('translations.shopId = :shopId')
                 ->setParameter('shopId', $shop->getId());
-        } elseif (property_exists(\Shopware\Models\Translation\Translation::class, 'localeId')
-            && method_exists(Shopware\Models\Shop\Shop::class, 'getLocale')
+        } elseif (property_exists(Translation::class, 'localeId')
+            && method_exists(Shop::class, 'getLocale')
             && $shop->getLocale() !== null
         ) {
             $builder = $builder->andWhere('translations.localeId = :localeId')
@@ -244,7 +248,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $query = $builder->getQuery();
         $result = $query->getOneOrNullResult();
 
-        if ($result instanceof \Shopware\Models\Translation\Translation && $result->getData()) {
+        if ($result instanceof Translation && $result->getData()) {
             $dataObject = unserialize($result->getData());
             if (array_key_exists('txtArtikel', $dataObject)) {
                 $article->setName($dataObject[self::TXT_ARTICLE]);
@@ -265,10 +269,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param \Shopware\Models\Article\Article $article the article model.
      * @throws NostoException
      */
-    public function assignId(\Shopware\Models\Article\Article $article)
+    public function assignId(Article $article)
     {
         $mainDetail = $article->getMainDetail();
-        if ($mainDetail instanceof \Shopware\Models\Article\Detail === false) {
+        if ($mainDetail instanceof Detail === false) {
             throw new NostoException(
                 sprintf(
                     "Could not resolve product id - main detail doesn't exist for article %d",
@@ -279,7 +283,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         try {
             $articleDetail = Shopware()
                 ->Models()
-                ->getRepository(\Shopware\Models\Article\Detail::class)
+                ->getRepository(Detail::class)
                 ->findOneBy(array('articleId' => $mainDetail->getArticleId()));
             if (!empty($articleDetail)) {
                 $this->setProductId($articleDetail->getNumber());
@@ -387,7 +391,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         /** @var \Shopware\Models\Article\Detail[] $details */
         $details = Shopware()
             ->Models()
-            ->getRepository(\Shopware\Models\Article\Detail::class)
+            ->getRepository(Detail::class)
             ->findBy(array('articleId' => $article->getId()));
         foreach ($details as $detail) {
             if ($detail->getInStock() > 0) {

@@ -39,6 +39,9 @@ use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
 use Nosto\NostoException;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
 
 /**
  * Product operation component. Used for communicating create/update/delete
@@ -58,18 +61,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
      */
-    public function create(\Shopware\Models\Article\Article $article)
+    public function create(Article $article)
     {
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository(\Shopware\Models\Shop\Shop::class);
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
-            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
+            if ($shop instanceof Shop === false) {
                 continue;
             }
             /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model = new Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
                 try {
@@ -95,7 +98,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @param boolean $allStores if true Nosto accounts from all stores will be returned
      * @return NostoAccount[] the accounts mapped in the shop IDs.
      */
-    protected function getAccounts(\Shopware\Models\Article\Article $article, $allStores = false)
+    protected function getAccounts(Article $article, $allStores = false)
     {
         $data = array();
 
@@ -103,7 +106,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         $inShops = array();
         $allShops = Shopware()
             ->Models()
-            ->getRepository(\Shopware\Models\Shop\Shop::class)
+            ->getRepository(Shop::class)
             ->findAll();
 
         if ($allStores === true) {
@@ -149,18 +152,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
      */
-    public function update(\Shopware\Models\Article\Article $article)
+    public function update(Article $article)
     {
         /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository(\Shopware\Models\Shop\Shop::class);
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
-            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
+            if ($shop instanceof Shop === false) {
                 continue;
             }
             /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model = new Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
                 try {
@@ -181,10 +184,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @param \Shopware\Models\Article\Article $article the product.
      * @throws \Nosto\NostoException
      */
-    public function delete(\Shopware\Models\Article\Article $article)
+    public function delete(Article $article)
     {
         foreach ($this->getAccounts($article, true) as $account) {
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model = new Product();
             $model->assignId($article);
             if ($model->getProductId()) {
                 $op = new DeleteProduct($account);

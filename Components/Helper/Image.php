@@ -38,6 +38,7 @@ use Shopware\Bundle\MediaBundle\MediaServiceInterface;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Shop\Shop;
+use Shopware\Models\Article\Image;
 
 /**
  * Helper class for images
@@ -188,7 +189,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');
         $detailImage = Shopware()
             ->Models()
-            ->getRepository(\Shopware\Models\Article\Image::class)
+            ->getRepository(Image::class)
             ->findOneBy(array('articleDetail' => $detail));
         if ($detailImage) {
             try {

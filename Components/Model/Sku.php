@@ -39,6 +39,8 @@ use Shopware\Models\Article\Detail;
 use Nosto\Object\Product\Sku as NostoSku;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as Image;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku
@@ -59,7 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         }
 
         $this->setUrl(
-            Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product::assembleProductUrl(
+            Product::assembleProductUrl(
                 $detail->getArticle(),
                 $shop,
                 $detail
@@ -68,7 +70,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         $this->setId($detail->getNumber());
         $this->setName($detail->getArticle()->getName());
         $this->setImageUrl(
-            Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image::getDetailImageUrl($detail)
+            Image::getDetailImageUrl($detail)
         );
         $this->setPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,

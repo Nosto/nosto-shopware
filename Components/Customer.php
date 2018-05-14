@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware\CustomModels\Nosto\Customer\Customer;
+
 /**
  * Customer component. Used as a helper to manage the Nosto user session inside
  * Shopware.
@@ -81,10 +83,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         if (!empty($sessionId) && !empty($nostoId)) {
             $customer = Shopware()
                 ->Models()
-                ->getRepository(\Shopware\CustomModels\Nosto\Customer\Customer::class)
+                ->getRepository(Customer::class)
                 ->findOneBy(array('sessionId' => $sessionId));
             if (empty($customer)) {
-                $customer = new \Shopware\CustomModels\Nosto\Customer\Customer();
+                $customer = new Customer();
                 $customer->setSessionId($sessionId);
             }
             if ($nostoId !== $customer->getNostoId()) {
@@ -126,7 +128,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         }
         $customer = Shopware()
             ->Models()
-            ->getRepository(\Shopware\CustomModels\Nosto\Customer\Customer::class)
+            ->getRepository(Customer::class)
             ->findOneBy(array('sessionId' => $sessionId));
         return ($customer !== null) ? $customer->getNostoId() : null;
     }
