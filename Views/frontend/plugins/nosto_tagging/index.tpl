@@ -127,6 +127,7 @@
             <span class="last_name">{$nostoCustomer->getLastName()|escape:'htmlall':'UTF-8'}</span>
             <span class="email">{$nostoCustomer->getEmail()|escape:'htmlall':'UTF-8'}</span>
             <span class="customer_reference">{$nostoCustomer->getCustomerReference()|escape:'htmlall':'UTF-8'}</span>
+            <span class="marketing_permission">{$nostoCustomer->getMarketingPermission()|escape:'htmlall':'UTF-8'}</span>
         </div>
     {/if}
     <div class="nosto_cart" style="display:none">
