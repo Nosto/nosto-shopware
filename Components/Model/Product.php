@@ -210,8 +210,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     {
         // Purchase price is not available before version 5.2
         if (method_exists($article->getMainDetail(), 'getPurchasePrice')) {
-            $suplierCost = $article->getMainDetail()->getPurchasePrice();
-            $this->setSupplierCost(PriceHelper::convertToShopCurrency($suplierCost, $shop));
+            $supplierCost = $article->getMainDetail()->getPurchasePrice();
+            $this->setSupplierCost(PriceHelper::convertToShopCurrency($supplierCost, $shop));
         }
     }
 

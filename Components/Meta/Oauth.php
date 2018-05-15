@@ -35,7 +35,7 @@
  */
 
 use Nosto\Types\OAuthInterface as NostoOAuthClientMetaDataInterface;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBoostrap;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Request\Api\Token as NostoApiToken;
 use Shopware\Models\Shop\Shop;
@@ -101,7 +101,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
      */
     public function getClientId()
     {
-        return NostoBoostrap::PLATFORM_NAME;
+        return NostoBootstrap::PLATFORM_NAME;
     }
 
     /**
@@ -112,7 +112,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
      */
     public function getClientSecret()
     {
-        return NostoBoostrap::PLATFORM_NAME;
+        return NostoBootstrap::PLATFORM_NAME;
     }
 
     /**
