@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Article\Article as Article;
-use Shopware\Models\Shop\Shop as Shop;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as NostoProduct;
 
@@ -56,8 +56,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
      * the recommendations to render the "Add to cart" button for the product
      * when it is recommended to a user.
      *
-     * @param \Shopware\Models\Article\Article $article
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Article $article
+     * @param Shop $shop
      * @return array
      */
     public static function buildProductTags(Article $article, Shop $shop)
@@ -80,6 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
                 $tags['tag2'] = array($pricePerUnit);
             }
         } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
                 sprintf(
                     'Could not create price per unit. Error was: %s (%s)',

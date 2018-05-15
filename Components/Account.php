@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
@@ -41,6 +41,14 @@ use Nosto\Helper\IframeHelper;
 use Nosto\NostoException;
 use Nosto\Operation\AccountSignup;
 use Nosto\Operation\UninstallAccount;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Shop\Locale;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account as MetaAccount;
+use Shopware\CustomModels\Nosto\Account\Account as AccountCustomModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe as Iframe;
+use Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder as UserBuilder;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
@@ -50,45 +58,37 @@ use Nosto\Operation\UninstallAccount;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 {
-    /*
-     * Constructor
-     *
-     * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
-     */
-    public function __construct()
-    {
-    }
-
     /**
      * Creates a new Nosto account for the given shop.
      *
      * Note that the account is not saved anywhere and it is up to the caller to handle it.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop to create the account for.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param Shop $shop the shop to create the account for.
+     * @param Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
      * @param string|null $email (optional) the account owner email if different than the active admin user.
      * @param array|stdClass $details (optional) the account details.
-     * @return \Shopware\CustomModels\Nosto\Account\Account the newly created account.
+     * @return AccountCustomModel the newly created account.
      * @throws NostoException if the account cannot be created for any reason.
      * @suppress PhanTypeMismatchArgument
      */
     public static function createAccount(
-        \Shopware\Models\Shop\Shop $shop,
-        \Shopware\Models\Shop\Locale $locale = null,
+        Shop $shop,
+        Locale $locale = null,
         $identity = null,
         $email = null,
         $details = null
     ) {
         $account = self::findAccount($shop);
-        if (!is_null($account)) {
+        if ($account !== null) {
             throw new NostoException(sprintf(
                 'Nosto account already exists for shop #%d.',
                 $shop->getId()
             ));
         }
-        $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account(
-            Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME
+        $meta = new MetaAccount(
+            NostoTaggingBootstrap::PLATFORM_NAME
         );
         $meta->loadData($shop, $locale, $identity);
         if (!empty($details)) {
@@ -100,37 +100,36 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         }
         $operation = new AccountSignup($meta);
         $nostoAccount = $operation->create();
-        $shopwareAccount = self::convertToShopwareAccount($nostoAccount, $shop);
-
-        return $shopwareAccount ;
+        /** @noinspection PhpParamsInspection */
+        return self::convertToShopwareAccount($nostoAccount, $shop);
     }
 
     /**
      * Finds a Nosto account for the given shop and returns it.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop to get the account for.
-     * @return null|Shopware\CustomModels\Nosto\Account\Account|object
+     * @param Shop $shop the shop to get the account for.
+     * @return null|AccountCustomModel|object
      */
-    public static function findAccount(\Shopware\Models\Shop\Shop $shop)
+    public static function findAccount(Shop $shop)
     {
         return Shopware()
             ->Models()
-            ->getRepository('\Shopware\CustomModels\Nosto\Account\Account')
+            ->getRepository(AccountCustomModel::class)
             ->findOneBy(array('shopId' => $shop->getId()));
     }
 
     /**
-     * Converts a `NostoAccount` into a `\Shopware\CustomModels\Nosto\Account\Account` model.
+     * Converts a `NostoAccount` into a `AccountCustomModel` model.
      *
      * @param NostoAccount $nostoAccount the account to convert.
-     * @param \Shopware\Models\Shop\Shop $shop the shop the account belongs to.
-     * @return \Shopware\CustomModels\Nosto\Account\Account the account model.
+     * @param Shop $shop the shop the account belongs to.
+     * @return AccountCustomModel the account model.
      */
     public static function convertToShopwareAccount(
         NostoAccount $nostoAccount,
-        \Shopware\Models\Shop\Shop $shop
+        Shop $shop
     ) {
-        $account = new \Shopware\CustomModels\Nosto\Account\Account();
+        $account = new AccountCustomModel();
         $account->setShopId($shop->getId());
         $account->setName($nostoAccount->getName());
         $data = array('apiTokens' => array());
@@ -145,12 +144,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     /**
      * Removes the account and tells Nosto about it.
      *
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account the account to remove.
+     * @param AccountCustomModel $account the account to remove.
      * @param $identity
-     * @throws NostoException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws OptimisticLockException
+     * @throws ORMInvalidArgumentException
      */
-    public static function removeAccount(\Shopware\CustomModels\Nosto\Account\Account $account, $identity)
+    public static function removeAccount(AccountCustomModel $account, $identity)
     {
         $nostoAccount = self::convertToNostoAccount($account);
         Shopware()->Models()->remove($account);
@@ -158,24 +157,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         try {
             // Notify Nosto that the account was deleted.
             $operation = new UninstallAccount($nostoAccount);
-            $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder();
+            $user = new UserBuilder();
             $operation->delete($user->build($identity));
-        } catch (NostoException $e) {
+        } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
     }
 
     /**
-     * Converts a `\Shopware\CustomModels\Nosto\Account\Account` model into a `NostoAccount`.
+     * Converts a `AccountCustomModel` model into a `NostoAccount`.
      *
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account the account model.
+     * @param AccountCustomModel $account the account model.
      * @return NostoAccount the nosto account.
-     * @throws NostoException
      */
-    public static function convertToNostoAccount(
-        \Shopware\CustomModels\Nosto\Account\Account $account
-    ) {
+    public static function convertToNostoAccount(AccountCustomModel $account)
+    {
         $nostoAccount = new NostoAccount($account->getName());
+        /** @var array $items */
         foreach ($account->getData() as $key => $items) {
             if ($key === 'apiTokens') {
                 foreach ($items as $name => $value) {
@@ -192,14 +191,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * Connected here means that we have the API tokens exchanged during account creation or OAuth.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop to check the account for.
+     * @param Shop $shop the shop to check the account for.
      * @return bool true if account exists and is connected to Nosto, false otherwise.
-     * @throws NostoException
      */
-    public static function accountExistsAndIsConnected(\Shopware\Models\Shop\Shop $shop)
+    public static function accountExistsAndIsConnected(Shop $shop)
     {
         $account = self::findAccount($shop);
-        if (is_null($account)) {
+        if ($account === null) {
             return false;
         }
         $nostoAccount = self::convertToNostoAccount($account);
@@ -209,26 +207,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
     /**
      * Builds the Nosto account administration iframe url and returns it.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop to get the url for.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
-     * @param \Shopware\CustomModels\Nosto\Account\Account|null $account the account to get the url
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param Shop $shop the shop to get the url for.
+     * @param Locale|null $locale the locale or null.
+     * @param AccountCustomModel|null $account the account to get the url
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
      * @suppress PhanUndeclaredMethod
-     * @throws NostoException
-     * @throws \Doctrine\ORM\OptimisticLockException
      * @return string the url.
      */
     public static function buildAccountIframeUrl(
-        \Shopware\Models\Shop\Shop $shop,
-        \Shopware\Models\Shop\Locale $locale = null,
-        \Shopware\CustomModels\Nosto\Account\Account $account = null,
+        Shop $shop,
+        Locale $locale = null,
+        AccountCustomModel
+        $account = null,
         $identity = null,
         array $params = array()
     ) {
-        $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe();
+        $meta = new Iframe();
         $meta->loadData($shop, $locale, $identity);
-        if (!is_null($account)) {
+        if ($account !== null) {
             $nostoAccount = self::convertToNostoAccount($account);
         } else {
             $nostoAccount = null;
@@ -236,7 +234,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         if (!isset($params['v'])) {
             $params['v'] = NostoTaggingBootstrap::PLATFORM_UI_VERSION;
         }
-        $user = new Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder();
+        $user = new UserBuilder();
         return IframeHelper::getUrl(
             $meta,
             $nostoAccount,

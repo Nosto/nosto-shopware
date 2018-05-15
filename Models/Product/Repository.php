@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Shopware\Models\Category\Category;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
@@ -45,7 +49,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
      * Returns an array of articles id's that are active
      * and has the same category id of the given shopware category
      *
-     * @param \Shopware\Models\Category\Category $category
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param Category $category
      * @param $pageSize
      * @param $currentOffset
      * @param $id
@@ -59,11 +64,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
     ) {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select('articles.id')
-            ->from('\Shopware\Models\Article\Article', 'articles')
+            ->from(Article::class, 'articles')
             ->innerJoin(
-                '\Shopware\Models\Article\Detail',
+                Detail::class,
                 'details',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
+                Join::WITH,
                 'articles.mainDetailId = details.id'
             )
             ->innerJoin(
@@ -86,6 +91,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
                 ->setMaxResults($pageSize)
                 ->getQuery();
         }
-        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        return $result->getResult(AbstractQuery::HYDRATE_ARRAY);
     }
 }

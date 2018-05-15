@@ -63,7 +63,7 @@
             }
             {/literal}
             Nosto.addProductToCart = function (productNumber, element) {
-                if (typeof nostojs !== 'undefined' && typeof element == 'object') {
+                if (typeof nostojs !== 'undefined' && typeof element === 'object') {
                     var slotId = Nosto.resolveContextSlotId(element);
                     if (slotId) {
                         nostojs(function (api) {
@@ -103,6 +103,7 @@
                 while (typeof e.parentElement !== "undefined" && e.parentElement) {
                     ++n;
                     e = e.parentElement;
+                    // noinspection EqualityComparisonWithCoercionJS
                     if (e.getAttribute('class') == 'nosto_element' && e.getAttribute('id')) {
                         return e.getAttribute('id');
                     }

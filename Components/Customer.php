@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
+
+use Shopware\CustomModels\Nosto\Customer\Customer;
+use Doctrine\ORM\OptimisticLockException;
 
 /**
  * Customer component. Used as a helper to manage the Nosto user session inside
@@ -66,9 +69,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * their status, and we need to know then which Nosto session the order
      * belonged to.
      * @suppress PhanDeprecatedFunction
+     * @throws OptimisticLockException
      */
     public static function persistSession()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $sessionId = (Shopware()->Session()->offsetExists('sessionId')
             ? Shopware()->Session()->offsetGet('sessionId')
             : Shopware()->SessionID());
@@ -79,10 +84,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         if (!empty($sessionId) && !empty($nostoId)) {
             $customer = Shopware()
                 ->Models()
-                ->getRepository('Shopware\CustomModels\Nosto\Customer\Customer')
+                ->getRepository(Customer::class)
                 ->findOneBy(array('sessionId' => $sessionId));
             if (empty($customer)) {
-                $customer = new \Shopware\CustomModels\Nosto\Customer\Customer();
+                $customer = new Customer();
                 $customer->setSessionId($sessionId);
             }
             if ($nostoId !== $customer->getNostoId()) {
@@ -96,17 +101,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
     /**
      * Returns the hashed session
      *
-     * @return ?string the Nosto ID.
+     * @return string|null the Nosto ID.
      */
     public static function getHcid()
     {
         $nostoId = self::getNostoId();
-        $hcid = null;
         if ($nostoId) {
-            $hcid = hash(self::VISITOR_HASH_ALGO, $nostoId);
+            return hash(self::VISITOR_HASH_ALGO, $nostoId);
         }
-
-        return $hcid;
+        return null;
     }
 
     /**
@@ -117,6 +120,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      */
     public static function getNostoId()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $sessionId = (Shopware()->Session()->offsetExists('sessionId')
             ? Shopware()->Session()->offsetGet('sessionId')
             : Shopware()->SessionID());
@@ -125,8 +129,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
         }
         $customer = Shopware()
             ->Models()
-            ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
+            ->getRepository(Customer::class)
             ->findOneBy(array('sessionId' => $sessionId));
-        return !is_null($customer) ? $customer->getNostoId() : null;
+        return ($customer !== null) ? $customer->getNostoId() : null;
     }
 }

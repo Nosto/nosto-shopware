@@ -33,6 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+// noinspection JSCheckFunctionSignatures
 Ext.define('Shopware.apps.NostoTagging.model.Account', {
     extend: 'Ext.data.Model',
     idProperty: 'id',

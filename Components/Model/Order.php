@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Nosto\Object\Order\Order as NostoOrder;
+use Shopware\Models\Order\Order;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem as OrderLineItem;
+use Nosto\NostoException;
+use Shopware\Models\Order\Detail;
 
 /**
  * Model for order information. This is used when compiling the info about an
  * order that is sent to Nosto.
  *
- * Extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base.
+ * Extends NostoOrder.
  * Implements NostoOrderInterface.
  * Implements NostoValidatableModelInterface.
  *
@@ -54,14 +60,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
     /**
      * Loads order details from the order model.
      *
-     * @param \Shopware\Models\Order\Order $order the order model.
+     * @param Order $order the order model.
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     * @throws \Nosto\NostoException
+     * @throws NostoException
      */
-    public function loadData(\Shopware\Models\Order\Order $order)
+    public function loadData(Order $order)
     {
         $this->setOrderNumber($order->getNumber());
         $this->setCreatedAt($order->getOrderTime());
@@ -69,25 +72,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         try {
             $paymentProvider = $payment->getName();
             $paymentPlugin = $payment->getPlugin();
-            if (!is_null($paymentPlugin) && $paymentPlugin->getVersion()) {
+            if ($paymentPlugin !== null && $paymentPlugin->getVersion()) {
                 $paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
             }
         } catch (Exception $e) {
             $paymentProvider = 'unknown';
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
         $this->setPaymentProvider($paymentProvider);
 
-        $orderStatus = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status();
+        $orderStatus = new OrderStatus();
         $orderStatus->loadData($order);
         $this->setOrderStatus($orderStatus);
 
-        $buyerInfo = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer();
+        $buyerInfo = new OrderBuyer();
         $buyerInfo->loadData($order->getCustomer());
         $this->setCustomer($buyerInfo);
         foreach ($order->getDetails() as $detail) {
-            /** @var Shopware\Models\Order\Detail $detail */
+            /** @var Detail $detail */
             if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
-                $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+                $item = new OrderLineItem();
                 $item->loadData($detail);
                 $this->addPurchasedItems($item);
             }
@@ -96,7 +101,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         if ($this->includeSpecialLineItems) {
             $shippingCost = $order->getInvoiceShipping();
             if ($shippingCost > 0) {
-                $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem();
+                $item = new OrderLineItem();
                 $item->loadSpecialItemData('Shipping cost', $shippingCost, $order->getCurrency());
                 $this->addPurchasedItems($item);
             }
@@ -106,7 +111,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoOrder' => $this,
-                'order' => $order,
+                'order' => $order
             )
         );
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
+
+use Shopware\Models\Order\Basket;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem as CartLineItem;
 
 /**
  * Model for shopping cart information. This is used when compiling the info
@@ -47,21 +50,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
     extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] line items in the cart.
+     * @var CartLineItem[] line items in the cart.
      */
     protected $lineItems = array();
 
     /**
      * Loads the cart line items from the order baskets.
      *
-     * @param \Shopware\Models\Order\Basket[] $baskets the users basket items.
+     * @param Basket[] $baskets the users basket items.
      */
     public function loadData(array $baskets)
     {
         try {
             $currency = Shopware()->Shop()->getCurrency()->getCurrency();
             foreach ($baskets as $basket) {
-                $item = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem();
+                $item = new CartLineItem();
                 $item->loadData($basket, $currency);
                 $this->lineItems[] = $item;
             }
@@ -70,16 +73,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
                 array(
                     'nostoCart' => $this,
                     'baskets' => $baskets,
-                    'currency' => $currency,
+                    'currency' => $currency
                 )
             );
         } catch (Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
         }
     }
 
     /**
-     * @return Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] the line items in the cart.
+     * @return CartLineItem[] the line items in the cart.
      */
     public function getLineItems()
     {
@@ -89,12 +93,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
     /**
      * Sets the line items for the basket.
      *
-     * The line items must be an array of Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
+     * The line items must be an array of CartLineItem
      *
      * Usage:
-     * $object->setLineItems([new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem(), ...]);
+     * $object->setLineItems([new CartLineItem(), ...]);
      *
-     * @param Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem[] $lineItems the line items.
+     * @param CartLineItem[] $lineItems the line items.
      *
      * @return $this Self for chaining
      */

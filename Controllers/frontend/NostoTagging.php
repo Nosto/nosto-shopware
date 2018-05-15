@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,24 +30,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\AbstractCollection;
+use Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository as AccountRepository;
+use Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository as ProductRepository;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
-use Nosto\Object\Product\ProductCollection;
-use Nosto\Object\Order\OrderCollection;
-use Nosto\Helper\ExportHelper;
-use Nosto\NostoException;
-use Nosto\Nosto;
-use Nosto\Operation\OAuth\AuthorizationCode;
+use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepository;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as ProductModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
-use Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository as AccountRepository;
-use Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository as ProductRepository;
-use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepository;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
+use Nosto\Operation\OAuth\AuthorizationCode;
+use Nosto\Object\Product\ProductCollection;
+use Nosto\Object\Order\OrderCollection;
+use Shopware\Models\Shop\DetachedShop;
+use Nosto\Object\AbstractCollection;
+use Shopware\Models\Article\Article;
+use Nosto\Object\NostoOAuthToken;
+use Shopware\Models\Order\Order;
+use Nosto\Helper\ExportHelper;
+use Nosto\NostoException;
+use Nosto\Nosto;
 
 /**
  * Main frontend controller. Handles account connection via OAuth 2 and data
@@ -61,17 +72,17 @@ use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepos
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
+     * @var ProductRepository
      */
     private $productRepository;
 
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
+     * @var AccountRepository
      */
     private $accountRepository;
 
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
+     * @var OrderRepository
      */
     private $orderRepository;
 
@@ -79,6 +90,9 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Shopware_Controllers_Frontend_NostoTagging constructor.
      * @param Enlight_Controller_Request_Request $request
      * @param Enlight_Controller_Response_Response $response
+     * @throws \Exception
+     * @throws Enlight_Event_Exception
+     * @throws Enlight_Exception
      */
     public function __construct(
         Enlight_Controller_Request_Request $request,
@@ -110,17 +124,18 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             'openNosto' => $shop->getId()
         );
 
-        if (!is_null($code)) {
+        if ($code !== null) {
+            /** @noinspection BadExceptionsProcessingInspection */
             try {
                 $account = NostoComponentAccount::findAccount($shop);
-                if (!is_null($account)) {
+                if ($account !== null) {
                     throw new NostoException(sprintf(
                         'Nosto account already exists for shop #%d.',
                         $shop->getId()
                     ));
                 }
-                $token = self::getAuthenticatedToken($shop, $code);
-                $result = self::fireRequest($token);
+                $token = $this->getAuthenticatedToken($shop, $code);
+                $result = $this->fireRequest($token);
                 $nostoAccount = new NostoAccount($token->getMerchantName());
                 $nostoAccount->setTokens(NostoApiToken::parseTokens($result, 'api_'));
                 if (!$nostoAccount->isConnectedToNosto()) {
@@ -129,6 +144,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                 $account = NostoComponentAccount::convertToShopwareAccount($nostoAccount, $shop);
                 if ($this->accountRepository->isAccountAlreadyRegistered($account)) {
                     // Existing account has been used for mapping other sub shop
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
                         'Same nosto account has been used for two sub shops'
                     );
@@ -143,28 +159,31 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                     $this->redirect($redirectParams, array('code' => 302));
                 }
             } catch (NostoException $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 $redirectParams['messageType'] = Nosto::TYPE_ERROR;
                 $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
                 $this->redirect($redirectParams, array('code' => 302));
             }
-        } elseif (!is_null($error)) {
+        } elseif ($error !== null) {
             $errorReason = $this->Request()->getParam('error_reason');
             $errorDescription = $this->Request()->getParam('error_description');
 
             $logMessage = $error;
-            if (!is_null($errorReason)) {
+            if ($errorReason !== null) {
                 $logMessage .= ' - ' . $errorReason;
             }
-            if (!is_null($errorDescription)) {
+            if ($errorDescription !== null) {
                 $logMessage .= ' - ' . $errorDescription;
             }
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($logMessage);
             $redirectParams['messageType'] = Nosto::TYPE_ERROR;
             $redirectParams['messageCode'] = Nosto::CODE_ACCOUNT_CONNECT;
             $redirectParams['messageText'] = $errorDescription;
             $this->redirect($redirectParams, array('code' => 302));
         } else {
+            /** @noinspection PhpUndefinedClassInspection */
             throw new Zend_Controller_Action_Exception('Not Found', 404);
         }
     }
@@ -173,8 +192,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Exports products from the current shop.
      * Result can be limited by the `limit` and `offset` GET parameters.
      *
-     * @throws NostoException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws Enlight_Event_Exception
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
     public function exportProductsAction()
     {
@@ -192,14 +214,14 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $collection = new ProductCollection();
         foreach ($articlesIds as $articleId) {
-            /** @var Shopware\Models\Article\Article $article */
+            /** @var Article $article */
             $article = Shopware()->Models()->find(
-                'Shopware\Models\Article\Article',
+                Article::class,
                 (int)$articleId['id']
             );
 
-            if (!is_null($article)) {
-                $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            if ($article !== null) {
+                $model = new ProductModel();
                 $model->loadData($article);
                 $collection->append($model);
             }
@@ -211,13 +233,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Encrypts the export collection and outputs it to the browser.
      *
      * @param AbstractCollection $collection the data collection to export.
-     * @throws NostoException
      */
     protected function export(AbstractCollection $collection)
     {
         $shop = Shopware()->Shop();
         $account = NostoComponentAccount::findAccount($shop);
-        if (!is_null($account)) {
+        if ($account !== null) {
             $cipherText = (new ExportHelper())->export(
                 NostoComponentAccount::convertToNostoAccount($account),
                 $collection
@@ -231,11 +252,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Exports completed orders from the current shop.
      * Result can be limited by the `limit` and `offset` GET parameters.
      *
-     * @throws Enlight_Event_Exception
-     * @throws NostoException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
      */
     public function exportOrdersAction()
     {
@@ -249,16 +265,21 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $collection = new OrderCollection();
         $shop = Shopware()->Shop()->getId();
         foreach ($result as $row) {
-            /** @var Shopware\Models\Order\Order $order */
-            $order = Shopware()->Models()->getRepository('Shopware\Models\Order\Order')
+            /** @var Order $order */
+            $order = Shopware()->Models()->getRepository(Order::class)
                 ->findOneBy(array('number' => $row['number']));
-            if (is_null($order) || $order->getShop()->getId() != $shop) {
+            if ($order === null || $order->getShop()->getId() != $shop) {
                 continue;
             }
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
-            $model->disableSpecialLineItems();
-            $model->loadData($order);
-            $collection->append($model);
+            try {
+                $model = new NostoOrderModel();
+                $model->disableSpecialLineItems();
+                $model->loadData($order);
+                $collection->append($model);
+            } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            }
         }
 
         $this->export($collection);
@@ -267,12 +288,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     /**
      * @param $shop
      * @param $code
-     * @return \Nosto\Object\NostoOAuthToken
+     * @return NostoOAuthToken
      * @throws NostoException
      */
-    private function getAuthenticatedToken(Shopware\Models\Shop\DetachedShop $shop, $code)
+    private function getAuthenticatedToken(DetachedShop $shop, $code)
     {
-        $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
+        $meta = new MetaOauth();
         $meta->loadData($shop);
 
         $oauthClient = new AuthorizationCode($meta);
@@ -290,12 +311,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     }
 
     /**
-     * @param \Nosto\Object\NostoOAuthToken $token
+     * @param NostoOAuthToken $token
      * @throws NostoException
-     * @throws \Nosto\Request\Http\Exception\AbstractHttpException
      * @return array|stdClass
      */
-    private function fireRequest(\Nosto\Object\NostoOAuthToken $token)
+    private function fireRequest(NostoOAuthToken $token)
     {
         $request = new NostoHttpRequest();
         $request->setUrl(Nosto::getOAuthBaseUrl().'/exchange');

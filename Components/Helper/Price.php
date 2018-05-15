@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,14 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
-use Shopware\Models\Article\Article as Article;
-use Shopware\Models\Article\Detail as Detail;
-use Shopware\Models\Shop\Shop as Shop;
+use Doctrine\Common\Collections\ArrayCollection;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Article\Price;
+use Shopware\Models\Customer\Group;
 
 /**
  * Helper class for prices
@@ -53,7 +56,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     /**
      * Convert the price from main shop currency to sub shop currency
      * @param float $priceInMainShopCurrency a price in main shop currency
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Shop $shop
      * @return mixed
      */
     public static function convertToShopCurrency($priceInMainShopCurrency, Shop $shop)
@@ -61,16 +64,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         // If it is 0, Shopware considering it 1
         if ($shop->getCurrency()->getFactor() == 0) {
             return $priceInMainShopCurrency;
-        } else {
-            return $priceInMainShopCurrency * $shop->getCurrency()->getFactor();
         }
+        return $priceInMainShopCurrency * $shop->getCurrency()->getFactor();
     }
 
     /**
      * Generates a textual representation of price per unit
      *
-     * @param \Shopware\Models\Article\Article $article
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Article $article
+     * @param Shop $shop
      * @return bool|string
      * @throws Zend_Currency_Exception
      */
@@ -94,9 +96,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             );
             $zendCurrency->setFormat(
                 array(
-                    'position' => ($shop->getCurrency()->getSymbolPosition() > 0
+                    'position' => $shop->getCurrency()->getSymbolPosition() > 0
                         ? $shop->getCurrency()->getSymbolPosition()
-                        : 8)
+                        : 8
                 )
             );
             $priceString = $zendCurrency->toCurrency($referencePrice);
@@ -108,15 +110,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                 $unitName
             );
         }
-
         return false;
     }
 
     /**
      * Calculates the price of an article including tax
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Article $article the article model.
+     * @param Shop $shop
      * @param string $type the type of price, i.e. "price" or "listPrice".
      * @return string the price formatted according to Nosto standards.
      */
@@ -125,7 +126,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         Shop $shop,
         $type = self::PRICE_TYPE_NORMAL
     ) {
-        /** @var \Shopware\Models\Article\Price $price */
+        /** @var Price $price */
         $price = self::getArticlePrice($article, $shop);
         if (!$price) {
             return NostoPriceHelper::format(0);
@@ -136,11 +137,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         } else {
             $value = $price->getPrice();
             $priceRate = self::getProductPriceRateAfterDiscountForArticle($article, $shop);
-            $value = $value * $priceRate;
+            $value *= $priceRate;
         }
         $tax = $article->getTax()->getTax();
         $priceWithTax = $value * (1 + ($tax / 100));
-        //convert currency
+        // Convert currency
         $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
 
         return NostoPriceHelper::format($priceWithTax);
@@ -149,8 +150,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     /**
      * Calculates the price of a given detail including tax
      *
-     * @param \Shopware\Models\Article\Detail $detail the Article Detail model.
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Detail $detail the Article Detail model.
+     * @param Shop $shop
      * @param string $type the type of price, i.e. "price" or "listPrice".
      * @return float the price formatted according to Nosto standards.
      */
@@ -159,10 +160,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         Shop $shop,
         $type = self::PRICE_TYPE_NORMAL
     ) {
-        /** @var \Shopware\Models\Article\Price $price */
+        /** @var Price $price */
         $price = self::getDetailPrice($detail, $shop);
         if (!$price) {
-            return floatval(NostoPriceHelper::format(0));
+            return (float)NostoPriceHelper::format(0);
         }
         // If the list price is not set, fall back on the normal price.
         if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
@@ -170,14 +171,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         } else {
             $value = $price->getPrice();
             $priceRate = self::getProductPriceRateAfterDiscountForDetail($detail, $shop);
-            $value = $value * $priceRate;
+            $value *= $priceRate;
         }
         $tax = $detail->getArticle()->getTax()->getTax();
         $priceWithTax = $value * (1 + ($tax / 100));
         // Convert currency
         $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
 
-        return floatval(NostoPriceHelper::format($priceWithTax));
+        return (float)NostoPriceHelper::format($priceWithTax);
     }
 
     /**
@@ -185,7 +186,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      *
      * @param Article $article
      * @param Shop $shop
-     * @return null|\Shopware\Models\Article\Price
+     * @return null|Price
      */
     private static function getArticlePrice(Article $article, Shop $shop)
     {
@@ -201,7 +202,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      *
      * @param Detail $detail
      * @param Shop $shop
-     * @return null|\Shopware\Models\Article\Price
+     * @return null|Price
      */
     private static function getDetailPrice(Detail $detail, Shop $shop)
     {
@@ -214,27 +215,28 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
 
     /**
      * Get price object of the article or detail for the shop
-     * @param $prices
+     * @param ArrayCollection $prices
      * @param Shop $shop
-     * @return null|\Shopware\Models\Article\Price
+     * @return null|Price
      */
     private static function getPrice($prices, Shop $shop)
     {
         $subShopPrice = null;
-        /* @var \Shopware\Models\Article\Price $price */
         foreach ($prices as $price) {
             try {
+                /** @var Price $price */
                 if ($price->getFrom() == 1) {
-                    if ($price->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
-                        && $shop->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                    if ($price->getCustomerGroup() instanceof Group
+                        && $shop->getCustomerGroup() instanceof Group
                         && $price->getCustomerGroup()->getId() == $shop->getCustomerGroup()->getId()
                     ) {
                         $subShopPrice = $price;
                         break;
-                    } elseif ($subShopPrice == null
-                        && $price->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
-                        && $shop->getMain() instanceof \Shopware\Models\Shop\Shop
-                        && $shop->getMain()->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
+                    }
+                    if ($subShopPrice == null
+                        && $price->getCustomerGroup() instanceof Group
+                        && $shop->getMain() instanceof Shop
+                        && $shop->getMain()->getCustomerGroup() instanceof Group
                         && $price->getCustomerGroup()->getId() == $shop->getMain()->getCustomerGroup()->getId()
                     ) {
                         // If no sub shop price, then use main shop price
@@ -242,6 +244,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
                     }
                 }
             } catch (Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
@@ -255,8 +258,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     /**
      * Wrapper for getting price rate after discount for Article Detail
      *
-     * @param \Shopware\Models\Article\Detail $detail the article detail model.
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Detail $detail the article detail model.
+     * @param Shop $shop
      * @return float a price rate after discount
      */
     private static function getProductPriceRateAfterDiscountForDetail(Detail $detail, Shop $shop)
@@ -265,7 +268,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $discounts = $detail->getArticle()->getPriceGroup()->getDiscounts();
             return self::getProductPriceRateAfterDiscount($discounts, $shop);
         }
-        /** @var \Shopware\Models\Customer\Group $customerGroup */
+        /** @var Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
         return (1 - $customerGroup->getDiscount() / 100);
     }
@@ -273,8 +276,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     /**
      * Wrapper for getting price rate after discount for Article
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
-     * @param \Shopware\Models\Shop\Shop $shop
+     * @param Article $article the article model.
+     * @param Shop $shop
      * @return float a price rate after discount
      */
     private static function getProductPriceRateAfterDiscountForArticle(Article $article, Shop $shop)
@@ -283,7 +286,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $discounts = $article->getPriceGroup()->getDiscounts();
             return self::getProductPriceRateAfterDiscount($discounts, $shop);
         }
-        /** @var \Shopware\Models\Customer\Group $customerGroup */
+        /** @var Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
         return (1 - $customerGroup->getDiscount() / 100);
     }
@@ -291,25 +294,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     /**
      * Get a price rate after discount
      *
-     * @param $discounts
+     * @param ArrayCollection|[] $discounts
      * @param Shop $shop
      * @return float|int price rate after discount
      */
     private static function getProductPriceRateAfterDiscount($discounts, Shop $shop)
     {
         // Get the customer group discount
-        /** @var \Shopware\Models\Customer\Group $customerGroup */
+        /** @var Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
         $priceRate = 1 - $customerGroup->getDiscount() / 100;
         // Handle the price group
+        /** @var ArrayCollection $discounts */
         if ($discounts !== null && !$discounts->isEmpty()) {
             foreach ($discounts as $discount) {
                 // Only handle the discount suitable for buying at least one item.
-                if ($discount->getCustomerGroup() instanceof \Shopware\Models\Customer\Group
-                    && $discount->getCustomerGroup()->getId() == $customerGroup->getId()
+                if ($discount->getCustomerGroup() instanceof Group
                     && $discount->getStart() == 1
+                    && $discount->getCustomerGroup()->getId() == $customerGroup->getId()
                 ) {
-                    $priceRate = $priceRate * (1 - $discount->getDiscount() / 100);
+                    $priceRate *= (1 - $discount->getDiscount() / 100);
                     break;
                 }
             }

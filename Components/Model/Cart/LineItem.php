@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
-use Nosto\Object\Cart\LineItem as LineItem;
+use Nosto\Object\Cart\LineItem;
+use Shopware\Models\Article\Detail;
+use Shopware\Models\Article\Article;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Shopware\Models\Order\Basket;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
 
 /**
  * Model for shopping cart line items. This is used when compiling the shopping
@@ -52,27 +60,28 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
     /**
      * Loads the line item data from the basket model.
      *
-     * @param Shopware\Models\Order\Basket $basket an order basket item.
+     * @param Basket $basket an order basket item.
      * @param string $currencyCode the line item currency code.
+     * @throws ORMInvalidArgumentException
      * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
-    public function loadData(Shopware\Models\Order\Basket $basket, $currencyCode)
+    public function loadData(Basket $basket, $currencyCode)
     {
         $this->setProductId('-1');
         if ($basket->getArticleId() > 0) {
             // If this is a product variation, we need to load the parent
             // article to fetch it's number and name.
             $article = Shopware()->Models()->find(
-                'Shopware\Models\Article\Article',
+                Article::class,
                 $basket->getArticleId()
             );
             if (!empty($article)) {
                 $detailNumber = Shopware()
                     ->Models()
-                    ->getRepository(\Shopware\Models\Article\Detail::class)
+                    ->getRepository(Detail::class)
                     ->findOneBy(array('number' => $basket->getOrderNumber()));
                 if (!empty($detailNumber)) {
                     $this->setProductId($detailNumber->getNumber());
@@ -85,20 +94,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
 
         $this->setName($basket->getArticleName());
         $this->setQuantity((int)$basket->getQuantity());
-        $this->setPrice(floatval(NostoPriceHelper::format($basket->getPrice())));
+        $this->setPrice((float)NostoPriceHelper::format($basket->getPrice()));
         $this->setPriceCurrencyCode(strtoupper($currencyCode));
 
         $articleDetail = Shopware()
             ->Models()
-            ->getRepository('Shopware\Models\Article\Detail')
+            ->getRepository(Detail::class)
             ->findOneBy(array('articleId' => $basket->getArticleId()));
-
+        /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()
             ->Plugins()
             ->Frontend()
             ->NostoTagging()
             ->Config()
-            ->get(Shopware_Plugins_Frontend_NostoTagging_Bootstrap::CONFIG_SKU_TAGGING);
+            ->get(Bootstrap::CONFIG_SKU_TAGGING);
         if ($skuTaggingAllowed && !empty($articleDetail)) {
             $this->setSkuId($articleDetail->getId());
         }
@@ -108,7 +117,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
             array(
                 'nostoCartLineItem' => $this,
                 'basket' => $basket,
-                'currency' => $currencyCode,
+                'currency' => $currencyCode
             )
         );
     }

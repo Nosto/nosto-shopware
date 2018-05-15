@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
 use Nosto\Types\IframeInterface as NostoAccountMetaDataIframeInterface;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Shop\Locale;
 
 /**
  * Meta-data class for information included in the plugin configuration iframe.
@@ -111,22 +113,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
     /**
      * Loads the iframe data from the shop model.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
+     * @param Shop $shop the shop model.
+     * @param Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
      * @suppress PhanDeprecatedFunction
      */
     public function loadData(
-        \Shopware\Models\Shop\Shop $shop,
-        \Shopware\Models\Shop\Locale $locale = null,
+        Shop $shop,
+        Locale $locale = null,
         $identity = null
     ) {
-        if (is_null($locale)) {
+        if ($locale === null) {
             $locale = $shop->getLocale();
         }
-        /** @var Shopware_Plugins_Frontend_NostoTagging_Bootstrap $plugin */
+        /** @noinspection PhpUndefinedMethodInspection */
         $plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
-        if (!is_null($identity)) {
+        if ($identity !== null) {
             list($firstName, $lastName) = explode(' ', $identity->name);
             $this->firstName = $firstName;
             $this->lastName = $lastName;
@@ -134,12 +136,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
         }
         $this->languageIsoCode = strtolower(substr($locale->getLocale(), 0, 2));
         $this->languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->uniqueId = $plugin->getUniqueId();
         $this->previewUrlProduct = NostoComponentUrl::getProductPagePreviewUrl($shop);
         $this->previewUrlCategory = NostoComponentUrl::getCategoryPagePreviewUrl($shop);
         $this->previewUrlSearch = NostoComponentUrl::getSearchPagePreviewUrl($shop);
         $this->previewUrlCart = NostoComponentUrl::getCartPagePreviewUrl($shop);
         $this->previewUrlFront = NostoComponentUrl::getFrontPagePreviewUrl($shop);
+        /** @noinspection PhpDeprecationInspection */
         $this->shopName = Shopware()->App() . ' - ' . $shop->getName();
     }
 
@@ -222,6 +226,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
      */
     public function getVersionPlatform()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         return Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion();
     }
 
@@ -232,6 +237,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
      */
     public function getVersionModule()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         return Shopware()->Plugins()->Frontend()->NostoTagging()->getVersion();
     }
 

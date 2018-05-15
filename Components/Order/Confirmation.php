@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
-use Nosto\NostoException;
+use Shopware\Models\Attribute\Order as OrderAttribute;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
+use Shopware\Models\Order\Order as OrderModel;
 
 /**
  * Order confirmation component. Used to send order information to Nosto.
@@ -49,17 +51,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
     /**
      * Sends an order confirmation API call to Nosto for an order.
      *
-     * @param Shopware\Models\Order\Order $order the order model.
+     * @param OrderModel $order the order model.
      *
-     * @throws Enlight_Event_Exception
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     * @throws \Nosto\NostoException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
      * @suppress PhanUndeclaredMethod
      */
-    public function sendOrder(Shopware\Models\Order\Order $order)
+    public function sendOrder(OrderModel $order)
     {
         try {
             $shop = Shopware()->Shop();
@@ -67,32 +64,34 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
             // Shopware throws an exception if service does not exist.
             // This would be the case when using Shopware API or cli
             $shop = $order->getShop();
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
-
-        if (is_null($shop)) {
+        if ($shop === null) {
             return;
         }
         $account = NostoComponentAccount::findAccount($shop);
-        if (!is_null($account)) {
+        if ($account !== null) {
             $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
             if ($nostoAccount->isConnectedToNosto()) {
+                /** @noinspection BadExceptionsProcessingInspection */
                 try {
                     $attribute = Shopware()
                         ->Models()
-                        ->getRepository('Shopware\Models\Attribute\Order')
+                        ->getRepository(OrderAttribute::class)
                         ->findOneBy(array('orderId' => $order->getId()));
-                    if ($attribute instanceof \Shopware\Models\Attribute\Order
+                    $customerId = null;
+                    if ($attribute instanceof OrderAttribute
                         && method_exists($attribute, 'getNostoCustomerId')
                     ) {
-                        $customerId = $attribute->getNostoCustomerID();
-                    } else {
-                        $customerId = null;
+                        $customerId = $attribute->getNostoCustomerId();
                     }
-                    $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order();
+                    $model = new NostoOrderModel();
                     $model->loadData($order);
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }

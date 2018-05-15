@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Category\Category;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Url component. Used as a helper to manage url creation inside Shopware.
@@ -44,26 +48,17 @@ use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Url
 {
-    /*
-     * Constructor
-     *
-     * @deprecated since version 1.1.9, to be removed in 1.2 - Use static methods directly
-     */
-    public function __construct()
-    {
-    }
-
     /**
      * Returns a product page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return null|string the url.
      */
-    public static function getProductPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getProductPagePreviewUrl(Shop $shop)
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('articles.id'))
-            ->from('\Shopware\Models\Article\Article', 'articles')
+            ->from(Article::class, 'articles')
             ->where('articles.active = 1')
             ->setFirstResult(0)
             ->setMaxResults(1)
@@ -76,7 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             array(
                 'module' => 'frontend',
                 'controller' => 'detail',
-                'sArticle' => $result[0]['id'],
+                'sArticle' => $result[0]['id']
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
@@ -87,15 +82,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
      *
      * These params are `__shop` and `nostodebug`.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @param string $url the url.
      * @param array $params (optional) additional params to add to the url.
      * @return string the url with added params.
      */
     protected static function addPreviewUrlQueryParams(
-        \Shopware\Models\Shop\Shop $shop,
+        Shop $shop,
         $url,
-        $params = array()
+        array $params = array()
     ) {
         $defaults = array(
             '__shop' => $shop->getId(),
@@ -108,20 +103,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns a category page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return null|string the url.
      */
-    public static function getCategoryPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getCategoryPagePreviewUrl(Shop $shop)
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('categories.id'))
-            ->from('Shopware\Models\Category\Category', 'categories')
+            ->from(Category::class, 'categories')
             ->where('categories.active = 1 AND categories.parent = :parentId AND categories.blog = 0')
             ->setParameter(':parentId', $shop->getCategory()->getId())
             ->setFirstResult(0)
             ->setMaxResults(1)
             ->getQuery()
-            ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
         if (empty($result)) {
             return null;
         }
@@ -129,7 +124,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             array(
                 'module' => 'frontend',
                 'controller' => 'cat',
-                'sCategory' => $result[0]['id'],
+                'sCategory' => $result[0]['id']
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
@@ -138,16 +133,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns the shopping cart preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return string the url.
      */
-    public static function getCartPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getCartPagePreviewUrl(Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(
                 'module' => 'frontend',
                 'controller' => 'checkout',
-                'action' => 'cart',
+                'action' => 'cart'
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
@@ -156,15 +151,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns the search page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return string the url.
      */
-    public static function getSearchPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getSearchPagePreviewUrl(Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(
                 'module' => 'frontend',
-                'controller' => 'search',
+                'controller' => 'search'
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url, array('sSearch' => 'nosto'));
@@ -173,14 +168,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Returns the front page preview url in the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return string the url.
      */
-    public static function getFrontPagePreviewUrl(\Shopware\Models\Shop\Shop $shop)
+    public static function getFrontPagePreviewUrl(Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(
             array(
-                'module' => 'frontend',
+                'module' => 'frontend'
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);

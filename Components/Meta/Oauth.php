@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Nosto\Types\OAuthInterface as NostoOAuthClientMetaDataInterface;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Request\Api\Token as NostoApiToken;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Shop\Locale;
 
 /**
  * Meta-data class for handling OAuth 2 requests during account connect.
@@ -62,14 +65,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
     /**
      * Loads the oauth meta data from the shop model.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale model or null.
+     * @param Shop $shop the shop model.
+     * @param Locale|null $locale the locale model or null.
      */
     public function loadData(
-        \Shopware\Models\Shop\Shop $shop,
-        \Shopware\Models\Shop\Locale $locale = null
+        Shop $shop,
+        Locale $locale = null
     ) {
-        if (is_null($locale)) {
+        if ($locale === null) {
             $locale = $shop->getLocale();
         }
 
@@ -98,7 +101,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
      */
     public function getClientId()
     {
-        return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
+        return NostoBootstrap::PLATFORM_NAME;
     }
 
     /**
@@ -109,7 +112,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth
      */
     public function getClientSecret()
     {
-        return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
+        return NostoBootstrap::PLATFORM_NAME;
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
@@ -39,21 +39,14 @@ use Shopware\Models\Article\Detail;
 use Nosto\Object\Product\Sku as NostoSku;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as Image;
 
+/**
+ * Class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku
+ */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoSku
 {
-    /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
-     */
-    private $customFieldsHelper;
-
-    /**
-     * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku constructor.
-     */
-    public function __construct()
-    {
-        $this->customFieldsHelper = new CustomFieldsHelper();
-    }
 
     /**
      * Loads the SKU Information
@@ -63,12 +56,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     public function loadData(Detail $detail, Shop $shop = null)
     {
-        if (is_null($shop)) {
+        if ($shop === null) {
             $shop = Shopware()->Shop();
         }
 
         $this->setUrl(
-            Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product::assembleProductUrl(
+            Product::assembleProductUrl(
                 $detail->getArticle(),
                 $shop,
                 $detail
@@ -77,7 +70,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         $this->setId($detail->getNumber());
         $this->setName($detail->getArticle()->getName());
         $this->setImageUrl(
-            Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image::getDetailImageUrl($detail)
+            Image::getDetailImageUrl($detail)
         );
         $this->setPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,
@@ -103,10 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function isDetailAvailable(Detail $detail)
     {
-        if ($detail->getInStock() > 0) {
-            return true;
-        }
-        return false;
+        return $detail->getInStock() > 0 && $detail->getArticle()->getActive();
     }
 
     /**
@@ -116,7 +106,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function amendDetailSettingsCustomFields(Detail $detail)
     {
-        $settingsCustomFields = $this->customFieldsHelper->getDetailSettingsCustomFields($detail);
+        $settingsCustomFields = CustomFieldsHelper::getDetailSettingsCustomFields($detail);
         if (!empty($settingsCustomFields)) {
             foreach ($settingsCustomFields as $key => $customField) {
                 $this->addCustomField($key, $customField);
@@ -131,7 +121,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function amendDetailFreeTextCustomFields(Detail $detail)
     {
-        $freeTextsFields = $this->customFieldsHelper->getFreeTextCustomFields($detail);
+        $freeTextsFields = CustomFieldsHelper::getFreeTextCustomFields($detail);
         if (!empty($freeTextsFields)) {
             foreach ($freeTextsFields as $key => $customField) {
                 $this->addCustomField($key, $customField);
