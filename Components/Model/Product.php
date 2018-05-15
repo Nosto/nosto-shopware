@@ -391,13 +391,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      */
     protected function checkAvailability(Article $article)
     {
+        if (!$article->getActive()) {
+            return self::OUT_OF_STOCK;
+        }
         /** @var Detail[] $details */
         $details = Shopware()
             ->Models()
             ->getRepository(Detail::class)
             ->findBy(array('articleId' => $article->getId()));
         foreach ($details as $detail) {
-            if ($detail->getInStock() > 0) {
+            if ($detail->getInStock() > 0 && $detail->getActive()) {
                 return self::IN_STOCK;
             }
         }

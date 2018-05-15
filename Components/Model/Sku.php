@@ -96,7 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      */
     protected function isDetailAvailable(Detail $detail)
     {
-        return $detail->getInStock() > 0;
+        return $detail->getInStock() > 0 && $detail->getArticle()->getActive();
     }
 
     /**
