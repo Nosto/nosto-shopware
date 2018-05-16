@@ -64,21 +64,11 @@
             {/literal}
             Nosto.addProductToCart = function (productId, element) {
                 Nosto.trackAddToCartClick(productId, element);
-                var fields = {
-                    'sActionIdentifier': '{$sUniqueRand}',
-                    'sAdd': productId,
-                    'sQuantity': 1
-                };
-                Nosto.postAddToCartForm(fields);
+                Nosto.postAddToCartForm(productId);
             };
             Nosto.addSkuToCart = function (product, element) {
                 Nosto.trackAddToCartClick(product.productId, element);
-                var fields = {
-                    'sActionIdentifier': '{$sUniqueRand}',
-                    'sAdd': product.skuId,
-                    'sQuantity': 1
-                };
-                Nosto.postAddToCartForm(fields);
+                Nosto.postAddToCartForm(product.skuId);
             };
             Nosto.trackAddToCartClick = function (productId, element) {
                 if (typeof nostojs !== 'undefined' && typeof element === 'object') {
@@ -90,10 +80,15 @@
                     }
                 }
             };
-            Nosto.postAddToCartForm = function (fields) {
+            Nosto.postAddToCartForm = function (productId) {
                 var form = document.createElement('form');
                 form.setAttribute('method', 'post');
                 form.setAttribute('action', '{url controller=checkout action=addArticle}');
+                var fields = {
+                    'sActionIdentifier': '{$sUniqueRand}',
+                    'sAdd': productId,
+                    'sQuantity': 1
+                };
                 for (var key in fields) {
                     if (fields.hasOwnProperty(key)) {
                         var hiddenField = document.createElement('input');
