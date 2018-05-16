@@ -58,35 +58,48 @@
         <script type="text/javascript">
             //<![CDATA[
             {literal}
-            if (typeof Nosto === "undefined") {
+            if (typeof Nosto === 'undefined') {
                 var Nosto = {};
             }
             {/literal}
-            Nosto.addProductToCart = function (productNumber, element) {
+            Nosto.addProductToCart = function (productId, element) {
+                Nosto.trackAddToCartClick(productId, element);
+                var fields = {
+                    'sActionIdentifier': '{$sUniqueRand}',
+                    'sAdd': productId,
+                    'sQuantity': 1
+                };
+                Nosto.postAddToCartForm(fields);
+            };
+            Nosto.addSkuToCart = function (product, element) {
+                Nosto.trackAddToCartClick(product.productId, element);
+                var fields = {
+                    'sActionIdentifier': '{$sUniqueRand}',
+                    'sAdd': product.skuId,
+                    'sQuantity': 1
+                };
+                Nosto.postAddToCartForm(fields);
+            };
+            Nosto.trackAddToCartClick = function (productId, element) {
                 if (typeof nostojs !== 'undefined' && typeof element === 'object') {
                     var slotId = Nosto.resolveContextSlotId(element);
                     if (slotId) {
                         nostojs(function (api) {
-                            api.recommendedProductAddedToCart(productNumber, slotId);
+                            api.recommendedProductAddedToCart(productId, slotId);
                         });
                     }
                 }
-                var form = document.createElement("form");
-                form.setAttribute("method", "post");
-                form.setAttribute("action", "{url controller=checkout action=addArticle}");
-
-                var hiddenFields = {
-                    "sActionIdentifier": "{$sUniqueRand}",
-                    "sAdd": productNumber,
-                    "sQuantity": 1
-                };
-
-                for (var key in hiddenFields) {
-                    if (hiddenFields.hasOwnProperty(key)) {
-                        var hiddenField = document.createElement("input");
-                        hiddenField.setAttribute("type", "hidden");
-                        hiddenField.setAttribute("name", key);
-                        hiddenField.setAttribute("value", hiddenFields[key]);
+            };
+            Nosto.postAddToCartForm = function (fields) {
+                var form = document.createElement('form');
+                form.setAttribute('method', 'post');
+                form.setAttribute('action', '{url controller=checkout action=addArticle}');
+                for (var key in fields) {
+                    if (fields.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement('input');
+                        hiddenField.setAttribute('type', 'hidden');
+                        hiddenField.setAttribute('name', key);
+                        hiddenField.setAttribute('value', fields[key]);
                         form.appendChild(hiddenField);
                     }
                 }
@@ -100,7 +113,7 @@
                 var m = 20;
                 var n = 0;
                 var e = element;
-                while (typeof e.parentElement !== "undefined" && e.parentElement) {
+                while (typeof e.parentElement !== 'undefined' && e.parentElement) {
                     ++n;
                     e = e.parentElement;
                     // noinspection EqualityComparisonWithCoercionJS
