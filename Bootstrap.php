@@ -1231,8 +1231,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         $nostoSearch = new NostoSearchModel();
         $nostoSearch->setSearchTerm(Shopware()->Front()->Request()->getParam('sSearch'));
-
-        $view->assign('nostoSearch', $nostoSearch);
+        // Add Category HTML Tagging to Page
+        $view->extendsBlock(
+            'frontend_index_content',
+            $nostoSearch->getAbstractObject()->toHtml(),
+            'append'
+        );
         $this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
     }
 
