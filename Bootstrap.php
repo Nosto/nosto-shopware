@@ -65,6 +65,7 @@ use Shopware\Components\CacheManager;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
+use Nosto\Object\MarkupableString;
 use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
 use Doctrine\ORM\ORMException;
@@ -974,7 +975,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function addPageTypeTagging(Enlight_View_Default $view, $pageType)
     {
-        $view->assign('nostoPageType', $pageType);
+        $pageTypeMarkup = new MarkupableString(
+            $pageType,
+            'nosto_page_type'
+        );
+        $view->extendsBlock(
+            'frontend_index_content',
+            $pageTypeMarkup->toHtml(),
+            'append'
+        );
     }
 
     /**

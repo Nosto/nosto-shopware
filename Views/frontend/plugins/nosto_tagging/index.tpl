@@ -126,10 +126,3 @@
         </script>
     {/if}
 {/block}
-{block name="frontend_index_content" append}
-    {if isset($nostoPageType) && is_string($nostoPageType)}
-        <div class="nosto_page_type"
-             style="display:none">{$nostoPageType|escape:'htmlall':'UTF-8'}</div>
-    {/if}
-
-{/block}
