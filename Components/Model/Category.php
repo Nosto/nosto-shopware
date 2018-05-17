@@ -129,7 +129,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      *
      * @return MarkupableString
      */
-    public function getAbstractObject()
+    public function getMarkupableObject()
     {
         return new MarkupableString(
             $this->getCategoryPath(),

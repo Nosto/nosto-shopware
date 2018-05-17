@@ -970,7 +970,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             'nosto_page_type'
         );
         $this->appendHtmlToView($view, $pageTypeMarkup->toHtml());
-
     }
 
     /**
@@ -1036,7 +1035,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $nostoCategory->loadData($category);
             $this->appendHtmlToView(
                 $view,
-                $nostoCategory->getAbstractObject()->toHtml()
+                $nostoCategory->getMarkupableObject()->toHtml()
             );
         }
         $this->addPageTypeTagging($view, self::PAGE_TYPE_PRODUCT);
@@ -1095,7 +1094,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         }
         $nostoCategory = new NostoCategoryModel();
         $nostoCategory->loadData($category);
-        $this->appendHtmlToView($view, $nostoCategory->getAbstractObject()->toHtml());
+        $this->appendHtmlToView($view, $nostoCategory->getMarkupableObject()->toHtml());
         $this->addPageTypeTagging($view, self::PAGE_TYPE_CATEGORY);
     }
 
@@ -1215,7 +1214,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         $nostoSearch = new NostoSearchModel();
         $nostoSearch->setSearchTerm(Shopware()->Front()->Request()->getParam('sSearch'));
-        $this->appendHtmlToView($view, $nostoSearch->getAbstractObject()->toHtml());
+        $this->appendHtmlToView($view, $nostoSearch->getMarkupableObject()->toHtml());
         $this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
     }
 
