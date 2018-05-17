@@ -865,7 +865,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if ($customerDataAllowed && $customer instanceof CustomerModel) {
             $nostoCustomer = new NostoCustomerModel();
             $nostoCustomer->loadData($customer);
-            $view->assign('nostoCustomer', $nostoCustomer);
+            // Add Customer HTML Tagging to Page
+            $view->extendsBlock(
+                'frontend_index_content',
+                $nostoCustomer->toHtml(),
+                'append'
+            );
         }
     }
 
@@ -893,8 +898,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
         $nostoCart = new NostoCartModel();
         $nostoCart->loadData($baskets);
-
-        $view->assign('nostoCart', $nostoCart);
+        // Add Cart HTML Tagging to Page
+        $view->extendsBlock(
+            'frontend_index_content',
+            $nostoCart->toHtml(),
+            'append'
+        );
     }
 
     /**
