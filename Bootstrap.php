@@ -1106,7 +1106,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         }
         $nostoCategory = new NostoCategoryModel();
         $nostoCategory->loadData($category);
-        $view->assign('nostoCategory', $nostoCategory);
+        // Add Category HTML Tagging to Page
+        $view->extendsBlock(
+            'frontend_index_content',
+            $nostoCategory->getAbstractObject()->toHtml(),
+            'append'
+        );
         $this->addPageTypeTagging($view, self::PAGE_TYPE_CATEGORY);
     }
 
