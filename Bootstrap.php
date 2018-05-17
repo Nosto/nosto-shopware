@@ -1188,8 +1188,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
         $nostoOrder = new NostoOrderModel();
         $nostoOrder->loadData($order);
-
-        $view->assign('nostoOrder', $nostoOrder);
+        // Add Order HTML Tagging to Page
+        $view->extendsBlock(
+            'frontend_index_content',
+            $nostoOrder->toHtml(),
+            'append'
+        );
     }
 
     /**
