@@ -34,6 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Object\MarkupableString;
+
 /**
  * Model for search term information. This is used when compiling the info about
  * a used search term that is sent to Nosto.
@@ -69,5 +71,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search
     public function setSearchTerm($term)
     {
         $this->searchTerm = $term;
+    }
+
+    /**
+     * Returns the HTML to render Search Terms
+     *
+     * @return MarkupableString
+     */
+    public function getMarkupableObject()
+    {
+        return new MarkupableString(
+            $this->getSearchTerm(),
+            'nosto_search_term'
+        );
     }
 }

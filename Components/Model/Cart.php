@@ -34,7 +34,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\Object\Cart\Cart;
 use Shopware\Models\Order\Basket;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem as CartLineItem;
 
 /**
@@ -47,13 +49,8 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem as Car
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    extends Cart
 {
-    /**
-     * @var CartLineItem[] line items in the cart.
-     */
-    protected $lineItems = array();
-
     /**
      * Loads the cart line items from the order baskets.
      *
@@ -66,8 +63,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
             foreach ($baskets as $basket) {
                 $item = new CartLineItem();
                 $item->loadData($basket, $currency);
-                $this->lineItems[] = $item;
+                $this->addItem($item);
             }
+            $this->setHcid(NostoComponentCustomer::getHcid());
             Shopware()->Events()->notify(
                 __CLASS__ . '_AfterLoad',
                 array(
@@ -80,32 +78,5 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
         }
-    }
-
-    /**
-     * @return CartLineItem[] the line items in the cart.
-     */
-    public function getLineItems()
-    {
-        return $this->lineItems;
-    }
-
-    /**
-     * Sets the line items for the basket.
-     *
-     * The line items must be an array of CartLineItem
-     *
-     * Usage:
-     * $object->setLineItems([new CartLineItem(), ...]);
-     *
-     * @param CartLineItem[] $lineItems the line items.
-     *
-     * @return $this Self for chaining
-     */
-    public function setLineItems($lineItems)
-    {
-        $this->lineItems = $lineItems;
-
-        return $this;
     }
 }

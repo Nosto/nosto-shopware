@@ -65,6 +65,7 @@ use Shopware\Components\CacheManager;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
+use Nosto\Object\MarkupableString;
 use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
 use Doctrine\ORM\ORMException;
@@ -865,7 +866,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if ($customerDataAllowed && $customer instanceof CustomerModel) {
             $nostoCustomer = new NostoCustomerModel();
             $nostoCustomer->loadData($customer);
-            $view->assign('nostoCustomer', $nostoCustomer);
+            $this->appendHtmlToView($view, $nostoCustomer->toHtml());
         }
     }
 
@@ -893,8 +894,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
         $nostoCart = new NostoCartModel();
         $nostoCart->loadData($baskets);
-
-        $view->assign('nostoCart', $nostoCart);
+        $this->appendHtmlToView($view, $nostoCart->toHtml());
     }
 
     /**
@@ -965,7 +965,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function addPageTypeTagging(Enlight_View_Default $view, $pageType)
     {
-        $view->assign('nostoPageType', $pageType);
+        $pageTypeMarkup = new MarkupableString(
+            $pageType,
+            'nosto_page_type'
+        );
+        $this->appendHtmlToView($view, $pageTypeMarkup->toHtml());
     }
 
     /**
@@ -1016,12 +1020,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if (!($article instanceof Article)) {
             return;
         }
-
         $nostoProduct = new NostoProductModel();
         $nostoProduct->loadData($article);
-
-        $view->assign('nostoProduct', $nostoProduct);
-
+        // Add Product HTML Tagging to Page
+        $this->appendHtmlToView($view, $nostoProduct->toHtml());
         /** @var Shopware\Models\Category\Category $category */
         $categoryId = (int)Shopware()->Front()->Request()->getParam('sCategory');
         $category = Shopware()->Models()->find(
@@ -1031,7 +1033,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if (!is_null($category)) {
             $nostoCategory = new NostoCategoryModel();
             $nostoCategory->loadData($category);
-            $view->assign('nostoCategory', $nostoCategory);
+            $this->appendHtmlToView(
+                $view,
+                $nostoCategory->getMarkupableObject()->toHtml()
+            );
         }
         $this->addPageTypeTagging($view, self::PAGE_TYPE_PRODUCT);
     }
@@ -1089,7 +1094,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         }
         $nostoCategory = new NostoCategoryModel();
         $nostoCategory->loadData($category);
-        $view->assign('nostoCategory', $nostoCategory);
+        $this->appendHtmlToView($view, $nostoCategory->getMarkupableObject()->toHtml());
         $this->addPageTypeTagging($view, self::PAGE_TYPE_CATEGORY);
     }
 
@@ -1171,8 +1176,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
         $nostoOrder = new NostoOrderModel();
         $nostoOrder->loadData($order);
-
-        $view->assign('nostoOrder', $nostoOrder);
+        $this->appendHtmlToView($view, $nostoOrder->toHtml());
     }
 
     /**
@@ -1210,8 +1214,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         $nostoSearch = new NostoSearchModel();
         $nostoSearch->setSearchTerm(Shopware()->Front()->Request()->getParam('sSearch'));
-
-        $view->assign('nostoSearch', $nostoSearch);
+        $this->appendHtmlToView($view, $nostoSearch->getMarkupableObject()->toHtml());
         $this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
     }
 
@@ -1425,5 +1428,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     public function getLogger()
     {
         return Shopware()->Container()->get('pluginlogger');
+    }
+
+    /**
+     * Add HTML Tagging to Page
+     *
+     * @param Enlight_View_Default $view
+     * @param $html
+     */
+    private function appendHtmlToView(Enlight_View_Default $view, $html)
+    {
+        $view->extendsBlock(
+            'frontend_index_content',
+            $html,
+            Enlight_Template_Default::BLOCK_APPEND
+        );
     }
 }

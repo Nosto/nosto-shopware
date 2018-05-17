@@ -35,6 +35,7 @@
  */
 
 use Shopware\Models\Category\Category;
+use Nosto\Object\MarkupableString;
 
 /**
  * Model for product category information. This is used when compiling the info
@@ -121,5 +122,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
         $this->categoryPath = $categoryPath;
 
         return $this;
+    }
+
+    /**
+     * Returns the HTML to render categories
+     *
+     * @return MarkupableString
+     */
+    public function getMarkupableObject()
+    {
+        return new MarkupableString(
+            $this->getCategoryPath(),
+            'nosto_category'
+        );
     }
 }
