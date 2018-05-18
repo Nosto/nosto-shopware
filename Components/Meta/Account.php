@@ -35,8 +35,8 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner as NostoAccountOwner;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing as NostoAccountBilling;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Object\Signup\Billing;
 use Nosto\Object\Signup\Signup;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Shop\Locale;
@@ -86,7 +86,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     protected $owner;
 
     /**
-     * @var NostoAccountBilling the billing meta model.
+     * @var Billing the billing meta model.
      */
     protected $billing;
 
@@ -126,8 +126,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         $this->ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
         $this->owner = new NostoAccountOwner();
         $this->owner->loadData($identity);
-        $this->billing = new NostoAccountBilling();
-        $this->billing->loadData($shop);
+        $this->billing = new Billing();
+        $this->billing->setCountry(strtoupper(substr($shop->getLocale()->getLocale(), 3)));
     }
 
     /**
@@ -309,7 +309,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     /**
      * Meta data model for the account billing details.
      *
-     * @return NostoAccountBilling the meta data model.
+     * @return Billing the meta data model.
      */
     public function getBillingDetails()
     {
