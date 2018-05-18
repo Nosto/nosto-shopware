@@ -35,81 +35,20 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
-use Nosto\Types\IframeInterface as NostoAccountMetaDataIframeInterface;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Shop\Locale;
+use Nosto\Object\Iframe as Iframe;
 
 /**
  * Meta-data class for information included in the plugin configuration iframe.
- *
- * Implements NostoAccountMetaDataIframeInterface.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
-    implements NostoAccountMetaDataIframeInterface
+    extends Iframe
 {
-    /**
-     * @var string the admin user first name.
-     */
-    protected $firstName;
-
-    /**
-     * @var string the admin user last name.
-     */
-    protected $lastName;
-
-    /**
-     * @var string the admin user email address.
-     */
-    protected $email;
-
-    /**
-     * @var string the language ISO (ISO 639-1) code for oauth server locale.
-     */
-    protected $languageIsoCode = 'en';
-
-    /**
-     * @var string the language ISO (ISO 639-1) for the store view scope.
-     */
-    protected $languageIsoCodeShop = 'en';
-
-    /**
-     * @var string unique ID that identifies the Shopware installation.
-     */
-    protected $uniqueId;
-
-    /**
-     * @var string preview url for the product page in the active store scope.
-     */
-    protected $previewUrlProduct;
-
-    /**
-     * @var string preview url for the category page in the active store scope.
-     */
-    protected $previewUrlCategory;
-
-    /**
-     * @var string preview url for the search page in the active store scope.
-     */
-    protected $previewUrlSearch;
-
-    /**
-     * @var string preview url for the cart page in the active store scope.
-     */
-    protected $previewUrlCart;
-
-    /**
-     * @var string preview url for the front page in the active store scope.
-     */
-    protected $previewUrlFront;
-
-    /**
-     * @var string the name of the store Nosto is installed in or about to be installed.
-     */
-    protected $shopName;
-
     /**
      * Loads the iframe data from the shop model.
      *
@@ -127,197 +66,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
             $locale = $shop->getLocale();
         }
         /** @noinspection PhpUndefinedMethodInspection */
-        $plugin = Shopware()->Plugins()->Frontend()->NostoTagging();
         if ($identity !== null) {
             list($firstName, $lastName) = explode(' ', $identity->name);
-            $this->firstName = $firstName;
-            $this->lastName = $lastName;
-            $this->email = $identity->email;
+            $this->setFirstName($firstName);
+            $this->setLastName($lastName);
+            $this->setEmail($identity->email);
         }
-        $this->languageIsoCode = strtolower(substr($locale->getLocale(), 0, 2));
-        $this->languageIsoCodeShop = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
+        $this->setLanguageIsoCode(strtolower(substr($locale->getLocale(), 0, 2)));
+        $this->setLanguageIsoCodeShop(strtolower(substr($shop->getLocale()->getLocale(), 0, 2)));
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->uniqueId = $plugin->getUniqueId();
-        $this->previewUrlProduct = NostoComponentUrl::getProductPagePreviewUrl($shop);
-        $this->previewUrlCategory = NostoComponentUrl::getCategoryPagePreviewUrl($shop);
-        $this->previewUrlSearch = NostoComponentUrl::getSearchPagePreviewUrl($shop);
-        $this->previewUrlCart = NostoComponentUrl::getCartPagePreviewUrl($shop);
-        $this->previewUrlFront = NostoComponentUrl::getFrontPagePreviewUrl($shop);
+        $this->setUniqueId(Shopware()->Plugins()->Frontend()->NostoTagging()->getUniqueId());
+        $this->setPreviewUrlProduct(NostoComponentUrl::getProductPagePreviewUrl($shop));
+        $this->setPreviewUrlCategory(NostoComponentUrl::getCategoryPagePreviewUrl($shop));
+        $this->setPreviewUrlSearch(NostoComponentUrl::getSearchPagePreviewUrl($shop));
+        $this->setPreviewUrlCart(NostoComponentUrl::getCartPagePreviewUrl($shop));
+        $this->setPreviewUrlFront(NostoComponentUrl::getFrontPagePreviewUrl($shop));
         /** @noinspection PhpDeprecationInspection */
-        $this->shopName = Shopware()->App() . ' - ' . $shop->getName();
-    }
-
-    /**
-     * The name of the platform the iframe is used on.
-     * A list of valid platform names is issued by Nosto.
-     *
-     * @return string the platform name.
-     */
-    public function getPlatform()
-    {
-        return Shopware_Plugins_Frontend_NostoTagging_Bootstrap::PLATFORM_NAME;
-    }
-
-    /**
-     * The first name of the user who is loading the config iframe.
-     *
-     * @return string the first name.
-     */
-    public function getFirstName()
-    {
-        return $this->firstName;
-    }
-
-    /**
-     * The last name of the user who is loading the config iframe.
-     *
-     * @return string the last name.
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * The email address of the user who is loading the config iframe.
-     *
-     * @return string the email address.
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * The 2-letter ISO code (ISO 639-1) for the language of the user who is loading the config iframe.
-     *
-     * @return string the language ISO code.
-     */
-    public function getLanguageIsoCode()
-    {
-        return $this->languageIsoCode;
-    }
-
-    /**
-     * The 2-letter ISO code (ISO 639-1) for the language of the shop the account belongs to.
-     *
-     * @return string the language ISO code.
-     */
-    public function getLanguageIsoCodeShop()
-    {
-        return $this->languageIsoCodeShop;
-    }
-
-    /**
-     * Unique identifier for the e-commerce installation.
-     * This identifier is used to link accounts together that are created on the same installation.
-     *
-     * @return string the identifier.
-     */
-    public function getUniqueId()
-    {
-        return $this->uniqueId;
-    }
-
-    /**
-     * The version number of the platform the e-commerce installation is running on.
-     *
-     * @return string the platform version.
-     */
-    public function getVersionPlatform()
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        return Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion();
-    }
-
-    /**
-     * The version number of the Nosto module/extension running on the e-commerce installation.
-     *
-     * @return string the module version.
-     */
-    public function getVersionModule()
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        return Shopware()->Plugins()->Frontend()->NostoTagging()->getVersion();
-    }
-
-    /**
-     * An absolute URL for any product page in the shop the account is linked to, with the nostodebug GET parameter
-     * enabled. e.g. http://myshop.com/products/product123?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview the recommendations on the given page.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlProduct()
-    {
-        return $this->previewUrlProduct;
-    }
-
-    /**
-     * An absolute URL for any category page in the shop the account is linked to, with the nostodebug GET parameter
-     * enabled. e.g. http://myshop.com/products/category123?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview the recommendations on the given page.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlCategory()
-    {
-        return $this->previewUrlCategory;
-    }
-
-    /**
-     * An absolute URL for the search page in the shop the account is linked to, with the nostodebug GET parameter
-     * enabled. e.g. http://myshop.com/search?query=red?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview the recommendations on the given page.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlSearch()
-    {
-        return $this->previewUrlSearch;
-    }
-
-    /**
-     * An absolute URL for the cart page in the shop the account is linked to, with the nostodebug GET parameter
-     * enabled. e.g. http://myshop.com/cart?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview the recommendations on the given page.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlCart()
-    {
-        return $this->previewUrlCart;
-    }
-
-    /**
-     * An absolute URL for the front page in the shop the account is linked to, with the nostodebug GET parameter
-     * enabled. e.g. http://shop.com?nostodebug=true
-     * This is used in the config iframe to allow the user to quickly preview the recommendations on the given page.
-     *
-     * @return string the url.
-     */
-    public function getPreviewUrlFront()
-    {
-        return $this->previewUrlFront;
-    }
-
-    /**
-     * Returns the name of the shop context where Nosto is installed or about to be installed in.
-     *
-     * @return string the name.
-     */
-    public function getShopName()
-    {
-        return $this->shopName;
-    }
-
-    /**
-     * Returns associative array with install modules.
-     *
-     * @return array array(moduleName=1, moduleName=0)
-     */
-    public function getModules()
-    {
-        return array();
+        $this->setShopName(Shopware()->App() . ' - ' . $shop->getName());
+        $this->setPlatform(NostoTaggingBootstrap::PLATFORM_NAME);
     }
 }
