@@ -39,6 +39,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelpe
 use Shopware\Models\Customer\Customer;
 use Shopware\Models\Customer\Address;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Shopware\Models\Country\Country;
 use /** @noinspection PhpDeprecationInspection */ Shopware\Models\Customer\Billing;
 
 /**
@@ -75,6 +76,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                 if ($address instanceof Address) {
                     $this->setFirstName($address->getFirstname());
                     $this->setLastName($address->getLastname());
+                    $this->setPostCode($address->getZipCode());
+                    $this->setPhone($address->getPhone());
+                    $this->setCountry($address->getCountry()->getName());
                 }
             } else {
                 /** @var Billing $address */
@@ -84,6 +88,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                 if ($address instanceof Billing) {
                     $this->setFirstName($address->getFirstName());
                     $this->setLastName($address->getLastName());
+                    $this->setPostCode($address->getZipCode());
+                    $this->setPhone($address->getPhone());
+                    try {
+                        /** @var Country $country */
+                        $country = Shopware()
+                            ->Models()
+                            ->getRepository(Country::class)
+                            ->findOneBy(array('id' => $address->getCountryId()));
+                        $this->setCountry($country->getName());
+                    } catch (\Exception $e) {
+                        /** @noinspection PhpUndefinedMethodInspection */
+                        Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+                    }
                 }
             }
             $this->setEmail($customer->getEmail());
