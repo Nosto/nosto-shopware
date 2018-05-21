@@ -128,6 +128,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendSettingsCustomFields($article);
         $this->amendFreeTextCustomFields($article);
         $this->setInventoryLevel($article->getMainDetail()->getInStock());
+        $this->setSupplierCost($article->getMainDetail()->getPurchasePrice());
+
         /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()
             ->Plugins()
