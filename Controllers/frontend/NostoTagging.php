@@ -56,6 +56,7 @@ use Shopware\Models\Shop\DetachedShop;
 use Nosto\Object\AbstractCollection;
 use Shopware\Models\Article\Article;
 use Nosto\Object\NostoOAuthToken;
+use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
 use Nosto\Helper\ExportHelper;
 use Nosto\NostoException;
@@ -351,9 +352,16 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             ]);
             return;
         }
-        $cartRestore = new CartRestore();
-        $cartRestore->restoreCart($hash, $sessionId);
-        Shopware()->Modules()->Basket()->sRefreshBasket();
+        $currentBasket = Shopware()
+            ->Models()
+            ->getRepository(Basket::class)
+            ->findOneBy(array('sessionId' => $sessionId));
+        // Only restores if user has no items in his current cart
+        if ($currentBasket === null) {
+            $cartRestore = new CartRestore();
+            $cartRestore->restoreCart($hash, $sessionId);
+            Shopware()->Modules()->Basket()->sRefreshBasket();
+        }
         $this->redirect([
             'controller' => 'checkout',
             'action' => 'index'
