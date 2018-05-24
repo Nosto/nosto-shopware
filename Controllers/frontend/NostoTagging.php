@@ -345,6 +345,10 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $hash = $this->Request()->getParam(CartRestore::CART_RESTORE_URL_PARAMETER);
         $sessionId = Shopware()->Session()->get('sessionId');
         if ($hash === null || $sessionId === null) {
+            $this->redirect([
+                'controller' => 'index',
+                'action' => 'index'
+            ]);
             return;
         }
         $cartRestore = new CartRestore();
