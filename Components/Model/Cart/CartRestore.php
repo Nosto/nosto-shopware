@@ -82,10 +82,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_CartRestore
     {
         $nostoCustomer = $this->updateNostoId();
         if ($nostoCustomer && $nostoCustomer->getRestoreCartHash()) {
-            return NostoHelperUrl::generateRestoreCartUrl(
-                Shopware()->Shop(),
-                $nostoCustomer->getRestoreCartHash()
-            );
+            $basket = Shopware()
+                ->Models()
+                ->getRepository(Basket::class)
+                ->findOneBy(array('sessionId' => $nostoCustomer->getSessionId()));
+            if ($basket !== null) {
+                return NostoHelperUrl::generateRestoreCartUrl(
+                    Shopware()->Shop(),
+                    $nostoCustomer->getRestoreCartHash()
+                );
+            }
         }
         return '-';
     }
