@@ -41,7 +41,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepos
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as ProductModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_CartRestore as CartRestore;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;

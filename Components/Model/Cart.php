@@ -38,7 +38,7 @@ use Nosto\Object\Cart\Cart;
 use Shopware\Models\Order\Basket;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem as CartLineItem;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_CartRestore as CartRestore;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
 
 /**
  * Model for shopping cart information. This is used when compiling the info

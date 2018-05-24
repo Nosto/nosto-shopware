@@ -45,7 +45,7 @@ use Shopware\Models\Order\Basket;
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_CartRestore
+class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
 {
     const CART_RESTORE_URL_PARAMETER = 'h';
 
