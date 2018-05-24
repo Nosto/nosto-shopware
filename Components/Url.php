@@ -201,6 +201,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             CartRestore::CART_RESTORE_URL_PARAMETER => $hash,
             '__shop' => $shop->getId(),
         );
-       return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
+        return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
     }
 }

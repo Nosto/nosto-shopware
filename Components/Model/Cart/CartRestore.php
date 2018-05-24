@@ -37,7 +37,6 @@
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoCustomerComponent;
 use Shopware\CustomModels\Nosto\Customer\Customer as CustomerModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoHelperUrl;
-use Shopware\Models\Shop\Shop;
 use Doctrine\ORM\OptimisticLockException;
 use Shopware\Models\Order\Basket;
 
@@ -99,7 +98,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_CartRestore
      */
     public function generateRestoreCartHash()
     {
-        $hash = hash(NostoCustomerComponent::VISITOR_HASH_ALGO, uniqid('nostocartrestore'));
+        $hash = hash(NostoCustomerComponent::VISITOR_HASH_ALGO, uniqid('nostocartrestore', true));
         if (strlen($hash) > CustomerModel::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH) {
             $hash = substr($hash, 0, CustomerModel::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH);
         }
@@ -127,7 +126,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_CartRestore
                 Shopware()->Models()->persist($basketItem);
                 Shopware()->Models()->flush($basketItem);
             }
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             return false;
@@ -161,7 +160,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_CartRestore
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
             }
         } else {
-            try{
+            try {
                 $nostoCustomer = new CustomerModel();
                 $nostoCustomer->setSessionId($this->getSessionId());
                 $nostoCustomer->setNostoId($nostoCustomerId);
