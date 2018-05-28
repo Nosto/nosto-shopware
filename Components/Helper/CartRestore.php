@@ -59,8 +59,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
             ->Models()
             ->getRepository(CustomerModel::class)
             ->findOneBy(array('restoreCartHash' => $hash));
-
-        $this->updateBasket($nostoCustomer->getSessionId(), $currentSessionId);
+        if ($nostoCustomer !== null) {
+            $this->updateBasket($nostoCustomer->getSessionId(), $currentSessionId);
+        }
     }
 
     /**
@@ -132,12 +133,34 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
                 Shopware()->Models()->persist($basketItem);
                 Shopware()->Models()->flush($basketItem);
             }
+            $this->updateNostoCustomerCartHash($sessionId, $newSessionId);
         } catch (\Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             return false;
         }
         return true;
+    }
+
+    /**
+     * Used to keep the restore to cart link valid even after being clicked
+     *
+     * @param $sessionId
+     * @param $newSessionId
+     * @throws OptimisticLockException
+     */
+    private function updateNostoCustomerCartHash($sessionId, $newSessionId)
+    {
+        /** @var $nostoCustomer CustomerModel */
+        $nostoCustomer = Shopware()
+            ->Models()
+            ->getRepository(CustomerModel::class)
+            ->findOneBy(array('sessionId' => $sessionId));
+        if ($nostoCustomer !== null) {
+            $nostoCustomer->setSessionId($newSessionId);
+            Shopware()->Models()->persist($nostoCustomer);
+            Shopware()->Models()->flush($nostoCustomer);
+        }
     }
 
     /**
