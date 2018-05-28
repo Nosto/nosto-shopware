@@ -866,7 +866,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if ($customerDataAllowed && $customer instanceof CustomerModel) {
             $nostoCustomer = new NostoCustomerModel();
             $nostoCustomer->loadData($customer);
-            $this->appendHtmlToView($view, $nostoCustomer->toHtml());
+            $view->assign('nostoCustomer', $nostoCustomer);
         }
     }
 
