@@ -894,7 +894,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
         $nostoCart = new NostoCartModel();
         $nostoCart->loadData($baskets);
-        $this->appendHtmlToView($view, $nostoCart->toHtml());
+        $view->assign('nostoCart', $nostoCart);
     }
 
     /**
