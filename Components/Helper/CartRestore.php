@@ -76,7 +76,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
     /**
      * Updates the sessions return a unique URL for the current cart
      *
-     * @return string
+     * @return null|string
      * @throws OptimisticLockException
      */
     public function generateRestoreToCartLink()
@@ -94,7 +94,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
                 );
             }
         }
-        return '-';
+        return null;
     }
 
     /**
