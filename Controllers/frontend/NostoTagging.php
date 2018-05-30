@@ -41,6 +41,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository as OrderRepos
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as ProductModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
@@ -55,6 +56,7 @@ use Shopware\Models\Shop\DetachedShop;
 use Nosto\Object\AbstractCollection;
 use Shopware\Models\Article\Article;
 use Nosto\Object\NostoOAuthToken;
+use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
 use Nosto\Helper\ExportHelper;
 use Nosto\NostoException;
@@ -329,5 +331,40 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             throw new NostoException('Received invalid data from Nosto when trying to sync account');
         }
         return $result;
+    }
+
+    /**
+     * Restores the cart based on the given hash
+     *
+     * @throws Enlight_Event_Exception
+     * @throws Enlight_Exception
+     * @throws Zend_Db_Adapter_Exception
+     * @throws Exception
+     */
+    public function cartAction()
+    {
+        $hash = $this->Request()->getParam(CartRestore::CART_RESTORE_URL_PARAMETER);
+        $sessionId = Shopware()->Session()->get('sessionId');
+        if ($hash === null || $sessionId === null) {
+            $this->redirect([
+                'controller' => 'index',
+                'action' => 'index'
+            ]);
+            return;
+        }
+        $currentBasket = Shopware()
+            ->Models()
+            ->getRepository(Basket::class)
+            ->findOneBy(array('sessionId' => $sessionId));
+        // Only restores if user has no items in his current cart
+        if ($currentBasket === null) {
+            $cartRestore = new CartRestore();
+            $cartRestore->restoreCart($hash, $sessionId);
+            Shopware()->Modules()->Basket()->sRefreshBasket();
+        }
+        $this->redirect([
+            'controller' => 'checkout',
+            'action' => 'index'
+        ]);
     }
 }

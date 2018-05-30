@@ -47,6 +47,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Customer extends ModelEntity
 {
     /**
+     * @var int The length of the restore cart attribute
+     */
+    const NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH = 64;
+
+    /**
      * @var integer $id
      *
      * @Assert\NotBlank
@@ -74,6 +79,18 @@ class Customer extends ModelEntity
      * @ORM\Column(name="nosto_id", type="string", length=255, nullable=false)
      */
     private $nostoId; //@codingStandardsIgnoreLine
+
+    /**
+     * @var string $restoreCartHash
+     *
+     * @ORM\Column(
+     *     name="restore_cart_hash",
+     *     type="string",
+     *     length=Customer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH,
+     *     nullable=true
+     * )
+     */
+    private $restoreCartHash;
 
     /**
      * @return int
@@ -117,5 +134,21 @@ class Customer extends ModelEntity
     {
         $this->nostoId = $id;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRestoreCartHash()
+    {
+        return $this->restoreCartHash;
+    }
+
+    /**
+     * @param string $restoreCartHash
+     */
+    public function setRestoreCartHash($restoreCartHash)
+    {
+        $this->restoreCartHash = $restoreCartHash;
     }
 }

@@ -39,6 +39,7 @@ use Shopware\Models\Article\Article;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Category\Category;
 use Doctrine\ORM\AbstractQuery;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
 
 /**
  * Url component. Used as a helper to manage url creation inside Shopware.
@@ -179,5 +180,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             )
         );
         return self::addPreviewUrlQueryParams($shop, $url);
+    }
+
+    /**
+     * Generates a unique URL to restore cart contents
+     *
+     * @param $hash
+     * @return string
+     */
+    public static function generateRestoreCartUrl(Shop $shop, $hash)
+    {
+        $url = Shopware()->Front()->Router()->assemble(
+            array(
+                'module' => 'frontend',
+                'controller' => 'nostotagging',
+                'action' => 'cart'
+            )
+        );
+        $params = array(
+            CartRestore::CART_RESTORE_URL_PARAMETER => $hash,
+            '__shop' => $shop->getId(),
+        );
+        return NostoHttpRequest::replaceQueryParamsInUrl($params, $url);
     }
 }

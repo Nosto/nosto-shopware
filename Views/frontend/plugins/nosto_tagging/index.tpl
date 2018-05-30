@@ -126,3 +126,12 @@
         </script>
     {/if}
 {/block}
+{block name="frontend_index_content" append}
+    {* Needs to be rendered at template level to avoid cache issues *}
+    {if isset($nostoCustomer) && $nostoCustomer}
+        {$nostoCustomer->toHtml()}
+    {/if}
+    {if isset($nostoCart) && $nostoCart}
+        {$nostoCart->toHtml()}
+    {/if}
+{/block}
