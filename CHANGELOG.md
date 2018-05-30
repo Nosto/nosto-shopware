@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0]
+- Add Restore Cart Link To Cart Tagging
+- Add Inventory Level And Supplier Cost To Product API Calls
+- Renders Tagging Programmatically
+- AddSkuToCart Function To Template
+- Add Custom Field Tagging For Product And SKU 
+- Add Product Streams Support 
+
 ## [2.0.4]
 - Fix marketing permission tagging
 
@@ -16,7 +24,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.0.0]
 - Bump SDK to 3.3.1
-- Fix shopware platfom version detection
+- Fix shopware platform version detection
 - Handle Opt-In for Customer and Buyer
 
 ## [1.2.6]
@@ -159,8 +167,8 @@ recommendations
 ### Added
 - Initial beta-release
 
-
-[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.4...develop
+[unreleased]: https://github.com/nosto/nosto-shopware-plugin/compare/2.1.0...develop
+[2.1.0]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.4...2.1.0
 [2.0.4]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/nosto/nosto-shopware-plugin/compare/2.0.1...2.0.2
