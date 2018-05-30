@@ -7,7 +7,7 @@
   "version": "2.1.0",
   "require": {
     "php": ">=5.5.0",
-    "nosto/php-sdk": "3.4.0"
+    "nosto/php-sdk": "3.4.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "2.8.1",

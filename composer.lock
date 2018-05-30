@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8042deab1b7ae9c96b3e48ca68e402d",
+    "content-hash": "aa99d52c4fcfb565f50124afc6c908dd",
     "packages": [
         {
             "name": "nosto/php-sdk",
-            "version": "3.4.0",
+            "version": "3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nosto/nosto-php-sdk.git",
-                "reference": "dce117a3456999b1334929240cbad1c0d5cba337"
+                "reference": "bb455c4886c2309eebf06ca117d51b947b130364"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/dce117a3456999b1334929240cbad1c0d5cba337",
-                "reference": "dce117a3456999b1334929240cbad1c0d5cba337",
+                "url": "https://api.github.com/repos/Nosto/nosto-php-sdk/zipball/bb455c4886c2309eebf06ca117d51b947b130364",
+                "reference": "bb455c4886c2309eebf06ca117d51b947b130364",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 "BSD-3-Clause"
             ],
             "description": "PHP SDK for developing Nosto modules for e-commerce platforms",
-            "time": "2018-05-30T06:18:50+00:00"
+            "time": "2018-05-30T10:54:13+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
