@@ -134,4 +134,7 @@
     {if isset($nostoCart) && $nostoCart}
         {$nostoCart->toHtml()}
     {/if}
+    {if isset($nostoPageType) && $nostoPageType}
+        {$nostoPageType->toHtml()}
+    {/if}
 {/block}

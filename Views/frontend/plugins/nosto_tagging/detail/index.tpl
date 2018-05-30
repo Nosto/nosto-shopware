@@ -37,4 +37,11 @@
     <div class="nosto_element" id="nosto-page-product1"></div>
     <div class="nosto_element" id="nosto-page-product2"></div>
     <div class="nosto_element" id="nosto-page-product3"></div>
+    {* Needs to be rendered at template level to avoid cache issues *}
+    {if isset($nostoProduct) && $nostoProduct}
+        {$nostoProduct->toHtml()}
+    {/if}
+    {if isset($nostoCategory) && $nostoCategory}
+        {$nostoCategory->toHtml()}
+    {/if}
 {/block}

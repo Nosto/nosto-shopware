@@ -35,6 +35,7 @@
  */
 
 use Shopware\Models\Category\Category;
+use Nosto\Object\Category as NostoCategory;
 use Nosto\Object\MarkupableString;
 
 /**
@@ -47,7 +48,6 @@ use Nosto\Object\MarkupableString;
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
     /**
      * @var string the full category path with categories separated by a `/` sign.
@@ -58,19 +58,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      * Loads the category data from a category model.
      *
      * @param Category $category the model.
+     * @return NostoCategory
      * @throws Enlight_Event_Exception
      */
-    public function loadData(Category $category)
+    public static function build(Category $category)
     {
-        $this->categoryPath = $this->buildCategoryPath($category);
+        $nostoCategory = new NostoCategory(self::buildCategoryPath($category));
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
-                'nostoCategory' => $this,
+                'nostoCategory' => $nostoCategory,
                 'category' => $category
             )
         );
+        return $nostoCategory;
     }
 
     /**
@@ -83,57 +85,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      * @param Category $category the category model.
      * @return string the path.
      */
-    public function buildCategoryPath($category)
+    public static function buildCategoryPath(Category $category)
     {
         $path = '';
         if ($category->getPath() !== null) {
             $path .= $category->getName();
             if ($category->getParent() && $category->getParent()->getPath() !== null) {
-                $path = $this->buildCategoryPath($category->getParent()) . '/' . $path;
+                $path = self::buildCategoryPath($category->getParent()) . '/' . $path;
             }
         }
         return $path;
-    }
-
-    /**
-     * Returns the category path including all ancestors.
-     *
-     * @return string the path.
-     */
-    public function getCategoryPath()
-    {
-        return $this->categoryPath;
-    }
-
-    /**
-     * Sets the category path.
-     *
-     * The category path must be a non-empty string.
-     *
-     * Usage:
-     * $object->setCategoryPath('Sports/Winter');
-     *
-     * @param string $categoryPath the category path.
-     *
-     * @return $this Self for chaining
-     */
-    public function setCategoryPath($categoryPath)
-    {
-        $this->categoryPath = $categoryPath;
-
-        return $this;
-    }
-
-    /**
-     * Returns the HTML to render categories
-     *
-     * @return MarkupableString
-     */
-    public function getMarkupableObject()
-    {
-        return new MarkupableString(
-            $this->getCategoryPath(),
-            'nosto_category'
-        );
     }
 }

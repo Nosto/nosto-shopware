@@ -36,4 +36,7 @@
 {block name="frontend_index_content" append}
     <div class="nosto_element" id="thankyou-nosto-1"></div>
     <div class="nosto_element" id="thankyou-nosto-2"></div>
+    {if isset($nostoOrder) && $nostoOrder}
+        {$nostoOrder->toHtml()}
+    {/if}
 {/block}
