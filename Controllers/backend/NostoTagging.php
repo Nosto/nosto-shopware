@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,14 +30,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Nosto;
-use Nosto\NostoException;
 use Nosto\Helper\OAuthHelper as NostoOAuthClient;
+use Shopware\Models\Shop\Shop;
+use Shopware\CustomModels\Nosto\Setting\Setting;
+use Shopware\CustomModels\Nosto\Account\Account;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
+use Shopware\Models\Shop\Repository;
+use Doctrine\ORM\TransactionRequiredException;
+use Doctrine\ORM\ORMException;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Main backend controller. Handles account create/connect/delete requests
@@ -55,6 +64,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
     /**
      * Loads the Nosto ExtJS sub-application for configuring Nosto for the shops.
      * Default action.
+     * @noinspection PhpMissingParentCallCommonInspection
      */
     public function indexAction()
     {
@@ -100,30 +110,31 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *   ...
      * ]
      * @throws Exception
-     * @throws NostoException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMInvalidArgumentException
+     * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
      */
     public function getAccountsAction()
     {
-        /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        /** @var Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         if (method_exists($repository, 'getActiveShops')) {
-            $result = $repository->getActiveShops(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+            $result = $repository->getActiveShops(AbstractQuery::HYDRATE_ARRAY);
         } else {
             // SW 4.0 does not have the `getActiveShops` method, so we fall back
             // on manually building the query.
             $result = $repository->createQueryBuilder('shop')
                 ->where('shop.active = 1')
                 ->getQuery()
-                ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+                ->getResult(AbstractQuery::HYDRATE_ARRAY);
         }
+        /** @noinspection PhpUndefinedMethodInspection */
         $identity = Shopware()->Auth()->getIdentity();
         $setting = Shopware()
             ->Models()
-            ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
+            ->getRepository(Setting::class)
             ->findOneBy(array('name' => 'oauthParams'));
-        if (!is_null($setting)) {
+        if ($setting !== null) {
             $oauthParams = json_decode($setting->getValue(), true);
             Shopware()->Models()->remove($setting);
             Shopware()->Models()->flush();
@@ -133,12 +144,14 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         foreach ($result as $row) {
             $params = array();
             $shop = $repository->getActiveById($row['id']);
-            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
+            if ($shop instanceof Shop === false) {
                 continue;
             }
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
             $account = NostoComponentAccount::findAccount($shop);
             if (isset($oauthParams[$shop->getId()])) {
+                /** @noinspection PhpUndefinedVariableInspection */
                 $params = $oauthParams[$shop->getId()];
             }
             $accountData = array(
@@ -150,9 +163,9 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     $params
                 ),
                 'shopId' => $shop->getId(),
-                'shopName' => $shop->getName(),
+                'shopName' => $shop->getName()
             );
-            if ($account instanceof \Shopware\CustomModels\Nosto\Account\Account) {
+            if ($account instanceof Account) {
                 $accountData['id'] = $account->getId();
                 $accountData['name'] = $account->getName();
             }
@@ -170,8 +183,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * This action should only be accessed by the Account model in the client
      * side application.
      *
+     * @throws ORMInvalidArgumentException
      * @throws Exception
-     * @throws \Doctrine\ORM\OptimisticLockException
      * @suppress PhanDeprecatedFunction
      */
     public function createAccountAction()
@@ -184,13 +197,16 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         if ($details) {
             $details = json_decode($details);
         }
-        /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        /** @var Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
+        /** @noinspection PhpUndefinedMethodInspection */
         $identity = Shopware()->Auth()->getIdentity();
 
-        if (!is_null($shop)) {
+        if ($shop !== null) {
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection BadExceptionsProcessingInspection */
             try {
                 $account = NostoComponentAccount::createAccount(
                     $shop,
@@ -216,9 +232,10 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                         )
                     ),
                     'shopId' => $shop->getId(),
-                    'shopName' => $shop->getName(),
+                    'shopName' => $shop->getName()
                 );
-            } catch (NostoException $e) {
+            } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
@@ -232,10 +249,11 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Account model in the client
      * side application.
-
      * @throws Exception
-     * @throws NostoException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws TransactionRequiredException
+     * @throws ORMException
+     * @throws ORMInvalidArgumentException
+     * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
      */
     public function deleteAccountAction()
@@ -246,15 +264,16 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $shopId = $this->Request()->getParam('shopId', null);
         /** @var \Shopware\CustomModels\Nosto\Account\Account $account */
         $account = Shopware()->Models()->find(
-            '\Shopware\CustomModels\Nosto\Account\Account',
+            Account::class,
             $accountId
         );
-        /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        /** @var Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
+        /** @noinspection PhpUndefinedMethodInspection */
         $identity = Shopware()->Auth()->getIdentity();
-
-        if (!is_null($account) && !is_null($shop)) {
+        if ($account !== null && $shop !== null) {
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
             NostoComponentAccount::removeAccount($account, $identity);
             $success = true;
@@ -270,7 +289,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     )
                 ),
                 'shopId' => $shop->getId(),
-                'shopName' => $shop->getName(),
+                'shopName' => $shop->getName()
             );
         }
 
@@ -291,14 +310,16 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $success = false;
         $data = array();
         $shopId = $this->Request()->getParam('shopId', null);
-        /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        /** @var Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         $shop = $repository->getActiveById($shopId);
+        /** @noinspection PhpUndefinedMethodInspection */
         $locale = Shopware()->Auth()->getIdentity()->locale;
 
-        if (!is_null($shop)) {
+        if ($shop !== null) {
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
-            $meta = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth();
+            $meta = new MetaOauth();
             $meta->loadData($shop, $locale);
             $success = true;
             $data = array('redirect_url' => NostoOAuthClient::getAuthorizationUrl($meta));

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Nosto\Object\Cart\LineItem as NostoLineItem;
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
+use Shopware\Models\Article\Detail;
+use Shopware\Models\Order\Detail as OrderDetail;
 
 /**
  * Model for order line item information. This is used when compiling the info
@@ -53,22 +54,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
     /**
      * Populates the order line item with data from the order detail model.
      *
-     * @param \Shopware\Models\Order\Detail $detail the order detail model.
+     * @param OrderDetail $detail the order detail model.
      * @suppress PhanTypeMismatchArgument
+     * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Order\Detail $detail)
+    public function loadData(OrderDetail $detail)
     {
         $this->setProductId(-1);
-
         if ($detail->getArticleId() > 0) {
             // If this is a product variation, we need to load the parent
             // article to fetch it's number and name.
-            $article = Shopware()->Models()->find(
-                'Shopware\Models\Article\Article',
-                $detail->getArticleId()
-            );
-            if (!empty($article)) {
-                $this->setProductId($article->getMainDetail()->getNumber());
+            try {
+                $articleDetail = Shopware()
+                    ->Models()
+                    ->getRepository(Detail::class)
+                    ->findOneBy(array('articleId' => $detail->getArticleId()));
+                if ($articleDetail !== null) {
+                    $this->setProductId($articleDetail->getNumber());
+                }
+            } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
         }
 
@@ -76,12 +82,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
         $this->setQuantity((int)$detail->getQuantity());
         $this->setPrice(NostoPriceHelper::format($detail->getPrice()));
         $this->setPriceCurrencyCode(strtoupper($detail->getOrder()->getCurrency()));
+        $this->setSkuId($detail->getArticleNumber());
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoOrderLineItem' => $this,
-                'detail' => $detail,
+                'detail' => $detail
             )
         );
     }
@@ -89,6 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
     /**
      * Loads a special item, e.g. shipping cost.
      *
+     * @noinspection PhpMissingParentCallCommonInspection
      * @param string $name the name of the item.
      * @param float|int|string $price the unit price of the item.
      * @param string $currency the 3-letter ISO code (ISO 4217) for the item currency.

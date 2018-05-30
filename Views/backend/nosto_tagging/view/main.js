@@ -33,7 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//noinspection JSUnusedGlobalSymbols
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
 Ext.define('Shopware.apps.NostoTagging.view.Main', {
     /**
      * Extends the Enlight application window.
@@ -93,6 +93,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
             tab;
 
         me.accountStore.each(function (account) {
+            // noinspection JSUnresolvedExtXType
             tab = me.tabPanel.add({
                 title: account.get('shopName'),
                 xtype: 'component',

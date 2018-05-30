@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner as NostoAccountOwner;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Object\Signup\Billing;
 use Nosto\Object\Signup\Signup;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Shop\Locale;
 
 /**
  * Meta-data class for account information sent to Nosto during account create.
@@ -77,12 +81,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     protected $ownerLanguageCode;
 
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner the account owner meta model.
+     * @var NostoAccountOwner the account owner meta model.
      */
     protected $owner;
 
     /**
-     * @var Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing the billing meta model.
+     * @var Billing the billing meta model.
      */
     protected $billing;
 
@@ -99,31 +103,31 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     /**
      * Loads the meta data for the given shop.
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop to load the data for.
-     * @param \Shopware\Models\Shop\Locale|null $locale the locale or null.
+     * @param Shop $shop the shop to load the data for.
+     * @param Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
      * @suppress PhanTypeMismatchArgumentInternal
      * @suppress PhanDeprecatedFunction
      */
     public function loadData(
-        \Shopware\Models\Shop\Shop $shop,
-        \Shopware\Models\Shop\Locale $locale = null,
+        Shop $shop,
+        Locale $locale = null,
         $identity = null
     ) {
-        if (is_null($locale)) {
+        if ($locale === null) {
             $locale = $shop->getLocale();
         }
-
+        /** @noinspection PhpDeprecationInspection */
         $this->title = Shopware()->App() . ' - ' . $shop->getName();
         $this->name = substr(sha1(rand()), 0, 8);
         $this->frontPageUrl = $this->buildStoreUrl($shop);
         $this->currencyCode = strtoupper($shop->getCurrency()->getCurrency());
         $this->languageCode = strtolower(substr($shop->getLocale()->getLocale(), 0, 2));
         $this->ownerLanguageCode = strtolower(substr($locale->getLocale(), 0, 2));
-        $this->owner = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner();
+        $this->owner = new NostoAccountOwner();
         $this->owner->loadData($identity);
-        $this->billing = new Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing();
-        $this->billing->loadData($shop);
+        $this->billing = new Billing();
+        $this->billing->setCountry(strtoupper(substr($shop->getLocale()->getLocale(), 3)));
     }
 
     /**
@@ -143,10 +147,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
      *
      * These params is `__shop`
      *
-     * @param \Shopware\Models\Shop\Shop $shop the shop model.
+     * @param Shop $shop the shop model.
      * @return string the url with added params.
      */
-    protected function buildStoreUrl(\Shopware\Models\Shop\Shop $shop)
+    protected function buildStoreUrl(Shop $shop)
     {
         $url = Shopware()->Front()->Router()->assemble(array('module' => 'frontend'));
         $defaults = array(
@@ -295,7 +299,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     /**
      * Meta data model for the account owner who is creating the account.
      *
-     * @return Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner the meta data model.
+     * @return NostoAccountOwner the meta data model.
      */
     public function getOwner()
     {
@@ -305,7 +309,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     /**
      * Meta data model for the account billing details.
      *
-     * @return Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing the meta data model.
+     * @return Billing the meta data model.
      */
     public function getBillingDetails()
     {

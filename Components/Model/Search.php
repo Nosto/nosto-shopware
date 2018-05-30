@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
+
+use Nosto\Object\MarkupableString;
 
 /**
  * Model for search term information. This is used when compiling the info about
@@ -69,5 +71,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search
     public function setSearchTerm($term)
     {
         $this->searchTerm = $term;
+    }
+
+    /**
+     * Returns the HTML to render Search Terms
+     *
+     * @return MarkupableString
+     */
+    public function getMarkupableObject()
+    {
+        return new MarkupableString(
+            $this->getSearchTerm(),
+            'nosto_search_term'
+        );
     }
 }

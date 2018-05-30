@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
+
+use Shopware\Models\Order\Order;
+use Doctrine\ORM\AbstractQuery;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Models_Order_Repository
@@ -49,7 +52,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('orders.number'))
-            ->from('\Shopware\Models\Order\Order', 'orders')
+            ->from(Order::class, 'orders')
             ->where('orders.status >= 0');
 
         if (!empty($id)) {
@@ -63,6 +66,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
                 ->getQuery();
         }
 
-        return $result->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        return $result->getResult(AbstractQuery::HYDRATE_ARRAY);
     }
 }

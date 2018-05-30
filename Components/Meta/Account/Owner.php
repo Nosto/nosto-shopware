@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Signup\Owner as Owner;
+use Nosto\Object\Signup\Owner;
 
 /**
  * Meta-data class for account owner information sent to Nosto during account
@@ -55,7 +55,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
      */
     public function loadData($identity = null)
     {
-        if (!is_null($identity)) {
+        if ($identity !== null) {
             /** @noinspection PhpUndefinedFieldInspection */
             $this->setEmail($identity->email);
             /** @noinspection PhpUndefinedFieldInspection */

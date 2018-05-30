@@ -33,7 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//noinspection JSUnusedGlobalSymbols
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
 Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     /**
      * Extends the Enlight controller.

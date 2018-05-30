@@ -58,35 +58,43 @@
         <script type="text/javascript">
             //<![CDATA[
             {literal}
-            if (typeof Nosto === "undefined") {
+            if (typeof Nosto === 'undefined') {
                 var Nosto = {};
             }
             {/literal}
-            Nosto.addProductToCart = function (productNumber, element) {
-                if (typeof nostojs !== 'undefined' && typeof element == 'object') {
+            Nosto.addProductToCart = function (productId, element) {
+                Nosto.trackAddToCartClick(productId, element);
+                Nosto.postAddToCartForm(productId);
+            };
+            Nosto.addSkuToCart = function (product, element) {
+                Nosto.trackAddToCartClick(product.productId, element);
+                Nosto.postAddToCartForm(product.skuId);
+            };
+            Nosto.trackAddToCartClick = function (productId, element) {
+                if (typeof nostojs !== 'undefined' && typeof element === 'object') {
                     var slotId = Nosto.resolveContextSlotId(element);
                     if (slotId) {
                         nostojs(function (api) {
-                            api.recommendedProductAddedToCart(productNumber, slotId);
+                            api.recommendedProductAddedToCart(productId, slotId);
                         });
                     }
                 }
-                var form = document.createElement("form");
-                form.setAttribute("method", "post");
-                form.setAttribute("action", "{url controller=checkout action=addArticle}");
-
-                var hiddenFields = {
-                    "sActionIdentifier": "{$sUniqueRand}",
-                    "sAdd": productNumber,
-                    "sQuantity": 1
+            };
+            Nosto.postAddToCartForm = function (productId) {
+                var form = document.createElement('form');
+                form.setAttribute('method', 'post');
+                form.setAttribute('action', '{url controller=checkout action=addArticle}');
+                var fields = {
+                    'sActionIdentifier': '{$sUniqueRand}',
+                    'sAdd': productId,
+                    'sQuantity': 1
                 };
-
-                for (var key in hiddenFields) {
-                    if (hiddenFields.hasOwnProperty(key)) {
-                        var hiddenField = document.createElement("input");
-                        hiddenField.setAttribute("type", "hidden");
-                        hiddenField.setAttribute("name", key);
-                        hiddenField.setAttribute("value", hiddenFields[key]);
+                for (var key in fields) {
+                    if (fields.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement('input');
+                        hiddenField.setAttribute('type', 'hidden');
+                        hiddenField.setAttribute('name', key);
+                        hiddenField.setAttribute('value', fields[key]);
                         form.appendChild(hiddenField);
                     }
                 }
@@ -100,9 +108,10 @@
                 var m = 20;
                 var n = 0;
                 var e = element;
-                while (typeof e.parentElement !== "undefined" && e.parentElement) {
+                while (typeof e.parentElement !== 'undefined' && e.parentElement) {
                     ++n;
                     e = e.parentElement;
+                    // noinspection EqualityComparisonWithCoercionJS
                     if (e.getAttribute('class') == 'nosto_element' && e.getAttribute('id')) {
                         return e.getAttribute('id');
                     }
@@ -118,37 +127,11 @@
     {/if}
 {/block}
 {block name="frontend_index_content" append}
+    {* Needs to be rendered at template level to avoid cache issues *}
     {if isset($nostoCustomer) && $nostoCustomer}
-        <div class="nosto_customer" style="display:none">
-            {if isset($nostoHcid) && !empty($nostoHcid)}
-                <span class="hcid">{$nostoHcid|escape:'htmlall':'UTF-8'}</span>
-            {/if}
-            <span class="first_name">{$nostoCustomer->getFirstName()|escape:'htmlall':'UTF-8'}</span>
-            <span class="last_name">{$nostoCustomer->getLastName()|escape:'htmlall':'UTF-8'}</span>
-            <span class="email">{$nostoCustomer->getEmail()|escape:'htmlall':'UTF-8'}</span>
-            <span class="customer_reference">{$nostoCustomer->getCustomerReference()|escape:'htmlall':'UTF-8'}</span>
-            <span class="marketing_permission">{$nostoCustomer->getMarketingPermission()|escape:'htmlall':'UTF-8'}</span>
-        </div>
+        {$nostoCustomer->toHtml()}
     {/if}
-    <div class="nosto_cart" style="display:none">
-        {if isset($nostoHcid) && !empty($nostoHcid)}
-            <span class="hcid">{$nostoHcid|escape:'htmlall':'UTF-8'}</span>
-        {/if}
-        {if isset($nostoCart) && $nostoCart}
-            {foreach from=$nostoCart->getLineItems() item=lineItem}
-                <div class="line_item">
-                    <span class="product_id">{$lineItem->getProductId()|escape:'htmlall':'UTF-8'}</span>
-                    <span class="quantity">{$lineItem->getQuantity()|escape:'htmlall':'UTF-8'}</span>
-                    <span class="name">{$lineItem->getName()|escape:'htmlall':'UTF-8'}</span>
-                    <span class="unit_price">{$lineItem->getUnitPrice()|escape:'htmlall':'UTF-8'}</span>
-                    <span class="price_currency_code">{$lineItem->getPriceCurrencyCode()|escape:'htmlall':'UTF-8'}</span>
-                </div>
-            {/foreach}
-        {/if}
-    </div>
-    {if isset($nostoPageType) && is_string($nostoPageType)}
-        <div class="nosto_page_type"
-             style="display:none">{$nostoPageType|escape:'htmlall':'UTF-8'}</div>
+    {if isset($nostoCart) && $nostoCart}
+        {$nostoCart->toHtml()}
     {/if}
-
 {/block}

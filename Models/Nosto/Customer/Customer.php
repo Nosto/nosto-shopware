@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
@@ -46,6 +46,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Customer extends ModelEntity
 {
+    /**
+     * @var int The length of the restore cart attribute
+     */
+    const NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH = 64;
+
     /**
      * @var integer $id
      *
@@ -74,6 +79,18 @@ class Customer extends ModelEntity
      * @ORM\Column(name="nosto_id", type="string", length=255, nullable=false)
      */
     private $nostoId; //@codingStandardsIgnoreLine
+
+    /**
+     * @var string $restoreCartHash
+     *
+     * @ORM\Column(
+     *     name="restore_cart_hash",
+     *     type="string",
+     *     length=Customer::NOSTO_TAGGING_RESTORE_CART_ATTRIBUTE_LENGTH,
+     *     nullable=true
+     * )
+     */
+    private $restoreCartHash;
 
     /**
      * @return int
@@ -117,5 +134,21 @@ class Customer extends ModelEntity
     {
         $this->nostoId = $id;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRestoreCartHash()
+    {
+        return $this->restoreCartHash;
+    }
+
+    /**
+     * @param string $restoreCartHash
+     */
+    public function setRestoreCartHash($restoreCartHash)
+    {
+        $this->restoreCartHash = $restoreCartHash;
     }
 }

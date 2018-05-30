@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,20 +30,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Article\Article as Article;
-use Shopware\Models\Shop\Shop as Shop;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Category\Category;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku as NostoSku;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams as ProductStreamsRepo;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\NostoException;
+use Shopware\Models\Article\Supplier;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Nosto\Object\Product\SkuCollection;
+use Shopware\Models\Translation\Translation;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -58,26 +69,31 @@ use Nosto\NostoException;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends NostoProduct
 {
+    const TXT_ARTICLE = 'txtArtikel';
+    const TXT_LANG_DESCRIPTION = 'txtlangbeschreibung';
     /**
      * Loads the model data from an article and shop.
      *
      * @param Article $article the article model.
      * @param Shop|null $shop the shop the product is in.
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws Enlight_Event_Exception
+     * @throws NonUniqueResultException
      * @suppress PhanTypeMismatchArgument
      */
     public function loadData(Article $article, Shop $shop = null)
     {
-        if (is_null($shop)) {
+        if ($shop === null) {
             $shop = Shopware()->Shop();
         }
 
         try {
             $this->assignId($article);
         } catch (NostoException $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             return;
         }
-        $this->setUrl($this->assembleProductUrl($article, $shop));
+        $this->setUrl(self::assembleProductUrl($article, $shop));
         $this->setName($article->getName());
         $this->setImageUrl(ImageHelper::getMainImageUrl($article, $shop));
         $this->setAlternateImageUrls(ImageHelper::getAlternativeImageUrls($article, $shop));
@@ -93,14 +109,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             PriceHelper::PRICE_TYPE_LIST
         ));
         $this->setAvailability($this->checkAvailability($article));
-        $tags = TagHelper::buildProductTags($article, $shop);
-        foreach ($tags as $tagType => $values) {
+        foreach (TagHelper::buildProductTags($article, $shop) as $tagType => $values) {
             $setterMethod = sprintf('set%s', ucfirst($tagType));
             $this->$setterMethod($values);
         }
         $this->setCategories($this->buildCategoryPaths($article, $shop));
         $this->setDescription($article->getDescriptionLong());
-        if ($article->getSupplier() instanceof \Shopware\Models\Article\Supplier) {
+        if ($article->getSupplier() instanceof Supplier) {
             $brand = $article->getSupplier()->getName();
         } else {
             $brand = '';
@@ -110,15 +125,82 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
         $this->amendArticleTranslation($article, $shop);
+        $this->amendSettingsCustomFields($article);
+        $this->amendFreeTextCustomFields($article);
+        $this->setInventoryLevel($article->getMainDetail()->getInStock());
+        $this->setSupplierCost($article->getMainDetail()->getPurchasePrice());
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $skuTaggingAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Bootstrap::CONFIG_SKU_TAGGING);
+
+        if ($skuTaggingAllowed) {
+            $this->setSkus($this->buildSkus($article, $shop));
+        }
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoProduct' => $this,
                 'article' => $article,
-                'shop' => $shop,
+                'shop' => $shop
             )
         );
+    }
+
+    /**
+     * Add product section 'Settings' as Custom Fields in the product tagging.
+     *
+     * @param Article $article
+     */
+    protected function amendSettingsCustomFields(Article $article)
+    {
+        $settingsCustomFields = CustomFieldsHelper::getDetailSettingsCustomFields(
+            $article->getMainDetail()
+        );
+        if (!empty($settingsCustomFields)) {
+            foreach ($settingsCustomFields as $key => $customField) {
+                $this->addCustomField($key, $customField);
+            }
+        }
+    }
+
+    /**
+     * Add product section 'Free Text Fields' as Custom Fields in the product tagging.
+     *
+     * @param Article $article
+     */
+    protected function amendFreeTextCustomFields(Article $article)
+    {
+        $freeTextsFields = CustomFieldsHelper::getFreeTextCustomFields(
+            $article->getMainDetail()
+        );
+        if (!empty($freeTextsFields)) {
+            foreach ($freeTextsFields as $key => $customField) {
+                $this->addCustomField($key, $customField);
+            }
+        }
+    }
+    
+    /**
+     * Add Sku variations to the current article
+     * @param Article $article
+     * @param Shop $shop
+     * @return SkuCollection
+     */
+    public function buildSkus(Article $article, Shop $shop)
+    {
+        $skuCollection = new SkuCollection();
+        foreach ($article->getDetails() as $detail) {
+            $sku = new NostoSku();
+            $sku->loadData($detail, $shop);
+            $skuCollection->append($sku);
+        }
+        return $skuCollection;
     }
 
     /**
@@ -127,12 +209,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      * @param Article $article article to be updated
      * @param Shop $shop sub shop
      */
-    public function amendSupplierCost(\Shopware\Models\Article\Article $article, Shop $shop)
+    public function amendSupplierCost(Article $article, Shop $shop)
     {
         // Purchase price is not available before version 5.2
-        if (method_exists($article->getMainDetail(), "getPurchasePrice")) {
-            $suplierCost = $article->getMainDetail()->getPurchasePrice();
-            $this->setSupplierCost(PriceHelper::convertToShopCurrency($suplierCost, $shop));
+        if (method_exists($article->getMainDetail(), 'getPurchasePrice')) {
+            $supplierCost = $article->getMainDetail()->getPurchasePrice();
+            $this->setSupplierCost(PriceHelper::convertToShopCurrency($supplierCost, $shop));
         }
     }
 
@@ -141,26 +223,26 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      *
      * @param Article $article article to be updated
      * @param Shop|null $shop sub shop id
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
-    public function amendArticleTranslation(\Shopware\Models\Article\Article $article, Shop $shop = null)
+    public function amendArticleTranslation(Article $article, Shop $shop = null)
     {
         if ($shop === null || $shop->getId() === null) {
             return;
         }
 
-        /** @var \Doctrine\ORM\QueryBuilder $builder */
+        /** @var QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
-            ->from('\Shopware\Models\Translation\Translation', 'translations')
+            ->from(Translation::class, 'translations')
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
             ->andWhere('translations.type = \'article\'');
 
-        if (property_exists('\Shopware\Models\Translation\Translation', 'shopId')) {
+        if (property_exists(Translation::class, 'shopId')) {
             $builder = $builder->andWhere('translations.shopId = :shopId')
                 ->setParameter('shopId', $shop->getId());
-        } elseif (property_exists('\Shopware\Models\Translation\Translation', 'localeId')
-            && method_exists('Shopware\Models\Shop\Shop', 'getLocale')
+        } elseif (property_exists(Translation::class, 'localeId')
+            && method_exists(Shop::class, 'getLocale')
             && $shop->getLocale() !== null
         ) {
             $builder = $builder->andWhere('translations.localeId = :localeId')
@@ -172,14 +254,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $query = $builder->getQuery();
         $result = $query->getOneOrNullResult();
 
-        if ($result instanceof \Shopware\Models\Translation\Translation && $result->getData()) {
+        if ($result instanceof Translation && $result->getData()) {
             $dataObject = unserialize($result->getData());
-            if (array_key_exists("txtArtikel", $dataObject)) {
-                $article->setName($dataObject["txtArtikel"]);
+            if (array_key_exists('txtArtikel', $dataObject)) {
+                $article->setName($dataObject[self::TXT_ARTICLE]);
                 $this->setName($article->getName());
             }
-            if (array_key_exists("txtlangbeschreibung", $dataObject)) {
-                $article->setDescriptionLong($dataObject["txtlangbeschreibung"]);
+            if (array_key_exists(self::TXT_LANG_DESCRIPTION, $dataObject)) {
+                $article->setDescriptionLong($dataObject[self::TXT_LANG_DESCRIPTION]);
                 $this->setDescription($article->getDescriptionLong());
             }
         }
@@ -190,13 +272,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      *
      * This method exists in order to expose a public API to change the ID.
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param Article $article the article model.
      * @throws NostoException
      */
-    public function assignId(\Shopware\Models\Article\Article $article)
+    public function assignId(Article $article)
     {
         $mainDetail = $article->getMainDetail();
-        if ($mainDetail instanceof \Shopware\Models\Article\Detail === false) {
+        if ($mainDetail instanceof Detail === false) {
             throw new NostoException(
                 sprintf(
                     "Could not resolve product id - main detail doesn't exist for article %d",
@@ -204,7 +286,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 )
             );
         }
-        $this->setProductId($mainDetail->getNumber());
+        try {
+            $articleDetail = Shopware()
+                ->Models()
+                ->getRepository(Detail::class)
+                ->findOneBy(array('articleId' => $mainDetail->getArticleId()));
+            if (!empty($articleDetail)) {
+                $this->setProductId($articleDetail->getNumber());
+            }
+        } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+        }
     }
 
     /**
@@ -217,12 +310,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     {
         //From shopware 5.3, it is possible to display product votes only in sub shop where they posted
         $showSubshopReviewOnly = false;
-        $showSubshopReivewOnlySupported = version_compare(
+        $showSubshopReviewOnlySupported = version_compare(
             Shopware::VERSION,
             NostoBootstrap::SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION,
             '>='
         );
-        if ($showSubshopReivewOnlySupported) {
+        if ($showSubshopReviewOnlySupported) {
             $showSubshopReviewOnly = Shopware()->Config()->get('displayOnlySubShopVotes');
         }
 
@@ -230,10 +323,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $voteSum = 0;
         foreach ($article->getVotes() as $vote) {
             if ($showSubshopReviewOnly) {
+                /** @var \Shopware\Models\Shop\Shop $shopForVote */
                 $shopForVote = $vote->getShop();
                 if ($shopForVote !== null
-                    && $shop !== null
-                    && $shopForVote->getId() != $shop->getId()
+                    && $shopForVote->getId() !== $shop->getId()
                 ) {
                     continue;
                 }
@@ -267,19 +360,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      *
      * @param Article $article the article model.
      * @param Shop $shop the shop model.
+     * @param null|Detail $detail the detail model.
      * @return string the url.
      */
-    protected function assembleProductUrl(Article $article, Shop $shop)
+    public static function assembleProductUrl(Article $article, Shop $shop, Detail $detail = null)
     {
-        $url = Shopware()->Front()->Router()->assemble(
-            array(
-                'module' => 'frontend',
-                'controller' => 'detail',
-                'sArticle' => $article->getId(),
-                // Force SSL if it's enabled.
-                'forceSecure' => true,
-            )
+        $urlParams = array(
+            'module' => 'frontend',
+            'controller' => 'detail',
+            'sArticle' => $article->getId(),
+            // Force SSL if it's enabled.
+            'forceSecure' => true
         );
+
+        if ($detail) {
+            $urlParams += ['number' => $detail->getNumber()];
+        }
+        $url = Shopware()->Front()->Router()->assemble($urlParams);
+
         // Always add the "__shop" parameter so that the crawler can distinguish
         // between products in different shops even if the host and path of the
         // shops match.
@@ -296,13 +394,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
      */
     protected function checkAvailability(Article $article)
     {
-        /** @var \Shopware\Models\Article\Detail[] $details */
+        if (!$article->getActive()) {
+            return self::OUT_OF_STOCK;
+        }
+        /** @var Detail[] $details */
         $details = Shopware()
             ->Models()
-            ->getRepository('Shopware\Models\Article\Detail')
+            ->getRepository(Detail::class)
             ->findBy(array('articleId' => $article->getId()));
         foreach ($details as $detail) {
-            if ($detail->getInStock() > 0) {
+            if ($detail->getInStock() > 0 && $detail->getActive()) {
                 return self::IN_STOCK;
             }
         }
@@ -324,11 +425,61 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $paths = array();
         $helper = new NostoCategory();
         $shopCatId = $shop->getCategory()->getId();
-        /** @var Shopware\Models\Category\Category $category */
+        /** @var Category $category */
         foreach ($article->getCategories() as $category) {
             // Only include categories that are under the shop's root category.
             if (strpos($category->getPath(), '|' . $shopCatId . '|') !== false) {
                 $paths[] = $helper->buildCategoryPath($category);
+            }
+        }
+        /** @noinspection PhpUndefinedMethodInspection */
+        $isProductStreamsAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(NostoBootstrap::CONFIG_PRODUCT_STREAMS);
+        if ($isProductStreamsAllowed) {
+            $paths = $this->generateRelatedProductStreams($article, $paths);
+            $paths = $this->generateRelatedProductSelectionStreams($article, $paths);
+        }
+        return $paths;
+    }
+
+    /**
+     * Add Product Streams to a given array of category paths
+     *
+     * @param Article $article
+     * @param array $paths
+     * @return array
+     */
+    public function generateRelatedProductStreams(Article $article, array $paths)
+    {
+        $productStreams = $article->getRelatedProductStreams();
+        if ($productStreams !== null) {
+            foreach ($productStreams as $productStream) {
+                $paths[] = $productStream->getName();
+            }
+        }
+        return $paths;
+    }
+
+    /**
+     * Add Product Selection Streams to a given array of category paths
+     *
+     * @param Article $article
+     * @param array $paths
+     * @return array
+     */
+    public function generateRelatedProductSelectionStreams(Article $article, array $paths)
+    {
+        $productStreams = new ProductStreamsRepo();
+        $productStreamsSelection = $productStreams->getProductStreamsSelectionName($article);
+        if (!empty($productStreamsSelection)) {
+            foreach ($productStreamsSelection as $selection) {
+                if (array_key_exists('name', $selection)) {
+                    $paths[] = $selection['name'];
+                }
             }
         }
         return $paths;

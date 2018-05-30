@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
+
+use Shopware\CustomModels\Nosto\Account\Account;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
@@ -40,23 +42,19 @@
 class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
 {
     /**
-     * @param \Shopware\CustomModels\Nosto\Account\Account $account
+     * @param Account $account
      * @return bool
      */
-    public function isAccountAlreadyRegistered(
-        \Shopware\CustomModels\Nosto\Account\Account $account
-    ) {
-        /** @var Shopware\CustomModels\Nosto\Account\Account $existingAccount */
+    public function isAccountAlreadyRegistered(Account $account)
+    {
+        /** @var Account $existingAccount */
         $existingAccount = Shopware()
             ->Models()
-            ->getRepository("Shopware\CustomModels\Nosto\Account\Account")
+            ->getRepository(Account::class)
             ->findOneBy(array('name' => $account->getName()));
 
         // If an account has been found, and the shop id is different from current shop, then it means
         // the admin is trying to map same nosto account to two sub shops. It is not allowed.
-        if ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId()) {
-            return true;
-        }
-        return false;
+        return ($existingAccount != null && $existingAccount->getShopId() !== $account->getShopId());
     }
 }

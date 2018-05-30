@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +30,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
-use Nosto\Object\Customer as Customer;
+use Nosto\Object\Customer;
 use Nosto\NostoException;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
+use Shopware\Models\Customer\Address;
+use Shopware\Models\Attribute\Customer as CustomerAttribute;
+use Shopware\Models\Customer\Customer as CustomerModel;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 /**
  * Model for customer information. This is used when compiling the info about
@@ -55,14 +61,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
     /**
      * Loads customer data from the logged in customer.
      *
-     * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     * @param CustomerModel $customer the customer model.
      * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Customer\Customer $customer)
+    public function loadData(CustomerModel $customer)
     {
-        if ($customer->getDefaultBillingAddress() instanceof \Shopware\Models\Customer\Address) {
+        if ($customer->getDefaultBillingAddress() instanceof Address) {
             $this->setFirstName($customer->getDefaultBillingAddress()->getFirstname());
-            $this->setLastName($customer->getDefaultBillingAddress()->getLastName());
+            $this->setLastName($customer->getDefaultBillingAddress()->getLastname());
         }
         $this->setEmail($customer->getEmail());
         $emailHelper = new EmailHelper();
@@ -72,6 +78,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
         try {
             $this->populateCustomerReference($customer);
         } catch (Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
                 sprintf(
                     'Could not populate customer reference. Error was: %s',
@@ -84,7 +91,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoCustomer' => $this,
-                'customer' => $customer,
+                'customer' => $customer
             )
         );
     }
@@ -93,14 +100,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      * Returns the customer reference for Nosto.
      * If no customer reference is found for the user a new is created.
      *
-     * @param \Shopware\Models\Customer\Customer $customer
+     * @param CustomerModel $customer
      *
      * @throws NostoException if customer reference cannot be fetched or created
-     *
+     * @throws ORMInvalidArgumentException
+     * @throws OptimisticLockException
+     * @throws ORMException
      * @return void
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function populateCustomerReference(\Shopware\Models\Customer\Customer $customer)
+    public function populateCustomerReference(CustomerModel $customer)
     {
         $getReferenceMethod = str_replace(
             '_',
@@ -121,12 +129,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
             )
         );
         $customerReference = null;
-        $entityRepository = Shopware()->Models()->getRepository('Shopware\Models\Attribute\Customer');
+        $entityRepository = Shopware()->Models()->getRepository(CustomerAttribute::class);
         /** @noinspection PhpUndefinedMethodInspection */
         $customerAttribute = $entityRepository
             ->findOneByCustomerId($customer->getId());
         if (!empty($customerAttribute)
-            && $customerAttribute instanceof Shopware\Models\Attribute\Customer
+            && $customerAttribute instanceof CustomerAttribute
             && method_exists($customerAttribute, $getReferenceMethod)
         ) {
             $customerReference = $customerAttribute->$getReferenceMethod();

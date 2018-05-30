@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
@@ -38,6 +38,11 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentA
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
+use Shopware\Models\Shop\Repository;
+use Shopware\Models\Category\Category;
 use Nosto\NostoException;
 
 /**
@@ -52,29 +57,30 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     /**
      * Sends info to Nosto about a newly created product.
      *
-     * @param \Shopware\Models\Article\Article $article the product.
+     * @param Article $article the product.
      * @throws Exception
-     * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
      */
-    public function create(\Shopware\Models\Article\Article $article)
+    public function create(Article $article)
     {
-        /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        /** @var Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
-            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
+            if ($shop instanceof Shop === false) {
                 continue;
             }
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model = new Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
                 try {
                     $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
@@ -88,28 +94,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * The shops the product belongs to is determined by analyzing the products
      * categories and checking if the shop root category is present.
      *
-     * @param \Shopware\Models\Article\Article $article the article model.
+     * @param Article $article the article model.
      * @param boolean $allStores if true Nosto accounts from all stores will be returned
      * @return NostoAccount[] the accounts mapped in the shop IDs.
-     * @throws \Nosto\NostoException
      */
-    protected function getAccounts(\Shopware\Models\Article\Article $article, $allStores = false)
+    protected function getAccounts(Article $article, $allStores = false)
     {
         $data = array();
 
-        /** @var \Shopware\Models\Shop\Shop[] $inShops */
+        /** @var Shop[] $inShops */
         $inShops = array();
         $allShops = Shopware()
             ->Models()
-            ->getRepository('\Shopware\Models\Shop\Shop')
+            ->getRepository(Shop::class)
             ->findAll();
 
         if ($allStores === true) {
             $inShops = $allShops;
         } else {
-            /** @var Shopware\Models\Category\Category $cat */
+            /** @var Category $cat */
             foreach ($article->getCategories() as $cat) {
-                /** @var \Shopware\Models\Shop\Shop $shop */
+                /** @var Shop $shop */
                 foreach ($allShops as $shop) {
                     if (isset($inShops[$shop->getId()])) {
                         continue;
@@ -127,7 +132,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
 
         foreach ($inShops as $shop) {
             $account = NostoComponentAccount::findAccount($shop);
-            if (!is_null($account)) {
+            if ($account !== null) {
                 $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
                 if ($nostoAccount->isConnectedToNosto()) {
                     $data[$shop->getId()] = $nostoAccount;
@@ -143,28 +148,28 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      *
      * @param \Shopware\Models\Article\Article $article the product.
      * @throws Exception
-     * @throws NostoException
-     * @throws \Doctrine\ORM\NonUniqueResultException
      * @suppress PhanDeprecatedFunction
      */
-    public function update(\Shopware\Models\Article\Article $article)
+    public function update(Article $article)
     {
-        /* @var \Shopware\Models\Shop\Repository $repository */
-        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        /** @var Repository $repository */
+        $repository = Shopware()->Models()->getRepository(Shop::class);
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);
-            if ($shop instanceof Shopware\Models\Shop\Shop === false) {
+            if ($shop instanceof Shop === false) {
                 continue;
             }
+            /** @noinspection PhpDeprecationInspection */
             $shop->registerResources(Shopware()->Bootstrap());
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model = new Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
                 try {
                     $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }
@@ -174,21 +179,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     /**
      * Sends info to Nosto about a deleted product.
      *
-     * @param \Shopware\Models\Article\Article $article the product.
-     * @throws \Nosto\NostoException
+     * @param Article $article the product.
+     * @throws NostoException
      */
-    public function delete(\Shopware\Models\Article\Article $article)
+    public function delete(Article $article)
     {
         foreach ($this->getAccounts($article, true) as $account) {
-            $model = new Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product();
+            $model = new Product();
             $model->assignId($article);
             if ($model->getProductId()) {
+                $op = new DeleteProduct($account);
+                $products = array($model->getProductId());
+                $op->setProductIds($products);
                 try {
-                    $op = new DeleteProduct($account);
-                    $products = array($model->getProductId());
-                    $op->setProductIds($products);
                     $op->delete();
-                } catch (NostoException $e) {
+                } catch (\Exception $e) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
             }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +30,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
+
+use Shopware\Models\Category\Category;
+use Nosto\Object\MarkupableString;
 
 /**
  * Model for product category information. This is used when compiling the info
@@ -54,10 +57,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
     /**
      * Loads the category data from a category model.
      *
-     * @param \Shopware\Models\Category\Category $category the model.
+     * @param Category $category the model.
      * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Category\Category $category)
+    public function loadData(Category $category)
     {
         $this->categoryPath = $this->buildCategoryPath($category);
 
@@ -65,7 +68,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoCategory' => $this,
-                'category' => $category,
+                'category' => $category
             )
         );
     }
@@ -77,16 +80,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      *
      * "Sports/Winter"
      *
-     * @param Shopware\Models\Category\Category $category the category model.
+     * @param Category $category the category model.
      * @return string the path.
      */
     public function buildCategoryPath($category)
     {
         $path = '';
-        if (!is_null($category->getPath())) {
+        if ($category->getPath() !== null) {
             $path .= $category->getName();
-            if ($category->getParent() && !is_null($category->getParent()->getPath())) {
-                $path = self::buildCategoryPath($category->getParent()) . '/' . $path;
+            if ($category->getParent() && $category->getParent()->getPath() !== null) {
+                $path = $this->buildCategoryPath($category->getParent()) . '/' . $path;
             }
         }
         return $path;
@@ -119,5 +122,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
         $this->categoryPath = $categoryPath;
 
         return $this;
+    }
+
+    /**
+     * Returns the HTML to render categories
+     *
+     * @return MarkupableString
+     */
+    public function getMarkupableObject()
+    {
+        return new MarkupableString(
+            $this->getCategoryPath(),
+            'nosto_category'
+        );
     }
 }

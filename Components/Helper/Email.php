@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,10 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware\Models\Newsletter\Address;
 
 /**
  * Helper class for Email operations
@@ -43,7 +44,6 @@
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email
 {
-
     /**
      * Returns true if email is subscribed to the newsletter.
      *
@@ -54,12 +54,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email
     {
         $subscription = Shopware()
             ->Models()
-            ->getRepository('Shopware\Models\Newsletter\Address')
+            ->getRepository(Address::class)
             ->findOneBy(array('email' => $email));
 
-        if (!is_null($subscription) && $subscription->getAdded()) {
-            return true;
-        }
-        return false;
+        return ($subscription !== null && $subscription->getAdded());
     }
 }

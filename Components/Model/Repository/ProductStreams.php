@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,43 +30,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Types\Signup\BillingInterface as NostoAccountMetaDataBillingDetailsInterface;
+use Shopware\Models\Article\Article;
 
 /**
- * Meta-data class for billing information sent to Nosto during account create.
- *
- * Implements NostoAccountMetaDataBillingDetailsInterface.
+ * Repository class for product streams.
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Billing
-    implements NostoAccountMetaDataBillingDetailsInterface
+class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams
 {
     /**
-     * @var string the 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
+     * @var \Doctrine\DBAL\Connection|mixed
      */
-    protected $countryCode;
+    private $conn;
 
     /**
-     * @param \Shopware\Models\Shop\Shop $shop
+     * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams constructor.
      */
-    public function loadData(\Shopware\Models\Shop\Shop $shop)
+    public function __construct()
     {
-        $this->countryCode = strtoupper(substr($shop->getLocale()->getLocale(), 3));
+        $this->conn = Shopware()->Container()->get('dbal_connection');
     }
 
     /**
-     * The 2-letter ISO code (ISO 3166-1 alpha-2) for the country used in account's billing details.
+     * Returns a list of Product Stream Selection Names
      *
-     * @return string the country ISO code.
+     * @param Article $article
+     * @return array
      */
-    public function getCountry()
+    public function getProductStreamsSelectionName(Article $article)
     {
-        return $this->countryCode;
+        try {
+            $builder = $this->conn->createQueryBuilder();
+            return $builder
+                ->select('streams.name')
+                ->from('s_product_streams_selection', 'selection')
+                ->innerJoin('selection', 's_product_streams', 'streams', 'selection.stream_id = streams.id')
+                ->where('article_id = :articleId')
+                ->setParameter(':articleId', $article->getId())
+                ->execute()
+                ->fetchAll();
+        } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            return array();
+        }
     }
 }

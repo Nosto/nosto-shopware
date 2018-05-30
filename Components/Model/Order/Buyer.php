@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2017, Nosto Solutions Ltd
+ * Copyright (c) 2018, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,12 +30,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2018 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Nosto\Object\Order\Buyer as NostoOrderBuyer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
+use Shopware\Models\Customer\Customer;
+use Shopware\Models\Customer\Address;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Shopware\Models\Country\Country;
+use /** @noinspection PhpDeprecationInspection */ Shopware\Models\Customer\Billing;
 
 /**
  * Model for order buyer information. This is used when compiling the info about
@@ -52,36 +57,63 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
     /**
      * Loads the order buyer info from the customer model.
      *
-     * @param \Shopware\Models\Customer\Customer $customer the customer model.
+     * @param Customer $customer the customer model.
      * @throws Enlight_Event_Exception
      */
-    public function loadData(\Shopware\Models\Customer\Customer $customer)
+    public function loadData(Customer $customer)
     {
-        if (method_exists("\Shopware\Models\Customer\Customer", "getDefaultBillingAddress")) {
-            /* @var \Shopware\Models\Customer\Address $address */
-            $address = $customer->getDefaultBillingAddress();
-            if ($address instanceof \Shopware\Models\Customer\Address) {
-                $this->setFirstName($address->getFirstname());
-                $this->setLastName($address->getLastname());
+        /** @noinspection PhpUndefinedMethodInspection */
+        $customerDataAllowed = Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
+        if ($customerDataAllowed) {
+            if (method_exists(Customer::class, 'getDefaultBillingAddress')) {
+                /** @var Address $address */
+                $address = $customer->getDefaultBillingAddress();
+                if ($address instanceof Address) {
+                    $this->setFirstName($address->getFirstname());
+                    $this->setLastName($address->getLastname());
+                    $this->setPostCode($address->getZipCode());
+                    $this->setPhone($address->getPhone());
+                    $this->setCountry($address->getCountry()->getName());
+                }
+            } else {
+                /** @var Billing $address */
+                /** @noinspection PhpDeprecationInspection */
+                $address = $customer->getBilling();
+                /** @noinspection PhpDeprecationInspection */
+                if ($address instanceof Billing) {
+                    $this->setFirstName($address->getFirstName());
+                    $this->setLastName($address->getLastName());
+                    $this->setPostCode($address->getZipCode());
+                    $this->setPhone($address->getPhone());
+                    try {
+                        /** @var Country $country */
+                        $country = Shopware()
+                            ->Models()
+                            ->getRepository(Country::class)
+                            ->findOneBy(array('id' => $address->getCountryId()));
+                        $this->setCountry($country->getName());
+                    } catch (\Exception $e) {
+                        /** @noinspection PhpUndefinedMethodInspection */
+                        Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+                    }
+                }
             }
-        } else {
-            /* @var \Shopware\Models\Customer\Billing $address */
-            $address = $customer->getBilling();
-            if ($address instanceof \Shopware\Models\Customer\Billing) {
-                $this->setFirstName($address->getFirstName());
-                $this->setLastName($address->getLastName());
-            }
+            $this->setEmail($customer->getEmail());
+            $emailHelper = new EmailHelper();
+            $this->setMarketingPermission(
+                $emailHelper->isEmailOptedIn($customer->getEmail())
+            );
         }
-        $this->setEmail($customer->getEmail());
-        $emailHelper = new EmailHelper();
-        $this->setMarketingPermission(
-            $emailHelper->isEmailOptedIn($customer->getEmail())
-        );
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
             array(
                 'nostoOrderBuyer' => $this,
-                'customer' => $customer,
+                'customer' => $customer
             )
         );
     }
