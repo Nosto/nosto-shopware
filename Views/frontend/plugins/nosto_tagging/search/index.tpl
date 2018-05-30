@@ -39,4 +39,7 @@
 
 {block name="frontend_index_content" append}
     <div class="nosto_element" id="nosto-page-search2"></div>
+    {if isset($nostoSearch) && $nostoSearch}
+        {$nostoSearch->toHtml()}
+    {/if}
 {/block}
