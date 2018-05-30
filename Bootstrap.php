@@ -1033,7 +1033,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $nostoCategory->loadData($category);
             $this->appendHtmlToView(
                 $view,
-                $nostoCategory->getMarkupableObject()->toHtml()
+                $nostoCategory->toHtml()
             );
         }
         $this->addPageTypeTagging($view, self::PAGE_TYPE_PRODUCT);
