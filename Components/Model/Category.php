@@ -35,6 +35,7 @@
  */
 
 use Shopware\Models\Category\Category;
+use Nosto\Object\Category as NostoCategory;
 use Nosto\Object\MarkupableString;
 
 /**
@@ -47,7 +48,7 @@ use Nosto\Object\MarkupableString;
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
-    extends Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
+    extends NostoCategory
 {
     /**
      * @var string the full category path with categories separated by a `/` sign.
@@ -122,18 +123,5 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
         $this->categoryPath = $categoryPath;
 
         return $this;
-    }
-
-    /**
-     * Returns the HTML to render categories
-     *
-     * @return MarkupableString
-     */
-    public function getMarkupableObject()
-    {
-        return new MarkupableString(
-            $this->getCategoryPath(),
-            'nosto_category'
-        );
     }
 }

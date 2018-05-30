@@ -43,7 +43,6 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer as NostoCus
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as NostoProductModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Search as NostoSearchModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart as NostoCartModel;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
@@ -65,10 +64,11 @@ use Shopware\Components\CacheManager;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
-use Nosto\Object\MarkupableString;
+use Nosto\Object\SearchTerm;
 use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
 use Doctrine\ORM\ORMException;
+use Nosto\Object\PageType;
 use Nosto\NostoException;
 use Nosto\Nosto;
 
@@ -965,11 +965,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function addPageTypeTagging(Enlight_View_Default $view, $pageType)
     {
-        $pageTypeMarkup = new MarkupableString(
-            $pageType,
-            'nosto_page_type'
-        );
-        $this->appendHtmlToView($view, $pageTypeMarkup->toHtml());
+        $pageTypeObject = new PageType();
+        $pageTypeObject->setPageType($pageType);
+        $this->appendHtmlToView($view, $pageTypeObject->toHtml());
     }
 
     /**
@@ -1094,7 +1092,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         }
         $nostoCategory = new NostoCategoryModel();
         $nostoCategory->loadData($category);
-        $this->appendHtmlToView($view, $nostoCategory->getMarkupableObject()->toHtml());
+        $this->appendHtmlToView($view, $nostoCategory->toHtml());
         $this->addPageTypeTagging($view, self::PAGE_TYPE_CATEGORY);
     }
 
@@ -1212,9 +1210,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function addSearchTagging(Enlight_View_Default $view)
     {
-        $nostoSearch = new NostoSearchModel();
+        $nostoSearch = new SearchTerm();
         $nostoSearch->setSearchTerm(Shopware()->Front()->Request()->getParam('sSearch'));
-        $this->appendHtmlToView($view, $nostoSearch->getMarkupableObject()->toHtml());
+        $this->appendHtmlToView($view, $nostoSearch->toHtml());
         $this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
     }
 
