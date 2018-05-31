@@ -81,7 +81,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
             $method = sprintf('get%s', $productCustomField);
             if (method_exists($detail, $method)) {
                 $fullMethod = $detail->{$method}();
-                if (!empty($fullMethod) && $detail->{$method}() != 0) {
+                if (!empty($fullMethod) && $fullMethod != 0) {
                     $settingsCustomFields[$key] = $detail->{$method}();
                 }
             }
