@@ -56,7 +56,6 @@ use Shopware\Models\Shop\DetachedShop;
 use Nosto\Object\AbstractCollection;
 use Shopware\Models\Article\Article;
 use Nosto\Object\NostoOAuthToken;
-use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
 use Nosto\Helper\ExportHelper;
 use Nosto\NostoException;
@@ -218,7 +217,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         foreach ($articlesIds as $articleId) {
             /** @var Article $article */
             $article = Shopware()->Models()->find(
-                Article::class,
+                '\Shopware\Models\Article\Article',
                 (int)$articleId['id']
             );
 
@@ -268,7 +267,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $shop = Shopware()->Shop()->getId();
         foreach ($result as $row) {
             /** @var Order $order */
-            $order = Shopware()->Models()->getRepository(Order::class)
+            $order = Shopware()->Models()->getRepository('\Shopware\Models\Order\Order')
                 ->findOneBy(array('number' => $row['number']));
             if ($order === null || $order->getShop()->getId() != $shop) {
                 continue;
@@ -354,7 +353,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         }
         $currentBasket = Shopware()
             ->Models()
-            ->getRepository(Basket::class)
+            ->getRepository('\Shopware\Models\Order\Basket')
             ->findOneBy(array('sessionId' => $sessionId));
         // Only restores if user has no items in his current cart
         if ($currentBasket === null) {

@@ -78,7 +78,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                 try {
                     $attribute = Shopware()
                         ->Models()
-                        ->getRepository(OrderAttribute::class)
+                        ->getRepository('\Shopware\Models\Attribute\Order')
                         ->findOneBy(array('orderId' => $order->getId()));
                     $customerId = null;
                     if ($attribute instanceof OrderAttribute

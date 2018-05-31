@@ -190,7 +190,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');
         $detailImage = Shopware()
             ->Models()
-            ->getRepository(Image::class)
+            ->getRepository('\Shopware\Models\Article\Image')
             ->findOneBy(array('articleDetail' => $detail));
         if ($detailImage) {
             try {

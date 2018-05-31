@@ -57,7 +57,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
     {
         $nostoCustomer = Shopware()
             ->Models()
-            ->getRepository(CustomerModel::class)
+            ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
             ->findOneBy(array('restoreCartHash' => $hash));
         if ($nostoCustomer !== null) {
             $this->updateBasket($nostoCustomer->getSessionId(), $currentSessionId);
@@ -85,7 +85,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
         if ($nostoCustomer && $nostoCustomer->getRestoreCartHash()) {
             $basket = Shopware()
                 ->Models()
-                ->getRepository(Basket::class)
+                ->getRepository('\Shopware\Models\Order\Basket')
                 ->findOneBy(array('sessionId' => $nostoCustomer->getSessionId()));
             if ($basket !== null) {
                 return NostoHelperUrl::generateRestoreCartUrl(
@@ -124,7 +124,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
         try {
             $basketItems = Shopware()
                 ->Models()
-                ->getRepository(Basket::class)
+                ->getRepository('\Shopware\Models\Order\Basket')
                 ->findBy(array('sessionId' => $sessionId));
 
             foreach ($basketItems as $basketItem) {
@@ -154,7 +154,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
         /** @var $nostoCustomer CustomerModel */
         $nostoCustomer = Shopware()
             ->Models()
-            ->getRepository(CustomerModel::class)
+            ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
             ->findOneBy(array('sessionId' => $sessionId));
         if ($nostoCustomer !== null) {
             $nostoCustomer->setSessionId($newSessionId);
@@ -180,7 +180,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
         }
         $nostoCustomer = Shopware()
             ->Models()
-            ->getRepository(CustomerModel::class)
+            ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
             ->findOneBy(array('nostoId' => $nostoCustomerId));
         if ($nostoCustomer instanceof CustomerModel
             && $nostoCustomer->getNostoId()

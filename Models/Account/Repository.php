@@ -50,7 +50,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Account_Repository
         /** @var Account $existingAccount */
         $existingAccount = Shopware()
             ->Models()
-            ->getRepository(Account::class)
+            ->getRepository('\Shopware\CustomModels\Nosto\Account\Account')
             ->findOneBy(array('name' => $account->getName()));
 
         // If an account has been found, and the shop id is different from current shop, then it means

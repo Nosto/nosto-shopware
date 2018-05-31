@@ -36,8 +36,6 @@
 
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
 use Nosto\Object\Cart\LineItem;
-use Shopware\Models\Article\Detail;
-use Shopware\Models\Article\Article;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware\Models\Order\Basket;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -75,13 +73,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
             // If this is a product variation, we need to load the parent
             // article to fetch it's number and name.
             $article = Shopware()->Models()->find(
-                Article::class,
+                '\Shopware\Models\Article\Article',
                 $basket->getArticleId()
             );
             if (!empty($article)) {
                 $detailNumber = Shopware()
                     ->Models()
-                    ->getRepository(Detail::class)
+                    ->getRepository('\Shopware\Models\Article\Detail')
                     ->findOneBy(array('number' => $basket->getOrderNumber()));
                 if (!empty($detailNumber)) {
                     $this->setProductId($detailNumber->getNumber());
@@ -99,7 +97,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
 
         $articleDetail = Shopware()
             ->Models()
-            ->getRepository(Detail::class)
+            ->getRepository('\Shopware\Models\Article\Detail')
             ->findOneBy(array('articleId' => $basket->getArticleId()));
         /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()

@@ -70,7 +70,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             ->Config()
             ->get(Bootstrap::CONFIG_SEND_CUSTOMER_DATA);
         if ($customerDataAllowed) {
-            if (method_exists(Customer::class, 'getDefaultBillingAddress')) {
+            if (method_exists('\Shopware\Models\Customer\Customer', 'getDefaultBillingAddress')) {
                 /** @var Address $address */
                 $address = $customer->getDefaultBillingAddress();
                 if ($address instanceof Address) {
@@ -94,7 +94,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                         /** @var Country $country */
                         $country = Shopware()
                             ->Models()
-                            ->getRepository(Country::class)
+                            ->getRepository('\Shopware\Models\Country\Country')
                             ->findOneBy(array('id' => $address->getCountryId()));
                         $this->setCountry($country->getName());
                     } catch (\Exception $e) {

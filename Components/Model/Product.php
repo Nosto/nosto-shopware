@@ -234,15 +234,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         /** @var QueryBuilder $builder */
         $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
-            ->from(Translation::class, 'translations')
+            ->from('\Shopware\Models\Translation\Translation', 'translations')
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
             ->andWhere('translations.type = \'article\'');
 
-        if (property_exists(Translation::class, 'shopId')) {
+        if (property_exists('\Shopware\Models\Translation\Translation', 'shopId')) {
             $builder = $builder->andWhere('translations.shopId = :shopId')
                 ->setParameter('shopId', $shop->getId());
-        } elseif (property_exists(Translation::class, 'localeId')
-            && method_exists(Shop::class, 'getLocale')
+        } elseif (property_exists('\Shopware\Models\Translation\Translation', 'localeId')
+            && method_exists('\Shopware\Models\Shop\Shop', 'getLocale')
             && $shop->getLocale() !== null
         ) {
             $builder = $builder->andWhere('translations.localeId = :localeId')
@@ -289,7 +289,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         try {
             $articleDetail = Shopware()
                 ->Models()
-                ->getRepository(Detail::class)
+                ->getRepository('\Shopware\Models\Article\Detail')
                 ->findOneBy(array('articleId' => $mainDetail->getArticleId()));
             if (!empty($articleDetail)) {
                 $this->setProductId($articleDetail->getNumber());
@@ -400,7 +400,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         /** @var Detail[] $details */
         $details = Shopware()
             ->Models()
-            ->getRepository(Detail::class)
+            ->getRepository('\Shopware\Models\Article\Detail')
             ->findBy(array('articleId' => $article->getId()));
         foreach ($details as $detail) {
             if ($detail->getInStock() > 0 && $detail->getActive()) {
