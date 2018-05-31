@@ -50,9 +50,7 @@ use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Models\Customer\Customer as CustomerModel;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Attribute\Order as OrderAttribute;
-use Shopware\CustomModels\Nosto\Customer\Customer;
 use Shopware\CustomModels\Nosto\Setting\Setting;
-use Shopware\CustomModels\Nosto\Account\Account;
 use Nosto\Object\Signup\Account as NostoAccount;
 use phpseclib\Crypt\Random as NostoCryptRandom;
 use Doctrine\ORM\TransactionRequiredException;
@@ -65,7 +63,6 @@ use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
 use Nosto\Object\SearchTerm;
-use Shopware\Models\Order\Basket;
 use Shopware\Models\Order\Order;
 use Doctrine\ORM\ORMException;
 use Nosto\Object\PageType;
@@ -267,9 +264,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
         $schematicTool->createSchema(
             array(
-                $modelManager->getClassMetadata(Account::class),
-                $modelManager->getClassMetadata(Customer::class),
-                $modelManager->getClassMetadata(Setting::class)
+                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Account\Account'),
+                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Customer\Customer'),
+                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Setting\Setting')
             )
         );
     }
@@ -602,9 +599,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
         $schematicTool->dropSchema(
             array(
-                $modelManager->getClassMetadata(Account::class),
-                $modelManager->getClassMetadata(Customer::class),
-                $modelManager->getClassMetadata(Setting::class)
+                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Account\Account'),
+                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Customer\Customer'),
+                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Setting\Setting')
             )
         );
     }
@@ -703,7 +700,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     }
                     $setting = Shopware()
                         ->Models()
-                        ->getRepository(Setting::class)
+                        ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
                         ->findOneBy(array('name' => 'oauthParams'));
                     if (is_null($setting)) {
                         $setting = new Setting();
@@ -857,7 +854,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @noinspection PhpUndefinedFieldInspection */
         $customerId = (int)Shopware()->Session()->sUserId;
         $customer = Shopware()->Models()->find(
-            CustomerModel::class,
+            '\Shopware\Models\Customer\Customer',
             $customerId
         );
         $customerDataAllowed = $this
@@ -884,7 +881,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         /** @var Shopware\Models\Order\Basket[] $baskets */
         /** @noinspection PhpUndefinedMethodInspection */
-        $baskets = Shopware()->Models()->getRepository(Basket::class)->findBy(
+        $baskets = Shopware()->Models()->getRepository('\Shopware\Models\Order\Basket')->findBy(
             array(
                 'sessionId' => (Shopware()->Session()->offsetExists('sessionId')
                     ? Shopware()->Session()->offsetGet('sessionId')
@@ -919,7 +916,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         $setting = Shopware()
             ->Models()
-            ->getRepository(Setting::class)
+            ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
             ->findOneBy(array('name' => 'uniqueId'));
 
         if (is_null($setting)) {
@@ -1013,7 +1010,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         /** @var Shopware\Models\Article\Article $article */
         $articleId = (int)Shopware()->Front()->Request()->getParam('sArticle');
-        $article = Shopware()->Models()->find(Article::class, $articleId);
+        $article = Shopware()->Models()->find('\Shopware\Models\Article\Article', $articleId);
         if (!($article instanceof Article)) {
             return;
         }
@@ -1024,7 +1021,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @var Shopware\Models\Category\Category $category */
         $categoryId = (int)Shopware()->Front()->Request()->getParam('sCategory');
         $category = Shopware()->Models()->find(
-            Category::class,
+            '\Shopware\Models\Category\Category',
             $categoryId
         );
         if ($category !== null) {
@@ -1079,7 +1076,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @var Category $category */
         $categoryId = (int)Shopware()->Front()->Request()->getParam('sCategory');
         $category = Shopware()->Models()->find(
-            Category::class,
+            '\Shopware\Models\Category\Category',
             $categoryId
         );
         if (!($category instanceof Category)) {
@@ -1144,7 +1141,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $orderNumber = $orderVariables->sOrderNumber;
             $order = Shopware()
                 ->Models()
-                ->getRepository(Order::class)
+                ->getRepository('\Shopware\Models\Order\Order')
                 ->findOneBy(array('number' => $orderNumber));
         } elseif (Shopware()->Session()->offsetExists('sUserId')) {
             // Fall back on loading the last order by customer ID if the order
@@ -1153,7 +1150,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $customerId = Shopware()->Session()->offsetGet('sUserId');
             $order = Shopware()
                 ->Models()
-                ->getRepository(Order::class)
+                ->getRepository('\Shopware\Models\Order\Order')
                 ->findOneBy(
                     array('customerId' => $customerId),
                     array('number' => 'DESC') // Last order by customer
@@ -1290,7 +1287,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @var Order $order */
         $order = Shopware()
             ->Models()
-            ->getRepository(Order::class)
+            ->getRepository('\Shopware\Models\Order\Order')
             ->findOneBy(array('number' => $sOrder->sOrderNumber));
         if ($order) {
             // Store the Nosto customer ID in the order attribute if found.
@@ -1298,7 +1295,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             if (!empty($nostoId)) {
                 $attribute = Shopware()
                     ->Models()
-                    ->getRepository(OrderAttribute::class)
+                    ->getRepository('\Shopware\Models\Attribute\Order')
                     ->findOneBy(array('orderId' => $order->getId()));
                 /** @noinspection PhpUndefinedClassInspection */
                 if ($attribute instanceof OrderAttribute
