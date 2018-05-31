@@ -35,9 +35,7 @@
  */
 
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
-use Shopware\Models\Article\Article;
 use Shopware\Models\Shop\Shop;
-use Shopware\Models\Category\Category;
 use Doctrine\ORM\AbstractQuery;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
 
@@ -59,7 +57,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('articles.id'))
-            ->from(Article::class, 'articles')
+            ->from('\Shopware\Models\Article\Article', 'articles')
             ->where('articles.active = 1')
             ->setFirstResult(0)
             ->setMaxResults(1)
@@ -111,7 +109,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('categories.id'))
-            ->from(Category::class, 'categories')
+            ->from('\Shopware\Models\Category\Category', 'categories')
             ->where('categories.active = 1 AND categories.parent = :parentId AND categories.blog = 0')
             ->setParameter(':parentId', $shop->getCategory()->getId())
             ->setFirstResult(0)

@@ -36,7 +36,6 @@
 
 use Shopware\Models\Category\Category;
 use Nosto\Object\Category as NostoCategory;
-use Nosto\Object\MarkupableString;
 
 /**
  * Model for product category information. This is used when compiling the info

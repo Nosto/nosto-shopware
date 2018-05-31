@@ -34,7 +34,6 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Order\Order;
 use Doctrine\ORM\AbstractQuery;
 
 /**
@@ -52,7 +51,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Order_Repository
     {
         $builder = Shopware()->Models()->createQueryBuilder();
         $result = $builder->select(array('orders.number'))
-            ->from(Order::class, 'orders')
+            ->from('\Shopware\Models\Order\Order', 'orders')
             ->where('orders.status >= 0');
 
         if (!empty($id)) {
