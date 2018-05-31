@@ -79,11 +79,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
         $settingsCustomFields = array();
         foreach (self::$productCustomFields as $key => $productCustomField) {
             $method = sprintf('get%s', $productCustomField);
-            if (method_exists($detail, $method)
-               && !empty($detail->{$method}())
-               && $detail->{$method}() != 0
-            ) {
-                $settingsCustomFields[$key] = $detail->{$method}();
+            if (method_exists($detail, $method)) {
+                $fullMethod = $detail->{$method}();
+                if (!empty($fullMethod) && $detail->{$method}() != 0) {
+                    $settingsCustomFields[$key] = $detail->{$method}();
+                }
             }
         }
         return $settingsCustomFields;
