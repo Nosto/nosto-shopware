@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.2]
+- Fix SKU Variations For Single Products
+- Add Variant Configuration Group Options Into Custom Attributes
+- Fix issue when updating the plugin could not create database column for cart restore hash
+
 ## [2.1.1]
 - Fix Backwards Compatibility With PHP 5.4
 
