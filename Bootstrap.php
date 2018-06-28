@@ -54,6 +54,7 @@ use Shopware\CustomModels\Nosto\Setting\Setting;
 use Nosto\Object\Signup\Account as NostoAccount;
 use phpseclib\Crypt\Random as NostoCryptRandom;
 use Doctrine\ORM\TransactionRequiredException;
+use Shopware\Components\Model\ModelManager;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Shopware\Models\Category\Category;
@@ -250,6 +251,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
+     * Returns an array with metadata of Nosto tables
+     *
+     * @param ModelManager $modelManager
+     * @return array
+     */
+    protected function getNostoModelClassMetadata(ModelManager $modelManager)
+    {
+        return array(
+            $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Account\Account'),
+            $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Customer\Customer'),
+            $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Setting\Setting')
+        );
+    }
+
+    /**
      * Creates needed db tables used by the plugin models.
      *
      * Run on install.
@@ -262,13 +278,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $this->registerCustomModels();
         $modelManager = Shopware()->Models();
         $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
-        $schematicTool->createSchema(
-            array(
-                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Account\Account'),
-                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Customer\Customer'),
-                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Setting\Setting')
-            )
-        );
+        $schematicTool->createSchema($this->getNostoModelClassMetadata($modelManager));
     }
 
     /**
@@ -567,6 +577,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function update($existingVersion)
     {
+        $this->updateMyTables();
         $this->createMyAttributes($existingVersion);
         $this->clearShopwareCache();
 
@@ -597,13 +608,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $this->registerCustomModels();
         $modelManager = Shopware()->Models();
         $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
-        $schematicTool->dropSchema(
-            array(
-                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Account\Account'),
-                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Customer\Customer'),
-                $modelManager->getClassMetadata('\Shopware\CustomModels\Nosto\Setting\Setting')
-            )
-        );
+        $schematicTool->dropSchema($this->getNostoModelClassMetadata($modelManager));
+    }
+
+    /**
+     * Update existing db tables.
+     *
+     * Run on update.
+     *
+     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::update
+     */
+    protected function updateMyTables()
+    {
+        $this->registerCustomModels();
+        $modelManager = Shopware()->Models();
+        $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
+        $schematicTool->updateSchema($this->getNostoModelClassMetadata($modelManager));
     }
 
     /**
