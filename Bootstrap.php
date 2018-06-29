@@ -623,7 +623,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $this->registerCustomModels();
         $modelManager = Shopware()->Models();
         $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
-        $schematicTool->updateSchema($this->getNostoModelClassMetadata($modelManager));
+        $schematicTool->updateSchema($this->getNostoModelClassMetadata($modelManager), true);
     }
 
     /**
