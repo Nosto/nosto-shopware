@@ -84,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
             foreach ($configurator as $config) {
                 /** @var Option $config */
                 if (!$config instanceof Option
-                    && $config->getGroup() === null
+                    || $config->getGroup() === null
                 ) {
                     continue;
                 }
