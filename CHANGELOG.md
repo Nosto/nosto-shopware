@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fix SKU Variations For Single Products
 - Add Variant Configuration Group Options Into Custom Attributes
 - Fix issue when updating the plugin could not create database column for cart restore hash
+- Fix Missing Category Tagging In Category Listing Page
 
 ## [2.1.1]
 - Fix Backwards Compatibility With PHP 5.4
