@@ -188,6 +188,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     
     /**
      * Add Sku variations to the current article
+     *
      * @param Article $article
      * @param Shop $shop
      * @return SkuCollection
@@ -196,6 +197,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     {
         $skuCollection = new SkuCollection();
         foreach ($article->getDetails() as $detail) {
+            /** @var Detail $detail */
+            if ($detail->getId() === $article->getMainDetail()->getId()) {
+                continue;
+            }
             $sku = new NostoSku();
             $sku->loadData($detail, $shop);
             $skuCollection->append($sku);

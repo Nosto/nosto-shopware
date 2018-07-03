@@ -36,6 +36,7 @@
 
 use Shopware\Models\Article\Detail;
 use Nosto\Helper\SerializationHelper;
+use Shopware\Models\Article\Configurator\Option;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
@@ -64,7 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
         'articleId',
         'article'
     );
-    public static $test = 'getWidth';
+
     /**
      * Returns an array with defined properties in the settings
      * panel of the variant/main product
@@ -77,10 +78,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
         // Iterates through the $productCustomFields array and
         // dynamically execute the methods in the Detail object.
         $settingsCustomFields = array();
+        // Add variant configuration group options into custom attributes
+        try {
+            $configurator = $detail->getConfiguratorOptions()->getValues();
+            foreach ($configurator as $config) {
+                /** @var Option $config */
+                if (!$config instanceof Option
+                    || $config->getGroup() === null
+                ) {
+                    continue;
+                }
+                $settingsCustomFields[$config->getGroup()->getName()] = $config->getName();
+            }
+        } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
+        }
         foreach (self::$productCustomFields as $key => $productCustomField) {
             $method = sprintf('get%s', $productCustomField);
             if (method_exists($detail, $method)) {
                 $fullMethod = $detail->{$method}();
+                /** @noinspection TypeUnsafeComparisonInspection */
                 if (!empty($fullMethod) && $fullMethod != 0) {
                     $settingsCustomFields[$key] = $detail->{$method}();
                 }
