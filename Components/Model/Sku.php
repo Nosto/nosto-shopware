@@ -41,6 +41,7 @@ use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as Image;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku
@@ -85,7 +86,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         $this->setAvailable($this->isDetailAvailable($detail));
         $this->setGtin($detail->getSupplierNumber());
         $this->amendDetailFreeTextCustomFields($detail);
-        $this->amendDetailSettingsCustomFields($detail);
+        if ($this->isCustomFieldsTaggingEnabled()) {
+            $this->amendDetailSettingsCustomFields($detail);
+        }
     }
 
     /**
@@ -127,5 +130,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
                 $this->addCustomField($key, $customField);
             }
         }
+    }
+
+    /**
+     * * Wrapper that returns if Custom Fields Tagging is enabled
+     * in Shopware backend
+     * @return mixed
+     */
+    private function isCustomFieldsTaggingEnabled()
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        return Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Bootstrap::CONFIG_CUSTOM_FIELD_TAGGING);
     }
 }
