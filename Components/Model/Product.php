@@ -125,7 +125,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->amendRatingsAndReviews($article, $shop);
         $this->amendInventoryLevel($article);
         $this->amendArticleTranslation($article, $shop);
-        $this->amendSettingsCustomFields($article);
+        if ($this->isCustomFieldsTaggingEnabled()) {
+            $this->amendSettingsCustomFields($article);
+        }
         $this->amendFreeTextCustomFields($article);
         $this->setInventoryLevel($article->getMainDetail()->getInStock());
         $this->setSupplierCost($article->getMainDetail()->getPurchasePrice());
@@ -488,5 +490,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             }
         }
         return $paths;
+    }
+
+    /**
+     * * Wrapper that returns if Custom Fields Tagging is enabled
+     * in Shopware backend
+     * @return mixed
+     */
+    private function isCustomFieldsTaggingEnabled()
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        return Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Bootstrap::CONFIG_CUSTOM_FIELD_TAGGING);
     }
 }

@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.3
+- Add feature flag to enable/disable tagging product properties to custom fields
+
 ## 2.1.2
 - Fix SKU variations for single products
 - Add variant configuration group options into custom attributes
