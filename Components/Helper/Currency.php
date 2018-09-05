@@ -38,6 +38,7 @@ use Shopware\Models\Shop\Shop;
 use Nosto\Object\ExchangeRateCollection;
 use Nosto\Object\ExchangeRate;
 use Nosto\Object\Signup\Account;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 
 /**
  * Helper class for Currency
@@ -49,6 +50,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
 {
     public function updateCurrencyExchangeRates(Account $account, Shop $shop)
     {
+        if (!$this->isMultiCurrencyEnabled()) {
+            return false;
+        }
         $currencyService = new \Nosto\Operation\SyncRates($account);
         $collection = $this->buildExchangeRatesCollection();
         return $currencyService->update($collection);
@@ -63,6 +67,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
             $collection->addRate($currency->getName(), $rate);
         }
         return $collection;
+    }
+
+    /**
+     * Wrapper that returns if multi currency is enabled
+     * in Shopware backend
+     *
+     * @return mixed
+     */
+    private function isMultiCurrencyEnabled()
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        return Shopware()
+            ->Plugins()
+            ->Frontend()
+            ->NostoTagging()
+            ->Config()
+            ->get(Bootstrap::CONFIG_MULTI_CURRENCY);
     }
 
 }

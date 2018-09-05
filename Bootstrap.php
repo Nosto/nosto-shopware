@@ -101,6 +101,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const CONFIG_SKU_TAGGING= 'sku_tagging';
     const CONFIG_PRODUCT_STREAMS = 'product_streams';
     const CONFIG_CUSTOM_FIELD_TAGGING = 'custom_field_tagging';
+    const CONFIG_MULTI_CURRENCY = 'multi_currency';
 
     private static $productUpdated = false;
 
@@ -258,6 +259,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 'value' => 1,
                 'scope' => Element::SCOPE_SHOP,
                 'description' => 'Add Product Properties In Custom Field Tagging',
+                'required' => true
+            ]
+        );
+
+        $form->setElement(
+            'checkbox',
+            self::CONFIG_MULTI_CURRENCY,
+            [
+                'label' => 'Enable Multi Currency',
+                'value' => 0,
+                'scope' => Element::SCOPE_SHOP,
+                'description' => 'Enable Multi Currency For All Shops ',
                 'required' => true
             ]
         );
