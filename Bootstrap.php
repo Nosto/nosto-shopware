@@ -102,6 +102,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const CONFIG_PRODUCT_STREAMS = 'product_streams';
     const CONFIG_CUSTOM_FIELD_TAGGING = 'custom_field_tagging';
     const CONFIG_MULTI_CURRENCY = 'multi_currency';
+    const CONFIG_MULTI_CURRENCY_DISABLED = 'multi_currency_disabled';
+    const CONFIG_MULTI_CURRENCY_EXCHANGE_RATES = 'multi_currency_exchange_rates';
 
     private static $productUpdated = false;
 
@@ -252,27 +254,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         );
 
         $form->setElement(
-            'checkbox',
-            self::CONFIG_CUSTOM_FIELD_TAGGING,
-            [
-                'label' => 'Enable Custom Field Tagging',
-                'value' => 1,
-                'scope' => Element::SCOPE_SHOP,
-                'description' => 'Add Product Properties In Custom Field Tagging',
-                'required' => true
-            ]
-        );
-
-        $form->setElement(
-            'checkbox',
+            'select',
             self::CONFIG_MULTI_CURRENCY,
-            [
-                'label' => 'Enable Multi Currency',
-                'value' => 0,
-                'scope' => Element::SCOPE_SHOP,
-                'description' => 'Enable Multi Currency For All Shops ',
-                'required' => true
-            ]
+            array(
+                'label' => 'Multi Currency',
+                'value' => 'Disabled',
+                'store' => array(
+                    array(self::CONFIG_MULTI_CURRENCY_DISABLED, 'Disabled'),
+                    array(self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES, 'Exchange Rates'),
+                ),
+                'description' => 'Set this to "Exchange rates" if your store uses Shopware\'s exchange rates.
+                 If you have a custom pricing handling set this to "Disabled" and Nosto will not 
+                 make any currency conversions.',
+                'required' => true,
+                'scope' => \Shopware\Models\Config\Element::SCOPE_SHOP)
         );
     }
 

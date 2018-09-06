@@ -123,7 +123,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      * Wrapper that returns if multi currency is enabled
      * in Shopware backend
      *
-     * @return mixed
+     * @return bool
      */
     public static function isMultiCurrencyEnabled()
     {
@@ -133,6 +133,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
             ->Frontend()
             ->NostoTagging()
             ->Config()
-            ->get(Bootstrap::CONFIG_MULTI_CURRENCY);
+            ->get(Bootstrap::CONFIG_MULTI_CURRENCY) !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED;
     }
 }
