@@ -34,10 +34,11 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\ExchangeRateCollection;
-use Nosto\Object\ExchangeRate;
-use Nosto\Object\Signup\Account;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Nosto\Object\ExchangeRateCollection;
+use Nosto\Object\Signup\Account;
+use Nosto\Object\ExchangeRate;
+use Shopware\Models\Shop\Shop;
 
 /**
  * Helper class for Currency
@@ -55,7 +56,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      */
     public function updateCurrencyExchangeRates(Account $account)
     {
-        if (!$this->isMultiCurrencyEnabled()) {
+        if (!self::isMultiCurrencyEnabled()) {
             return false;
         }
         $currencyService = new \Nosto\Operation\SyncRates($account);
@@ -78,49 +79,35 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     }
 
     /**
-     * If the store uses multiple currencies, the prices are converted from base
-     * currency into given currency. Otherwise the given price is returned.
-     *
-     * @param float $basePrice The price of a product in base currency
-     * @return float
-     * @throws \Exception
-     */
-    public function convertToTaggingPrice($basePrice)
-    {
-        // If multi currency is disabled we don't do any processing or
-        // conversions for the price
-        if (!$this->isMultiCurrencyEnabled()) {
-            return $basePrice;
-        }
-
-        $taggingCurrency = $this->getTaggingCurrency();
-        $baseCurrency = $this->getDefaultCurrency();
-        if ($taggingCurrency->getCurrency() !== $baseCurrency->getCurrency()) {
-            // Do the conversion:
-            $rate = $taggingCurrency->getFactor();
-            return (float)$basePrice * $rate;
-        }
-        return $basePrice;
-    }
-
-    /**
      * Returns the currency that must be used in tagging
      */
     public function getTaggingCurrency()
     {
         // If multi currency is disabled we use
         // the base currency for tagging
-        if (!$this->isMultiCurrencyEnabled()) {
-            return $this->getDefaultCurrency();
+        if (!self::isMultiCurrencyEnabled()) {
+            return self::getDefaultCurrency();
         }
         return Shopware()->Shop()->getCurrency();
     }
 
     /**
-     *
-     * @return mixed|null|\Shopware\Models\Shop\Currency
+     * @param Shop $shop
+     * @return string
      */
-    public function getDefaultCurrency()
+    public static function getCurrencyCode(Shop $shop)
+    {
+        if (self::isMultiCurrencyEnabled()) {
+            // Return currency code
+            return self::getDefaultCurrency()->getCurrency();
+        }
+        return $shop->getCurrency()->getCurrency();
+    }
+
+    /**
+     * @return mixed|\Shopware\Models\Shop\Currency
+     */
+    public static function getDefaultCurrency()
     {
         $currencies = Shopware()->Shop()->getCurrencies();
         foreach ($currencies as $currency) {
@@ -134,11 +121,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
 
     /**
      * Wrapper that returns if multi currency is enabled
-     * in Shopware backend for the given shop
+     * in Shopware backend
      *
      * @return mixed
      */
-    public function isMultiCurrencyEnabled()
+    public static function isMultiCurrencyEnabled()
     {
         /** @noinspection PhpUndefinedMethodInspection */
         return Shopware()
