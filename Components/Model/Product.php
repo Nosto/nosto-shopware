@@ -133,6 +133,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->setInventoryLevel($article->getMainDetail()->getInStock());
         $this->setSupplierCost($article->getMainDetail()->getPurchasePrice());
 
+        if (CurrencyHelper::isMultiCurrencyEnabled()) {
+            $this->setVariationId(CurrencyHelper::getCurrencyCode($shop));
+        }
         /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()
             ->Plugins()
