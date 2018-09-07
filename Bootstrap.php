@@ -45,6 +45,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponent
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart as NostoCartModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Models\Customer\Customer as CustomerModel;
@@ -721,6 +722,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $view = $ctrl->View();
         $request = $ctrl->Request();
 
+        $this->updateExchangeRates();
+
         if ($this->validateEvent($ctrl, 'backend', 'index', 'index')) {
             $view->addTemplateDir($this->Path() . 'Views/');
             $view->extendsTemplate('backend/plugins/nosto_tagging/index/header.tpl');
@@ -757,6 +760,40 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $view->addTemplateDir($this->Path() . 'Views/');
             $view->extendsTemplate('backend/nosto_start_app/menu.js');
         }
+    }
+
+    /**
+     * @return bool
+     * @throws NostoException
+     * @throws \Nosto\Request\Http\Exception\AbstractHttpException
+     */
+    protected function updateExchangeRates()
+    {
+        $success = false;
+        try {
+            /** @var \Shopware_Proxies_ShopwareModelsShopRepositoryProxy $repository */
+            $repository = Shopware()->Container()->get('models')->getRepository('Shopware\Models\Shop\Shop');
+        } catch (\Exception $e) {
+            $this->getLogger()->warning($e->getMessage());
+            return false;
+        }
+        foreach ($repository->getActiveShops() as $shop) {
+            $shopConfig = $this
+                ->get('shopware.plugin.cached_config_reader')
+                ->getByPluginName('NostoTagging', $shop);
+            if ($shopConfig[self::CONFIG_MULTI_CURRENCY] !== self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
+                continue;
+            }
+            $account = NostoComponentAccount::findAccount($shop);
+            if ($account) {
+                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+                $currencyHelper = new CurrencyHelper();
+                if ($currencyHelper->updateCurrencyExchangeRates($nostoAccount, $shop)){
+                    $success = true;
+                }
+            }
+        }
+        return $success;
     }
 
     /**

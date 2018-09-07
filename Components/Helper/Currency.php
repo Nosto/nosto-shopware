@@ -50,26 +50,28 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
 {
     /**
      * @param Account $account
+     * @param Shop $shop
      * @return bool
      * @throws \Nosto\NostoException
      * @throws \Nosto\Request\Http\Exception\AbstractHttpException
      */
-    public function updateCurrencyExchangeRates(Account $account)
+    public function updateCurrencyExchangeRates(Account $account, Shop $shop)
     {
         if (!self::isMultiCurrencyEnabled()) {
             return false;
         }
         $currencyService = new \Nosto\Operation\SyncRates($account);
-        $collection = $this->buildExchangeRatesCollection();
+        $collection = $this->buildExchangeRatesCollection($shop);
         return $currencyService->update($collection);
     }
 
     /**
+     * @param Shop $shop
      * @return ExchangeRateCollection
      */
-    public function buildExchangeRatesCollection()
+    public function buildExchangeRatesCollection(Shop $shop)
     {
-        $currencies = Shopware()->Shop()->getCurrencies();
+        $currencies = $shop->getCurrencies();
         $collection = new ExchangeRateCollection();
         foreach ($currencies as $currency) {
             $rate = new ExchangeRate($currency->getCurrency(), $currency->getFactor());
@@ -80,6 +82,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
 
     /**
      * Returns the currency that must be used in tagging
+     *
+     * @return mixed|\Shopware\Models\Shop\Currency
      */
     public function getTaggingCurrency()
     {
@@ -121,7 +125,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
 
     /**
      * Wrapper that returns if multi currency is enabled
-     * in Shopware backend
+     * in Shopware backend. Should be used from the frontend context
      *
      * @return bool
      */
