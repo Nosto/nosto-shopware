@@ -64,6 +64,7 @@ use Shopware\Components\CacheManager;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
+use Nosto\Object\MarkupableString;
 use Nosto\Object\SearchTerm;
 use Shopware\Models\Order\Order;
 use Doctrine\ORM\ORMException;
@@ -861,6 +862,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $this->addEmbedScript($view);
         $this->addCustomerTagging($view);
         $this->addCartTagging($view);
+        $this->addVariationTagging($view);
         $this->addHcidTagging($view);
 
         $locale = Shopware()->Shop()->getLocale()->getLocale();
@@ -983,6 +985,27 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     protected function addHcidTagging(Enlight_View_Default $view)
     {
         $view->assign('nostoHcid', NostoComponentCustomer::getHcid());
+    }
+
+    /**
+     * Adds the variation tagging.
+     *
+     * @param Enlight_View_Default $view the view.
+     *
+     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+     */
+    protected function addVariationTagging(Enlight_View_Default $view)
+    {
+        $shopConfig = $this
+            ->get('shopware.plugin.cached_config_reader')
+            ->getByPluginName('NostoTagging', Shopware()->Shop());
+        if ($shopConfig[self::CONFIG_MULTI_CURRENCY] === self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
+            $variationObj = new MarkupableString(
+                CurrencyHelper::getCurrencyCode(Shopware()->Shop()),
+                'nosto_variation'
+            );
+            $view->assign('nostoVariation', $variationObj);
+        }
     }
 
     /**

@@ -354,7 +354,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
      */
     public function getDefaultVariationId()
     {
-        // @TODO Check here
         return parent::getDefaultVariantId();
     }
 
