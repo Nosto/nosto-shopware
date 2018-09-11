@@ -764,6 +764,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
+     * Trigger exchange rates update for each shop that
+     * has multi currency enabled
+     *
      * @return bool
      * @throws NostoException
      * @throws \Nosto\Request\Http\Exception\AbstractHttpException

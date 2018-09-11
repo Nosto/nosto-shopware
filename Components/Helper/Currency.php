@@ -49,6 +49,8 @@ use Shopware\Models\Shop\Shop;
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
 {
     /**
+     * Update exchange rates for the given shop.
+     *
      * @param Account $account
      * @param Shop $shop
      * @return bool
@@ -57,9 +59,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      */
     public function updateCurrencyExchangeRates(Account $account, Shop $shop)
     {
-        if (!self::isMultiCurrencyEnabled()) {
-            return false;
-        }
         $currencyService = new \Nosto\Operation\SyncRates($account);
         $collection = $this->buildExchangeRatesCollection($shop);
         return $currencyService->update($collection);
