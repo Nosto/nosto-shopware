@@ -129,10 +129,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         $this->owner->loadData($identity);
         $this->billing = new Billing();
         $this->billing->setCountry(strtoupper(substr($shop->getLocale()->getLocale(), 3)));
-        if (CurrencyHelper::isMultiCurrencyEnabled()) {
+        if (CurrencyHelper::isMultiCurrencyEnabled($shop)) {
             $this->setDefaultVariantId(CurrencyHelper::getDefaultCurrency()->getCurrency());
-            // @TODO Refactor this naming
-            $this->setUseCurrencyExchangeRates(CurrencyHelper::isMultiCurrencyEnabled());
+            $this->setUseCurrencyExchangeRates(true);
         }
     }
 

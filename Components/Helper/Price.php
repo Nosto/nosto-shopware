@@ -63,7 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     public static function convertToShopCurrency($priceInMainShopCurrency, Shop $shop)
     {
         // If it is 0, Shopware considering it 1
-        if (CurrencyHelper::isMultiCurrencyEnabled()
+        if (CurrencyHelper::isMultiCurrencyEnabled($shop)
             || $shop->getCurrency()->getFactor() === 0.0
         ) {
             return $priceInMainShopCurrency;
