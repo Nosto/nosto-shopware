@@ -350,7 +350,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     }
 
     /**
-     * @return null
+     * @return string
      */
     public function getDefaultVariationId()
     {

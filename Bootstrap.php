@@ -789,7 +789,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             if ($account) {
                 $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
                 $currencyHelper = new CurrencyHelper();
-                if ($currencyHelper->updateCurrencyExchangeRates($nostoAccount, $shop)){
+                if ($currencyHelper->updateCurrencyExchangeRates($nostoAccount, $shop)) {
                     $success = true;
                 }
             }

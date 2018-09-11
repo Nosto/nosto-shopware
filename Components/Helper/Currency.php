@@ -74,7 +74,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
         $currencies = $shop->getCurrencies();
         $collection = new ExchangeRateCollection();
         foreach ($currencies as $currency) {
-            $rate = new ExchangeRate($currency->getCurrency(), $currency->getFactor());
+            $rate = new ExchangeRate($currency->getCurrency(), (string)$currency->getFactor());
             $collection->addRate($currency->getCurrency(), $rate);
         }
         return $collection;
