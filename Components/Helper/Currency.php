@@ -61,7 +61,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         $currencyService = new \Nosto\Operation\SyncRates($account);
         $collection = $this->buildExchangeRatesCollection($shop);
-        return $currencyService->update($collection);
+        try {
+            return $currencyService->update($collection);
+        } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
+                'Failed to update exchange rates: '.
+                $e->getMessage()
+            );
+            return false;
+        }
     }
 
     /**
