@@ -132,19 +132,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     }
 
     /**
-     * Wrapper that returns if multi currency is enabled
-     * in Shopware backend. Should be used from the frontend context
+     * Wrapper that returns if multi-currency is enabled in Shopware backend.
+     * If no shop object is given, will use the shop from the frontend request
      *
+     * @param Shop|null $shop
      * @return bool
      */
-    public static function isMultiCurrencyEnabled()
+    public static function isMultiCurrencyEnabled(Shop $shop = null)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        return Shopware()
-            ->Plugins()
-            ->Frontend()
-            ->NostoTagging()
-            ->Config()
-            ->get(Bootstrap::CONFIG_MULTI_CURRENCY) !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED;
+        if ($shop === null) {
+            $shop = Shopware()->Shop();
+        }
+        $shopConfig = Shopware()->Container()
+            ->get('shopware.plugin.cached_config_reader')
+            ->getByPluginName('NostoTagging', $shop);
+        return $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED;
     }
 }

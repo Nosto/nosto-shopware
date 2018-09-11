@@ -999,10 +999,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     protected function addVariationTagging(Enlight_View_Default $view)
     {
-        $shopConfig = $this
-            ->get('shopware.plugin.cached_config_reader')
-            ->getByPluginName('NostoTagging', Shopware()->Shop());
-        if ($shopConfig[self::CONFIG_MULTI_CURRENCY] === self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
+        if (CurrencyHelper::isMultiCurrencyEnabled(Shopware()->Shop())) {
             $variationObj = new MarkupableString(
                 CurrencyHelper::getCurrencyCode(Shopware()->Shop()),
                 'nosto_variation'
