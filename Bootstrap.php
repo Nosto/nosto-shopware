@@ -47,6 +47,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderM
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart as NostoCartModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Models\Customer\Customer as CustomerModel;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
@@ -56,6 +57,7 @@ use Nosto\Object\Signup\Account as NostoAccount;
 use phpseclib\Crypt\Random as NostoCryptRandom;
 use Doctrine\ORM\TransactionRequiredException;
 use Shopware\Components\Model\ModelManager;
+use Nosto\Object\Settings as NostoSettings;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Shopware\Models\Category\Category;
@@ -65,9 +67,10 @@ use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
 use Nosto\Object\MarkupableString;
-use Nosto\Object\SearchTerm;
 use Shopware\Models\Order\Order;
+use Shopware\Models\Shop\Shop;
 use Doctrine\ORM\ORMException;
+use Nosto\Object\SearchTerm;
 use Nosto\Object\PageType;
 use Nosto\NostoException;
 use Nosto\Nosto;
@@ -522,6 +525,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             'Shopware\Models\Article\Detail::postUpdate',
             'onPostUpdateArticle'
         );
+        $this->subscribeEvent(
+            'Shopware_Controllers_Backend_Config_After_Save_Config_Element',
+            'afterSaveConfig'
+        );
 
         // Frontend events.
         $this->subscribeEvent(
@@ -560,6 +567,54 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             'Enlight_Controller_Action_Frontend_Error_GenericError',
             'onFrontEndErrorGenericError'
         );
+    }
+
+    /**
+     * @return array shops
+     */
+    public function getAllActiveShops()
+    {
+        /** @var \Shopware_Proxies_ShopwareModelsShopRepositoryProxy $repository */
+        $repository = Shopware()->Container()->get('models')->getRepository('Shopware\Models\Shop\Shop');
+        return $repository->getActiveShops();
+    }
+
+    /**
+     * @param Shop $shop
+     * @return array|mixed
+     */
+    public function getShopConfig(Shop $shop)
+    {
+        return $this
+            ->get('shopware.plugin.cached_config_reader')
+            ->getByPluginName('NostoTagging', $shop);
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     */
+    public function afterSaveConfig(Enlight_Event_EventArgs $args)
+    {
+        foreach ($this->getAllActiveShops() as $shop) {
+            $settings = new NostoSettings();
+            $shopConfig = $this->getShopConfig($shop);
+            if ($shopConfig[self::CONFIG_MULTI_CURRENCY] === self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
+                $settings->setUseCurrencyExchangeRates(true);
+            } else {
+                $settings->setUseCurrencyExchangeRates(false);
+                $settings->setDefaultVariantId('');
+            }
+            $account = NostoComponentAccount::findAccount($shop);
+            if ($account) {
+                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+                $service = new NostoUpdateSettings($nostoAccount);
+                try {
+                    $service->update($settings);
+                } catch (\Exception $e) {
+                    $this->getLogger()->warning($e->getMessage());
+                }
+            }
+        }
     }
 
     /**

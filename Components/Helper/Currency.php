@@ -146,6 +146,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
         $shopConfig = Shopware()->Container()
             ->get('shopware.plugin.cached_config_reader')
             ->getByPluginName('NostoTagging', $shop);
-        return $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED;
+        return $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== 'Disabled';
     }
 }
