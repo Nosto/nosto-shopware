@@ -57,10 +57,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      * @throws \Nosto\NostoException
      * @throws \Nosto\Request\Http\Exception\AbstractHttpException
      */
-    public function updateCurrencyExchangeRates(Account $account, Shop $shop)
+    public static function updateCurrencyExchangeRates(Account $account, Shop $shop)
     {
         $currencyService = new \Nosto\Operation\SyncRates($account);
-        $collection = $this->buildExchangeRatesCollection($shop);
+        $collection = self::buildExchangeRatesCollection($shop);
         try {
             return $currencyService->update($collection);
         } catch (\Exception $e) {
@@ -77,7 +77,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      * @param Shop $shop
      * @return ExchangeRateCollection
      */
-    public function buildExchangeRatesCollection(Shop $shop)
+    public static function buildExchangeRatesCollection(Shop $shop)
     {
         $currencies = $shop->getCurrencies();
         $collection = new ExchangeRateCollection();
@@ -86,21 +86,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
             $collection->addRate($currency->getCurrency(), $rate);
         }
         return $collection;
-    }
-
-    /**
-     * Returns the currency that must be used in tagging
-     *
-     * @return mixed|\Shopware\Models\Shop\Currency
-     */
-    public function getTaggingCurrency()
-    {
-        // If multi currency is disabled we use
-        // the base currency for tagging
-        if (!self::isMultiCurrencyEnabled()) {
-            return self::getDefaultCurrency(Shopware()->Shop());
-        }
-        return Shopware()->Shop()->getCurrency();
     }
 
     /**

@@ -625,6 +625,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
                 $service = new NostoUpdateSettings($nostoAccount);
                 try {
+                    CurrencyHelper::updateCurrencyExchangeRates($nostoAccount, $shop);
                     $service->update($settings);
                 } catch (\Exception $e) {
                     $this->getLogger()->warning($e->getMessage());
@@ -862,8 +863,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $account = NostoComponentAccount::findAccount($shop);
             if ($account) {
                 $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
-                $currencyHelper = new CurrencyHelper();
-                if ($currencyHelper->updateCurrencyExchangeRates($nostoAccount, $shop)) {
+                if (CurrencyHelper::updateCurrencyExchangeRates($nostoAccount, $shop)) {
                     $success = true;
                 }
             }
