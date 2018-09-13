@@ -98,7 +98,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
         // If multi currency is disabled we use
         // the base currency for tagging
         if (!self::isMultiCurrencyEnabled()) {
-            return self::getDefaultCurrency();
+            return self::getDefaultCurrency(Shopware()->Shop());
         }
         return Shopware()->Shop()->getCurrency();
     }
@@ -111,24 +111,29 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         if (self::isMultiCurrencyEnabled()) {
             // Return currency code
-            return self::getDefaultCurrency()->getCurrency();
+            $defaultCurrency = self::getDefaultCurrency($shop);
+            if ($defaultCurrency) {
+                return $defaultCurrency->getCurrency();
+            }
         }
         return $shop->getCurrency()->getCurrency();
     }
 
     /**
-     * @return mixed|\Shopware\Models\Shop\Currency
+     * @param Shop $shop
+     * @return mixed|null|\Shopware\Models\Shop\Currency
      */
-    public static function getDefaultCurrency()
+    public static function getDefaultCurrency(Shop $shop)
     {
-        $currencies = Shopware()->Shop()->getCurrencies();
-        foreach ($currencies as $currency) {
-            if ($currency->getDefault()) {
-                return $currency;
+        $currencies = $shop->getCurrencies();
+        if ($currencies) {
+            foreach ($currencies as $currency) {
+                if ($currency->getDefault()) {
+                    return $currency;
+                }
             }
         }
-        // If no currency is defined as default, return the first one
-        return Shopware()->Shop()->getCurrencies()->first();
+        return null;
     }
 
     /**
@@ -146,6 +151,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
         $shopConfig = Shopware()->Container()
             ->get('shopware.plugin.cached_config_reader')
             ->getByPluginName('NostoTagging', $shop);
-        return $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== 'Disabled';
+        return $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED;
     }
 }

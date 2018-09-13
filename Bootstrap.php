@@ -612,6 +612,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $shopConfig = $this->getShopConfig($shop);
             if ($shopConfig[self::CONFIG_MULTI_CURRENCY] === self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
                 $settings->setUseCurrencyExchangeRates(true);
+                $defaultCurrency = CurrencyHelper::getDefaultCurrency($shop);
+                if ($defaultCurrency) {
+                    $settings->setDefaultVariantId($defaultCurrency->getCurrency());
+                }
             } else {
                 $settings->setUseCurrencyExchangeRates(false);
                 $settings->setDefaultVariantId('');
