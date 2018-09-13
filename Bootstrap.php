@@ -248,24 +248,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
         $form->setElement(
             'checkbox',
-            self::CONFIG_CUSTOM_FIELD_TAGGING,
-            [
-                'label' => 'Enable Custom Field Tagging',
-                'value' => 1,
-                'scope' => Element::SCOPE_SHOP,
-                'description' => 'Add Product Properties In Custom Field Tagging',
-                'required' => true
-            ]
-        );
-
-        $form->setElement(
-            'checkbox',
             self::CONFIG_PRODUCT_STREAMS,
             [
                 'label' => 'Enable Product Streams Support',
                 'value' => 0,
                 'scope' => Element::SCOPE_SHOP,
                 'description' => 'Add Product Streams To Category Paths',
+                'required' => true
+            ]
+        );
+
+        $form->setElement(
+            'checkbox',
+            self::CONFIG_CUSTOM_FIELD_TAGGING,
+            [
+                'label' => 'Enable Custom Field Tagging',
+                'value' => 1,
+                'scope' => Element::SCOPE_SHOP,
+                'description' => 'Add Product Properties In Custom Field Tagging',
                 'required' => true
             ]
         );
