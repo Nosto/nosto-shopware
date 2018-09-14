@@ -39,6 +39,8 @@ use Nosto\Object\ExchangeRateCollection;
 use Nosto\Object\Signup\Account;
 use Nosto\Object\ExchangeRate;
 use Shopware\Models\Shop\Shop;
+use Shopware\Models\Shop\Currency;
+use Nosto\Object\Format;
 
 /**
  * Helper class for Currency
@@ -48,14 +50,19 @@ use Shopware\Models\Shop\Shop;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
 {
+    const CURRENCY_SYMBOL_LEFT = 32;
+    const CURRENCY_SYMBOL_RIGHT = 16;
+    const CURRENCY_SYMBOL_DEFAULT = 0;
+    const CURRENCY_DECIMAL_CHAR = ',';
+    const CURRENCY_GROUPING_CHAR = '.';
+    const CURRENCY_DECIMAL_PRECISION = 2;
+
     /**
      * Update exchange rates for the given shop.
      *
      * @param Account $account
      * @param Shop $shop
      * @return bool
-     * @throws \Nosto\NostoException
-     * @throws \Nosto\Request\Http\Exception\AbstractHttpException
      */
     public static function updateCurrencyExchangeRates(Account $account, Shop $shop)
     {
@@ -137,5 +144,48 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
             ->get('shopware.plugin.cached_config_reader')
             ->getByPluginName('NostoTagging', $shop);
         return $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED;
+    }
+
+    /**
+     * @param Shop $shop
+     * @return array
+     */
+    public static function getFormattedCurrencies(Shop $shop)
+    {
+        $currencies = $shop->getCurrencies();
+        $formattedCurrencies = array();
+        foreach ($currencies as $currency) {
+            $formattedCurrencies[$currency->getCurrency()] = new Format(
+                self::getCurrencyBeforeAmount($currency),
+                $currency->getSymbol(),
+                self::CURRENCY_DECIMAL_CHAR,
+                self::CURRENCY_GROUPING_CHAR,
+                self::CURRENCY_DECIMAL_PRECISION
+            );
+        }
+        return $formattedCurrencies;
+    }
+
+    /**
+     * @param Currency $currency
+     * @return bool|null
+     */
+    public static function getCurrencyBeforeAmount(Currency $currency)
+    {
+        switch ($currency->getSymbolPosition()) {
+            case self::CURRENCY_SYMBOL_LEFT:
+                return true;
+            case self::CURRENCY_SYMBOL_RIGHT:
+                return false;
+            case self::CURRENCY_SYMBOL_DEFAULT:
+                // Shopware's default is after the amount
+                return false;
+            default:
+                /** @noinspection PhpUndefinedMethodInspection */
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
+                    'Failed to get currency symbol position, setting as after amount'
+                );
+                return false;
+        }
     }
 }

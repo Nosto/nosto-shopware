@@ -616,6 +616,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 if ($defaultCurrency) {
                     $settings->setDefaultVariantId($defaultCurrency->getCurrency());
                 }
+                $settings->setCurrencies(CurrencyHelper::getFormattedCurrencies($shop));
             } else {
                 $settings->setUseCurrencyExchangeRates(false);
                 $settings->setDefaultVariantId('');
@@ -840,8 +841,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * has multi currency enabled
      *
      * @return bool
-     * @throws NostoException
-     * @throws \Nosto\Request\Http\Exception\AbstractHttpException
      */
     protected function updateExchangeRates()
     {
@@ -854,9 +853,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             return false;
         }
         foreach ($repository->getActiveShops() as $shop) {
-            $shopConfig = $this
-                ->get('shopware.plugin.cached_config_reader')
-                ->getByPluginName('NostoTagging', $shop);
+            $shopConfig = $this->getShopConfig($shop);
             if ($shopConfig[self::CONFIG_MULTI_CURRENCY] !== self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
                 continue;
             }
@@ -864,6 +861,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             if ($account) {
                 $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
                 if (CurrencyHelper::updateCurrencyExchangeRates($nostoAccount, $shop)) {
+                    // If at least one has been successful, we consider that the operation was successful
                     $success = true;
                 }
             }
