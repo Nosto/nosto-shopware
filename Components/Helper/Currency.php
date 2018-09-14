@@ -34,7 +34,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
+use Nosto\Object\Settings as NostoSettings;
 use Nosto\Object\ExchangeRateCollection;
 use Nosto\Object\Signup\Account;
 use Nosto\Object\ExchangeRate;
@@ -103,7 +106,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         if (self::isMultiCurrencyEnabled()) {
             // Return currency code
-            $defaultCurrency = self::getDefaultCurrency($shop);
+            $defaultCurrency = self::getDefaultCurrency();
             if ($defaultCurrency) {
                 return $defaultCurrency->getCurrency();
             }
@@ -112,16 +115,23 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     }
 
     /**
-     * @param Shop $shop
      * @return mixed|null|\Shopware\Models\Shop\Currency
      */
-    public static function getDefaultCurrency(Shop $shop)
+    public static function getDefaultCurrency()
     {
-        $currencies = $shop->getCurrencies();
-        if ($currencies) {
-            foreach ($currencies as $currency) {
-                if ($currency->getDefault()) {
-                    return $currency;
+        /** @noinspection PhpUndefinedMethodInspection */
+        $shops = Shopware()->Plugins()->Frontend()->NostoTagging()->getAllActiveShops();
+        if (!$shops) {
+            return null;
+        }
+        /** @var Shop $shop */
+        foreach ($shops as $shop) {
+            $currencies = $shop->getCurrencies();
+            if ($currencies) {
+                foreach ($currencies as $currency) {
+                    if ($currency->getDefault()) {
+                        return $currency;
+                    }
                 }
             }
         }
@@ -143,7 +153,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
         $shopConfig = Shopware()->Container()
             ->get('shopware.plugin.cached_config_reader')
             ->getByPluginName('NostoTagging', $shop);
-        return $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED;
+
+        return ($shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== Bootstrap::CONFIG_MULTI_CURRENCY_DISABLED
+            && $shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== 'Disabled');
     }
 
     /**
@@ -186,6 +198,41 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
                     'Failed to get currency symbol position, setting as after amount'
                 );
                 return false;
+        }
+    }
+
+    /**
+     * Send an updated settings object with the currency changes
+     *
+     * @param Shop $shop
+     */
+    public static function updateCurrencySettings(Shop $shop)
+    {
+        $settings = new NostoSettings();
+        /** @noinspection PhpUndefinedMethodInspection */
+        $shopConfig = Shopware()->Plugins()->Frontend()->NostoTagging()->getShopConfig($shop);
+        if ($shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] === Bootstrap::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
+            $settings->setUseCurrencyExchangeRates(true);
+            $defaultCurrency = self::getDefaultCurrency();
+            if ($defaultCurrency) {
+                $settings->setDefaultVariantId($defaultCurrency->getCurrency());
+            }
+            $settings->setCurrencies(self::getFormattedCurrencies($shop));
+        } else {
+            $settings->setUseCurrencyExchangeRates(false);
+            $settings->setDefaultVariantId('');
+        }
+        $account = NostoComponentAccount::findAccount($shop);
+        if ($account) {
+            $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+            $service = new NostoUpdateSettings($nostoAccount);
+            try {
+                self::updateCurrencyExchangeRates($nostoAccount, $shop);
+                $service->update($settings);
+            } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
+            }
         }
     }
 }

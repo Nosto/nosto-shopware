@@ -47,7 +47,6 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderM
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart as NostoCartModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Models\Customer\Customer as CustomerModel;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
@@ -57,7 +56,6 @@ use Nosto\Object\Signup\Account as NostoAccount;
 use phpseclib\Crypt\Random as NostoCryptRandom;
 use Doctrine\ORM\TransactionRequiredException;
 use Shopware\Components\Model\ModelManager;
-use Nosto\Object\Settings as NostoSettings;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Shopware\Models\Category\Category;
@@ -582,6 +580,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
+     * Return all shops from a backend context
+     *
      * @return array shops
      */
     public function getAllActiveShops()
@@ -592,6 +592,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
+     * Return backend configuration for a given shop
+     * in a backend context
+     *
      * @param Shop $shop
      * @return array|mixed
      */
@@ -603,35 +606,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
+     * Event that runs on every configuration save
+     *
      * @param Enlight_Event_EventArgs $args
      */
     public function afterSaveConfig(Enlight_Event_EventArgs $args)
     {
+        // Update currency settings for all shops
         foreach ($this->getAllActiveShops() as $shop) {
-            $settings = new NostoSettings();
-            $shopConfig = $this->getShopConfig($shop);
-            if ($shopConfig[self::CONFIG_MULTI_CURRENCY] === self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
-                $settings->setUseCurrencyExchangeRates(true);
-                $defaultCurrency = CurrencyHelper::getDefaultCurrency($shop);
-                if ($defaultCurrency) {
-                    $settings->setDefaultVariantId($defaultCurrency->getCurrency());
-                }
-                $settings->setCurrencies(CurrencyHelper::getFormattedCurrencies($shop));
-            } else {
-                $settings->setUseCurrencyExchangeRates(false);
-                $settings->setDefaultVariantId('');
-            }
-            $account = NostoComponentAccount::findAccount($shop);
-            if ($account) {
-                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
-                $service = new NostoUpdateSettings($nostoAccount);
-                try {
-                    CurrencyHelper::updateCurrencyExchangeRates($nostoAccount, $shop);
-                    $service->update($settings);
-                } catch (\Exception $e) {
-                    $this->getLogger()->warning($e->getMessage());
-                }
-            }
+            CurrencyHelper::updateCurrencySettings($shop);
         }
     }
 
