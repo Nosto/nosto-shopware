@@ -828,14 +828,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     protected function updateExchangeRates()
     {
         $success = false;
-        try {
-            /** @var \Shopware_Proxies_ShopwareModelsShopRepositoryProxy $repository */
-            $repository = Shopware()->Container()->get('models')->getRepository('Shopware\Models\Shop\Shop');
-        } catch (\Exception $e) {
-            $this->getLogger()->warning($e->getMessage());
-            return false;
-        }
-        foreach ($repository->getActiveShops() as $shop) {
+        foreach ($this->getAllActiveShops() as $shop) {
             $shopConfig = $this->getShopConfig($shop);
             if ($shopConfig[self::CONFIG_MULTI_CURRENCY] !== self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
                 continue;

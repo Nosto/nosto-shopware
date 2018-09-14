@@ -84,14 +84,38 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     }
 
     /**
+     * Get currencies for the given shop.
+     * If it's a sub shop, returns the parent's currencies
+     *
+     * @param Shop $shop
+     * @return \Doctrine\Common\Collections\ArrayCollection|Currency[]
+     */
+    public static function getCurrencies(Shop $shop)
+    {
+        $currencies = $shop->getCurrencies();
+        if (!$currencies) {
+            try {
+                // If it's a subshop, currencies are inherited from the main shop
+                $currencies = $shop->getMain()->getCurrencies();
+            } catch (\Exception $e) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
+                    'Main shop has no currencies ' .
+                    $e->getMessage()
+                );
+            }
+        }
+        return $currencies;
+    }
+
+    /**
      * @param Shop $shop
      * @return ExchangeRateCollection
      */
     public static function buildExchangeRatesCollection(Shop $shop)
     {
-        $currencies = $shop->getCurrencies();
         $collection = new ExchangeRateCollection();
-        foreach ($currencies as $currency) {
+        foreach (self::getCurrencies($shop) as $currency) {
             $rate = new ExchangeRate($currency->getCurrency(), (string)$currency->getFactor());
             $collection->addRate($currency->getCurrency(), $rate);
         }
@@ -164,9 +188,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      */
     public static function getFormattedCurrencies(Shop $shop)
     {
-        $currencies = $shop->getCurrencies();
+        // Currencies are inherited from the main shop
         $formattedCurrencies = array();
-        foreach ($currencies as $currency) {
+        foreach (self::getCurrencies($shop) as $currency) {
             $formattedCurrencies[$currency->getCurrency()] = new Format(
                 self::getCurrencyBeforeAmount($currency),
                 $currency->getSymbol(),
