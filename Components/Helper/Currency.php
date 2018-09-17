@@ -34,13 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
-use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
-use Nosto\Object\Settings as NostoSettings;
-use Nosto\Object\ExchangeRateCollection;
-use Nosto\Object\Signup\Account;
-use Nosto\Object\ExchangeRate;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Shop\Currency;
 use Nosto\Object\Format;
@@ -61,29 +55,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     const CURRENCY_DECIMAL_PRECISION = 2;
 
     /**
-     * Update exchange rates for the given shop.
-     *
-     * @param Account $account
-     * @param Shop $shop
-     * @return bool
-     */
-    public static function updateCurrencyExchangeRates(Account $account, Shop $shop)
-    {
-        $currencyService = new \Nosto\Operation\SyncRates($account);
-        $collection = self::buildExchangeRatesCollection($shop);
-        try {
-            return $currencyService->update($collection);
-        } catch (\Exception $e) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
-                'Failed to update exchange rates: '.
-                $e->getMessage()
-            );
-            return false;
-        }
-    }
-
-    /**
      * Get currencies for the given shop.
      * If it's a sub shop, returns the parent's currencies
      *
@@ -93,34 +64,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     public static function getCurrencies(Shop $shop)
     {
         $currencies = $shop->getCurrencies();
-        if (!$currencies) {
-            try {
-                // If it's a subshop, currencies are inherited from the main shop
-                $currencies = $shop->getMain()->getCurrencies();
-            } catch (\Exception $e) {
+        if ($currencies->isEmpty()) {
+            // If it's a sub-shop, currencies are inherited from the main shop
+            $currencies = $shop->getMain()->getCurrencies();
+            if ($currencies->isEmpty()) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
                     sprintf(
-                        'Shop %s and his main shop have no currencies ' . $e->getMessage(),
-                        $shop->getName())
+                        'Shop %s and his main shop have no currencies',
+                        $shop->getName()
+                    )
                 );
             }
         }
         return $currencies;
-    }
-
-    /**
-     * @param Shop $shop
-     * @return ExchangeRateCollection
-     */
-    public static function buildExchangeRatesCollection(Shop $shop)
-    {
-        $collection = new ExchangeRateCollection();
-        foreach (self::getCurrencies($shop) as $currency) {
-            $rate = new ExchangeRate($currency->getCurrency(), (string)$currency->getFactor());
-            $collection->addRate($currency->getCurrency(), $rate);
-        }
-        return $collection;
     }
 
     /**
@@ -216,41 +173,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
                     'Failed to get currency symbol position, setting as after amount'
                 );
                 return false;
-        }
-    }
-
-    /**
-     * Send an updated settings object with the currency changes
-     *
-     * @param Shop $shop
-     */
-    public static function updateCurrencySettings(Shop $shop)
-    {
-        $settings = new NostoSettings();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $shopConfig = Shopware()->Plugins()->Frontend()->NostoTagging()->getShopConfig($shop);
-        if ($shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] === Bootstrap::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
-            $settings->setUseCurrencyExchangeRates(true);
-            $defaultCurrency = self::getDefaultCurrency($shop);
-            if ($defaultCurrency) {
-                $settings->setDefaultVariantId($defaultCurrency->getCurrency());
-            }
-            $settings->setCurrencies(self::getFormattedCurrencies($shop));
-        } else {
-            $settings->setUseCurrencyExchangeRates(false);
-            $settings->setDefaultVariantId('');
-        }
-        $account = NostoComponentAccount::findAccount($shop);
-        if ($account) {
-            $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
-            $service = new NostoUpdateSettings($nostoAccount);
-            try {
-                self::updateCurrencyExchangeRates($nostoAccount, $shop);
-                $service->update($settings);
-            } catch (\Exception $e) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
-            }
         }
     }
 }

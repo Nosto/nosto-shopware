@@ -34,11 +34,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Shop\Shop;
-use Nosto\Object\Signup\Account;
-use Nosto\Object\ExchangeRateCollection;
-use Nosto\Object\ExchangeRate;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Nosto\Object\ExchangeRateCollection;
+use Nosto\Object\Signup\Account;
+use Shopware\Models\Shop\Shop;
+use Nosto\Object\ExchangeRate;
 
 /**
  * Exchange Rates operation component. Used for updating exchange rates to Nosto
@@ -83,5 +85,34 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
             $collection->addRate($currency->getCurrency(), $rate);
         }
         return $collection;
+    }
+
+    /**
+     * Trigger exchange rates update for each shop that
+     * has multi currency enabled
+     *
+     * @return bool
+     */
+    public static function updateExchangeRates()
+    {
+        $success = false;
+        /** @noinspection PhpUndefinedMethodInspection */
+        $shops = Shopware()->Plugins()->Frontend()->NostoTagging()->getAllActiveShops();
+        foreach ($shops as $shop) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $shopConfig = Shopware()->Plugins()->Frontend()->NostoTagging()->getShopConfig($shop);
+            if ($shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] !== Bootstrap::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
+                continue;
+            }
+            $account = NostoComponentAccount::findAccount($shop);
+            if ($account) {
+                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+                if (self::updateCurrencyExchangeRates($nostoAccount, $shop)) {
+                    // If at least one has been successful, we consider that the operation was successful
+                    $success = true;
+                }
+            }
+        }
+        return $success;
     }
 }

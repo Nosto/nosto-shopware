@@ -37,7 +37,9 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation as NostoOrderConfirmation;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Settings as NostoSettingsOperation;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product as NostoOperationProduct;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates as NostoExchangeRatesOp;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategoryModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer as NostoCustomerModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as NostoProductModel;
@@ -614,7 +616,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         // Update currency settings for all shops
         foreach ($this->getAllActiveShops() as $shop) {
-            CurrencyHelper::updateCurrencySettings($shop);
+            NostoSettingsOperation::updateCurrencySettings($shop);
         }
     }
 
@@ -779,7 +781,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $view = $ctrl->View();
         $request = $ctrl->Request();
 
-        $this->updateExchangeRates();
+        NostoExchangeRatesOp::updateExchangeRates();
 
         if ($this->validateEvent($ctrl, 'backend', 'index', 'index')) {
             $view->addTemplateDir($this->Path() . 'Views/');
@@ -817,32 +819,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             $view->addTemplateDir($this->Path() . 'Views/');
             $view->extendsTemplate('backend/nosto_start_app/menu.js');
         }
-    }
-
-    /**
-     * Trigger exchange rates update for each shop that
-     * has multi currency enabled
-     *
-     * @return bool
-     */
-    protected function updateExchangeRates()
-    {
-        $success = false;
-        foreach ($this->getAllActiveShops() as $shop) {
-            $shopConfig = $this->getShopConfig($shop);
-            if ($shopConfig[self::CONFIG_MULTI_CURRENCY] !== self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
-                continue;
-            }
-            $account = NostoComponentAccount::findAccount($shop);
-            if ($account) {
-                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
-                if (CurrencyHelper::updateCurrencyExchangeRates($nostoAccount, $shop)) {
-                    // If at least one has been successful, we consider that the operation was successful
-                    $success = true;
-                }
-            }
-        }
-        return $success;
     }
 
     /**
