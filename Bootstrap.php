@@ -614,9 +614,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function afterSaveConfig(Enlight_Event_EventArgs $args)
     {
-        // Update currency settings for all shops
-        foreach ($this->getAllActiveShops() as $shop) {
-            NostoSettingsOperation::updateCurrencySettings($shop);
+        try {
+            $configValues = $args->getElement()->getValues()->getValues();
+        } catch (\Exception $e) {
+            $this->getLogger()->error(
+                'Could not save backend configuration ' . $e->getMessage()
+            );
+            return;
+        }
+        /** @var Shopware\Models\Config\Value[] $configValues */
+        foreach ($configValues as $configValue) {
+            // Trigger update for Multi-Currency Settings
+            if ($configValue->getElement()
+                && $configValue->getElement()->getName() === self::CONFIG_MULTI_CURRENCY
+            ) {
+                NostoSettingsOperation::updateCurrencySettings($configValue->getShop());
+            }
         }
     }
 
