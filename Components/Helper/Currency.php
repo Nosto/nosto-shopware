@@ -100,8 +100,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
             } catch (\Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
-                    'Main shop has no currencies ' .
-                    $e->getMessage()
+                    sprintf(
+                        'Shop %s and his main shop have no currencies ' . $e->getMessage(),
+                        $shop->getName())
                 );
             }
         }
@@ -128,9 +129,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      */
     public static function getCurrencyCode(Shop $shop)
     {
-        if (self::isMultiCurrencyEnabled()) {
+        if (self::isMultiCurrencyEnabled($shop)) {
             // Return currency code
-            $defaultCurrency = self::getDefaultCurrency();
+            $defaultCurrency = self::getDefaultCurrency($shop);
             if ($defaultCurrency) {
                 return $defaultCurrency->getCurrency();
             }
@@ -139,24 +140,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     }
 
     /**
-     * @return mixed|null|\Shopware\Models\Shop\Currency
+     * @param Shop $shop
+     * @return mixed|null|Currency
      */
-    public static function getDefaultCurrency()
+    public static function getDefaultCurrency(Shop $shop)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        $shops = Shopware()->Plugins()->Frontend()->NostoTagging()->getAllActiveShops();
-        if (!$shops) {
-            return null;
-        }
-        /** @var Shop $shop */
-        foreach ($shops as $shop) {
-            $currencies = $shop->getCurrencies();
-            if ($currencies) {
-                foreach ($currencies as $currency) {
-                    if ($currency->getDefault()) {
-                        return $currency;
-                    }
-                }
+        $currencies = $shop->getMain()
+            ? $shop->getMain()->getCurrencies()
+            : $shop->getCurrencies();
+        foreach ($currencies as $currency) {
+            if ($currency->getDefault()) {
+                return $currency;
             }
         }
         return null;
@@ -237,7 +231,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
         $shopConfig = Shopware()->Plugins()->Frontend()->NostoTagging()->getShopConfig($shop);
         if ($shopConfig[Bootstrap::CONFIG_MULTI_CURRENCY] === Bootstrap::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES) {
             $settings->setUseCurrencyExchangeRates(true);
-            $defaultCurrency = self::getDefaultCurrency();
+            $defaultCurrency = self::getDefaultCurrency($shop);
             if ($defaultCurrency) {
                 $settings->setDefaultVariantId($defaultCurrency->getCurrency());
             }
