@@ -795,7 +795,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $request = $ctrl->Request();
 
         if ($this->validateEvent($ctrl, 'backend', 'index', 'index')) {
-            NostoExchangeRatesOp::updateExchangeRates();
+            $ratesOp = new NostoExchangeRatesOp();
+            $ratesOp->updateExchangeRates();
             $view->addTemplateDir($this->Path() . 'Views/');
             $view->extendsTemplate('backend/plugins/nosto_tagging/index/header.tpl');
             if (($shopId = $request->getParam('openNosto')) !== null) {

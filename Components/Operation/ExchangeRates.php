@@ -57,10 +57,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
      * @param Shop $shop
      * @return bool
      */
-    public static function updateCurrencyExchangeRates(Account $account, Shop $shop)
+    public function updateCurrencyExchangeRates(Account $account, Shop $shop)
     {
         $currencyService = new \Nosto\Operation\SyncRates($account);
-        $collection = self::buildExchangeRatesCollection($shop);
+        $collection = $this->buildExchangeRatesCollection($shop);
         try {
             return $currencyService->update($collection);
         } catch (\Exception $e) {
@@ -77,7 +77,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
      * @param Shop $shop
      * @return ExchangeRateCollection
      */
-    public static function buildExchangeRatesCollection(Shop $shop)
+    public function buildExchangeRatesCollection(Shop $shop)
     {
         $collection = new ExchangeRateCollection();
         foreach (CurrencyHelper::getCurrencies($shop) as $currency) {
@@ -93,7 +93,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
      *
      * @return bool
      */
-    public static function updateExchangeRates()
+    public function updateExchangeRates()
     {
         $success = false;
         /** @noinspection PhpUndefinedMethodInspection */
@@ -107,7 +107,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
             $account = NostoComponentAccount::findAccount($shop);
             if ($account) {
                 $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
-                if (self::updateCurrencyExchangeRates($nostoAccount, $shop)) {
+                if ($this->updateCurrencyExchangeRates($nostoAccount, $shop)) {
                     // If at least one has been successful, we consider that the operation was successful
                     $success = true;
                 }

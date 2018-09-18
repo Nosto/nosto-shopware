@@ -75,8 +75,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Settings
         if ($account) {
             $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
             $service = new NostoUpdateSettings($nostoAccount);
+            $ratesOperation = new ExchangeRatesOperation();
             try {
-                ExchangeRatesOperation::updateCurrencyExchangeRates($nostoAccount, $shop);
+                $ratesOperation->updateCurrencyExchangeRates($nostoAccount, $shop);
                 $service->update($settings);
             } catch (\Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
