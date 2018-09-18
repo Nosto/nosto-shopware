@@ -34,13 +34,12 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_ExchangeRates as ExchangeRatesHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
-use Nosto\Object\ExchangeRateCollection;
 use Nosto\Object\Signup\Account;
 use Shopware\Models\Shop\Shop;
-use Nosto\Object\ExchangeRate;
+use Nosto\Operation\SyncRates;
 
 /**
  * Exchange Rates operation component. Used for updating exchange rates to Nosto
@@ -59,8 +58,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
      */
     public function updateCurrencyExchangeRates(Account $account, Shop $shop)
     {
-        $currencyService = new \Nosto\Operation\SyncRates($account);
-        $collection = $this->buildExchangeRatesCollection($shop);
+        $currencyService = new SyncRates($account);
+        $ratesHelper = new ExchangeRatesHelper();
+        $collection = $ratesHelper->buildExchangeRatesCollection($shop);
         try {
             return $currencyService->update($collection);
         } catch (\Exception $e) {
@@ -71,20 +71,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
             );
             return false;
         }
-    }
-
-    /**
-     * @param Shop $shop
-     * @return ExchangeRateCollection
-     */
-    public function buildExchangeRatesCollection(Shop $shop)
-    {
-        $collection = new ExchangeRateCollection();
-        foreach (CurrencyHelper::getCurrencies($shop) as $currency) {
-            $rate = new ExchangeRate($currency->getCurrency(), (string)$currency->getFactor());
-            $collection->addRate($currency->getCurrency(), $rate);
-        }
-        return $collection;
     }
 
     /**
