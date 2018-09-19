@@ -172,18 +172,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         switch ($currency->getSymbolPosition()) {
             case self::CURRENCY_SYMBOL_LEFT:
+            // Shopware's default is before the amount
+            case self::CURRENCY_SYMBOL_DEFAULT:
                 return true;
             case self::CURRENCY_SYMBOL_RIGHT:
-                return false;
-            case self::CURRENCY_SYMBOL_DEFAULT:
-                // Shopware's default is after the amount
                 return false;
             default:
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
-                    'Failed to get currency symbol position, setting as after amount'
+                    'Failed to get currency symbol position, setting as before amount'
                 );
-                return false;
+                return true;
         }
     }
 }
