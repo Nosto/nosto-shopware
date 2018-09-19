@@ -84,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      * @param Shop $shop
      * @return string
      */
-    public static function getCurrencyCode(Shop $shop)
+    public static function getTaggingCurrencyCode(Shop $shop)
     {
         if (self::isMultiCurrencyEnabled($shop)) {
             // Return currency code

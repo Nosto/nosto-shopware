@@ -98,7 +98,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->setName($article->getName());
         $this->setImageUrl(ImageHelper::getMainImageUrl($article, $shop));
         $this->setAlternateImageUrls(ImageHelper::getAlternativeImageUrls($article, $shop));
-        $this->setPriceCurrencyCode(CurrencyHelper::getCurrencyCode($shop));
+        $this->setPriceCurrencyCode(CurrencyHelper::getTaggingCurrencyCode($shop));
         $this->setPrice(PriceHelper::calcArticlePriceInclTax(
             $article,
             $shop,
@@ -134,7 +134,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->setSupplierCost($article->getMainDetail()->getPurchasePrice());
 
         if (CurrencyHelper::isMultiCurrencyEnabled($shop)) {
-            $this->setVariationId(CurrencyHelper::getCurrencyCode($shop));
+            $baseCurrency = CurrencyHelper::getDefaultCurrency($shop);
+            if ($baseCurrency) {
+                $this->setVariationId($baseCurrency->getCurrency());
+            }
         }
         
         /** @noinspection PhpUndefinedMethodInspection */
