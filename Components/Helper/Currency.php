@@ -154,6 +154,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     }
 
     /**
+     * Return the current currency code.
+     * Used to get the currency being displayed in the front-end
+     *
+     * @return string
+     */
+    public static function getCurrentCurrencyCode()
+    {
+        return Shopware()->Shop()->getCurrency()->getCurrency();
+    }
+    
+    /**
      * @param Currency $currency
      * @return bool|null
      */

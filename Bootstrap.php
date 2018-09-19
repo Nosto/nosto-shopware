@@ -1035,7 +1035,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         if (CurrencyHelper::isMultiCurrencyEnabled(Shopware()->Shop())) {
             $variationObj = new MarkupableString(
-                CurrencyHelper::getCurrencyCode(Shopware()->Shop()),
+                CurrencyHelper::getCurrentCurrencyCode(),
                 'nosto_variation'
             );
             $view->assign('nostoVariation', $variationObj);
