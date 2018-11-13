@@ -78,6 +78,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
             );
 
             if (!empty($article)) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $skuTaggingAllowed = Shopware()
                     ->Plugins()
                     ->Frontend()
