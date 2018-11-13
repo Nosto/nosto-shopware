@@ -76,16 +76,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
                 '\Shopware\Models\Article\Article',
                 $basket->getArticleId()
             );
+
             if (!empty($article)) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                $skuTaggingAllowed = Shopware()
+                    ->Plugins()
+                    ->Frontend()
+                    ->NostoTagging()
+                    ->Config()
+                    ->get(Bootstrap::CONFIG_SKU_TAGGING);
+
                 $detailNumber = Shopware()
                     ->Models()
                     ->getRepository('\Shopware\Models\Article\Detail')
                     ->findOneBy(array('number' => $basket->getOrderNumber()));
-                if (!empty($detailNumber)) {
-                    $this->setProductId($detailNumber->getNumber());
-                } else {
-                    // If detail number not found, fallback to parent
-                    $this->setProductId($article->getMainDetail()->getNumber());
+                // If detail number not found, fallback to parent
+                $this->setProductId($article->getMainDetail()->getNumber());
+                if (!empty($detailNumber) && $skuTaggingAllowed) {
+                    $this->setSkuId($detailNumber->getNumber());
                 }
             }
         }
@@ -94,21 +102,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
         $this->setQuantity((int)$basket->getQuantity());
         $this->setPrice((float)NostoPriceHelper::format($basket->getPrice()));
         $this->setPriceCurrencyCode(strtoupper($currencyCode));
-
-        $articleDetail = Shopware()
-            ->Models()
-            ->getRepository('\Shopware\Models\Article\Detail')
-            ->findOneBy(array('articleId' => $basket->getArticleId()));
-        /** @noinspection PhpUndefinedMethodInspection */
-        $skuTaggingAllowed = Shopware()
-            ->Plugins()
-            ->Frontend()
-            ->NostoTagging()
-            ->Config()
-            ->get(Bootstrap::CONFIG_SKU_TAGGING);
-        if ($skuTaggingAllowed && !empty($articleDetail)) {
-            $this->setSkuId($articleDetail->getId());
-        }
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
