@@ -101,6 +101,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const CONFIG_SKU_TAGGING= 'sku_tagging';
     const CONFIG_PRODUCT_STREAMS = 'product_streams';
     const CONFIG_CUSTOM_FIELD_TAGGING = 'custom_field_tagging';
+    const MYSQL_TABLE_ALREADY_EXISTS_ERROR = 'SQLSTATE[42S01]';
 
     private static $productUpdated = false;
 
@@ -291,7 +292,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $this->registerCustomModels();
         $modelManager = Shopware()->Models();
         $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
-        $schematicTool->createSchema($this->getNostoModelClassMetadata($modelManager));
+        try {
+            $schematicTool->createSchema($this->getNostoModelClassMetadata($modelManager));
+        } catch (ToolsException $e) {
+            // If table already exists, log and continue installation
+            if (strpos($e->getMessage(), self::MYSQL_TABLE_ALREADY_EXISTS_ERROR)) {
+                $this->getLogger()->warning(
+                    sprintf(
+                    'Table already exists, continuing with installation. Message was: %s',
+                        $e->getMessage()
+                    )
+                );
+            } else {
+                throw new ToolsException($e);
+            }
+        }
     }
 
     /**
