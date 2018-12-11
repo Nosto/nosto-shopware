@@ -299,7 +299,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             if (strpos($e->getMessage(), self::MYSQL_TABLE_ALREADY_EXISTS_ERROR)) {
                 $this->getLogger()->warning(
                     sprintf(
-                    'Table already exists, continuing with installation. Message was: %s',
+                        'Table already exists, continuing with installation. Message was: %s',
                         $e->getMessage()
                     )
                 );
