@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.1.5
+- Prevent crash upon installation when database table already exists
+
 ## 2.1.4
 - Fix the product id and sku id in cart tagging
 
