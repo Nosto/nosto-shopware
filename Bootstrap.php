@@ -86,7 +86,7 @@ use Nosto\Nosto;
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.2.0-RC1';
+    const PLUGIN_VERSION = '2.2.0-RC2';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -109,6 +109,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     const CONFIG_MULTI_CURRENCY = 'multi_currency';
     const CONFIG_MULTI_CURRENCY_DISABLED = 'multi_currency_disabled';
     const CONFIG_MULTI_CURRENCY_EXCHANGE_RATES = 'multi_currency_exchange_rates';
+    const MYSQL_TABLE_ALREADY_EXISTS_ERROR = 'SQLSTATE[42S01]';
 
     private static $productUpdated = false;
 
@@ -316,7 +317,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $this->registerCustomModels();
         $modelManager = Shopware()->Models();
         $schematicTool = new Doctrine\ORM\Tools\SchemaTool($modelManager);
-        $schematicTool->createSchema($this->getNostoModelClassMetadata($modelManager));
+        try {
+            $schematicTool->createSchema($this->getNostoModelClassMetadata($modelManager));
+        } catch (ToolsException $e) {
+            // If table already exists, log and continue installation
+            if (strpos($e->getMessage(), self::MYSQL_TABLE_ALREADY_EXISTS_ERROR)) {
+                $this->getLogger()->warning(
+                    sprintf(
+                        'Table already exists, continuing with installation. Message was: %s',
+                        $e->getMessage()
+                    )
+                );
+            } else {
+                throw new ToolsException($e);
+            }
+        }
     }
 
     /**

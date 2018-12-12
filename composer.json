@@ -4,7 +4,7 @@
   "license": [
     "BSD-3-Clause"
   ],
-  "version": "2.2.0-RC1",
+  "version": "2.2.0-RC2",
   "require": {
     "php": ">=5.4.0",
     "nosto/php-sdk": "3.4.1"
