@@ -46,6 +46,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCat
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku as NostoSku;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams as ProductStreamsRepo;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Product\Product as NostoProduct;
 use Nosto\NostoException;
@@ -97,7 +98,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->setName($article->getName());
         $this->setImageUrl(ImageHelper::getMainImageUrl($article, $shop));
         $this->setAlternateImageUrls(ImageHelper::getAlternativeImageUrls($article, $shop));
-        $this->setPriceCurrencyCode($shop->getCurrency()->getCurrency());
+        $this->setPriceCurrencyCode(CurrencyHelper::getTaggingCurrencyCode($shop));
         $this->setPrice(PriceHelper::calcArticlePriceInclTax(
             $article,
             $shop,
@@ -132,6 +133,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $this->setInventoryLevel($article->getMainDetail()->getInStock());
         $this->setSupplierCost($article->getMainDetail()->getPurchasePrice());
 
+        if (CurrencyHelper::isMultiCurrencyEnabled($shop)) {
+            $baseCurrency = CurrencyHelper::getDefaultCurrency($shop);
+            if ($baseCurrency) {
+                $this->setVariationId($baseCurrency->getCurrency());
+            }
+        }
+        
         /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()
             ->Plugins()

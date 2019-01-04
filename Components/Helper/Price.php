@@ -41,6 +41,7 @@ use Shopware\Models\Article\Detail;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Customer\Group;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 
 /**
  * Helper class for prices
@@ -62,7 +63,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     public static function convertToShopCurrency($priceInMainShopCurrency, Shop $shop)
     {
         // If it is 0, Shopware considering it 1
-        if ($shop->getCurrency()->getFactor() == 0) {
+        if (CurrencyHelper::isMultiCurrencyEnabled($shop)
+            || $shop->getCurrency()->getFactor() === 0.0
+        ) {
             return $priceInMainShopCurrency;
         }
         return $priceInMainShopCurrency * $shop->getCurrency()->getFactor();

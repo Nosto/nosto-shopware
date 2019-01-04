@@ -137,4 +137,7 @@
     {if isset($nostoPageType) && $nostoPageType}
         {$nostoPageType->toHtml()}
     {/if}
+    {if isset($nostoVariation) && $nostoVariation}
+        {$nostoVariation->toHtml()}
+    {/if}
 {/block}

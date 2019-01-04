@@ -35,6 +35,7 @@
  */
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner as NostoAccountOwner;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Billing;
 use Nosto\Object\Signup\Signup;
@@ -119,6 +120,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         }
         /** @noinspection PhpDeprecationInspection */
         $this->title = Shopware()->App() . ' - ' . $shop->getName();
+        /** @noinspection RandomApiMigrationInspection */
         $this->name = substr(sha1(rand()), 0, 8);
         $this->frontPageUrl = $this->buildStoreUrl($shop);
         $this->currencyCode = strtoupper($shop->getCurrency()->getCurrency());
@@ -128,6 +130,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         $this->owner->loadData($identity);
         $this->billing = new Billing();
         $this->billing->setCountry(strtoupper(substr($shop->getLocale()->getLocale(), 3)));
+        if (CurrencyHelper::isMultiCurrencyEnabled($shop)) {
+            $defaultCurrency = CurrencyHelper::getDefaultCurrency($shop);
+            if ($defaultCurrency) {
+                $this->setDefaultVariantId($defaultCurrency->getCurrency());
+            }
+            $this->setUseCurrencyExchangeRates(true);
+        }
     }
 
     /**
@@ -344,11 +353,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
     }
 
     /**
-     * @return null
+     * @return string
      */
     public function getDefaultVariationId()
     {
-        return null;
+        return parent::getDefaultVariantId();
     }
 
     /**
