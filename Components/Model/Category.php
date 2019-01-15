@@ -62,7 +62,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
      */
     public static function build(Category $category)
     {
-        $nostoCategory = new NostoCategory(self::buildCategoryPath($category));
+        $nostoCategory = new NostoCategory();
+        $nostoCategory->setCategoryString(self::buildCategoryPath($category));
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',
