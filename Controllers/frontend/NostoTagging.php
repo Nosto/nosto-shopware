@@ -60,6 +60,7 @@ use Shopware\Models\Order\Order;
 use Nosto\Helper\ExportHelper;
 use Nosto\NostoException;
 use Nosto\Nosto;
+use Nosto\Exception\Builder as ExceptionBuilder;
 
 /**
  * Main frontend controller. Handles account connection via OAuth 2 and data
@@ -324,7 +325,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $response = $request->get();
         $result = $response->getJsonResult(true);
         if ($response->getCode() !== 200) {
-            Nosto::throwHttpException($request, $response);
+            throw ExceptionBuilder::fromHttpRequestAndResponse($request, $response);
         }
         if (empty($result)) {
             throw new NostoException('Received invalid data from Nosto when trying to sync account');
