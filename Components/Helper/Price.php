@@ -144,9 +144,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         }
 
         //Check if Gross Price is displayed in frontend
-        if ($price->getCustomerGroup()->getTax()) {
-            $tax = $article->getTax()->getTax();
-            $value = $value * (1 + ($tax / 100));
+        if ($price->getCustomerGroup()) {
+            if ($price->getCustomerGroup()->getTax()) {
+                $tax = $article->getTax()->getTax();
+                $value = $value * (1 + ($tax / 100));
+            }
         }
 
         // Convert currency
