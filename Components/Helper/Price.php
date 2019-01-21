@@ -142,12 +142,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $priceRate = self::getProductPriceRateAfterDiscountForArticle($article, $shop);
             $value *= $priceRate;
         }
-        $tax = $article->getTax()->getTax();
-        $priceWithTax = $value * (1 + ($tax / 100));
-        // Convert currency
-        $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
 
-        return NostoPriceHelper::format($priceWithTax);
+        //Check if Gross Price is displayed in frontend
+        if ($price->getCustomerGroup()) {
+            if ($price->getCustomerGroup()->getTax()) {
+                $tax = $article->getTax()->getTax();
+                $value = $value * (1 + ($tax / 100));
+            }
+        }
+
+        // Convert currency
+        $value = self::convertToShopCurrency($value, $shop);
+
+        return NostoPriceHelper::format($value);
     }
 
     /**
