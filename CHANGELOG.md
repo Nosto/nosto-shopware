@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.0
+- Respect configured tax rules in product tagging
+- Add index to table s_nostotagging_customer for column nosto_id
+- Bump Nosto SDK version to support HTTP 2
+
 ## 2.2.0 
 - Add support for multi-currency
 
