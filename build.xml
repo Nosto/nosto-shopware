@@ -89,6 +89,7 @@
         <delete file="${buildsrc}/composer.lock"/>
         <delete file="${buildsrc}/Dockerfile"/>
         <delete file="${buildsrc}/Jenkinsfile"/>
+        <delete dir="${buildsrc}/.github"/>
     </target>
 
     <target name="updatedependencies">
