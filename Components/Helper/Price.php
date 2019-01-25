@@ -41,6 +41,7 @@ use Shopware\Models\Article\Detail;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Customer\Group;
+use Shopware\Models\Tax\Tax;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 
 /**
@@ -136,23 +137,61 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
         }
         // If the list price is not set, fall back on the normal price.
         if ($type === self::PRICE_TYPE_LIST && $price->getPseudoPrice() > 0) {
-            $value = $price->getPseudoPrice();
+            $priceExcludingTaxes = $price->getPseudoPrice();
         } else {
-            $value = $price->getPrice();
+            $priceExcludingTaxes = $price->getPrice();
             $priceRate = self::getProductPriceRateAfterDiscountForArticle($article, $shop);
-            $value *= $priceRate;
+            $priceExcludingTaxes *= $priceRate;
         }
 
-        //Check if Gross Price is displayed in frontend
-        if ($price->getCustomerGroup() && $price->getCustomerGroup()->getTax()) {
-            $tax = $article->getTax()->getTax();
-            $value = $value * (1 + ($tax / 100));
+        $price = self::applyTaxes($priceExcludingTaxes, $price, $article->getTax());
+        $price = self::convertToShopCurrency($price, $shop);
+
+        return NostoPriceHelper::format($price);
+    }
+
+    /**
+     * Taxation logic  in a nutshell
+     * - Check if prices should be displayed with or without taxes
+     * - Check if there specific tax rules defined for the customer group
+     * - Apply default tax if no detailed tax rules for the customer group are defined
+     *
+     * @param $priceWithoutTax
+     * @param Price $price
+     * @param Tax $tax
+     * @return float|int
+     */
+    public static function applyTaxes(
+        $priceWithoutTax,
+        Price $price,
+        Tax $tax
+    ) {
+        $priceAfterTaxes = $priceWithoutTax;
+        $priceCustomerGroup = $price->getCustomerGroup();
+        // Check if prices should be displayed including taxes
+        if ($price->getCustomerGroup() && $priceCustomerGroup->getTax()) {
+            $taxRulesApplied = false;
+            $taxRules = $tax->getRules();
+            /* @var Shopware\Models\Tax\Rule $rule */
+            foreach ($taxRules as $rule) {
+                if ($priceCustomerGroup->getId() === $rule->getCustomerGroupId()) {
+                    // We consider the rules applied if one is defined for the customer group
+                    if ($rule->getTax() > 0) {
+                        $priceAfterTaxes = $priceWithoutTax * (1 + ($rule->getTax() / 100));
+                    }
+                    $taxRulesApplied = true;
+                }
+            }
+            // Shopware only adds the default tax if no tax rules are defined & applied
+            if ($taxRulesApplied === false) {
+                $articleTax = $tax->getTax();
+                if ($articleTax > 0) {
+                    $priceAfterTaxes= $priceWithoutTax * (1 + ($articleTax / 100));
+                }
+            }
         }
 
-        // Convert currency
-        $value = self::convertToShopCurrency($value, $shop);
-
-        return NostoPriceHelper::format($value);
+        return $priceAfterTaxes;
     }
 
     /**
@@ -181,9 +220,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $priceRate = self::getProductPriceRateAfterDiscountForDetail($detail, $shop);
             $value *= $priceRate;
         }
-        $tax = $detail->getArticle()->getTax()->getTax();
-        $priceWithTax = $value * (1 + ($tax / 100));
-        // Convert currency
+        $priceWithTax = self::applyTaxes($value, $price, $detail->getArticle()->getTax());
         $priceWithTax = self::convertToShopCurrency($priceWithTax, $shop);
 
         return (float)NostoPriceHelper::format($priceWithTax);
