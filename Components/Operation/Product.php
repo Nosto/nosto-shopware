@@ -63,28 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      */
     public function create(Article $article)
     {
-        /** @var Repository $repository */
-        $repository = Shopware()->Models()->getRepository('\Shopware\Models\Shop\Shop');
-        foreach ($this->getAccounts($article) as $shopId => $account) {
-            $shop = $repository->getActiveById($shopId);
-            if ($shop instanceof Shop === false) {
-                continue;
-            }
-            /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap());
-            $model = new Product();
-            $model->loadData($article, $shop);
-            if ($model->getProductId()) {
-                try {
-                    $op = new UpsertProduct($account);
-                    $op->addProduct($model);
-                    $op->upsert();
-                } catch (\Exception $e) {
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
-                }
-            }
-        }
+        $this->update($article);
     }
 
     /**
