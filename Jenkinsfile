@@ -30,7 +30,7 @@ pipeline {
     stage('Copy-Paste Detection') {
       steps {
         catchError {
-          sh "./vendor/bin/phpcpd --exclude=vendor --exclude=build --log-pmd=phdpcpd.xml . || true"
+          sh "./vendor/bin/phpcpd --exclude=vendor --exclude=build --log-pmd=phdpcpd.xml . "
         }
         archiveArtifacts 'phdpcpd.xml'
       }
