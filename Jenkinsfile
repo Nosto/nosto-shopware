@@ -23,14 +23,16 @@ pipeline {
         catchError {
           sh "./vendor/bin/phpcs --standard=ruleset.xml --severity=3 --report=checkstyle --report-file=chkphpcs.xml . || true"
         }
+        archiveArtifacts 'chkphpcs.xml'
       }
     }
 
     stage('Copy-Paste Detection') {
       steps {
         catchError {
-          sh "./vendor/bin/phpcpd --exclude=vendor --exclude=build --log-pmd=phdpcpd.xml . || true"
+          sh "./vendor/bin/phpcpd --exclude=vendor --exclude=build --log-pmd=phdpcpd.xml . "
         }
+        archiveArtifacts 'phdpcpd.xml'
       }
     }
 
@@ -39,14 +41,7 @@ pipeline {
         catchError {
           sh "./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml || true"
         }
-      }
-    }
-
-    stage('Package') {
-      steps {
-        script {
-          version = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-        }
+        archiveArtifacts 'pmdphpmd.xml'
       }
     }
 
@@ -55,6 +50,7 @@ pipeline {
         catchError {
           sh "./vendor/bin/phan --config-file=phan.php --output-mode=checkstyle --output=chkphan.xml || true"
         }
+        archiveArtifacts 'chkphan.xml'
       }
     }
   }
