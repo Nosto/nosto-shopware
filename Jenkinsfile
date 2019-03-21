@@ -39,10 +39,9 @@ pipeline {
     stage('Package') {
       steps {
         script {
-          sh "./vendor/bin/phing -Dversion=123"
-          sh 'chmod 644 *.tgz'
+          sh "./vendor/bin/phing -Dversion=2.3.2"
         }
-        archiveArtifacts "NostoTagging-123.zip"
+        archiveArtifacts "NostoTagging-2.3.2.zip"
       }
     }
 
