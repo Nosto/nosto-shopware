@@ -41,7 +41,7 @@ pipeline {
         script {
           sh "./vendor/bin/phing -Dversion=2.3.2"
         }
-        archiveArtifacts "NostoTagging-2.3.2.zip"
+        archiveArtifacts "build/package/NostoTagging-2.3.2.zip"
       }
     }
 
