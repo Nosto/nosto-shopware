@@ -36,6 +36,16 @@ pipeline {
       }
     }
 
+    stage('Package') {
+      steps {
+        script {
+          sh "./vendor/bin/phing -Dversion=123"
+          sh 'chmod 644 *.tgz'
+        }
+        archiveArtifacts "NostoTagging-123.zip"
+      }
+    }
+
     stage('Mess Detection') {
       steps {
         catchError {
