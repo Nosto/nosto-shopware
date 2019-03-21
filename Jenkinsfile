@@ -39,7 +39,7 @@ pipeline {
     stage('Package') {
       steps {
         script {
-          version = sh(returnStdout: true, script: 'grep "const PLUGIN_VERSION = " Bootstrap.php | cut -d= -f2 | tr ',' ' '| tr ';' ' ' | tr "\'" ' '').trim()
+          version = sh(returnStdout: true, script: 'grep "const PLUGIN_VERSION = " Bootstrap.php | cut -d= -f2 | tr "," " "| tr ";" " " | tr "\'" " "').trim()
           sh "./vendor/bin/phing -Dversion=${version}"
         }
         archiveArtifacts "build/package/NostoTagging-${version}.zip"
