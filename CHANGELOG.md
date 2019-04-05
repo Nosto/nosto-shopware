@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.3
+- Encode HTML characters automatically
+
 ## 2.3.2
 - Fix tax calculation for Nosto product price to factor in the tax rules instead of only the default tax 
 
