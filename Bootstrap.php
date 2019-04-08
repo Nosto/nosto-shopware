@@ -86,7 +86,7 @@ use Nosto\Nosto;
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.3.2';
+    const PLUGIN_VERSION = '2.4.0';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -1353,6 +1353,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     protected function addSearchTagging(Enlight_View_Default $view)
     {
         $nostoSearch = new SearchTerm(Shopware()->Front()->Request()->getParam('sSearch'));
+        $nostoSearch->disableAutoEncodeAll();
         $view->assign('nostoSearch', $nostoSearch);
         $this->addPageTypeTagging($view, self::PAGE_TYPE_SEARCH);
     }
