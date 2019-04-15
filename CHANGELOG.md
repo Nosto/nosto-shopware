@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.1
+- Fix an issue that can cause crash when a product added to cart no longer has a parent 
+
 ## 2.4.0
 - Encode HTML characters automatically
 
