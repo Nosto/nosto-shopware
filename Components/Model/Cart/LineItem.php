@@ -36,6 +36,8 @@
 
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
 use Nosto\Object\Cart\LineItem;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware\Models\Order\Basket;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -77,6 +79,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
                 $basket->getArticleId()
             );
 
+            /** @var Article $article */
             if (!empty($article)) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $skuTaggingAllowed = Shopware()
@@ -85,13 +88,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
                     ->NostoTagging()
                     ->Config()
                     ->get(Bootstrap::CONFIG_SKU_TAGGING);
-
+                /** @var Detail $detailNumber */
                 $detailNumber = Shopware()
                     ->Models()
                     ->getRepository('\Shopware\Models\Article\Detail')
                     ->findOneBy(array('number' => $basket->getOrderNumber()));
                 // If detail number not found, fallback to parent
-                $this->setProductId($article->getMainDetail()->getNumber());
+                if ($article->getMainDetail() !== null
+                    && $article->getMainDetail()->getNumber() !== null
+                ) {
+                    $this->setProductId($article->getMainDetail()->getNumber());
+                } else {
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->info(
+                        sprintf('Item in basket %s does not have a parent', $basket->getArticleId())
+                    );
+                }
                 if (!empty($detailNumber) && $skuTaggingAllowed) {
                     $this->setSkuId($detailNumber->getNumber());
                 }
