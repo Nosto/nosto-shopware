@@ -270,14 +270,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $result = $query->getOneOrNullResult();
 
         if ($result instanceof Translation && $result->getData()) {
+            // Article's setName method treats the string, so let's clone the object to avoid discrepancies
+            $nostoArticle = clone $article;
             $dataObject = unserialize($result->getData());
-            if (array_key_exists('txtArtikel', $dataObject)) {
-                $article->setName($dataObject[self::TXT_ARTICLE]);
-                $this->setName($article->getName());
+            if (array_key_exists(self::TXT_ARTICLE, $dataObject)) {
+                $nostoArticle->setName($dataObject[self::TXT_ARTICLE]);
+                $this->setName($nostoArticle->getName());
             }
             if (array_key_exists(self::TXT_LANG_DESCRIPTION, $dataObject)) {
-                $article->setDescriptionLong($dataObject[self::TXT_LANG_DESCRIPTION]);
-                $this->setDescription($article->getDescriptionLong());
+                $nostoArticle->setDescriptionLong($dataObject[self::TXT_LANG_DESCRIPTION]);
+                $this->setDescription($nostoArticle->getDescriptionLong());
             }
         }
     }
