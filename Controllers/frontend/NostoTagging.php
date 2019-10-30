@@ -90,14 +90,16 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
     /**
      * Shopware_Controllers_Frontend_NostoTagging constructor.
-     * @param Enlight_Controller_Request_Request $request
-     * @param Enlight_Controller_Response_Response $response
+     * @param Enlight_Controller_Request_Request|null $request
+     * @param Enlight_Controller_Response_Response|null $response
      */
     public function __construct(
         Enlight_Controller_Request_Request $request = null,
         Enlight_Controller_Response_Response $response = null
     ) {
-        parent::__construct($request, $response);
+        if ($request && $response) {
+            parent::__construct($request, $response);
+        }
         $this->productRepository = new ProductRepository();
         $this->accountRepository = new AccountRepository();
         $this->orderRepository = new OrderRepository();
