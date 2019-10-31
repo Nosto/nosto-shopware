@@ -86,7 +86,7 @@ use Nosto\Nosto;
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.4.2';
+    const PLUGIN_VERSION = '2.4.3';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -465,14 +465,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function getShopwareVersion()
     {
-        if (Shopware::VERSION !== null && Shopware::VERSION !== '___VERSION___') {
+        if (defined('Shopware::VERSION') && Shopware::VERSION !== null && Shopware::VERSION !== '___VERSION___') {
             return Shopware::VERSION;
-        } elseif (Shopware()->Container()->getParameter('shopware.release.version')) {
+        }
+        if (Shopware()->Container()->getParameter('shopware.release.version')) {
             return Shopware()->Container()->getParameter('shopware.release.version');
-        } elseif (Nosto::getEnvVariable('SHOPWARE_VERSION')) {
+        }
+        if (Nosto::getEnvVariable('SHOPWARE_VERSION')) {
             return Nosto::getEnvVariable('SHOPWARE_VERSION');
         }
-
         throw new NostoException('Could not determine shopware version');
     }
 
