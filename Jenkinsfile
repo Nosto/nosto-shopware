@@ -18,6 +18,15 @@ pipeline {
       }
     }
 
+    stage('Security Checks') {
+      steps {
+        catchError {
+          sh "symfony security:check --dir=. --format=json > chksecurity.json"
+        }
+        archiveArtifacts 'chksecurity.json'
+      }
+    }
+
     stage('Code Sniffer') {
       steps {
         catchError {

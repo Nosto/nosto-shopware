@@ -63,6 +63,10 @@ RUN         apt-get -y -qq install build-essential php-pear && \
             apt-get purge -y build-essential && \
             apt-get -y clean
 
+# Add Symfony CLI
+RUN        wget https://get.symfony.com/cli/installer -O - | bash && \
+           mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+
 # Enable AST extension
 RUN         echo "extension=ast.so" >> /etc/php/7.1/cli/php.ini
 
@@ -78,4 +82,7 @@ RUN        groupadd -r plugins -g 113 && \
            usermod -a -G www-data plugins
 
 USER       plugins
+
+# Download composer packages in parallel
+RUN        composer global require hirak/prestissimo
 #ENTRYPOINT ["bash"]
