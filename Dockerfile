@@ -63,10 +63,6 @@ RUN         apt-get -y -qq install build-essential php-pear && \
             apt-get purge -y build-essential && \
             apt-get -y clean
 
-# Add Symfony CLI
-RUN        wget https://get.symfony.com/cli/installer -O - | bash && \
-           mv /root/.symfony/bin/symfony /usr/local/bin/symfony
-
 # Enable AST extension
 RUN         echo "extension=ast.so" >> /etc/php/7.1/cli/php.ini
 
