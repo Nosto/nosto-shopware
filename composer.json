@@ -4,7 +4,7 @@
   "license": [
     "BSD-3-Clause"
   ],
-  "version": "2.4.3",
+  "version": "2.4.4",
   "require": {
     "php": ">=5.4.0",
     "nosto/php-sdk": "3.15.0"
@@ -16,7 +16,7 @@
     "phpmd/phpmd": "^2.6",
     "sebastian/phpcpd": "4.1.0",
     "phing/phing": "2.*",
-    "shopware/shopware": "5.2.2",
+    "shopware/shopware": "5.5.*",
     "wimg/php-compatibility": "^9.0"
   },
   "autoload": {

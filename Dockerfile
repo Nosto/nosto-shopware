@@ -78,4 +78,7 @@ RUN        groupadd -r plugins -g 113 && \
            usermod -a -G www-data plugins
 
 USER       plugins
+
+# Download composer packages in parallel
+RUN        composer global require hirak/prestissimo
 #ENTRYPOINT ["bash"]

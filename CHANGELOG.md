@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.4
+- Update composer dependencies
+
 ## 2.4.3
 - Fix compatibility issues with Shopware 5.6 installations.
 
