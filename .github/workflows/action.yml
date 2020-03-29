@@ -40,9 +40,9 @@ jobs:
 
     - name: Run the sniffer
       run: |
-        ./libs/bin/phpcs --config-set ignore_errors_on_exit 1
-        ./libs/bin/phpcs --config-set ignore_warnings_on_exit 1
-        ./libs/bin/phpcs --standard=ruleset.xml --severity=10 --report=checkstyle --report-file=chkphpcs.xml .
+        ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+        ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+        ./vendor/bin/phpcs --standard=ruleset.xml --severity=10 --report=checkstyle --report-file=chkphpcs.xml .
 
     - name: Archive code sniffing results
       uses: actions/upload-artifact@v1
@@ -52,7 +52,7 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./libs/bin/cs2pr chkphpcs.xml
+      run: ./vendor/bin/cs2pr chkphpcs.xml
 
   phpmd:
     name: Mess Detect
@@ -89,7 +89,7 @@ jobs:
     ############################################################################
 
     - name: Run the mess detector
-      run: ./libs/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude libs,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
+      run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests --reportfile pmdphpmd.xml --ignore-violations-on-exit
 
     - name: Archive mess detection results
       uses: actions/upload-artifact@v1
@@ -99,7 +99,7 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./libs/bin/cs2pr pmdphpmd.xml
+      run: ./vendor/bin/cs2pr pmdphpmd.xml
 
   phpcpd:
     name: Copy-Paste Detect
@@ -137,7 +137,7 @@ jobs:
 
       #https://github.com/sebastianbergmann/phpcpd/issues/148
     - name: Run the copy-paste detector
-      run: ./libs/bin/phpcpd --exclude=libs --exclude=build --log-pmd=phdpcpd.xml .
+      run: ./vendor/bin/phpcpd --exclude=vendor --exclude=build --log-pmd=phdpcpd.xml .
       continue-on-error: true
 
     - name: Archive copy-paste detection results
@@ -148,7 +148,7 @@ jobs:
 
     - name: Report annotations
       id: report-annotations
-      run: ./libs/bin/cs2pr phdpcpd.xml
+      run: ./vendor/bin/cs2pr phdpcpd.xml
 
   package:
     name: Package
