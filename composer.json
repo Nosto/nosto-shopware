@@ -15,7 +15,8 @@
     "sebastian/phpcpd": "4.1.0",
     "phing/phing": "2.*",
     "shopware/shopware": "5.5.*",
-    "wimg/php-compatibility": "^9.0"
+    "wimg/php-compatibility": "^9.0",
+    "staabm/annotate-pull-request-from-checkstyle": "^1.1"
   },
   "autoload": {
     "psr-4": {
