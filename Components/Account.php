@@ -68,7 +68,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @param Locale|null $locale the locale or null.
      * @param stdClass|null $identity the user identity.
      * @param string|null $email (optional) the account owner email if different than the active admin user.
-     * @param array|stdClass $details (optional) the account details.
+     * @param array|stdClass|null $details (optional) the account details.
      * @return AccountCustomModel the newly created account.
      * @throws NostoException if the account cannot be created for any reason.
      * @suppress PhanTypeMismatchArgument

@@ -125,7 +125,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
     /**
      * Sends info to Nosto about a newly updated product.
      *
-     * @param \Shopware\Models\Article\Article $article the product.
+     * @param Article $article the product.
      * @throws Exception
      * @suppress PhanDeprecatedFunction
      */
@@ -139,7 +139,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                 continue;
             }
             /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap());
+            $shop->registerResources(Shopware()->Bootstrap()); /** @phan-suppress-current-line PhanParamTooMany */
             $model = new Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {

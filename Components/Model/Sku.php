@@ -60,11 +60,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         if ($shop === null) {
             $shop = Shopware()->Shop();
         }
-
         $this->setUrl(
             Product::assembleProductUrl(
                 $detail->getArticle(),
-                $shop,
+                $shop, /** @phan-suppress-current-line PhanTypeMismatchArgumentNullable */
                 $detail
             )
         );
@@ -75,12 +74,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         );
         $this->setPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,
-            $shop,
+            $shop, /** @phan-suppress-current-line PhanTypeMismatchArgumentNullable */
             PriceHelper::PRICE_TYPE_NORMAL
         ));
         $this->setListPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,
-            $shop,
+            $shop, /** @phan-suppress-current-line PhanTypeMismatchArgumentNullable */
             PriceHelper::PRICE_TYPE_LIST
         ));
         $this->setAvailable($this->isDetailAvailable($detail));

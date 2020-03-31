@@ -98,14 +98,15 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
      * Assembles the product image url based on article.
      *
      * @param Image $image
-     * @param MediaServiceInterface|null $mediaService
      * @param Shop $shop
+     * @param MediaServiceInterface|null $mediaService
      * @return null|?string the url of the Image or null if image not found.
+     * @suppress PhanUndeclaredMethod $shop getters
      */
     private static function buildUrl(
         Image $image,
-        MediaServiceInterface $mediaService = null,
-        Shop $shop
+        Shop $shop,
+        MediaServiceInterface $mediaService = null
     ) {
         $url = null;
 
@@ -160,7 +161,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
 
         /** @var Shopware\Models\Article\Image $image */
         foreach ($article->getImages() as $image) {
-            $imageUrl = self::buildUrl($image, $mediaService, $shop);
+            $imageUrl = self::buildUrl($image, $shop, $mediaService);
             if ($imageUrl !== null) {
                 $imageUrls[] = $imageUrl;
                 if ($mainImageUrl === null || $image->getMain() === 1) {

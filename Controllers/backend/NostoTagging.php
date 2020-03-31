@@ -147,7 +147,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                 continue;
             }
             /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap());
+            $shop->registerResources(Shopware()->Bootstrap()); /** @phan-suppress-current-line PhanParamTooMany */
             $account = NostoComponentAccount::findAccount($shop);
             if (isset($oauthParams[$shop->getId()])) {
                 /** @noinspection PhpUndefinedVariableInspection */

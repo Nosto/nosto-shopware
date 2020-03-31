@@ -51,7 +51,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
     /**
      * Loads the data for the account owner.
      *
-     * @param stdClass|null the user identity.
+     * @param stdClass $identity|null $identity the user identity.
      */
     public function loadData($identity = null)
     {
