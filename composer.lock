@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f68092c28de67a7bb080b6792c1f716c",
+    "content-hash": "900236d550b95c110001fe2fe55c9aaa",
     "packages": [
         {
             "name": "nosto/php-sdk",
@@ -1578,6 +1578,50 @@
                 "static"
             ],
             "time": "2020-03-27T11:06:43+00:00"
+        },
+        {
+            "name": "drenso/phan-extensions",
+            "version": "v2.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Drenso/PhanExtensions.git",
+                "reference": "cedef1c214c259bfaab0652256abf931b00c2781"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Drenso/PhanExtensions/zipball/cedef1c214c259bfaab0652256abf931b00c2781",
+                "reference": "cedef1c214c259bfaab0652256abf931b00c2781",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phan/phan": "~1|~2"
+            },
+            "type": "project",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bob van de Vijver",
+                    "email": "bob@drenso.nl"
+                },
+                {
+                    "name": "Tobias Feijten",
+                    "email": "tobias@drenso.nl"
+                }
+            ],
+            "description": "This project contains several extensions (stubs/plugins) to be used with Phan for static PHP analysis",
+            "homepage": "https://github.com/Drenso/PhanExtensions",
+            "keywords": [
+                "phan",
+                "plugin",
+                "plugins",
+                "stub",
+                "stubs",
+                "symfony"
+            ],
+            "time": "2019-05-31T15:22:44+00:00"
         },
         {
             "name": "egulias/email-validator",
