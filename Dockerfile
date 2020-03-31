@@ -64,8 +64,9 @@ RUN         apt-get -y -qq install build-essential php-pear && \
             apt-get purge -y build-essential && \
             apt-get -y clean
 
-# Enable AST extension
+# Enable AST & mcrypt extensions
 RUN         echo "extension=ast.so" >> /etc/php/7.2/cli/php.ini
+RUN         echo "extension=mcrypt.so" >> /etc/php/7.2/cli/php.ini
 
 RUN         a2enmod rewrite && phpenmod ast soap && \
             a2dissite 000-default.conf
