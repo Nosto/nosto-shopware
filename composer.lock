@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7eaeaf3741cd6ca03bf57b4799b4d53e",
+    "content-hash": "d8d18343e7abf82aec1c12fdc50d71f8",
     "packages": [
         {
             "name": "composer/semver",
@@ -195,16 +195,16 @@
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v1.6.0",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06"
+                "reference": "e245890383c3ed38b6d202ee373c23ccfebc0f54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06",
-                "reference": "0d4d1b48d682a93b6bfedf60b88c7750e9cb0b06",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/e245890383c3ed38b6d202ee373c23ccfebc0f54",
+                "reference": "e245890383c3ed38b6d202ee373c23ccfebc0f54",
                 "shasum": ""
             },
             "require": {
@@ -215,8 +215,8 @@
                 "php": ">=5.6"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.8.35 || ~5.7 || ~6.4",
-                "squizlabs/php_codesniffer": "~1.5"
+                "phpunit/phpunit": "~4.8.35 || ~5.7 || ~6.4 || ~7.0",
+                "squizlabs/php_codesniffer": "~3.5"
             },
             "type": "library",
             "autoload": {
@@ -237,7 +237,7 @@
                 }
             ],
             "description": "Map nested JSON structures onto PHP classes",
-            "time": "2019-08-15T19:41:25+00:00"
+            "time": "2020-03-04T17:23:33+00:00"
         },
         {
             "name": "nosto/php-sdk",
@@ -288,16 +288,16 @@
         },
         {
             "name": "phan/phan",
-            "version": "2.6.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phan/phan.git",
-                "reference": "d082d19370ff87e6036073eaccda7c06ddc3f53e"
+                "reference": "184c591e5b31c1f98426ed8e147a61864bd0cc96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/d082d19370ff87e6036073eaccda7c06ddc3f53e",
-                "reference": "d082d19370ff87e6036073eaccda7c06ddc3f53e",
+                "url": "https://api.github.com/repos/phan/phan/zipball/184c591e5b31c1f98426ed8e147a61864bd0cc96",
+                "reference": "184c591e5b31c1f98426ed8e147a61864bd0cc96",
                 "shasum": ""
             },
             "require": {
@@ -308,7 +308,7 @@
                 "ext-tokenizer": "*",
                 "felixfbecker/advanced-json-rpc": "^3.0.4",
                 "microsoft/tolerant-php-parser": "0.0.20",
-                "netresearch/jsonmapper": "^1.6.0",
+                "netresearch/jsonmapper": "^1.6.0|^2.0",
                 "php": "^7.1.0",
                 "sabre/event": "^5.0",
                 "symfony/console": "^2.3|^3.0|^4.0|^5.0",
@@ -357,7 +357,7 @@
                 "php",
                 "static"
             ],
-            "time": "2020-03-07T19:01:06+00:00"
+            "time": "2020-03-13T21:34:53+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -838,16 +838,16 @@
         },
         {
             "name": "symfony/debug",
-            "version": "v4.4.6",
+            "version": "v4.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "f0ae2b4150254b8b4ac578f33d910b9c116618f0"
+                "reference": "346636d2cae417992ecfd761979b2ab98b339a45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/f0ae2b4150254b8b4ac578f33d910b9c116618f0",
-                "reference": "f0ae2b4150254b8b4ac578f33d910b9c116618f0",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/346636d2cae417992ecfd761979b2ab98b339a45",
+                "reference": "346636d2cae417992ecfd761979b2ab98b339a45",
                 "shasum": ""
             },
             "require": {
@@ -890,7 +890,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2020-03-23T12:37:11+00:00"
+            "time": "2020-03-27T16:54:36+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -1112,16 +1112,16 @@
     "packages-dev": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.133.46",
+            "version": "3.133.47",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "98d359e61b365f3040ca61c66ae8883334cf5d74"
+                "reference": "706082d6a0e53c7656eca61866b456178112daf6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/98d359e61b365f3040ca61c66ae8883334cf5d74",
-                "reference": "98d359e61b365f3040ca61c66ae8883334cf5d74",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/706082d6a0e53c7656eca61866b456178112daf6",
+                "reference": "706082d6a0e53c7656eca61866b456178112daf6",
                 "shasum": ""
             },
             "require": {
@@ -1192,7 +1192,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2020-03-27T18:15:32+00:00"
+            "time": "2020-03-30T18:15:57+00:00"
         },
         {
             "name": "bcremer/line-reader",
@@ -3063,6 +3063,49 @@
                 "utf-8"
             ],
             "time": "2018-01-03T07:32:36+00:00"
+        },
+        {
+            "name": "mridang/pmd-annotations",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mridang/pmd-annotations.git",
+                "reference": "0fcaf0e31698c4d81ddb6fa2538edfda8123a7a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mridang/pmd-annotations/zipball/0fcaf0e31698c4d81ddb6fa2538edfda8123a7a2",
+                "reference": "0fcaf0e31698c4d81ddb6fa2538edfda8123a7a2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-simplexml": "*",
+                "php": "^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5"
+            },
+            "bin": [
+                "pmd2pr"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mridang Agarwalla"
+                }
+            ],
+            "description": "Turns PMD style XML reports into Github pull-request annotations via the Checks API. This script is meant for use within your Github Action.",
+            "keywords": [
+                "actions",
+                "annotations",
+                "github",
+                "pmd"
+            ],
+            "time": "2020-03-31T08:41:21+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",
@@ -5117,16 +5160,16 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v4.4.6",
+            "version": "v4.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "cf57788d1ca64ee7e689698dc0295d25c9fe3780"
+                "reference": "abc8e3618bfdb55e44c8c6a00abd333f831bbfed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/cf57788d1ca64ee7e689698dc0295d25c9fe3780",
-                "reference": "cf57788d1ca64ee7e689698dc0295d25c9fe3780",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/abc8e3618bfdb55e44c8c6a00abd333f831bbfed",
+                "reference": "abc8e3618bfdb55e44c8c6a00abd333f831bbfed",
                 "shasum": ""
             },
             "require": {
@@ -5183,7 +5226,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2020-03-16T11:24:17+00:00"
+            "time": "2020-03-27T16:54:36+00:00"
         },
         {
             "name": "symfony/event-dispatcher-contracts",
@@ -5618,16 +5661,16 @@
         },
         {
             "name": "symfony/inflector",
-            "version": "v4.4.6",
+            "version": "v4.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/inflector.git",
-                "reference": "f419ab2853cc00471ffd7fc18e544b5f5a90adb1"
+                "reference": "53cfa47fe9142f39b5605df67bada3893dd4f46c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/inflector/zipball/f419ab2853cc00471ffd7fc18e544b5f5a90adb1",
-                "reference": "f419ab2853cc00471ffd7fc18e544b5f5a90adb1",
+                "url": "https://api.github.com/repos/symfony/inflector/zipball/53cfa47fe9142f39b5605df67bada3893dd4f46c",
+                "reference": "53cfa47fe9142f39b5605df67bada3893dd4f46c",
                 "shasum": ""
             },
             "require": {
@@ -5672,20 +5715,20 @@
                 "symfony",
                 "words"
             ],
-            "time": "2020-01-04T13:00:46+00:00"
+            "time": "2020-03-27T16:54:36+00:00"
         },
         {
             "name": "symfony/intl",
-            "version": "v4.4.6",
+            "version": "v4.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/intl.git",
-                "reference": "345aa50278b9d02a9cc75a5f19596c21646aa8d8"
+                "reference": "63238a53b1cf0cd3e2b0b22cabc7c0b6f3fd4562"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/intl/zipball/345aa50278b9d02a9cc75a5f19596c21646aa8d8",
-                "reference": "345aa50278b9d02a9cc75a5f19596c21646aa8d8",
+                "url": "https://api.github.com/repos/symfony/intl/zipball/63238a53b1cf0cd3e2b0b22cabc7c0b6f3fd4562",
+                "reference": "63238a53b1cf0cd3e2b0b22cabc7c0b6f3fd4562",
                 "shasum": ""
             },
             "require": {
@@ -5747,7 +5790,7 @@
                 "l10n",
                 "localization"
             ],
-            "time": "2020-03-16T16:04:53+00:00"
+            "time": "2020-03-27T16:54:36+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -5971,16 +6014,16 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v4.4.6",
+            "version": "v4.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-access.git",
-                "reference": "a35574237897b511e9a30a7bd161d49ec8999661"
+                "reference": "75cbf0f388d82685ce06515951397bc1370901d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/property-access/zipball/a35574237897b511e9a30a7bd161d49ec8999661",
-                "reference": "a35574237897b511e9a30a7bd161d49ec8999661",
+                "url": "https://api.github.com/repos/symfony/property-access/zipball/75cbf0f388d82685ce06515951397bc1370901d7",
+                "reference": "75cbf0f388d82685ce06515951397bc1370901d7",
                 "shasum": ""
             },
             "require": {
@@ -6034,7 +6077,7 @@
                 "property path",
                 "reflection"
             ],
-            "time": "2020-03-16T16:04:53+00:00"
+            "time": "2020-03-27T16:54:36+00:00"
         },
         {
             "name": "symfony/serializer",
@@ -6330,16 +6373,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v4.4.6",
+            "version": "v4.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "982ddfd0d7aeb2be0227c242399c3f29e0403266"
+                "reference": "6e4939b084defee0ab60a21e6a02e3a198afd91f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/982ddfd0d7aeb2be0227c242399c3f29e0403266",
-                "reference": "982ddfd0d7aeb2be0227c242399c3f29e0403266",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/6e4939b084defee0ab60a21e6a02e3a198afd91f",
+                "reference": "6e4939b084defee0ab60a21e6a02e3a198afd91f",
                 "shasum": ""
             },
             "require": {
@@ -6386,7 +6429,7 @@
                 "instantiate",
                 "serialize"
             ],
-            "time": "2020-03-16T11:24:17+00:00"
+            "time": "2020-03-27T16:54:36+00:00"
         },
         {
             "name": "theseer/fdomdocument",
