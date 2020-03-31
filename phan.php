@@ -55,5 +55,9 @@ return [
     'file_list' => [
         'Bootstrap.php'
     ],
-    "color_issue_messages_if_supported" => true
+    "color_issue_messages_if_supported" => true,
+    'plugins' => [
+        'vendor/drenso/phan-extensions/Plugin/Annotation/SymfonyAnnotationPlugin.php',
+        'vendor/drenso/phan-extensions/Plugin/DocComment/InlineVarPlugin.php'
+    ]
 ];

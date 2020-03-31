@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.5
+- Update dependencies
+- Upgrade Phan and fix inspections
+- Bump minimal PHP version for require dev packages to 7.2
+
 ## 2.4.4
 - Update composer dependencies
 

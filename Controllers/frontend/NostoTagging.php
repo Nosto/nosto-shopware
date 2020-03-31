@@ -92,13 +92,15 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Shopware_Controllers_Frontend_NostoTagging constructor.
      * @param Enlight_Controller_Request_Request|null $request
      * @param Enlight_Controller_Response_Response|null $response
+     * @throws Enlight_Event_Exception
+     * @throws Enlight_Exception
      */
     public function __construct(
         Enlight_Controller_Request_Request $request = null,
         Enlight_Controller_Response_Response $response = null
     ) {
         if ($request && $response) {
-            parent::__construct($request, $response);
+            parent::__construct($request, $response); /** @phan-suppress-current-line PhanParamTooMany */
         }
         $this->productRepository = new ProductRepository();
         $this->accountRepository = new AccountRepository();
@@ -185,6 +187,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             $this->redirect($redirectParams, array('code' => 302));
         } else {
             /** @noinspection PhpUndefinedClassInspection */
+            /** @phan-suppress-next-line PhanUndeclaredClassMethod */
             throw new Zend_Controller_Action_Exception('Not Found', 404);
         }
     }
