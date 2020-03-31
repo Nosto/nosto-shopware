@@ -56,7 +56,7 @@ return [
         'Bootstrap.php'
     ],
 	'plugins' => [
-		'vendor/drenso/phan-extensions/Plugin/Annotation/SymfonyAnnotationPlugin.php',
-		'vendor/drenso/phan-extensions/Plugin/DocComment/InlineVarPlugin.php'
-	],
+        'vendor/drenso/phan-extensions/Plugin/Annotation/SymfonyAnnotationPlugin.php',
+        'vendor/drenso/phan-extensions/Plugin/DocComment/InlineVarPlugin.php'
+    ],
 ];
