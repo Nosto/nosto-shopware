@@ -54,6 +54,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      *
      * @param Detail $detail Article Detail to load the SKU information
      * @param Shop|null $shop the shop the product belongs to
+     * @suppress PhanTypeMismatchArgumentNullable
      */
     public function loadData(Detail $detail, Shop $shop = null)
     {
@@ -63,7 +64,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         $this->setUrl(
             Product::assembleProductUrl(
                 $detail->getArticle(),
-                $shop, /** @phan-suppress-current-line PhanTypeMismatchArgumentNullable */
+                $shop,
                 $detail
             )
         );
@@ -74,12 +75,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
         );
         $this->setPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,
-            $shop, /** @phan-suppress-current-line PhanTypeMismatchArgumentNullable */
+            $shop,
             PriceHelper::PRICE_TYPE_NORMAL
         ));
         $this->setListPrice(PriceHelper::calcDetailPriceInclTax(
             $detail,
-            $shop, /** @phan-suppress-current-line PhanTypeMismatchArgumentNullable */
+            $shop,
             PriceHelper::PRICE_TYPE_LIST
         ));
         $this->setAvailable($this->isDetailAvailable($detail));
