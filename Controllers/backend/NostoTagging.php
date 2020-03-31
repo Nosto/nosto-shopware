@@ -147,10 +147,10 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                 continue;
             }
             /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap()); /** @phan-suppress-current-line PhanParamTooMany */
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            $shop->registerResources(Shopware()->Bootstrap());
             $account = NostoComponentAccount::findAccount($shop);
             if (isset($oauthParams[$shop->getId()])) {
-                /** @noinspection PhpUndefinedVariableInspection */
                 $params = $oauthParams[$shop->getId()];
             }
             $accountData = array(
@@ -204,6 +204,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 
         if ($shop !== null) {
             /** @noinspection PhpDeprecationInspection */
+            // @phan-suppress-next-line PhanParamTooMany
             $shop->registerResources(Shopware()->Bootstrap());
             /** @noinspection BadExceptionsProcessingInspection */
             try {
@@ -273,6 +274,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $identity = Shopware()->Auth()->getIdentity();
         if ($account !== null && $shop !== null) {
             /** @noinspection PhpDeprecationInspection */
+            // @phan-suppress-next-line PhanParamTooMany
             $shop->registerResources(Shopware()->Bootstrap());
             NostoComponentAccount::removeAccount($account, $identity);
             $success = true;
@@ -317,6 +319,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
 
         if ($shop !== null) {
             /** @noinspection PhpDeprecationInspection */
+            // @phan-suppress-next-line PhanParamTooMany
             $shop->registerResources(Shopware()->Bootstrap());
             $meta = new MetaOauth();
             $meta->loadData($shop, $locale);

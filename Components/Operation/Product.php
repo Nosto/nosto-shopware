@@ -139,7 +139,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                 continue;
             }
             /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap()); /** @phan-suppress-current-line PhanParamTooMany */
+            /** @phan-suppress-next-line PhanTypeMismatchArgument */
+            $shop->registerResources(Shopware()->Bootstrap());
             $model = new Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
