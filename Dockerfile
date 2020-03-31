@@ -51,10 +51,10 @@ RUN         apt-get update && apt-get -y -q install zip unzip wget libfreetype6-
             apt-get -y clean
 
 # Install Apache, MySQL and all the required development and prod PHP modules
-RUN         apt-get -y -qq install apache2 php7.1 php7.1-common default-mysql-client-core \
-            default-mysql-server-core default-mysql-server php7.1-dev \
-            php7.1-mcrypt php7.1-xsl php7.1-zip php7.1-bcmath php7.1-intl php7.1-gd \
-            php7.1-curl php7.1-mbstring php7.1-mysql php7.1-soap php-xml php7.1-xml && \
+RUN         apt-get -y -qq install apache2 php7.2 php7.2-common default-mysql-client-core \
+            default-mysql-server-core default-mysql-server php7.2-dev \
+            php7.2-mcrypt php7.2-xsl php7.2-zip php7.2-bcmath php7.2-intl php7.2-gd \
+            php7.2-curl php7.2-mbstring php7.2-mysql php7.2-soap php-xml php7.2-xml && \
             apt-get -y clean
 
 # Upgrade AST extension
@@ -64,7 +64,7 @@ RUN         apt-get -y -qq install build-essential php-pear && \
             apt-get -y clean
 
 # Enable AST extension
-RUN         echo "extension=ast.so" >> /etc/php/7.1/cli/php.ini
+RUN         echo "extension=ast.so" >> /etc/php/7.2/cli/php.ini
 
 RUN         a2enmod rewrite && phpenmod ast soap && \
             a2dissite 000-default.conf
