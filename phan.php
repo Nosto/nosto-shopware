@@ -54,5 +54,6 @@ return [
     ],
     'file_list' => [
         'Bootstrap.php'
-    ]
+    ],
+    "color_issue_messages_if_supported" => true
 ];
