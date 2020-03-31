@@ -54,13 +54,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku extends NostoS
      *
      * @param Detail $detail Article Detail to load the SKU information
      * @param Shop|null $shop the shop the product belongs to
+     * @suppress PhanTypeMismatchArgumentNullable
      */
     public function loadData(Detail $detail, Shop $shop = null)
     {
         if ($shop === null) {
             $shop = Shopware()->Shop();
         }
-
         $this->setUrl(
             Product::assembleProductUrl(
                 $detail->getArticle(),

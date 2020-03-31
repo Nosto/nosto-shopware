@@ -59,6 +59,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      *
      * @param Customer $customer the customer model.
      * @throws Enlight_Event_Exception
+     * @suppress PhanUndeclaredClassInstanceof
+     * @suppress PhanUndeclaredClassMethod
+
      */
     public function loadData(Customer $customer)
     {
@@ -81,9 +84,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                     $this->setCountry($address->getCountry()->getName());
                 }
             } else {
+                /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
                 /** @var Billing $address */
                 /** @noinspection PhpDeprecationInspection */
-                $address = $customer->getBilling();
+                $address = $customer->getBilling(); /** @phan-suppress-current-line PhanUndeclaredMethod */
                 /** @noinspection PhpDeprecationInspection */
                 if ($address instanceof Billing) {
                     $this->setFirstName($address->getFirstName());

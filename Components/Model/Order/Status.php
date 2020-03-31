@@ -63,7 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
             $description = $status->getName();
         } else {
             /** @noinspection PhpDeprecationInspection */
-            $description = $status->getDescription();
+            $description = $status->getDescription(); /** @phan-suppress-current-line PhanUndeclaredMethod */
         }
         $this->setCode($this->convertDescriptionToCode($description));
         $this->setLabel($description);

@@ -84,7 +84,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     {
         $mainDetail = $article->getMainDetail();
         $unit = $mainDetail->getUnit();
-        $price = self::calcArticlePriceInclTax(
+        $price = (double)self::calcArticlePriceInclTax(
             $article,
             $shop,
             self::PRICE_TYPE_NORMAL
@@ -339,7 +339,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     /**
      * Get a price rate after discount
      *
-     * @param ArrayCollection|[] $discounts
+     * @param ArrayCollection $discounts | [] $discounts
      * @param Shop $shop
      * @return float|int price rate after discount
      */
