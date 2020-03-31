@@ -59,7 +59,7 @@ RUN         apt-get -y -qq install apache2 php7.2 php7.2-common default-mysql-cl
 
 # Upgrade AST & mcrypt extensions
 RUN         apt-get -y -qq install build-essential php-pear && \
-            pecl install ast-0.1.6 && \
+            pecl install ast && \
             pecl install mcrypt-1.0.1 && \
             apt-get purge -y build-essential && \
             apt-get -y clean
