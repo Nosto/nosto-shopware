@@ -382,7 +382,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     $attribute['type']
                 );
             } else {
-                /** @noinspection PhpDeprecationInspection */
+                /** @phan-suppress-next-line PhanUndeclaredMethod */
                 Shopware()->Models()->addAttribute(
                     $attribute['table'],
                     $attribute['prefix'],
@@ -462,6 +462,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @return mixed|string
      * @throws InvalidArgumentException
      * @throws NostoException in case version cannot be determined
+     * @suppress PhanUndeclaredConstantOfClass
      */
     public function getShopwareVersion()
     {
@@ -604,6 +605,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function getAllActiveShops()
     {
+        /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
         /** @var \Shopware_Proxies_ShopwareModelsShopRepositoryProxy $repository */
         $repository = Shopware()->Container()->get('models')->getRepository('Shopware\Models\Shop\Shop');
         return $repository->getActiveShops();
@@ -779,7 +781,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     $fieldName
                 );
             } else {
-                /** @noinspection PhpDeprecationInspection */
+                /** @phan-suppress-next-line PhanUndeclaredMethod */
                 Shopware()->Models()->removeAttribute(
                     $attribute['table'],
                     $attribute['prefix'],
@@ -1300,6 +1302,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             // number was not present in the order variables.
             // This will be the case for Shopware <= 4.2.
             $customerId = Shopware()->Session()->offsetGet('sUserId');
+            /** @phan-suppress-next-line PhanParamTooMany */
             $order = Shopware()
                 ->Models()
                 ->getRepository('\Shopware\Models\Order\Order')
