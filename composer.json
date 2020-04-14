@@ -18,7 +18,7 @@
     "shopware/shopware": "5.5.*",
     "wimg/php-compatibility": "^9.0",
     "staabm/annotate-pull-request-from-checkstyle": "^1.1",
-    "mridang/pmd-annotations": "^0.0",
+    "mridang/pmd-annotations": "^0.0.2",
     "drenso/phan-extensions": "^2.5"
   },
   "autoload": {
