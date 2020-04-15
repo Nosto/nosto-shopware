@@ -146,9 +146,14 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             if ($shop instanceof Shop === false) {
                 continue;
             }
-            /** @noinspection PhpDeprecationInspection */
-            /** @phan-suppress-next-line PhanTypeMismatchArgument */
-            $shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany PhanTypeMismatchArgument  */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                $shop->registerResources();
+            }
             $account = NostoComponentAccount::findAccount($shop);
             if (isset($oauthParams[$shop->getId()])) {
                 $params = $oauthParams[$shop->getId()];

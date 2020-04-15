@@ -138,9 +138,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             if ($shop instanceof Shop === false) {
                 continue;
             }
-            /** @noinspection PhpDeprecationInspection */
-            /** @phan-suppress-next-line PhanTypeMismatchArgument */
-            $shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                $shop->registerResources();
+            }
             $model = new Product();
             $model->loadData($article, $shop);
             if ($model->getProductId()) {
