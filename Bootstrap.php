@@ -1302,7 +1302,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             // number was not present in the order variables.
             // This will be the case for Shopware <= 4.2.
             $customerId = Shopware()->Session()->offsetGet('sUserId');
-            /** @phan-suppress-next-line PhanParamTooMany */
+            // @phan-suppress-next-line PhanParamTooMany
             $order = Shopware()
                 ->Models()
                 ->getRepository('\Shopware\Models\Order\Order')
