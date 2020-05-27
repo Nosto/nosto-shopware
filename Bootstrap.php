@@ -86,7 +86,7 @@ use Nosto\Nosto;
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.4.5';
+    const PLUGIN_VERSION = '2.4.6';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -797,6 +797,49 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
+     * Check if plugin installation path is valid and updates DB config if it is not.
+     *
+     * @return void
+     * @throws ReflectionException|Zend_Db_Adapter_Exception
+     */
+    private function validatePathSource()
+    {
+        // Check that the path is valid
+        $reflection = new \ReflectionClass($this);
+        if ($fileName = $reflection->getFileName()) {
+            $dirName = dirname($fileName) . DIRECTORY_SEPARATOR;
+            if ($this->Path() === $dirName) {
+                return;
+            }
+        }
+        $this->updatePluginSource();
+    }
+
+    /**
+     * @throws Zend_Db_Adapter_Exception
+     */
+    private function updatePluginSource()
+    {
+        // Source folder is different than the one that came from DB
+        // Update source on the DB.
+        $path = $this->Path();
+        $data = [];
+        if (strpos($path, "Community/Frontend/NostoTagging") !== false) {
+            $data['source'] = 'Local';
+            $path = str_replace('Community/Frontend/NostoTagging', 'Local/Frontend/NostoTagging', $path);
+        } else {
+            $data['source'] = 'Community';
+            $path = str_replace('Local/Frontend/NostoTagging', 'Community/Frontend/NostoTagging', $path);
+        }
+        $where = [
+            'name = ?' => $this->getName(),
+            'source = ?' => $this->getSource(),
+        ];
+        Shopware()->Db()->update('s_core_plugins', $data, $where);
+        $this->info->set('path', $path);
+    }
+
+    /**
      * Event handler for the `Enlight_Controller_Action_PostDispatch_Backend_Index` event.
      *
      * Adds Nosto CSS to the backend <head>.
@@ -811,6 +854,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $ctrl = $args->getSubject();
         $view = $ctrl->View();
         $request = $ctrl->Request();
+        try {
+            $this->validatePathSource();
+        } catch (\Exception $e) {
+            $this->getLogger()->warning(
+                sprintf(
+                    "Could not validate extension installation path. Error message was: %s",
+                    $e->getMessage()
+                )
+            );
+        }
 
         if ($this->validateEvent($ctrl, 'backend', 'index', 'index')) {
             $ratesOp = new NostoExchangeRatesOp();
