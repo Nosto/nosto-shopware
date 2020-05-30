@@ -2,4 +2,4 @@ vendor
 build/package
 build/src
 .idea
-
+output
