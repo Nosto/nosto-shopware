@@ -36,9 +36,7 @@
 
 namespace Shopware\CustomModels\Nosto\Setting;
 
-use Doctrine\ORM\Mapping as ORM;
 use Shopware\Components\Model\ModelEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Repository")

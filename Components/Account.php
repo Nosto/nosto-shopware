@@ -100,8 +100,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         }
         $operation = new AccountSignup($meta);
         $nostoAccount = $operation->create();
-        /** @noinspection PhpParamsInspection */
-        return self::convertToShopwareAccount($nostoAccount, $shop);
+		return self::convertToShopwareAccount($nostoAccount, $shop);
     }
 
     /**

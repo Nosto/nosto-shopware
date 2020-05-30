@@ -56,10 +56,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
     public function loadData($identity = null)
     {
         if ($identity !== null) {
-            /** @noinspection PhpUndefinedFieldInspection */
-            $this->setEmail($identity->email);
-            /** @noinspection PhpUndefinedFieldInspection */
-            list($firstName, $lastName) = explode(' ', $identity->name);
+			$this->setEmail($identity->email);
+			list($firstName, $lastName) = explode(' ', $identity->name);
             $this->setFirstName($firstName);
             $this->setLastName($lastName);
         }

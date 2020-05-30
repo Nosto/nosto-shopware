@@ -313,8 +313,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $discounts = $detail->getArticle()->getPriceGroup()->getDiscounts();
             return self::getProductPriceRateAfterDiscount($discounts, $shop);
         }
-        /** @var Group $customerGroup */
-        $customerGroup = $shop->getCustomerGroup();
+		$customerGroup = $shop->getCustomerGroup();
         return (1 - $customerGroup->getDiscount() / 100);
     }
 
@@ -331,8 +330,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $discounts = $article->getPriceGroup()->getDiscounts();
             return self::getProductPriceRateAfterDiscount($discounts, $shop);
         }
-        /** @var Group $customerGroup */
-        $customerGroup = $shop->getCustomerGroup();
+		$customerGroup = $shop->getCustomerGroup();
         return (1 - $customerGroup->getDiscount() / 100);
     }
 
@@ -346,8 +344,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     private static function getProductPriceRateAfterDiscount($discounts, Shop $shop)
     {
         // Get the customer group discount
-        /** @var Group $customerGroup */
-        $customerGroup = $shop->getCustomerGroup();
+		$customerGroup = $shop->getCustomerGroup();
         $priceRate = 1 - $customerGroup->getDiscount() / 100;
         // Handle the price group
         /** @var ArrayCollection $discounts */

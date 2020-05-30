@@ -246,8 +246,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             return;
         }
 
-        /** @var QueryBuilder $builder */
-        $builder = Shopware()->Models()->createQueryBuilder();
+		$builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
             ->from('\Shopware\Models\Translation\Translation', 'translations')
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())

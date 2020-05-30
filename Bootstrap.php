@@ -1130,8 +1130,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         if (is_null($setting)) {
             $setting = new Setting();
             $setting->setName('uniqueId');
-            /** @noinspection PhpUndefinedClassInspection */
-            $setting->setValue(bin2hex(NostoCryptRandom::string(32)));
+			$setting->setValue(bin2hex(NostoCryptRandom::string(32)));
             Shopware()->Models()->persist($setting);
             Shopware()->Models()->flush($setting);
         }
@@ -1464,8 +1463,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @noinspection PhpUndefinedMethodInspection */
         $view = $controller->View();
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        if (!$request->isDispatched()
+		if (!$request->isDispatched()
             || $request->getModuleName() != 'frontend'
             || $request->getControllerName() != 'error'
             || $response->getHttpResponseCode() != 404
@@ -1474,10 +1472,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             return;
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $view->addTemplateDir($this->Path() . 'Views/');
-        /** @noinspection PhpUndefinedMethodInspection */
-        $view->extendsTemplate('frontend/plugins/nosto_tagging/notfound/index.tpl');
+		$view->addTemplateDir($this->Path() . 'Views/');
+		$view->extendsTemplate('frontend/plugins/nosto_tagging/notfound/index.tpl');
         $this->addPageTypeTagging($view, self::PAGE_TYPE_NOTFOUND);
     }
 
@@ -1507,8 +1503,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     ->Models()
                     ->getRepository('\Shopware\Models\Attribute\Order')
                     ->findOneBy(array('orderId' => $order->getId()));
-                /** @noinspection PhpUndefinedClassInspection */
-                if ($attribute instanceof OrderAttribute
+				if ($attribute instanceof OrderAttribute
                     && method_exists($attribute, 'setNostoCustomerId')
                 ) {
                     $attribute->setNostoCustomerId($nostoId);

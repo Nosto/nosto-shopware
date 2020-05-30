@@ -57,13 +57,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
 {
     private $includeSpecialLineItems = true;
 
-    /**
-     * Loads order details from the order model.
-     *
-     * @param Order $order the order model.
-     * @throws Enlight_Event_Exception
-     * @throws NostoException
-     */
+	/**
+	 * Loads order details from the order model.
+	 *
+	 * @param Order $order the order model.
+	 * @throws Enlight_Event_Exception
+	 */
     public function loadData(Order $order)
     {
         $this->setOrderNumber($order->getNumber());

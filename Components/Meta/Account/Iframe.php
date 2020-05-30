@@ -65,8 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
         if ($locale === null) {
             $locale = $shop->getLocale();
         }
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($identity !== null) {
+		if ($identity !== null) {
             list($firstName, $lastName) = explode(' ', $identity->name);
             $this->setFirstName($firstName);
             $this->setLastName($lastName);
@@ -81,8 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
         $this->setPreviewUrlSearch(NostoComponentUrl::getSearchPagePreviewUrl($shop));
         $this->setPreviewUrlCart(NostoComponentUrl::getCartPagePreviewUrl($shop));
         $this->setPreviewUrlFront(NostoComponentUrl::getFrontPagePreviewUrl($shop));
-        /** @noinspection PhpDeprecationInspection */
-        $this->setShopName(Shopware()->App() . ' - ' . $shop->getName());
+		$this->setShopName(Shopware()->App() . ' - ' . $shop->getName());
         $this->setPlatform(NostoTaggingBootstrap::PLATFORM_NAME);
     }
 }

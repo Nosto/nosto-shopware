@@ -40,7 +40,7 @@ use Shopware\Models\Customer\Customer;
 use Shopware\Models\Customer\Address;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware\Models\Country\Country;
-use /** @noinspection PhpDeprecationInspection */ Shopware\Models\Customer\Billing;
+use  Shopware\Models\Customer\Billing;
 
 /**
  * Model for order buyer information. This is used when compiling the info about
@@ -86,10 +86,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             } else {
                 /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
                 /** @var Billing $address */
-                /** @noinspection PhpDeprecationInspection */
-                $address = $customer->getBilling(); /** @phan-suppress-current-line PhanUndeclaredMethod */
-                /** @noinspection PhpDeprecationInspection */
-                if ($address instanceof Billing) {
+				$address = $customer->getBilling(); /** @phan-suppress-current-line PhanUndeclaredMethod */
+				if ($address instanceof Billing) {
                     $this->setFirstName($address->getFirstName());
                     $this->setLastName($address->getLastName());
                     $this->setPostCode($address->getZipCode());

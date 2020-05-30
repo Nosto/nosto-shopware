@@ -118,8 +118,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         if ($locale === null) {
             $locale = $shop->getLocale();
         }
-        /** @noinspection PhpDeprecationInspection */
-        $this->title = Shopware()->App() . ' - ' . $shop->getName();
+		$this->title = Shopware()->App() . ' - ' . $shop->getName();
         /** @noinspection RandomApiMigrationInspection */
         $this->name = substr(sha1(rand()), 0, 8);
         $this->frontPageUrl = $this->buildStoreUrl($shop);

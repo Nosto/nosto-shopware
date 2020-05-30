@@ -180,12 +180,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
         return self::addPreviewUrlQueryParams($shop, $url);
     }
 
-    /**
-     * Generates a unique URL to restore cart contents
-     *
-     * @param $hash
-     * @return string
-     */
+	/**
+	 * Generates a unique URL to restore cart contents
+	 *
+	 * @param Shop $shop
+	 * @param $hash
+	 * @return string
+	 */
     public static function generateRestoreCartUrl(Shop $shop, $hash)
     {
         $url = Shopware()->Front()->Router()->assemble(

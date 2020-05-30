@@ -88,13 +88,11 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      */
     private $orderRepository;
 
-    /**
-     * Shopware_Controllers_Frontend_NostoTagging constructor.
-     * @param Enlight_Controller_Request_Request|null $request
-     * @param Enlight_Controller_Response_Response|null $response
-     * @throws Enlight_Event_Exception
-     * @throws Enlight_Exception
-     */
+	/**
+	 * Shopware_Controllers_Frontend_NostoTagging constructor.
+	 * @param Enlight_Controller_Request_Request|null $request
+	 * @param Enlight_Controller_Response_Response|null $response
+	 */
     public function __construct(
         Enlight_Controller_Request_Request $request = null,
         Enlight_Controller_Response_Response $response = null
