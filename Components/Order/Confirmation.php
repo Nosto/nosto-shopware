@@ -60,7 +60,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
     {
         try {
             $shop = Shopware()->Shop();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Shopware throws an exception if service does not exist.
             // This would be the case when using Shopware API or cli
             $shop = $order->getShop();
@@ -90,7 +90,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $model->loadData($order);
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }

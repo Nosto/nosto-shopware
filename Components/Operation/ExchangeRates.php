@@ -63,7 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
         $collection = $ratesHelper->buildExchangeRatesCollection($shop);
         try {
             return $currencyService->update($collection);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
                 'Failed to update exchange rates: '.

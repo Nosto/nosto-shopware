@@ -153,7 +153,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
@@ -178,7 +178,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                 $op->setProductIds($products);
                 try {
                     $op->delete();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }

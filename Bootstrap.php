@@ -36,6 +36,7 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use Shopware\Components\Logger;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation as NostoOrderConfirmation;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Settings as NostoSettingsOperation;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product as NostoOperationProduct;
@@ -200,7 +201,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * @inheritdoc
-     * @throws \Exception
+     * @throws Exception
      * @throws ToolsException
      */
     public function install()
@@ -282,10 +283,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     array(self::CONFIG_MULTI_CURRENCY_EXCHANGE_RATES, 'Exchange Rates'),
                 ),
                 'description' => 'Set this to "Exchange rates" if your store uses Shopware\'s exchange rates.
-                 If you have a custom pricing handling set this to "Disabled" and Nosto will not 
+                 If you have a custom pricing handling set this to "Disabled" and Nosto will not
                  make any currency conversions.',
                 'required' => true,
-                'scope' => \Shopware\Models\Config\Element::SCOPE_SHOP)
+                'scope' => Element::SCOPE_SHOP)
         );
     }
 
@@ -452,7 +453,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     'class' => 'nosto--icon'
                 )
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
     }
@@ -606,7 +607,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     public function getAllActiveShops()
     {
         /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
-        /** @var \Shopware_Proxies_ShopwareModelsShopRepositoryProxy $repository */
+        /** @var Shopware_Proxies_ShopwareModelsShopRepositoryProxy $repository */
         $repository = Shopware()->Container()->get('models')->getRepository('Shopware\Models\Shop\Shop');
         return $repository->getActiveShops();
     }
@@ -634,7 +635,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         try {
             $configValues = $args->getElement()->getValues()->getValues();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->error(
                 'Could not save backend configuration ' . $e->getMessage()
             );
@@ -685,7 +686,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * @inheritdoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function update($existingVersion)
     {
@@ -699,7 +700,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * @inheritdoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function uninstall()
     {
@@ -805,7 +806,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     private function validatePathSource()
     {
         // Check that the path is valid
-        $reflection = new \ReflectionClass($this);
+        $reflection = new ReflectionClass($this);
         if ($fileName = $reflection->getFileName()) {
             $dirName = dirname($fileName) . DIRECTORY_SEPARATOR;
             if ($this->Path() === $dirName) {
@@ -856,7 +857,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $request = $ctrl->Request();
         try {
             $this->validatePathSource();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->warning(
                 sprintf(
                     "Could not validate extension installation path. Error message was: %s",
@@ -989,7 +990,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $shop = Shopware()->Shop();
         try {
             return NostoComponentAccount::accountExistsAndIsConnected($shop);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
         return false;
@@ -1018,7 +1019,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                     Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com')
                 );
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
     }
@@ -1321,7 +1322,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 $this->addOrderTagging($view);
                 $this->addPageTypeTagging($view, self::PAGE_TYPE_ORDER);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
     }
@@ -1519,7 +1520,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             try {
                 $orderConfirmation = new NostoOrderConfirmation();
                 $orderConfirmation->sendOrder($order);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             }
@@ -1542,7 +1543,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         try {
             $orderConfirmation = new NostoOrderConfirmation();
             $orderConfirmation->sendOrder($order);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
     }
@@ -1562,7 +1563,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $article = $args->getEntity();
 
         if (self::$productUpdated == false) {
-            if ($article instanceof \Shopware\Models\Article\Detail) {
+            if ($article instanceof Detail) {
                 $article = $article->getArticle();
             }
             $op = new NostoOperationProduct();
@@ -1593,7 +1594,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 $op = new NostoOperationProduct();
                 $op->update($article);
                 self::$productUpdated = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->getLogger()->warning($e->getMessage());
             }
         }
@@ -1614,13 +1615,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         try {
             $op = new NostoOperationProduct();
             $op->delete($article);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
         }
     }
 
     /**
-     * @return \Shopware\Components\Logger
+     * @return Logger
      */
     public function getLogger()
     {

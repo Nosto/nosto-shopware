@@ -117,7 +117,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         if ($mediaService !== null) {
             try {
                 $url = $mediaService->getUrl($media->getPath());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
@@ -153,7 +153,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
         try {
             /** @var MediaServiceInterface $mediaService */
             $mediaService = Shopware()->Container()->get('shopware_media.media_service');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             $mediaService = null;
@@ -203,7 +203,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
                     $imagePath = $detailImage->getParent()->getMedia()->getPath();
                     return $mediaService->getUrl($imagePath);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
@@ -217,7 +217,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image
                     $articleImgPath = $detail->getArticle()->getImages()->first()->getMedia()->getPath();
                     return $articleImgPath ? $mediaService->getUrl($articleImgPath) : '';
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }

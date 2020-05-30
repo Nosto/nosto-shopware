@@ -159,7 +159,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
             $operation = new UninstallAccount($nostoAccount);
             $user = new UserBuilder();
             $operation->delete($user->build($identity));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }

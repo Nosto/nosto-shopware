@@ -134,7 +134,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
                 Shopware()->Models()->flush($basketItem);
             }
             $this->updateNostoCustomerCartHash($sessionId, $newSessionId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             return false;
@@ -194,7 +194,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
                 $nostoCustomer->setSessionId($this->getSessionId());
                 $nostoCustomer->setNostoId($nostoCustomerId);
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             }

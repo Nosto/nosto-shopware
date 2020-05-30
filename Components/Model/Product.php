@@ -139,7 +139,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
                 $this->setVariationId($baseCurrency->getCurrency());
             }
         }
-        
+
         /** @noinspection PhpUndefinedMethodInspection */
         $skuTaggingAllowed = Shopware()
             ->Plugins()
@@ -195,7 +195,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             }
         }
     }
-    
+
     /**
      * Add Sku variations to the current article
      *
@@ -311,7 +311,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             if (!empty($articleDetail)) {
                 $this->setProductId($articleDetail->getNumber());
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
@@ -340,7 +340,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $voteSum = 0;
         foreach ($article->getVotes() as $vote) {
             if ($showSubshopReviewOnly) {
-                /** @var \Shopware\Models\Shop\Shop $shopForVote */
+                /** @var Shop $shopForVote */
                 $shopForVote = $vote->getShop();
                 if ($shopForVote !== null
                     && $shopForVote->getId() !== $shop->getId()

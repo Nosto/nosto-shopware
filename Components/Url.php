@@ -62,7 +62,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             ->setFirstResult(0)
             ->setMaxResults(1)
             ->getQuery()
-            ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
         if (empty($result)) {
             return null;
         }

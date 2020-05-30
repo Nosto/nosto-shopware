@@ -239,7 +239,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     'shopId' => $shop->getId(),
                     'shopName' => $shop->getName()
                 );
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
@@ -267,7 +267,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $data = array();
         $accountId = $this->Request()->getParam('id', null);
         $shopId = $this->Request()->getParam('shopId', null);
-        /** @var \Shopware\CustomModels\Nosto\Account\Account $account */
+        /** @var Account $account */
         $account = Shopware()->Models()->find(
             '\Shopware\CustomModels\Nosto\Account\Account',
             $accountId

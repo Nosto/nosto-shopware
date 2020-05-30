@@ -101,7 +101,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                             ->getRepository('\Shopware\Models\Country\Country')
                             ->findOneBy(array('id' => $address->getCountryId()));
                         $this->setCountry($country->getName());
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         /** @noinspection PhpUndefinedMethodInspection */
                         Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                     }

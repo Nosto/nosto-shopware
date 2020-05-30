@@ -90,7 +90,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
                 }
                 $settingsCustomFields[$config->getGroup()->getName()] = $config->getName();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
         }

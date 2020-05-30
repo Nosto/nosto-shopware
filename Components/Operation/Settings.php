@@ -79,7 +79,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Settings
             try {
                 $ratesOperation->updateCurrencyExchangeRates($nostoAccount, $shop);
                 $service->update($settings);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             }

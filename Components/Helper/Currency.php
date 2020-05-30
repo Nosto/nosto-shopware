@@ -34,6 +34,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Shop\Currency;
@@ -59,7 +60,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      * If it's a sub shop, returns the parent's currencies
      *
      * @param Shop $shop
-     * @return \Doctrine\Common\Collections\ArrayCollection|Currency[]
+     * @return ArrayCollection|Currency[]
      */
     public static function getCurrencies(Shop $shop)
     {
@@ -163,7 +164,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         return Shopware()->Shop()->getCurrency()->getCurrency();
     }
-    
+
     /**
      * @param Currency $currency
      * @return bool|null

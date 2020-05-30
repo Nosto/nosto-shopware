@@ -79,7 +79,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag
             if ($pricePerUnit) {
                 $tags['tag2'] = array($pricePerUnit);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning(
                 sprintf(

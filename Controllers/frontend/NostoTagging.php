@@ -280,7 +280,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                 $model->disableSpecialLineItems();
                 $model->loadData($order);
                 $collection->append($model);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }

@@ -71,7 +71,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
                 if ($articleDetail !== null) {
                     $this->setProductId($articleDetail->getNumber());
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
