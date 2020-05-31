@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection PhpUnused */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.

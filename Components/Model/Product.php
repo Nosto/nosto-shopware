@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -55,7 +56,6 @@ use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Nosto\Object\Product\SkuCollection;
 use Shopware\Models\Translation\Translation;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\QueryBuilder;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -326,7 +326,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     {
         //From shopware 5.3, it is possible to display product votes only in sub shop where they posted
         $showSubshopReviewOnly = false;
-        $showSubshopReviewOnlySupported = version_compare(
+		/** @noinspection PhpUndefinedMethodInspection */
+		$showSubshopReviewOnlySupported = version_compare(
             Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion(),
             NostoBootstrap::SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION,
             '>='

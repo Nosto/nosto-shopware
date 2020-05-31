@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -48,12 +49,8 @@ use Nosto\Object\Category as NostoCategory;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
 {
-    /**
-     * @var string the full category path with categories separated by a `/` sign.
-     */
-    protected $categoryPath;
 
-    /**
+	/**
      * Loads the category data from a category model.
      *
      * @param Category $category the model.

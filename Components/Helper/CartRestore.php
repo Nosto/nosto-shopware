@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,6 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\ORM\ORMException;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoCustomerComponent;
 use Shopware\CustomModels\Nosto\Customer\Customer as CustomerModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoHelperUrl;
@@ -73,12 +75,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
         return Shopware()->Session()->get('sessionId');
     }
 
-    /**
-     * Updates the sessions return a unique URL for the current cart
-     *
-     * @return null|string
-     * @throws OptimisticLockException
-     */
+	/**
+	 * Updates the sessions return a unique URL for the current cart
+	 *
+	 * @return null|string
+	 * @throws OptimisticLockException
+	 * @throws ORMException
+	 * @throws ORMException
+	 */
     public function generateRestoreToCartLink()
     {
         $nostoCustomer = $this->updateNostoId();
@@ -142,13 +146,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
         return true;
     }
 
-    /**
-     * Used to keep the restore to cart link valid even after being clicked
-     *
-     * @param $sessionId
-     * @param $newSessionId
-     * @throws OptimisticLockException
-     */
+	/**
+	 * Used to keep the restore to cart link valid even after being clicked
+	 *
+	 * @param $sessionId
+	 * @param $newSessionId
+	 * @throws OptimisticLockException
+	 * @throws ORMException
+	 * @throws ORMException
+	 * @throws ORMException
+	 */
     private function updateNostoCustomerCartHash($sessionId, $newSessionId)
     {
         /** @var $nostoCustomer CustomerModel */
@@ -163,15 +170,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
         }
     }
 
-    /**
-     * Update the Nosto ID from the current session, if it exists.
-     * If customer does not exist, will create a new one and attribute the ID
-     * The Nosto ID is present in a cookie set by the JavaScript loaded from
-     * Nosto.
-     *
-     * @return null|object|CustomerModel
-     * @throws OptimisticLockException
-     */
+	/**
+	 * Update the Nosto ID from the current session, if it exists.
+	 * If customer does not exist, will create a new one and attribute the ID
+	 * The Nosto ID is present in a cookie set by the JavaScript loaded from
+	 * Nosto.
+	 *
+	 * @return null|object|CustomerModel
+	 * @throws OptimisticLockException
+	 * @throws ORMException
+	 * @throws ORMException
+	 * @throws ORMException
+	 */
     public function updateNostoId()
     {
         $nostoCustomerId = Shopware()->Front()->Request()->getCookie(NostoCustomerComponent::COOKIE_NAME);

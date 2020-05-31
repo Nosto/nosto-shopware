@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="Main" pattern="(file[Shopware]:*||file[Shopware]:*/)&amp;&amp;!file[Shopware]:.idea//*" />
-</component>

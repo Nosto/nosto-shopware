@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -345,7 +346,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
 
     /**
      * @return boolean
-     */
+	 * @noinspection PhpUnused
+	 */
     public function getUseCurrencyExchangeRates()
     {
         return false;
@@ -353,7 +355,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
 
     /**
      * @return string
-     */
+	 * @noinspection PhpUnused
+	 */
     public function getDefaultVariationId()
     {
         return parent::getDefaultVariantId();

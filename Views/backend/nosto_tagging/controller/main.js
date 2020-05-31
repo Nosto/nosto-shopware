@@ -54,8 +54,8 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      * @return void
      */
     init: function () {
-        var me = this;
-        me.showWindow();
+      const me = this;
+      me.showWindow();
         me.loadSettings();
         me.postMessageListener();
     },
@@ -66,8 +66,8 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      * @return void
      */
     showWindow: function () {
-        var me = this;
-        me.accountStore = me.getStore('Account');
+      const me = this;
+      me.accountStore = me.getStore('Account');
         me.mainWindow = me.getView('Main').create({
             accountStore: me.accountStore
         });
@@ -92,13 +92,13 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      * @return void
      */
     loadSettings: function () {
-        var me = this;
-        Ext.Ajax.request({
+      const me = this;
+      Ext.Ajax.request({
             method: 'GET',
             url: '{url controller=NostoTagging action=loadSettings}',
             success: function (response) {
-                var op = Ext.decode(response.responseText);
-                if (op.success && op.data) {
+              const op = Ext.decode(response.responseText);
+              if (op.success && op.data) {
                     me.settings = op.data;
                 } else {
                     throw new Error('Nosto: failed to load settings.');
@@ -114,8 +114,8 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      * @return void
      */
     postMessageListener: function () {
-        var me = this;
-        window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
+      const me = this;
+      window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
     },
 
     /**
@@ -128,15 +128,15 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
      */
     receiveMessage: function (event) {
         //noinspection JSCheckFunctionSignatures
-        var me = this,
-            originRegexp = new RegExp(me.settings.postMessageOrigin),
-            json,
-            data,
-            account,
-            op,
-            accountData;
+      const me = this,
+        originRegexp = new RegExp(me.settings.postMessageOrigin);
+      let json,
+        data,
+        account,
+        op,
+        accountData;
 
-        // Check the origin to prevent cross-site scripting.
+      // Check the origin to prevent cross-site scripting.
         if (!originRegexp.test(event.origin)) {
             return;
         }
@@ -202,8 +202,10 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
                         },
                         success: function (response) {
                             op = Ext.decode(response.responseText);
-                            if (op.success && op.data.redirect_url) {
-                                window.location.href = op.data.redirect_url;
+                            // noinspection JSUnresolvedVariable
+													if (op.success && op.data.redirect_url) {
+                                // noinspection JSUnresolvedVariable
+														window.location.href = op.data.redirect_url;
                             } else {
                                 throw new Error('Nosto: failed to handle account connection.');
                             }

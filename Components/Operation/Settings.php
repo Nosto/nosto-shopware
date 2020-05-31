@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,6 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\NostoException;
 use Shopware\Models\Shop\Shop;
 use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
 use Nosto\Object\Settings as NostoSettings;
@@ -50,11 +52,13 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates as
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Settings
 {
-    /**
-     * Send an updated settings object with the currency changes
-     *
-     * @param Shop $shop
-     */
+	/**
+	 * Send an updated settings object with the currency changes
+	 *
+	 * @param Shop $shop
+	 * @throws NostoException
+	 * @throws NostoException
+	 */
     public static function updateCurrencySettings(Shop $shop)
     {
         $settings = new NostoSettings();

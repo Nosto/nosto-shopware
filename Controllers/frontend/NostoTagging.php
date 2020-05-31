@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -98,7 +99,8 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         Enlight_Controller_Response_Response $response = null
     ) {
         if ($request && $response) {
-            parent::__construct($request, $response); /** @phan-suppress-current-line PhanParamTooMany */
+			/** @noinspection PhpMethodParametersCountMismatchInspection */
+			parent::__construct($request, $response); /** @phan-suppress-current-line PhanParamTooMany */
         }
         $this->productRepository = new ProductRepository();
         $this->accountRepository = new AccountRepository();
@@ -190,16 +192,17 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         }
     }
 
-    /**
-     * Exports products from the current shop.
-     * Result can be limited by the `limit` and `offset` GET parameters.
-     *
-     * @throws Enlight_Event_Exception
-     * @throws NonUniqueResultException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws TransactionRequiredException
-     */
+	/**
+	 * Exports products from the current shop.
+	 * Result can be limited by the `limit` and `offset` GET parameters.
+	 *
+	 * @throws Enlight_Event_Exception
+	 * @throws NonUniqueResultException
+	 * @throws NostoException
+	 * @throws ORMException
+	 * @throws OptimisticLockException
+	 * @throws TransactionRequiredException
+	 */
     public function exportProductsAction()
     {
         $category = Shopware()->Shop()->getCategory();
@@ -231,11 +234,13 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $this->export($collection);
     }
 
-    /**
-     * Encrypts the export collection and outputs it to the browser.
-     *
-     * @param AbstractCollection $collection the data collection to export.
-     */
+	/**
+	 * Encrypts the export collection and outputs it to the browser.
+	 *
+	 * @param AbstractCollection $collection the data collection to export.
+	 * @throws NostoException
+	 * @throws NostoException
+	 */
     protected function export(AbstractCollection $collection)
     {
         $shop = Shopware()->Shop();
@@ -250,11 +255,12 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         die();
     }
 
-    /**
-     * Exports completed orders from the current shop.
-     * Result can be limited by the `limit` and `offset` GET parameters.
-     *
-     */
+	/**
+	 * Exports completed orders from the current shop.
+	 * Result can be limited by the `limit` and `offset` GET parameters.
+	 *
+	 * @throws NostoException
+	 */
     public function exportOrdersAction()
     {
         $pageSize = (int)$this->Request()->getParam('limit', 100);

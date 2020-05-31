@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,6 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\NostoException;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_ExchangeRates as ExchangeRatesHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
@@ -73,12 +75,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
         }
     }
 
-    /**
-     * Trigger exchange rates update for each shop that
-     * has multi currency enabled
-     *
-     * @return bool
-     */
+	/**
+	 * Trigger exchange rates update for each shop that
+	 * has multi currency enabled
+	 *
+	 * @return bool
+	 * @throws NostoException
+	 * @throws NostoException
+	 */
     public function updateExchangeRates()
     {
         $success = false;

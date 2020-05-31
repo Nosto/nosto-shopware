@@ -44,8 +44,8 @@
         <script type="text/javascript">
             {literal}
             (function () {
-                var name = "nostojs";
-                window[name] = window[name] || function (cb) {
+              const name = "nostojs";
+              window[name] = window[name] || function (cb) {
                             (window[name].q = window[name].q || []).push(cb);
                         };
             })();
@@ -55,11 +55,12 @@
         <script type="text/javascript"
                 src="//{$nostoServerUrl|escape:'htmlall':'UTF-8'}/include/{$nostoAccountName|escape:'htmlall':'UTF-8'}"
                 async></script>
-        <script type="text/javascript">
+        <!--suppress JSUnresolvedFunction, JSUnusedLocalSymbols, JSUnresolvedVariable -->
+		<script type="text/javascript">
             //<![CDATA[
             {literal}
             if (typeof Nosto === 'undefined') {
-                var Nosto = {};
+                const Nosto = {};
             }
             {/literal}
             Nosto.addProductToCart = function (productId, element) {
@@ -72,8 +73,8 @@
             };
             Nosto.trackAddToCartClick = function (productId, element) {
                 if (typeof nostojs !== 'undefined' && typeof element === 'object') {
-                    var slotId = Nosto.resolveContextSlotId(element);
-                    if (slotId) {
+                  const slotId = Nosto.resolveContextSlotId(element);
+                  if (slotId) {
                         nostojs(function (api) {
                             api.recommendedProductAddedToCart(productId, slotId);
                         });
@@ -81,18 +82,18 @@
                 }
             };
             Nosto.postAddToCartForm = function (productId) {
-                var form = document.createElement('form');
-                form.setAttribute('method', 'post');
+              const form = document.createElement('form');
+              form.setAttribute('method', 'post');
                 form.setAttribute('action', '{url controller=checkout action=addArticle}');
-                var fields = {
-                    'sActionIdentifier': '{$sUniqueRand}',
-                    'sAdd': productId,
-                    'sQuantity': 1
-                };
-                for (var key in fields) {
+              const fields = {
+                'sActionIdentifier': '{$sUniqueRand}',
+                'sAdd': productId,
+                'sQuantity': 1
+              };
+              for (let key in fields) {
                     if (fields.hasOwnProperty(key)) {
-                        var hiddenField = document.createElement('input');
-                        hiddenField.setAttribute('type', 'hidden');
+                      const hiddenField = document.createElement('input');
+                      hiddenField.setAttribute('type', 'hidden');
                         hiddenField.setAttribute('name', key);
                         hiddenField.setAttribute('value', fields[key]);
                         form.appendChild(hiddenField);
@@ -105,10 +106,10 @@
                 form.submit();
             };
             Nosto.resolveContextSlotId = function (element) {
-                var m = 20;
-                var n = 0;
-                var e = element;
-                while (typeof e.parentElement !== 'undefined' && e.parentElement) {
+              const m = 20;
+              let n = 0;
+              let e = element;
+              while (typeof e.parentElement !== 'undefined' && e.parentElement) {
                     ++n;
                     e = e.parentElement;
                     // noinspection EqualityComparisonWithCoercionJS

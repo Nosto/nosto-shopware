@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -39,7 +40,6 @@ use Shopware\Models\Order\Order;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem as OrderLineItem;
-use Nosto\NostoException;
 use Shopware\Models\Order\Detail;
 
 /**

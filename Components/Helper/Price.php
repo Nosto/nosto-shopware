@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -368,7 +369,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @return string
      * @suppress PhanUndeclaredMethod
      * @deprecated
-     */
+	 * @noinspection PhpUnused
+	 */
     public static function format($price)
     {
         return NostoPriceHelper::format($price);

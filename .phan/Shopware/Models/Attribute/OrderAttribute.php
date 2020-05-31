@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+<?php /** @noinspection ALL */
 
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
@@ -35,32 +35,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Signup\Owner;
+namespace Shopware\Models\Attribute;
 
-/**
- * Meta-data class for account owner information sent to Nosto during account
- * create.
- *
- * Implements NostoAccountMetaDataOwnerInterface.
- *
- * @package Shopware
- * @subpackage Plugins_Frontend
- */
-class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner
-    extends Owner
+class OrderAttribute
 {
-    /**
-     * Loads the data for the account owner.
-     *
-     * @param stdClass $identity|null $identity the user identity.
-     */
-    public function loadData($identity = null)
-    {
-        if ($identity !== null) {
-			$this->setEmail($identity->email);
-			list($firstName, $lastName) = explode(' ', $identity->name);
-            $this->setFirstName($firstName);
-            $this->setLastName($lastName);
-        }
-    }
+
 }

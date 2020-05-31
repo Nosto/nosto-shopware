@@ -42,10 +42,10 @@ Ext.define('Shopware.apps.NostoStartApp.Menu', {
      * @Override
      */
     afterRender: function () {
-        var me = this,
-            result = me.callParent(arguments);
+      const me = this,
+        result = me.callParent(arguments);
 
-        if (location.href.search("openNosto") !== -1) {
+      if (location.href.search("openNosto") !== -1) {
             Shopware.app.Application.addSubApplication({
                 name: 'Shopware.apps.NostoTagging'
             });

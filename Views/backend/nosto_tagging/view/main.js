@@ -72,8 +72,8 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * @return void
      */
     initComponent: function () {
-        var me = this;
-        me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
+      const me = this;
+      me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
             layout: 'fit',
             items: []
         });
@@ -88,11 +88,11 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * @return void
      */
     initAccountTabs: function () {
-        var me = this,
-            i = 0,
-            tab;
+      const me = this;
+      let i = 0,
+        tab;
 
-        me.accountStore.each(function (account) {
+      me.accountStore.each(function (account) {
             // noinspection JSUnresolvedExtXType
             tab = me.tabPanel.add({
                 title: account.get('shopName'),
@@ -117,11 +117,11 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * @return Shopware.apps.NostoTagging.model.Account
      */
     getActiveAccount: function () {
-        var me = this,
-            activeTab = me.tabPanel.getActiveTab(),
-            activeAccount = null;
+      const me = this,
+        activeTab = me.tabPanel.getActiveTab();
+      let activeAccount = null;
 
-        me.accountStore.each(function (account) {
+      me.accountStore.each(function (account) {
             if (account.get('shopId') === activeTab.shopId) {
                 activeAccount = account;
             }
@@ -136,10 +136,10 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
      * @param account Shopware.apps.NostoTagging.model.Account
      */
     reloadIframe: function (account) {
-        var me = this,
-            elements;
+      const me = this;
+      let elements;
 
-        elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
+      elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
         if (typeof elements[0] !== 'undefined') {
             elements[0].src = account.get('url');
         } else {

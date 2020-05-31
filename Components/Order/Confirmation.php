@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,6 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\NostoException;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
 use Shopware\Models\Attribute\Order as OrderAttribute;
@@ -48,14 +50,16 @@ use Shopware\Models\Order\Order as OrderModel;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
 {
-    /**
-     * Sends an order confirmation API call to Nosto for an order.
-     *
-     * @param OrderModel $order the order model.
-     *
-     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
-     * @suppress PhanUndeclaredMethod
-     */
+	/**
+	 * Sends an order confirmation API call to Nosto for an order.
+	 *
+	 * @param OrderModel $order the order model.
+	 *
+	 * @throws NostoException
+	 * @throws NostoException
+	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
+	 * @suppress PhanUndeclaredMethod
+	 */
     public function sendOrder(OrderModel $order)
     {
         try {

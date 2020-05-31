@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
  * All rights reserved.
@@ -66,17 +67,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         $this->update($article);
     }
 
-    /**
-     * Returns the Nosto accounts for the product mapped on the shop ID to which
-     * they belong.
-     *
-     * The shops the product belongs to is determined by analyzing the products
-     * categories and checking if the shop root category is present.
-     *
-     * @param Article $article the article model.
-     * @param boolean $allStores if true Nosto accounts from all stores will be returned
-     * @return NostoAccount[] the accounts mapped in the shop IDs.
-     */
+	/**
+	 * Returns the Nosto accounts for the product mapped on the shop ID to which
+	 * they belong.
+	 *
+	 * The shops the product belongs to is determined by analyzing the products
+	 * categories and checking if the shop root category is present.
+	 *
+	 * @param Article $article the article model.
+	 * @param boolean $allStores if true Nosto accounts from all stores will be returned
+	 * @return NostoAccount[] the accounts mapped in the shop IDs.
+	 * @throws NostoException
+	 * @throws NostoException
+	 */
     protected function getAccounts(Article $article, $allStores = false)
     {
         $data = array();
@@ -141,10 +144,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             /** @noinspection PhpUndefinedMethodInspection */
             if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
                 /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
-                $shop->registerResources(Shopware()->Bootstrap());
+				/** @noinspection PhpDeprecationInspection */
+				/** @noinspection PhpMethodParametersCountMismatchInspection */
+				$shop->registerResources(Shopware()->Bootstrap());
             } else {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
-                $shop->registerResources();
+				/** @noinspection PhpDeprecationInspection */
+				$shop->registerResources();
             }
             $model = new Product();
             $model->loadData($article, $shop);

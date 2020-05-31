@@ -44,8 +44,8 @@ Ext.define('Shopware.apps.NostoTagging', {
     models: ['Account'],
     views: ['Main'],
     launch: function () {
-        var me = this,
-            ctrl = me.getController('Main');
-        return ctrl.mainWindow;
+      const me = this,
+        ctrl = me.getController('Main');
+      return ctrl.mainWindow;
     }
 });
