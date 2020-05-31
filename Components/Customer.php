@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+<?php /** @noinspection PhpUnusedAliasInspection */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
@@ -35,6 +36,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\ORMException;
 use Shopware\CustomModels\Nosto\Customer\Customer;
 use Doctrine\ORM\OptimisticLockException;

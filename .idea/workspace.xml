@@ -2,64 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9387b4af-ff6a-4bef-99f3-54fac9413335" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.phan/Shopware/Models/Attribute/CustomerAttribute.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.phan/Shopware/Models/Attribute/OrderAttribute.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.phan/Shopware/Models/Billing/Billing.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/scopes/Main.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.phan/Shopware/Models/Attribute/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/.phan/Shopware/Models/Attribute/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.phan/Shopware/Models/Attribute/Order.php" beforeDir="false" afterPath="$PROJECT_DIR$/.phan/Shopware/Models/Attribute/Order.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Account.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Account.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/CartRestore.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/CartRestore.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Currency.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Currency.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/CustomFields.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/CustomFields.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Email.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Email.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/ExchangeRates.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/ExchangeRates.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Image.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Image.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Price.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Price.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Tag.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Tag.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Account.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Account.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Account/Iframe.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Account/Iframe.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Account/Owner.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Account/Owner.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Oauth.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Oauth.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Base.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Base.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Cart.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Cart/LineItem.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Cart/LineItem.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Category.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Category.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Order.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Order/Buyer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order/Buyer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Order/LineItem.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order/LineItem.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Order/Status.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order/Status.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Product.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Repository/ProductStreams.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Repository/ProductStreams.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Sku.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Sku.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Operation/ExchangeRates.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Operation/ExchangeRates.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Operation/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Operation/Product.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Operation/Settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Operation/Settings.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Order/Confirmation.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Order/Confirmation.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Url.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Url.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/User/Builder.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/User/Builder.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/backend/NostoTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/backend/NostoTagging.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/frontend/NostoTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/frontend/NostoTagging.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Account/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Account/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Account/Account.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Account/Account.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Account/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Account/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Customer/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Customer/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Customer/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Customer/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Setting/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Setting/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Setting/Setting.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Setting/Setting.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Order/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Order/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Product/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Product/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Shopware.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Shopware.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_start_app/menu.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_start_app/menu.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/controller/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/controller/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/view/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/view/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/emotion_components/widgets/emotion/components/nosto_slot.tpl" beforeDir="false" afterPath="$PROJECT_DIR$/Views/emotion_components/widgets/emotion/components/nosto_slot.tpl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/frontend/plugins/nosto_tagging/index.tpl" beforeDir="false" afterPath="$PROJECT_DIR$/Views/frontend/plugins/nosto_tagging/index.tpl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -234,10 +177,6 @@
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="1" />
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="1440" />
-    <option name="height" value="900" />
-  </component>
   <component name="ProjectId" id="1ZuMbCbf4eySHG98luaH7dajAyp" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -311,7 +250,8 @@
       <workItem from="1590831880483" duration="7528000" />
       <workItem from="1590854763321" duration="481000" />
       <workItem from="1590855271856" duration="1757000" />
-      <workItem from="1590916918825" duration="5484000" />
+      <workItem from="1590916918825" duration="5520000" />
+      <workItem from="1590924031471" duration="24000" />
     </task>
     <servers />
   </component>
@@ -339,10 +279,10 @@
     </state>
     <state x="208" y="31" key="#Project_Structure/0.0.1440.900@0.0.1440.900" timestamp="1590854563075" />
     <state x="208" y="53" key="#Project_Structure/0.23.1440.877@0.23.1440.877" timestamp="1590920913759" />
-    <state x="468" y="327" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1590920684202">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state x="468" y="312" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1590924045122">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="468" y="312" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1440.900@0.0.1440.900" timestamp="1590835410147" />
+    <state x="468" y="312" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1440.900@0.0.1440.900" timestamp="1590924045122" />
     <state x="468" y="327" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.877@0.23.1440.877" timestamp="1590920684202" />
     <state x="553" y="369" width="439" height="249" key="ComposerInitDialogKey" timestamp="1590838770781">
       <screen x="0" y="0" width="1440" height="900" />
