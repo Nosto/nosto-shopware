@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+<?php /** @noinspection PhpUnusedAliasInspection */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
@@ -37,7 +38,9 @@
 
 namespace Shopware\CustomModels\Nosto\Customer;
 
+use Doctrine\ORM\Mapping as ORM;
 use Shopware\Components\Model\ModelEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Repository")
