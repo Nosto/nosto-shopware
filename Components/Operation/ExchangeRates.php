@@ -36,12 +36,12 @@
  */
 
 use Nosto\NostoException;
+use Nosto\Object\Signup\Account;
+use Nosto\Operation\SyncRates;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_ExchangeRates as ExchangeRatesHelper;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
-use Nosto\Object\Signup\Account;
-use Shopware\Models\Shop\Shop;
-use Nosto\Operation\SyncRates;
 
 /**
  * Exchange Rates operation component. Used for updating exchange rates to Nosto
@@ -68,21 +68,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
         } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
-                'Failed to update exchange rates: '.
+                'Failed to update exchange rates: ' .
                 $e->getMessage()
             );
             return false;
         }
     }
 
-	/**
-	 * Trigger exchange rates update for each shop that
-	 * has multi currency enabled
-	 *
-	 * @return bool
-	 * @throws NostoException
-	 * @throws NostoException
-	 */
+    /**
+     * Trigger exchange rates update for each shop that
+     * has multi currency enabled
+     *
+     * @return bool
+     * @throws NostoException
+     * @throws NostoException
+     */
     public function updateExchangeRates()
     {
         $success = false;

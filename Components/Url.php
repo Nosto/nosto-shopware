@@ -35,9 +35,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\ORM\AbstractQuery;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Shop\Shop;
-use Doctrine\ORM\AbstractQuery;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
 
 /**
@@ -181,13 +181,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
         return self::addPreviewUrlQueryParams($shop, $url);
     }
 
-	/**
-	 * Generates a unique URL to restore cart contents
-	 *
-	 * @param Shop $shop
-	 * @param $hash
-	 * @return string
-	 */
+    /**
+     * Generates a unique URL to restore cart contents
+     *
+     * @param Shop $shop
+     * @param $hash
+     * @return string
+     */
     public static function generateRestoreCartUrl(Shop $shop, $hash)
     {
         $url = Shopware()->Front()->Router()->assemble(

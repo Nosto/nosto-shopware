@@ -36,11 +36,11 @@
  */
 
 use Nosto\Object\Order\Order as NostoOrder;
+use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Order;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem as OrderLineItem;
-use Shopware\Models\Order\Detail;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
 
 /**
  * Model for order information. This is used when compiling the info about an
@@ -57,12 +57,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
 {
     private $includeSpecialLineItems = true;
 
-	/**
-	 * Loads order details from the order model.
-	 *
-	 * @param Order $order the order model.
-	 * @throws Enlight_Event_Exception
-	 */
+    /**
+     * Loads order details from the order model.
+     *
+     * @param Order $order the order model.
+     * @throws Enlight_Event_Exception
+     */
     public function loadData(Order $order)
     {
         $this->setOrderNumber($order->getNumber());

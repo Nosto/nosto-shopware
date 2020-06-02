@@ -35,27 +35,27 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\ORM\NonUniqueResultException;
+use Nosto\NostoException;
+use Nosto\Object\Product\Product as NostoProduct;
+use Nosto\Object\Product\SkuCollection;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
-use Shopware\Models\Shop\Shop;
+use Shopware\Models\Article\Supplier;
 use Shopware\Models\Category\Category;
+use Shopware\Models\Shop\Shop;
+use Shopware\Models\Translation\Translation;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as ImageHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Tag as TagHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category as NostoCategory;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku as NostoSku;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams as ProductStreamsRepo;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
-use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\NostoException;
-use Shopware\Models\Article\Supplier;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
-use Nosto\Object\Product\SkuCollection;
-use Shopware\Models\Translation\Translation;
-use Doctrine\ORM\NonUniqueResultException;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku as NostoSku;
 
 /**
  * Model for product information. This is used when compiling the info about a
@@ -72,6 +72,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
 {
     const TXT_ARTICLE = 'txtArtikel';
     const TXT_LANG_DESCRIPTION = 'txtlangbeschreibung';
+
     /**
      * Loads the model data from an article and shop.
      *
@@ -246,7 +247,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             return;
         }
 
-		$builder = Shopware()->Models()->createQueryBuilder();
+        $builder = Shopware()->Models()->createQueryBuilder();
         $builder = $builder->select(array('translations'))
             ->from('\Shopware\Models\Translation\Translation', 'translations')
             ->where('translations.key = :articleId')->setParameter('articleId', $article->getId())
@@ -326,8 +327,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
     {
         //From shopware 5.3, it is possible to display product votes only in sub shop where they posted
         $showSubshopReviewOnly = false;
-		/** @noinspection PhpUndefinedMethodInspection */
-		$showSubshopReviewOnlySupported = version_compare(
+        /** @noinspection PhpUndefinedMethodInspection */
+        $showSubshopReviewOnlySupported = version_compare(
             Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion(),
             NostoBootstrap::SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION,
             '>='

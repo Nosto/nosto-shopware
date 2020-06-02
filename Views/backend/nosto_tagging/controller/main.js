@@ -35,187 +35,187 @@
 
 //noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
 Ext.define('Shopware.apps.NostoTagging.controller.Main', {
-    /**
-     * Extends the Enlight controller.
-     * @string
-     */
-    extend: 'Enlight.app.Controller',
+  /**
+   * Extends the Enlight controller.
+   * @string
+   */
+  extend: 'Enlight.app.Controller',
 
-    /**
-     * Settings for the controller.
-     */
-    settings: {
-        postMessageOrigin: null
-    },
+  /**
+   * Settings for the controller.
+   */
+  settings: {
+    postMessageOrigin: null
+  },
 
-    /**
-     * Initializes the controller.
-     *
-     * @return void
-     */
-    init: function () {
-      const me = this;
-      me.showWindow();
-        me.loadSettings();
-        me.postMessageListener();
-    },
+  /**
+   * Initializes the controller.
+   *
+   * @return void
+   */
+  init: function () {
+    const me = this;
+    me.showWindow();
+    me.loadSettings();
+    me.postMessageListener();
+  },
 
-    /**
-     * Shows the main window.
-     *
-     * @return void
-     */
-    showWindow: function () {
-      const me = this;
-      me.accountStore = me.getStore('Account');
-        me.mainWindow = me.getView('Main').create({
-            accountStore: me.accountStore
-        });
-        me.mainWindow.show();
-        me.mainWindow.setLoading(true);
-        //noinspection JSUnusedGlobalSymbols
-        me.accountStore.load({
-            callback: function (records, op, success) {
-                me.mainWindow.setLoading(false);
-                if (success) {
-                    me.mainWindow.initAccountTabs();
-                } else {
-                    throw new Error('Nosto: failed to load accounts.');
-                }
-            }
-        });
-    },
-
-    /**
-     * Loads controller settings.
-     *
-     * @return void
-     */
-    loadSettings: function () {
-      const me = this;
-      Ext.Ajax.request({
-            method: 'GET',
-            url: '{url controller=NostoTagging action=loadSettings}',
-            success: function (response) {
-              const op = Ext.decode(response.responseText);
-              if (op.success && op.data) {
-                    me.settings = op.data;
-                } else {
-                    throw new Error('Nosto: failed to load settings.');
-                }
-            }
-        });
-    },
-
-    /**
-     * Register event handler for window.postMessage() messages from Nosto through which we handle account creation,
-     * connection and deletion.
-     *
-     * @return void
-     */
-    postMessageListener: function () {
-      const me = this;
-      window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
-    },
-
-    /**
-     * Window.postMessage() event handler.
-     *
-     * Handles the communication between the iframe and the plugin.
-     *
-     * @param event Object
-     * @return void
-     */
-    receiveMessage: function (event) {
-        //noinspection JSCheckFunctionSignatures
-      const me = this,
-        originRegexp = new RegExp(me.settings.postMessageOrigin);
-      let json,
-        data,
-        account,
-        op,
-        accountData;
-
-      // Check the origin to prevent cross-site scripting.
-        if (!originRegexp.test(event.origin)) {
-            return;
+  /**
+   * Shows the main window.
+   *
+   * @return void
+   */
+  showWindow: function () {
+    const me = this;
+    me.accountStore = me.getStore('Account');
+    me.mainWindow = me.getView('Main').create({
+      accountStore: me.accountStore
+    });
+    me.mainWindow.show();
+    me.mainWindow.setLoading(true);
+    //noinspection JSUnusedGlobalSymbols
+    me.accountStore.load({
+      callback: function (records, op, success) {
+        me.mainWindow.setLoading(false);
+        if (success) {
+          me.mainWindow.initAccountTabs();
+        } else {
+          throw new Error('Nosto: failed to load accounts.');
         }
-        // If the message does not start with '[Nosto]', then it is not for us.
-        if (('' + event.data).substr(0, 7) !== '[Nosto]') {
-            return;
+      }
+    });
+  },
+
+  /**
+   * Loads controller settings.
+   *
+   * @return void
+   */
+  loadSettings: function () {
+    const me = this;
+    Ext.Ajax.request({
+      method: 'GET',
+      url: '{url controller=NostoTagging action=loadSettings}',
+      success: function (response) {
+        const op = Ext.decode(response.responseText);
+        if (op.success && op.data) {
+          me.settings = op.data;
+        } else {
+          throw new Error('Nosto: failed to load settings.');
         }
+      }
+    });
+  },
 
-        json = ('' + event.data).substr(7);
-        data = Ext.decode(json);
-        if (typeof data === 'object' && data.type) {
-            account = me.mainWindow.getActiveAccount();
-            if (!account) {
-                throw new Error('Nosto: failed to determine active account.');
-            }
-            switch (data.type) {
-                case 'newAccount':
-                    if (data.params && data.params.email) {
-                        account.set('email', data.params.email);
-                        if (data.params.details) {
-                            account.set('details', JSON.stringify(data.params.details));
-                        }
-                    }
-                    account.save({
-                        success: function (record, op) {
-                            // why can't we get the model data binding to work?
-                            if (op.resultSet && op.resultSet.records) {
-                                accountData = op.resultSet.records[0].data;
-                                record.set('id', accountData.id);
-                                record.set('name', accountData.name);
-                                record.set('url', accountData.url);
-                                me.mainWindow.reloadIframe(record);
-                            } else {
-                                throw new Error('Nosto: failed to create new account.');
-                            }
-                        }
-                    });
-                    break;
+  /**
+   * Register event handler for window.postMessage() messages from Nosto through which we handle account creation,
+   * connection and deletion.
+   *
+   * @return void
+   */
+  postMessageListener: function () {
+    const me = this;
+    window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
+  },
 
-                case 'removeAccount':
-                    account.destroy({
-                        success: function (record, op) {
-                            // why can't we get the model data binding to work?
-                            if (op.resultSet && op.resultSet.records) {
-                                accountData = op.resultSet.records[0].data;
-                                record.set('id', 0);
-                                record.set('name', '');
-                                record.set('url', accountData.url);
-                                me.mainWindow.reloadIframe(record);
-                            } else {
-                                throw new Error('Nosto: failed to delete account.');
-                            }
-                        }
-                    });
-                    break;
+  /**
+   * Window.postMessage() event handler.
+   *
+   * Handles the communication between the iframe and the plugin.
+   *
+   * @param event Object
+   * @return void
+   */
+  receiveMessage: function (event) {
+    //noinspection JSCheckFunctionSignatures
+    const me = this,
+      originRegexp = new RegExp(me.settings.postMessageOrigin);
+    let json,
+      data,
+      account,
+      op,
+      accountData;
 
-                case 'connectAccount':
-                    Ext.Ajax.request({
-                        method: 'POST',
-                        url: '{url controller=NostoTagging action=connectAccount}',
-                        params: {
-                            shopId: account.get('shopId')
-                        },
-                        success: function (response) {
-                            op = Ext.decode(response.responseText);
-                            // noinspection JSUnresolvedVariable
-													if (op.success && op.data.redirect_url) {
-                                // noinspection JSUnresolvedVariable
-														window.location.href = op.data.redirect_url;
-                            } else {
-                                throw new Error('Nosto: failed to handle account connection.');
-                            }
-                        }
-                    });
-                    break;
-
-                default:
-                    throw new Error('Nosto: invalid postMessage `type`.');
-            }
-        }
+    // Check the origin to prevent cross-site scripting.
+    if (!originRegexp.test(event.origin)) {
+      return;
     }
+    // If the message does not start with '[Nosto]', then it is not for us.
+    if (('' + event.data).substr(0, 7) !== '[Nosto]') {
+      return;
+    }
+
+    json = ('' + event.data).substr(7);
+    data = Ext.decode(json);
+    if (typeof data === 'object' && data.type) {
+      account = me.mainWindow.getActiveAccount();
+      if (!account) {
+        throw new Error('Nosto: failed to determine active account.');
+      }
+      switch (data.type) {
+        case 'newAccount':
+          if (data.params && data.params.email) {
+            account.set('email', data.params.email);
+            if (data.params.details) {
+              account.set('details', JSON.stringify(data.params.details));
+            }
+          }
+          account.save({
+            success: function (record, op) {
+              // why can't we get the model data binding to work?
+              if (op.resultSet && op.resultSet.records) {
+                accountData = op.resultSet.records[0].data;
+                record.set('id', accountData.id);
+                record.set('name', accountData.name);
+                record.set('url', accountData.url);
+                me.mainWindow.reloadIframe(record);
+              } else {
+                throw new Error('Nosto: failed to create new account.');
+              }
+            }
+          });
+          break;
+
+        case 'removeAccount':
+          account.destroy({
+            success: function (record, op) {
+              // why can't we get the model data binding to work?
+              if (op.resultSet && op.resultSet.records) {
+                accountData = op.resultSet.records[0].data;
+                record.set('id', 0);
+                record.set('name', '');
+                record.set('url', accountData.url);
+                me.mainWindow.reloadIframe(record);
+              } else {
+                throw new Error('Nosto: failed to delete account.');
+              }
+            }
+          });
+          break;
+
+        case 'connectAccount':
+          Ext.Ajax.request({
+            method: 'POST',
+            url: '{url controller=NostoTagging action=connectAccount}',
+            params: {
+              shopId: account.get('shopId')
+            },
+            success: function (response) {
+              op = Ext.decode(response.responseText);
+              // noinspection JSUnresolvedVariable
+              if (op.success && op.data.redirect_url) {
+                // noinspection JSUnresolvedVariable
+                window.location.href = op.data.redirect_url;
+              } else {
+                throw new Error('Nosto: failed to handle account connection.');
+              }
+            }
+          });
+          break;
+
+        default:
+          throw new Error('Nosto: invalid postMessage `type`.');
+      }
+    }
+  }
 });

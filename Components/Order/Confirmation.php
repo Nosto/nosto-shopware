@@ -36,11 +36,11 @@
  */
 
 use Nosto\NostoException;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
 use Shopware\Models\Attribute\Order as OrderAttribute;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Shopware\Models\Order\Order as OrderModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 
 /**
  * Order confirmation component. Used to send order information to Nosto.
@@ -50,16 +50,16 @@ use Shopware\Models\Order\Order as OrderModel;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
 {
-	/**
-	 * Sends an order confirmation API call to Nosto for an order.
-	 *
-	 * @param OrderModel $order the order model.
-	 *
-	 * @throws NostoException
-	 * @throws NostoException
-	 * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
-	 * @suppress PhanUndeclaredMethod
-	 */
+    /**
+     * Sends an order confirmation API call to Nosto for an order.
+     *
+     * @param OrderModel $order the order model.
+     *
+     * @throws NostoException
+     * @throws NostoException
+     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
+     * @suppress PhanUndeclaredMethod
+     */
     public function sendOrder(OrderModel $order)
     {
         try {

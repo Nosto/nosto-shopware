@@ -36,10 +36,10 @@
  */
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
-use Shopware\Models\Shop\Shop;
-use Shopware\Models\Shop\Currency;
 use Nosto\Object\Format;
+use Shopware\Models\Shop\Currency;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 
 /**
  * Helper class for Currency
@@ -174,7 +174,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         switch ($currency->getSymbolPosition()) {
             case self::CURRENCY_SYMBOL_LEFT:
-            // Shopware's default is before the amount
+                // Shopware's default is before the amount
             case self::CURRENCY_SYMBOL_DEFAULT:
                 return true;
             case self::CURRENCY_SYMBOL_RIGHT:

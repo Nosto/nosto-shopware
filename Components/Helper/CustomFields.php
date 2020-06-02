@@ -35,9 +35,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Article\Detail;
 use Nosto\Helper\SerializationHelper;
 use Shopware\Models\Article\Configurator\Option;
+use Shopware\Models\Article\Detail;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
@@ -116,7 +116,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
      */
     public static function getFreeTextCustomFields(Detail $detail)
     {
-		$propertiesAndValues = SerializationHelper::getProperties(
+        $propertiesAndValues = SerializationHelper::getProperties(
             $detail->getAttribute()
         );
         $customFields = array();

@@ -35,8 +35,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Cart\LineItem as NostoLineItem;
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
+use Nosto\Object\Cart\LineItem as NostoLineItem;
 use Shopware\Models\Order\Detail as OrderDetail;
 
 /**

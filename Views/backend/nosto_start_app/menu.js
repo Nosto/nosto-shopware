@@ -36,22 +36,22 @@
 //{block name="backend/index/view/menu" append}
 //noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
 Ext.define('Shopware.apps.NostoStartApp.Menu', {
-    override: 'Shopware.apps.Index.view.Menu',
+  override: 'Shopware.apps.Index.view.Menu',
 
-    /**
-     * @Override
-     */
-    afterRender: function () {
-      const me = this,
-        result = me.callParent(arguments);
+  /**
+   * @Override
+   */
+  afterRender: function () {
+    const me = this,
+      result = me.callParent(arguments);
 
-      if (location.href.search("openNosto") !== -1) {
-            Shopware.app.Application.addSubApplication({
-                name: 'Shopware.apps.NostoTagging'
-            });
-        }
-
-        return result;
+    if (location.href.search("openNosto") !== -1) {
+      Shopware.app.Application.addSubApplication({
+        name: 'Shopware.apps.NostoTagging'
+      });
     }
+
+    return result;
+  }
 });
 //{/block}

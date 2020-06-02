@@ -39,8 +39,8 @@ use Shopware\Bundle\MediaBundle\MediaServiceInterface;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Image;
-use Shopware\Models\Shop\Shop;
 use Shopware\Models\Media\Media;
+use Shopware\Models\Shop\Shop;
 
 /**
  * Helper class for images

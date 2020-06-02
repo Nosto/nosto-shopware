@@ -46,8 +46,8 @@
             (function () {
               const name = "nostojs";
               window[name] = window[name] || function (cb) {
-                            (window[name].q = window[name].q || []).push(cb);
-                        };
+                (window[name].q = window[name].q || []).push(cb);
+              };
             })();
             {/literal}
         </script>
@@ -56,74 +56,74 @@
                 src="//{$nostoServerUrl|escape:'htmlall':'UTF-8'}/include/{$nostoAccountName|escape:'htmlall':'UTF-8'}"
                 async></script>
         <!--suppress JSUnresolvedFunction, JSUnusedLocalSymbols, JSUnresolvedVariable -->
-		<script type="text/javascript">
-            //<![CDATA[
-            {literal}
-            if (typeof Nosto === 'undefined') {
-                const Nosto = {};
+        <script type="text/javascript">
+          //<![CDATA[
+          {literal}
+          if (typeof Nosto === 'undefined') {
+            const Nosto = {};
+          }
+          {/literal}
+          Nosto.addProductToCart = function (productId, element) {
+            Nosto.trackAddToCartClick(productId, element);
+            Nosto.postAddToCartForm(productId);
+          };
+          Nosto.addSkuToCart = function (product, element) {
+            Nosto.trackAddToCartClick(product.productId, element);
+            Nosto.postAddToCartForm(product.skuId);
+          };
+          Nosto.trackAddToCartClick = function (productId, element) {
+            if (typeof nostojs !== 'undefined' && typeof element === 'object') {
+              const slotId = Nosto.resolveContextSlotId(element);
+              if (slotId) {
+                nostojs(function (api) {
+                  api.recommendedProductAddedToCart(productId, slotId);
+                });
+              }
             }
-            {/literal}
-            Nosto.addProductToCart = function (productId, element) {
-                Nosto.trackAddToCartClick(productId, element);
-                Nosto.postAddToCartForm(productId);
+          };
+          Nosto.postAddToCartForm = function (productId) {
+            const form = document.createElement('form');
+            form.setAttribute('method', 'post');
+            form.setAttribute('action', '{url controller=checkout action=addArticle}');
+            const fields = {
+              'sActionIdentifier': '{$sUniqueRand}',
+              'sAdd': productId,
+              'sQuantity': 1
             };
-            Nosto.addSkuToCart = function (product, element) {
-                Nosto.trackAddToCartClick(product.productId, element);
-                Nosto.postAddToCartForm(product.skuId);
-            };
-            Nosto.trackAddToCartClick = function (productId, element) {
-                if (typeof nostojs !== 'undefined' && typeof element === 'object') {
-                  const slotId = Nosto.resolveContextSlotId(element);
-                  if (slotId) {
-                        nostojs(function (api) {
-                            api.recommendedProductAddedToCart(productId, slotId);
-                        });
-                    }
-                }
-            };
-            Nosto.postAddToCartForm = function (productId) {
-              const form = document.createElement('form');
-              form.setAttribute('method', 'post');
-                form.setAttribute('action', '{url controller=checkout action=addArticle}');
-              const fields = {
-                'sActionIdentifier': '{$sUniqueRand}',
-                'sAdd': productId,
-                'sQuantity': 1
-              };
-              for (let key in fields) {
-                    if (fields.hasOwnProperty(key)) {
-                      const hiddenField = document.createElement('input');
-                      hiddenField.setAttribute('type', 'hidden');
-                        hiddenField.setAttribute('name', key);
-                        hiddenField.setAttribute('value', fields[key]);
-                        form.appendChild(hiddenField);
-                    }
-                }
-                document.body.appendChild(form);
-                if (typeof CSRF === 'object' && typeof CSRF.updateForms === 'function') {
-                    CSRF.updateForms();
-                }
-                form.submit();
-            };
-            Nosto.resolveContextSlotId = function (element) {
-              const m = 20;
-              let n = 0;
-              let e = element;
-              while (typeof e.parentElement !== 'undefined' && e.parentElement) {
-                    ++n;
-                    e = e.parentElement;
-                    // noinspection EqualityComparisonWithCoercionJS
-                    if (e.getAttribute('class') == 'nosto_element' && e.getAttribute('id')) {
-                        return e.getAttribute('id');
-                    }
-                    if (n >= m) {
-                        return false;
-                    }
-                }
+            for (let key in fields) {
+              if (fields.hasOwnProperty(key)) {
+                const hiddenField = document.createElement('input');
+                hiddenField.setAttribute('type', 'hidden');
+                hiddenField.setAttribute('name', key);
+                hiddenField.setAttribute('value', fields[key]);
+                form.appendChild(hiddenField);
+              }
+            }
+            document.body.appendChild(form);
+            if (typeof CSRF === 'object' && typeof CSRF.updateForms === 'function') {
+              CSRF.updateForms();
+            }
+            form.submit();
+          };
+          Nosto.resolveContextSlotId = function (element) {
+            const m = 20;
+            let n = 0;
+            let e = element;
+            while (typeof e.parentElement !== 'undefined' && e.parentElement) {
+              ++n;
+              e = e.parentElement;
+              // noinspection EqualityComparisonWithCoercionJS
+              if (e.getAttribute('class') == 'nosto_element' && e.getAttribute('id')) {
+                return e.getAttribute('id');
+              }
+              if (n >= m) {
                 return false;
-            };
+              }
+            }
+            return false;
+          };
 
-            //]]>
+          //]]>
         </script>
     {/if}
 {/block}

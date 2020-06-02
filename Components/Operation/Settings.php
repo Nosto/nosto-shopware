@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+<?php /** @noinspection PhpUnusedAliasInspection */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 
 /**
  * Copyright (c) 2019, Nosto Solutions Ltd
@@ -35,12 +36,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\ORM\Mapping as ORM;
 use Nosto\NostoException;
-use Shopware\Models\Shop\Shop;
-use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
 use Nosto\Object\Settings as NostoSettings;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
+use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates as ExchangeRatesOperation;
 
@@ -50,15 +52,16 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates as
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
+/** @phan-file-suppress PhanUnreferencedUseNormal */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Settings
 {
-	/**
-	 * Send an updated settings object with the currency changes
-	 *
-	 * @param Shop $shop
-	 * @throws NostoException
-	 * @throws NostoException
-	 */
+    /**
+     * Send an updated settings object with the currency changes
+     *
+     * @param Shop $shop
+     * @throws NostoException
+     * @throws NostoException
+     */
     public static function updateCurrencySettings(Shop $shop)
     {
         $settings = new NostoSettings();

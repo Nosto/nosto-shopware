@@ -37,9 +37,9 @@
  */
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Shopware\CustomModels\Nosto\Customer\Customer;
-use Doctrine\ORM\OptimisticLockException;
 
 /**
  * Customer component. Used as a helper to manage the Nosto user session inside
@@ -48,6 +48,7 @@ use Doctrine\ORM\OptimisticLockException;
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
+/** @phan-file-suppress PhanUnreferencedUseNormal */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 {
     /**
@@ -60,24 +61,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      */
     const VISITOR_HASH_ALGO = 'sha256';
 
-	/**
-	 * Persists the Shopware session and the Nosto session in the db.
-	 *
-	 * We do this to be able to later map the Nosto session to an order. This
-	 * is possible to do as the payment gateways are required to send the
-	 * Shopware session along with all the requests. This means that the session
-	 * will be available when the order is first created. When the order is
-	 * created we store the nosto session in the `s_order_attributes` table and
-	 * is use it from there when sending the order confirmations.
-	 * All this is needed as we re-send the orders when anything changes, like
-	 * their status, and we need to know then which Nosto session the order
-	 * belonged to.
-	 * @suppress PhanDeprecatedFunction
-	 * @throws OptimisticLockException
-	 * @throws ORMException
-	 * @throws ORMException
-	 * @throws ORMException
-	 */
+    /**
+     * Persists the Shopware session and the Nosto session in the db.
+     *
+     * We do this to be able to later map the Nosto session to an order. This
+     * is possible to do as the payment gateways are required to send the
+     * Shopware session along with all the requests. This means that the session
+     * will be available when the order is first created. When the order is
+     * created we store the nosto session in the `s_order_attributes` table and
+     * is use it from there when sending the order confirmations.
+     * All this is needed as we re-send the orders when anything changes, like
+     * their status, and we need to know then which Nosto session the order
+     * belonged to.
+     * @suppress PhanDeprecatedFunction
+     * @throws OptimisticLockException
+     * @throws ORMException
+     * @throws ORMException
+     * @throws ORMException
+     */
     public static function persistSession()
     {
         /** @noinspection PhpUndefinedMethodInspection */

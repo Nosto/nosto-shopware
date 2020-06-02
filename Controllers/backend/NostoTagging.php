@@ -35,18 +35,18 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
-use Nosto\Nosto;
-use Nosto\Helper\OAuthHelper as NostoOAuthClient;
-use Shopware\Models\Shop\Shop;
-use Shopware\CustomModels\Nosto\Account\Account;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
-use Shopware\Models\Shop\Repository;
-use Doctrine\ORM\TransactionRequiredException;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\TransactionRequiredException;
+use Nosto\Helper\OAuthHelper as NostoOAuthClient;
+use Nosto\Nosto;
+use Shopware\CustomModels\Nosto\Account\Account;
+use Shopware\Models\Shop\Repository;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
 
 /**
  * Main backend controller. Handles account create/connect/delete requests
@@ -149,14 +149,14 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             }
             /** @noinspection PhpUndefinedMethodInspection */
             if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
-                /** @phan-suppress-next-line PhanParamTooMany PhanTypeMismatchArgument  */
-				/** @noinspection PhpDeprecationInspection */
-				/** @noinspection PhpMethodParametersCountMismatchInspection */
-				$shop->registerResources(Shopware()->Bootstrap());
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                /** @phan-suppress-next-line PhanParamTooMany PhanTypeMismatchArgument */
+                $shop->registerResources(Shopware()->Bootstrap());
             } else {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
-				/** @noinspection PhpDeprecationInspection */
-				$shop->registerResources();
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
             }
             $account = NostoComponentAccount::findAccount($shop);
             if (isset($oauthParams[$shop->getId()])) {

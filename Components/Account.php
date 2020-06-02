@@ -37,21 +37,21 @@
  */
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
-use Nosto\Object\Signup\Account as NostoAccount;
-use Nosto\Request\Api\Token as NostoApiToken;
 use Nosto\Helper\IframeHelper;
 use Nosto\NostoException;
+use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Operation\AccountSignup;
 use Nosto\Operation\UninstallAccount;
-use Shopware\Models\Shop\Shop;
-use Shopware\Models\Shop\Locale;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account as MetaAccount;
+use Nosto\Request\Api\Token as NostoApiToken;
 use Shopware\CustomModels\Nosto\Account\Account as AccountCustomModel;
+use Shopware\Models\Shop\Locale;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account as MetaAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe as Iframe;
 use Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder as UserBuilder;
-use Doctrine\ORM\OptimisticLockException;
 
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
@@ -59,6 +59,7 @@ use Doctrine\ORM\OptimisticLockException;
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
+/** @phan-file-suppress PhanUnreferencedUseNormal */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 {
     /**
@@ -103,7 +104,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         }
         $operation = new AccountSignup($meta);
         $nostoAccount = $operation->create();
-		return self::convertToShopwareAccount($nostoAccount, $shop);
+        return self::convertToShopwareAccount($nostoAccount, $shop);
     }
 
     /**
@@ -143,17 +144,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         return $account;
     }
 
-	/**
-	 * Removes the account and tells Nosto about it.
-	 *
-	 * @param AccountCustomModel $account the account to remove.
-	 * @param $identity
-	 * @throws NostoException
-	 * @throws OptimisticLockException
-	 * @throws ORMException
-	 * @throws ORMException
-	 * @throws ORMException
-	 */
+    /**
+     * Removes the account and tells Nosto about it.
+     *
+     * @param AccountCustomModel $account the account to remove.
+     * @param $identity
+     * @throws NostoException
+     * @throws OptimisticLockException
+     * @throws ORMException
+     * @throws ORMException
+     * @throws ORMException
+     */
     public static function removeAccount(AccountCustomModel $account, $identity)
     {
         $nostoAccount = self::convertToNostoAccount($account);
@@ -170,14 +171,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         }
     }
 
-	/**
-	 * Converts a `AccountCustomModel` model into a `NostoAccount`.
-	 *
-	 * @param AccountCustomModel $account the account model.
-	 * @return NostoAccount the nosto account.
-	 * @throws NostoException
-	 * @throws NostoException
-	 */
+    /**
+     * Converts a `AccountCustomModel` model into a `NostoAccount`.
+     *
+     * @param AccountCustomModel $account the account model.
+     * @return NostoAccount the nosto account.
+     * @throws NostoException
+     * @throws NostoException
+     */
     public static function convertToNostoAccount(AccountCustomModel $account)
     {
         $nostoAccount = new NostoAccount($account->getName());
@@ -193,16 +194,16 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         return $nostoAccount;
     }
 
-	/**
-	 * Checks if a Nosto account exists for a Shop and that it is connected to Nosto.
-	 *
-	 * Connected here means that we have the API tokens exchanged during account creation or OAuth.
-	 *
-	 * @param Shop $shop the shop to check the account for.
-	 * @return bool true if account exists and is connected to Nosto, false otherwise.
-	 * @throws NostoException
-	 * @throws NostoException
-	 */
+    /**
+     * Checks if a Nosto account exists for a Shop and that it is connected to Nosto.
+     *
+     * Connected here means that we have the API tokens exchanged during account creation or OAuth.
+     *
+     * @param Shop $shop the shop to check the account for.
+     * @return bool true if account exists and is connected to Nosto, false otherwise.
+     * @throws NostoException
+     * @throws NostoException
+     */
     public static function accountExistsAndIsConnected(Shop $shop)
     {
         $account = self::findAccount($shop);
@@ -213,25 +214,24 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         return $nostoAccount->isConnectedToNosto();
     }
 
-	/**
-	 * Builds the Nosto account administration iframe url and returns it.
-	 *
-	 * @noinspection MoreThanThreeArgumentsInspection
-	 * @param Shop $shop the shop to get the url for.
-	 * @param Locale|null $locale the locale or null.
-	 * @param AccountCustomModel|null $account the account to get the url
-	 * @param stdClass|null $identity (optional) user identity.
-	 * @param array $params (optional) parameters for the url.
-	 * @return string the url.
-	 * @throws NostoException
-	 * @throws NostoException
-	 * @suppress PhanUndeclaredMethod
-	 */
+    /**
+     * Builds the Nosto account administration iframe url and returns it.
+     *
+     * @noinspection MoreThanThreeArgumentsInspection
+     * @param Shop $shop the shop to get the url for.
+     * @param Locale|null $locale the locale or null.
+     * @param AccountCustomModel|null $account the account to get the url
+     * @param stdClass|null $identity (optional) user identity.
+     * @param array $params (optional) parameters for the url.
+     * @return string the url.
+     * @throws NostoException
+     * @throws NostoException
+     * @suppress PhanUndeclaredMethod
+     */
     public static function buildAccountIframeUrl(
         Shop $shop,
         Locale $locale = null,
-        AccountCustomModel
-        $account = null,
+        AccountCustomModel $account = null,
         $identity = null,
         array $params = array()
     ) {

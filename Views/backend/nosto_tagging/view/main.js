@@ -35,115 +35,115 @@
 
 //noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
 Ext.define('Shopware.apps.NostoTagging.view.Main', {
-    /**
-     * Extends the Enlight application window.
-     * @string
-     */
-    extend: 'Enlight.app.Window',
+  /**
+   * Extends the Enlight application window.
+   * @string
+   */
+  extend: 'Enlight.app.Window',
 
-    /**
-     * Window title.
-     * @string
-     */
-    title: 'Nosto',
+  /**
+   * Window title.
+   * @string
+   */
+  title: 'Nosto',
 
-    /**
-     * Window layout.
-     * @string
-     */
-    layout: 'fit',
+  /**
+   * Window layout.
+   * @string
+   */
+  layout: 'fit',
 
-    /**
-     * Window width.
-     * @integer
-     */
-    width: "70%",
+  /**
+   * Window width.
+   * @integer
+   */
+  width: "70%",
 
-    /**
-     * Window height.
-     * @integer
-     */
-    height: "90%",
+  /**
+   * Window height.
+   * @integer
+   */
+  height: "90%",
 
-    /**
-     * Initializes the component.
-     *
-     * @public
-     * @return void
-     */
-    initComponent: function () {
-      const me = this;
-      me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
-            layout: 'fit',
-            items: []
-        });
-        me.callParent(arguments);
-    },
+  /**
+   * Initializes the component.
+   *
+   * @public
+   * @return void
+   */
+  initComponent: function () {
+    const me = this;
+    me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
+      layout: 'fit',
+      items: []
+    });
+    me.callParent(arguments);
+  },
 
-    /**
-     * Creates tabs for each account in the account store
-     * and adds them to the tab panel.
-     *
-     * @public
-     * @return void
-     */
-    initAccountTabs: function () {
-      const me = this;
-      let i = 0,
-        tab;
+  /**
+   * Creates tabs for each account in the account store
+   * and adds them to the tab panel.
+   *
+   * @public
+   * @return void
+   */
+  initAccountTabs: function () {
+    const me = this;
+    let i = 0,
+      tab;
 
-      me.accountStore.each(function (account) {
-            // noinspection JSUnresolvedExtXType
-            tab = me.tabPanel.add({
-                title: account.get('shopName'),
-                xtype: 'component',
-                autoEl: {
-                    'tag': 'iframe',
-                    'data-shopId': account.get('shopId'),
-                    'src': account.get('url')
-                },
-                shopId: account.get('shopId')
-            });
-            if (++i === 1) {
-                me.tabPanel.setActiveTab(tab);
-            }
-        });
-    },
+    me.accountStore.each(function (account) {
+      // noinspection JSUnresolvedExtXType
+      tab = me.tabPanel.add({
+        title: account.get('shopName'),
+        xtype: 'component',
+        autoEl: {
+          'tag': 'iframe',
+          'data-shopId': account.get('shopId'),
+          'src': account.get('url')
+        },
+        shopId: account.get('shopId')
+      });
+      if (++i === 1) {
+        me.tabPanel.setActiveTab(tab);
+      }
+    });
+  },
 
-    /**
-     * Getter for the active account model.
-     *
-     * @public
-     * @return Shopware.apps.NostoTagging.model.Account
-     */
-    getActiveAccount: function () {
-      const me = this,
-        activeTab = me.tabPanel.getActiveTab();
-      let activeAccount = null;
+  /**
+   * Getter for the active account model.
+   *
+   * @public
+   * @return Shopware.apps.NostoTagging.model.Account
+   */
+  getActiveAccount: function () {
+    const me = this,
+      activeTab = me.tabPanel.getActiveTab();
+    let activeAccount = null;
 
-      me.accountStore.each(function (account) {
-            if (account.get('shopId') === activeTab.shopId) {
-                activeAccount = account;
-            }
-        });
-        return activeAccount;
-    },
+    me.accountStore.each(function (account) {
+      if (account.get('shopId') === activeTab.shopId) {
+        activeAccount = account;
+      }
+    });
+    return activeAccount;
+  },
 
-    /**
-     * Reloads the active iframe window with url from account model.
-     *
-     * @public
-     * @param account Shopware.apps.NostoTagging.model.Account
-     */
-    reloadIframe: function (account) {
-      const me = this;
-      let elements;
+  /**
+   * Reloads the active iframe window with url from account model.
+   *
+   * @public
+   * @param account Shopware.apps.NostoTagging.model.Account
+   */
+  reloadIframe: function (account) {
+    const me = this;
+    let elements;
 
-      elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
-        if (typeof elements[0] !== 'undefined') {
-            elements[0].src = account.get('url');
-        } else {
-            throw new Error('Nosto: failed to re-load iframe for shop #' + account.get('shopId'));
-        }
+    elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
+    if (typeof elements[0] !== 'undefined') {
+      elements[0].src = account.get('url');
+    } else {
+      throw new Error('Nosto: failed to re-load iframe for shop #' + account.get('shopId'));
     }
+  }
 });

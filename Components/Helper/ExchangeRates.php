@@ -35,10 +35,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
-use Nosto\Object\ExchangeRateCollection;
 use Nosto\Object\ExchangeRate;
+use Nosto\Object\ExchangeRateCollection;
 use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 
 /**
  * Helper class for Exchange Rates
