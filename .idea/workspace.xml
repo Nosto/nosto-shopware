@@ -2,46 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9387b4af-ff6a-4bef-99f3-54fac9413335" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/chkphan.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Account.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Account.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/CartRestore.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/CartRestore.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Currency.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Currency.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/CustomFields.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/CustomFields.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/ExchangeRates.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/ExchangeRates.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Image.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Image.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Helper/Price.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Helper/Price.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Account.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Account.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Account/Iframe.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Account/Iframe.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Account/Owner.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Account/Owner.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Meta/Oauth.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Meta/Oauth.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Cart.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Cart.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Cart/LineItem.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Cart/LineItem.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Category.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Category.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Order.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Components/Model/Order/Buyer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order/Buyer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Order/LineItem.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order/LineItem.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Order/Status.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Order/Status.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Product.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Model/Sku.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Model/Sku.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Operation/ExchangeRates.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Operation/ExchangeRates.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Operation/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Operation/Product.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Operation/Settings.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Operation/Settings.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Order/Confirmation.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Order/Confirmation.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Components/Url.php" beforeDir="false" afterPath="$PROJECT_DIR$/Components/Url.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/backend/NostoTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/backend/NostoTagging.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/frontend/NostoTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/frontend/NostoTagging.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Product/Repository.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Product/Repository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_start_app/menu.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_start_app/menu.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/controller/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/controller/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/model/account.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/model/account.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/store/account.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/store/account.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/backend/nosto_tagging/view/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/Views/backend/nosto_tagging/view/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/emotion_components/widgets/emotion/components/nosto_slot.tpl" beforeDir="false" afterPath="$PROJECT_DIR$/Views/emotion_components/widgets/emotion/components/nosto_slot.tpl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Views/frontend/plugins/nosto_tagging/index.tpl" beforeDir="false" afterPath="$PROJECT_DIR$/Views/frontend/plugins/nosto_tagging/index.tpl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -294,7 +256,7 @@
       <workItem from="1590927822272" duration="1845000" />
       <workItem from="1590937781123" duration="594000" />
       <workItem from="1590938447752" duration="1041000" />
-      <workItem from="1590988099762" duration="3590000" />
+      <workItem from="1590988099762" duration="3647000" />
     </task>
     <servers />
   </component>
@@ -344,10 +306,10 @@
     </state>
     <state x="229" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1591091369713" />
     <state x="229" y="110" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1590920854169" />
-    <state x="420" y="199" width="983" height="514" key="find.popup" timestamp="1591093428106">
+    <state x="420" y="199" width="983" height="514" key="find.popup" timestamp="1591114836067">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="420" y="199" width="983" height="514" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1591093428106" />
+    <state x="420" y="199" width="983" height="514" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1591114836067" />
     <state x="420" y="217" width="600" height="538" key="find.popup/0.23.1440.877@0.23.1440.877" timestamp="1590922142598" />
     <state x="385" y="195" width="670" height="694" key="search.everywhere.popup" timestamp="1590928089936">
       <screen x="0" y="0" width="1440" height="900" />
