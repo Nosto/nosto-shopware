@@ -212,10 +212,17 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $identity = Shopware()->Auth()->getIdentity();
 
         if ($shop !== null) {
-            /** @noinspection PhpDeprecationInspection */
-            // @phan-suppress-next-line PhanParamTooMany
-			/** @noinspection PhpMethodParametersCountMismatchInspection */
-			$shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
+            }
             /** @noinspection BadExceptionsProcessingInspection */
             try {
                 $account = NostoComponentAccount::createAccount(
@@ -283,10 +290,17 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         /** @noinspection PhpUndefinedMethodInspection */
         $identity = Shopware()->Auth()->getIdentity();
         if ($account !== null && $shop !== null) {
-            /** @noinspection PhpDeprecationInspection */
-            // @phan-suppress-next-line PhanParamTooMany
-			/** @noinspection PhpMethodParametersCountMismatchInspection */
-			$shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
+            }
             NostoComponentAccount::removeAccount($account, $identity);
             $success = true;
             $data = array(
@@ -329,10 +343,17 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $locale = Shopware()->Auth()->getIdentity()->locale;
 
         if ($shop !== null) {
-            /** @noinspection PhpDeprecationInspection */
-            // @phan-suppress-next-line PhanParamTooMany
-			/** @noinspection PhpMethodParametersCountMismatchInspection */
-			$shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
+            }
             $meta = new MetaOauth();
             $meta->loadData($shop, $locale);
             $success = true;

@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9387b4af-ff6a-4bef-99f3-54fac9413335" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/backend/NostoTagging.php" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/backend/NostoTagging.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -255,7 +256,7 @@
       <workItem from="1590927822272" duration="1845000" />
       <workItem from="1590937781123" duration="594000" />
       <workItem from="1590938447752" duration="1041000" />
-      <workItem from="1590988099762" duration="570000" />
+      <workItem from="1590988099762" duration="1380000" />
     </task>
     <servers />
   </component>
@@ -305,10 +306,10 @@
     </state>
     <state x="229" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1591091369713" />
     <state x="229" y="110" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1590920854169" />
-    <state x="420" y="199" width="600" height="514" key="find.popup" timestamp="1590937141418">
+    <state x="420" y="199" width="983" height="514" key="find.popup" timestamp="1591093428106">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="420" y="199" width="600" height="514" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1590937141418" />
+    <state x="420" y="199" width="983" height="514" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1591093428106" />
     <state x="420" y="217" width="600" height="538" key="find.popup/0.23.1440.877@0.23.1440.877" timestamp="1590922142598" />
     <state x="385" y="195" width="670" height="694" key="search.everywhere.popup" timestamp="1590928089936">
       <screen x="0" y="0" width="1440" height="900" />
