@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9387b4af-ff6a-4bef-99f3-54fac9413335" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Account/Account.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Account/Account.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Customer/Customer.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Customer/Customer.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/Nosto/Setting/Setting.php" beforeDir="false" afterPath="$PROJECT_DIR$/Models/Nosto/Setting/Setting.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -212,7 +209,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2275" />
     <property name="run.code.analysis.last.selected.profile" value="pCI" />
-    <property name="settings.editor.selected.configurable" value="reference.webide.settings.project.settings.php" />
+    <property name="settings.editor.selected.configurable" value="project.scopes" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="RecentsManager">
@@ -255,7 +252,10 @@
       <workItem from="1590855271856" duration="1757000" />
       <workItem from="1590916918825" duration="5520000" />
       <workItem from="1590924031471" duration="24000" />
-      <workItem from="1590927822272" duration="1452000" />
+      <workItem from="1590927822272" duration="1845000" />
+      <workItem from="1590937781123" duration="594000" />
+      <workItem from="1590938447752" duration="1041000" />
+      <workItem from="1590988099762" duration="570000" />
     </task>
     <servers />
   </component>
@@ -296,14 +296,14 @@
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="574" y="374" key="ComposerValidateDialog/0.23.1440.877@0.23.1440.877" timestamp="1590918247289" />
-    <state x="349" y="156" width="756" height="587" key="NewModule_or_Project.wizard" timestamp="1590846421613">
+    <state x="349" y="156" width="756" height="587" key="NewModule_or_Project.wizard" timestamp="1590938956664">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="349" y="156" width="756" height="587" key="NewModule_or_Project.wizard/0.0.1440.900@0.0.1440.900" timestamp="1590846421613" />
-    <state x="229" y="110" key="SettingsEditor" timestamp="1590920854169">
-      <screen x="0" y="23" width="1440" height="877" />
+    <state x="349" y="156" width="756" height="587" key="NewModule_or_Project.wizard/0.0.1440.900@0.0.1440.900" timestamp="1590938956664" />
+    <state x="229" y="89" key="SettingsEditor" timestamp="1591091369713">
+      <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="229" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1590846105067" />
+    <state x="229" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1591091369713" />
     <state x="229" y="110" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1590920854169" />
     <state x="420" y="199" width="600" height="514" key="find.popup" timestamp="1590937141418">
       <screen x="0" y="0" width="1440" height="900" />
