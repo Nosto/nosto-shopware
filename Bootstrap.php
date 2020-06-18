@@ -1,6 +1,5 @@
-<?php // @codingStandardsIgnoreLine
-/**
- * Copyright (c) 2019, Nosto Solutions Ltd
+<?php /**
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,10 +29,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
- */
-
+ */ // @codingStandardsIgnoreLine
 require_once __DIR__ . '/vendor/autoload.php';
 
 use Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation as NostoOrderConfirmation;
