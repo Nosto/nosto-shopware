@@ -152,8 +152,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @throws NostoException
      * @throws OptimisticLockException
      * @throws ORMException
-     * @throws ORMException
-     * @throws ORMException
      */
     public static function removeAccount(AccountCustomModel $account, $identity)
     {
@@ -176,7 +174,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * @param AccountCustomModel $account the account model.
      * @return NostoAccount the nosto account.
-     * @throws NostoException
      * @throws NostoException
      */
     public static function convertToNostoAccount(AccountCustomModel $account)
@@ -202,7 +199,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @param Shop $shop the shop to check the account for.
      * @return bool true if account exists and is connected to Nosto, false otherwise.
      * @throws NostoException
-     * @throws NostoException
      */
     public static function accountExistsAndIsConnected(Shop $shop)
     {
@@ -224,7 +220,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
      * @return string the url.
-     * @throws NostoException
      * @throws NostoException
      * @suppress PhanUndeclaredMethod
      */

@@ -81,7 +81,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
      * @return null|string
      * @throws OptimisticLockException
      * @throws ORMException
-     * @throws ORMException
      */
     public function generateRestoreToCartLink()
     {
@@ -153,8 +152,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
      * @param $newSessionId
      * @throws OptimisticLockException
      * @throws ORMException
-     * @throws ORMException
-     * @throws ORMException
      */
     private function updateNostoCustomerCartHash($sessionId, $newSessionId)
     {
@@ -178,8 +175,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
      *
      * @return null|object|CustomerModel
      * @throws OptimisticLockException
-     * @throws ORMException
-     * @throws ORMException
      * @throws ORMException
      */
     public function updateNostoId()
