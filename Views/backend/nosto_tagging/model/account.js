@@ -38,13 +38,13 @@ Ext.define('Shopware.apps.NostoTagging.model.Account', {
   extend: 'Ext.data.Model',
   idProperty: 'id',
   fields: [
-    {name: 'id', type: 'int'},
-    {name: 'name', type: 'string'},
-    {name: 'url', type: 'string'},
-    {name: 'email', type: 'string'},
-    {name: 'shopId', type: 'int'},
-    {name: 'shopName', type: 'string'},
-    {name: 'details', type: 'string'}
+    { name: 'id', type: 'int' },
+    { name: 'name', type: 'string' },
+    { name: 'url', type: 'string' },
+    { name: 'email', type: 'string' },
+    { name: 'shopId', type: 'int' },
+    { name: 'shopName', type: 'string' },
+    { name: 'details', type: 'string' }
   ],
   proxy: {
     type: 'ajax',
