@@ -42,6 +42,7 @@ Ext.define('Shopware.apps.NostoStartApp.Menu', {
    * @Override
    */
   afterRender: function () {
+    // noinspection JSCheckFunctionSignatures
     const me = this,
       result = me.callParent(arguments);
 

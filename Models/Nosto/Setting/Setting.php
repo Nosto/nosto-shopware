@@ -1,7 +1,4 @@
-<?php /** @noinspection PhpUnusedAliasInspection */
-/** @noinspection PhpIllegalPsrClassPathInspection */
-/** @noinspection PhpUnused */
-
+<?php /** @noinspection PhpIllegalPsrClassPathInspection  PhpUnused */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.

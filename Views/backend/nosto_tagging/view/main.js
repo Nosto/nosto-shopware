@@ -77,6 +77,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
       layout: 'fit',
       items: []
     });
+    // noinspection JSCheckFunctionSignatures
     me.callParent(arguments);
   },
 

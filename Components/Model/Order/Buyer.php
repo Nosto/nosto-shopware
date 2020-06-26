@@ -86,6 +86,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             } else {
                 /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
                 /** @var Billing $address */
+                /** @noinspection PhpUndefinedMethodInspection */
                 /** @phan-suppress-next-line PhanUndeclaredMethod */
                 $address = $customer->getBilling();
                 if ($address instanceof Billing) {

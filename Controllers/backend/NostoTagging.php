@@ -65,6 +65,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * Loads the Nosto ExtJS sub-application for configuring Nosto for the shops.
      * Default action.
      * @noinspection PhpMissingParentCallCommonInspection
+     * @noinspection PhpUnused
+     * @noinspection NullPointerExceptionInspection
      */
     public function indexAction()
     {
