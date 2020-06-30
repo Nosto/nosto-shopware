@@ -3,3 +3,5 @@ build/package
 build/src
 .idea
 output
+.idea/workspace.xml
+
