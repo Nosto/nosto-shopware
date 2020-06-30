@@ -39,39 +39,38 @@ namespace Shopware\Models\Customer;
 
 class Billing
 {
+    /**
+     * @return string
+     */
+    public function getFirstName()
+    {
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getFirstName()
-	{
-	}
+    /**
+     * @return string
+     */
+    public function getLastName()
+    {
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getLastName()
-	{
-	}
+    /**
+     * @return string
+     */
+    public function getZipCode()
+    {
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getZipCode()
-	{
-	}
+    /**
+     * @return string
+     */
+    public function getPhone()
+    {
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getPhone()
-	{
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getCountryId()
-	{
-	}
+    /**
+     * @return string
+     */
+    public function getCountryId()
+    {
+    }
 }

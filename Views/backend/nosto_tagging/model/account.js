@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
@@ -38,13 +38,13 @@ Ext.define('Shopware.apps.NostoTagging.model.Account', {
   extend: 'Ext.data.Model',
   idProperty: 'id',
   fields: [
-    {name: 'id', type: 'int'},
-    {name: 'name', type: 'string'},
-    {name: 'url', type: 'string'},
-    {name: 'email', type: 'string'},
-    {name: 'shopId', type: 'int'},
-    {name: 'shopName', type: 'string'},
-    {name: 'details', type: 'string'}
+    { name: 'id', type: 'int' },
+    { name: 'name', type: 'string' },
+    { name: 'url', type: 'string' },
+    { name: 'email', type: 'string' },
+    { name: 'shopId', type: 'int' },
+    { name: 'shopName', type: 'string' },
+    { name: 'details', type: 'string' }
   ],
   proxy: {
     type: 'ajax',
