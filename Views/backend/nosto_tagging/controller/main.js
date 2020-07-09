@@ -33,7 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoTagging.controller.Main', {
   /**
    * Extends the Enlight controller.
@@ -68,14 +68,17 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
   showWindow: function () {
     const me = this;
     me.accountStore = me.getStore('Account');
+    //noinspection JSUnresolvedFunction
     me.mainWindow = me.getView('Main').create({
       accountStore: me.accountStore
     });
     me.mainWindow.show();
+    //noinspection JSUnresolvedFunction
     me.mainWindow.setLoading(true);
     //noinspection JSUnusedGlobalSymbols
     me.accountStore.load({
       callback: function (records, op, success) {
+        //noinspection JSUnresolvedFunction
         me.mainWindow.setLoading(false);
         if (success) {
           me.mainWindow.initAccountTabs();
@@ -92,7 +95,9 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
    * @return void
    */
   loadSettings: function () {
+    //noinspection JSUnresolvedVariable
     const me = this;
+    //noinspection JSUnresolvedVariable
     Ext.Ajax.request({
       method: 'GET',
       url: '{url controller=NostoTagging action=loadSettings}',
@@ -114,6 +119,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
    * @return void
    */
   postMessageListener: function () {
+    //noinspection JSUnresolvedVariable
     const me = this;
     window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
   },
@@ -137,6 +143,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
       accountData;
 
     // Check the origin to prevent cross-site scripting.
+    //noinspection JSUnresolvedVariable
     if (!originRegexp.test(event.origin)) {
       return;
     }
@@ -154,6 +161,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
       }
       switch (data.type) {
         case 'newAccount':
+          //noinspection JSUnresolvedVariable
           if (data.params && data.params.email) {
             account.set('email', data.params.email);
             if (data.params.details) {
@@ -163,6 +171,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
           account.save({
             success: function (record, op) {
               // why can't we get the model data binding to work?
+              //noinspection JSUnresolvedVariable
               if (op.resultSet && op.resultSet.records) {
                 accountData = op.resultSet.records[0].data;
                 record.set('id', accountData.id);
@@ -180,6 +189,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
           account.destroy({
             success: function (record, op) {
               // why can't we get the model data binding to work?
+              //noinspection JSUnresolvedVariable
               if (op.resultSet && op.resultSet.records) {
                 accountData = op.resultSet.records[0].data;
                 record.set('id', 0);
@@ -194,6 +204,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
           break;
 
         case 'connectAccount':
+          //noinspection JSUnresolvedVariable
           Ext.Ajax.request({
             method: 'POST',
             url: '{url controller=NostoTagging action=connectAccount}',
@@ -202,9 +213,9 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
             },
             success: function (response) {
               op = Ext.decode(response.responseText);
-              // noinspection JSUnresolvedVariable
+              //noinspection JSUnresolvedVariable
               if (op.success && op.data.redirect_url) {
-                // noinspection JSUnresolvedVariable
+                //noinspection JSUnresolvedVariable
                 window.location.href = op.data.redirect_url;
               } else {
                 throw new Error('Nosto: failed to handle account connection.');

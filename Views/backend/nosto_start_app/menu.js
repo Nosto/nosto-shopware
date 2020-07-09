@@ -34,7 +34,7 @@
  */
 
 //{block name="backend/index/view/menu" append}
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoStartApp.Menu', {
   override: 'Shopware.apps.Index.view.Menu',
 
@@ -42,11 +42,13 @@ Ext.define('Shopware.apps.NostoStartApp.Menu', {
    * @Override
    */
   afterRender: function () {
-    // noinspection JSCheckFunctionSignatures
+    //noinspection JSCheckFunctionSignatures
     const me = this,
+      //noinspection JSUnresolvedFunction
       result = me.callParent(arguments);
 
     if (location.href.search("openNosto") !== -1) {
+      //noinspection JSUnresolvedFunction,,noinspection JSUnresolvedVariable
       Shopware.app.Application.addSubApplication({
         name: 'Shopware.apps.NostoTagging'
       });

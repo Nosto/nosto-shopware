@@ -33,7 +33,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoTagging.view.Main', {
   /**
    * Extends the Enlight application window.
@@ -73,11 +73,12 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
    */
   initComponent: function () {
     const me = this;
+    //noinspection JSUnresolvedVariable
     me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
       layout: 'fit',
       items: []
     });
-    // noinspection JSCheckFunctionSignatures
+    //noinspection JSUnresolvedFunction,JSCheckFunctionSignatures
     me.callParent(arguments);
   },
 
@@ -92,9 +93,9 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
     const me = this;
     let i = 0,
       tab;
-
+    //noinspection JSUnresolvedFunction
     me.accountStore.each(function (account) {
-      // noinspection JSUnresolvedExtXType
+      //noinspection JSUnresolvedExtXType
       tab = me.tabPanel.add({
         title: account.get('shopName'),
         xtype: 'component',
@@ -106,6 +107,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
         shopId: account.get('shopId')
       });
       if (++i === 1) {
+        //noinspection JSUnresolvedFunction
         me.tabPanel.setActiveTab(tab);
       }
     });
@@ -119,9 +121,11 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
    */
   getActiveAccount: function () {
     const me = this,
+      //noinspection JSUnresolvedFunction
       activeTab = me.tabPanel.getActiveTab();
     let activeAccount = null;
 
+    //noinspection JSUnresolvedFunction
     me.accountStore.each(function (account) {
       if (account.get('shopId') === activeTab.shopId) {
         activeAccount = account;
@@ -137,9 +141,11 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
    * @param account Shopware.apps.NostoTagging.model.Account
    */
   reloadIframe: function (account) {
+    //noinspection JSUnresolvedVariable
     const me = this;
     let elements;
 
+    //noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
     elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
     if (typeof elements[0] !== 'undefined') {
       elements[0].src = account.get('url');
