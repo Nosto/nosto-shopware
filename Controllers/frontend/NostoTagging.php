@@ -71,6 +71,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository as ProductR
  *
  * @package Shopware
  * @subpackage Controllers_Frontend
+ * @noinspection PhpUnused
  */
 class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Action
 {
@@ -93,6 +94,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Shopware_Controllers_Frontend_NostoTagging constructor.
      * @param Enlight_Controller_Request_Request|null $request
      * @param Enlight_Controller_Response_Response|null $response
+     * @noinspection PhpUnused
      */
     public function __construct(
         Enlight_Controller_Request_Request $request = null,
@@ -115,6 +117,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * redirects to that domain.
      *
      * @throws Exception
+     * @noinspection PhpUnused
      */
     public function oauthAction()
     {
@@ -203,6 +206,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
+     * @noinspection PhpUnused
      */
     public function exportProductsAction()
     {
@@ -261,6 +265,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * Result can be limited by the `limit` and `offset` GET parameters.
      *
      * @throws NostoException
+     * @noinspection PhpUnused
      */
     public function exportOrdersAction()
     {
@@ -347,6 +352,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
      * @throws Enlight_Exception
      * @throws Zend_Db_Adapter_Exception
      * @throws Exception
+     * @noinspection PhpUnused
      */
     public function cartAction()
     {

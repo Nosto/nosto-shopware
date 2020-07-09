@@ -53,6 +53,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_Product
 
     /**
      * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams constructor.
+     * @noinspection PhpUnused
      */
     public function __construct()
     {

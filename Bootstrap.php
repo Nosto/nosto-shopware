@@ -143,6 +143,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @inheritdoc
      * @suppress PhanTypeMismatchArgument
      * @throws NostoException
+     * @noinspection PhpUnused
      */
     public function afterInit()
     {
@@ -152,6 +153,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * @inheritdoc
+     * @noinspection PhpUnused
      */
     public function getCapabilities()
     {
@@ -164,6 +166,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
     /**
      * @inheritdoc
+     * @noinspection PhpUnused
      */
     public function getInfo()
     {
@@ -201,6 +204,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @inheritdoc
      * @throws Exception
      * @throws ToolsException
+     * @noinspection PhpUnused
      */
     public function install()
     {
@@ -696,6 +700,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     /**
      * @inheritdoc
      * @throws Exception
+     * @noinspection PhpUnused
      */
     public function update($existingVersion)
     {
@@ -710,6 +715,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     /**
      * @inheritdoc
      * @throws Exception
+     * @noinspection PhpUnused
      */
     public function uninstall()
     {
@@ -962,6 +968,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
+     * @noinspection PhpUnused
      */
     public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1153,6 +1160,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the home page recommendation elements.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+     * @noinspection PhpUnused
      */
     public function onPostDispatchFrontendIndex(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1193,6 +1201,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @throws ORMException
      * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
+     * @noinspection PhpUnused
      */
     public function onPostDispatchFrontendDetail(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1258,6 +1267,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
+     * @noinspection PhpUnused
      */
     public function onPostDispatchFrontendListing(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1310,6 +1320,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the order thank you page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+     * @noinspection PhpUnused
      */
     public function onPostDispatchFrontendCheckout(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1391,6 +1402,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Adds the search page tagging.
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
+     * @noinspection PhpUnused
      */
     public function onPostDispatchFrontendSearch(Enlight_Controller_ActionEventArgs $args)
     {
@@ -1541,6 +1553,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Sends an API order confirmation to Nosto.
      *
      * @param Enlight_Event_EventArgs $args
+     * @noinspection PhpUnused
      */
     public function onPostUpdateOrder(Enlight_Event_EventArgs $args)
     {

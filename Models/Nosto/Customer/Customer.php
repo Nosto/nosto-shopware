@@ -95,6 +95,7 @@ class Customer extends ModelEntity
 
     /**
      * @return int
+     * @noinspection PhpUnused
      */
     public function getId()
     {

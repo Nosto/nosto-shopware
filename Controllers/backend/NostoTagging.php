@@ -56,6 +56,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
  *
  * @package Shopware
  * @subpackage Controllers_Backend
+ * @noinspection PhpUnused
  */
 class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs
 {
@@ -78,6 +79,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Main controller in the client
      * side application.
+     * @noinspection PhpUnused
      */
     public function loadSettingsAction()
     {
@@ -115,6 +117,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * @throws ORMInvalidArgumentException
      * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function getAccountsAction()
     {
@@ -196,6 +199,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * @throws ORMInvalidArgumentException
      * @throws Exception
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function createAccountAction()
     {
@@ -274,6 +278,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * @throws ORMInvalidArgumentException
      * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function deleteAccountAction()
     {
@@ -332,6 +337,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * side application.
      * @throws Exception
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function connectAccountAction()
     {
