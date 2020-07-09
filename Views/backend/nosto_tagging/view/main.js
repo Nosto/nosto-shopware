@@ -145,7 +145,7 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
     const me = this;
     let elements;
 
-    //noinspection JSCheckFunctionSignatures,JSUnresolvedFunction
+    //noinspection JSCheckFunctionSignatures,JSUnresolvedFunction,JSUnresolvedVariable
     elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
     if (typeof elements[0] !== 'undefined') {
       elements[0].src = account.get('url');

@@ -102,6 +102,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
       method: 'GET',
       url: '{url controller=NostoTagging action=loadSettings}',
       success: function (response) {
+        //noinspection JSUnresolvedVariable
         const op = Ext.decode(response.responseText);
         if (op.success && op.data) {
           me.settings = op.data;
@@ -121,6 +122,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
   postMessageListener: function () {
     //noinspection JSUnresolvedVariable
     const me = this;
+    //noinspection JSUnresolvedVariable
     window.addEventListener('message', Ext.bind(me.receiveMessage, me), false);
   },
 
@@ -151,7 +153,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     if (('' + event.data).substr(0, 7) !== '[Nosto]') {
       return;
     }
-
+    //noinspection JSUnresolvedVariable
     json = ('' + event.data).substr(7);
     data = Ext.decode(json);
     if (typeof data === 'object' && data.type) {
@@ -212,6 +214,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
               shopId: account.get('shopId')
             },
             success: function (response) {
+              //noinspection JSUnresolvedVariable
               op = Ext.decode(response.responseText);
               //noinspection JSUnresolvedVariable
               if (op.success && op.data.redirect_url) {

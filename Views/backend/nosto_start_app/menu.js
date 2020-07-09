@@ -48,8 +48,9 @@ Ext.define('Shopware.apps.NostoStartApp.Menu', {
       result = me.callParent(arguments);
 
     if (location.href.search("openNosto") !== -1) {
-      //noinspection JSUnresolvedFunction,,noinspection JSUnresolvedVariable
+      //noinspection JSUnresolvedFunction,JSUnresolvedVariable
       Shopware.app.Application.addSubApplication({
+        //noinspection JSUnresolvedVariable
         name: 'Shopware.apps.NostoTagging'
       });
     }
