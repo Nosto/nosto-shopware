@@ -86,15 +86,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
                 ->Models()
                 ->getRepository('\Shopware\CustomModels\Nosto\Customer\Customer')
                 ->findOneBy(array('sessionId' => $sessionId));
+            $shouldPersist = false;
             if (empty($customer)) {
                 $customer = new Customer();
                 $customer->setSessionId($sessionId);
+                $shouldPersist = true;
             }
             if ($nostoId !== $customer->getNostoId()) {
                 $customer->setNostoId($nostoId);
+                $shouldPersist = true;
             }
-            Shopware()->Models()->persist($customer);
-            Shopware()->Models()->flush($customer);
+            if ($shouldPersist) {
+                Shopware()->Models()->persist($customer);
+                Shopware()->Models()->flush($customer);
+            }
         }
     }
 
