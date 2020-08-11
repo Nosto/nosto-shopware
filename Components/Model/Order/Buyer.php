@@ -81,7 +81,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                     $this->setLastName($address->getLastname());
                     $this->setPostCode($address->getZipCode());
                     $this->setPhone($address->getPhone());
-                    $this->setCountry($address->getCountry()->getName());
+                    $this->setCountry($address->getCountry()->getIso());
                 }
             } else {
                 /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
