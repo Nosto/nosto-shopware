@@ -91,7 +91,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                 } catch (\Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
-                        sprintf("Nosto order confirmation failed. Messa was: %s",
+                        sprintf("Nosto order update upsert failed. Message was: %s",
                             $e->getMessage()
                         )
                     );
