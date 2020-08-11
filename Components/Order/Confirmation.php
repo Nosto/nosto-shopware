@@ -39,6 +39,7 @@ use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
 use Shopware\Models\Attribute\Order as OrderAttribute;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Shopware\Models\Order\Order as OrderModel;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Order confirmation component. Used to send order information to Nosto.
@@ -60,10 +61,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
     {
         try {
             $shop = Shopware()->Shop();
-        } catch (\Exception $e) {
+        } catch (ServiceNotFoundException $e) {
+            $shop = $order->getShop();
             // Shopware throws an exception if service does not exist.
             // This would be the case when using Shopware API or cli
-            $shop = $order->getShop();
+        } catch (\Exception $e) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            return;
         }
         if ($shop === null) {
             return;
