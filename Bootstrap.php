@@ -1031,6 +1031,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
+     * @return NostoCustomerModel|null
      */
     public function generateCustomerTagging()
     {
@@ -1059,6 +1060,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * something in the cart.
      *
      * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
+     * @return NostoCartModel|null
      */
     public function generateCartTagging()
     {
@@ -1091,6 +1093,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Generates the variation tagging data to be added to the view.
      *
      * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
+     * @return MarkupableString|null
      */
     public function generateVariationTagging()
     {

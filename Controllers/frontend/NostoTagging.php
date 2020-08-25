@@ -383,7 +383,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $nostoFrontEnd = Shopware()->Plugins()->Frontend()->NostoTagging();
         $cartTagging = $nostoFrontEnd->generateCartTagging();
         if ($cartTagging) {
-            $html = $cartTagging->toHtml();
+            $html .= $cartTagging->toHtml();
         }
         $customerTagging = $nostoFrontEnd->generateCustomerTagging();
         if ($customerTagging) {
