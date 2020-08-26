@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.8
+- Prevent Shopware's full page cache to cache Nosto tagging blocks
+
 ## 2.4.7
 - Fix sending invalid orders to Nosto by setting missing ISO code for customer country
 - Remove excessive logging in order confirmation via API operations
