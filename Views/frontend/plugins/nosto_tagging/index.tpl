@@ -127,17 +127,8 @@
     {/if}
 {/block}
 {block name="frontend_index_content" append}
-    {* Needs to be rendered at template level to avoid cache issues *}
-    {if isset($nostoCustomer) && $nostoCustomer}
-        {$nostoCustomer->toHtml()}
-    {/if}
-    {if isset($nostoCart) && $nostoCart}
-        {$nostoCart->toHtml()}
-    {/if}
+    {action controller=nostoTagging action=noCacheTagging}
     {if isset($nostoPageType) && $nostoPageType}
         {$nostoPageType->toHtml()}
-    {/if}
-    {if isset($nostoVariation) && $nostoVariation}
-        {$nostoVariation->toHtml()}
     {/if}
 {/block}

@@ -84,7 +84,7 @@ use Nosto\Nosto;
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.4.7';
+    const PLUGIN_VERSION = '2.4.8';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ENTITY_MANAGER_VERSION = '5.0.0';
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
@@ -966,9 +966,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $view->extendsTemplate('frontend/plugins/nosto_tagging/index.tpl');
 
         $this->addEmbedScript($view);
-        $this->addCustomerTagging($view);
-        $this->addCartTagging($view);
-        $this->addVariationTagging($view);
         $this->addHcidTagging($view);
 
         $locale = Shopware()->Shop()->getLocale()->getLocale();
@@ -1022,20 +1019,19 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
-     * Adds the logged in customer tagging to the view.
+     * Generates the logged in customer tagging data to be added the view.
      *
      * This tagging should be present on all pages as long as a logged in
      * customer can be found.
-     *
-     * @param Enlight_View_Default $view the view.
      *
      * @throws Enlight_Event_Exception
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
-     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+     * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
+     * @return NostoCustomerModel|null
      */
-    protected function addCustomerTagging(Enlight_View_Default $view)
+    public function generateCustomerTagging()
     {
         /** @var Shopware\Models\Customer\Customer $customer */
         /** @noinspection PhpUndefinedFieldInspection */
@@ -1049,22 +1045,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
                 ->get(self::CONFIG_SEND_CUSTOMER_DATA);
         if ($customerDataAllowed && $customer instanceof CustomerModel) {
             $nostoCustomer = new NostoCustomerModel();
-            $nostoCustomer->loadData($customer);
-            $view->assign('nostoCustomer', $nostoCustomer);
+            $nostoCustomer->loadData($customer); // Do not return directly, needs to be built in this context
+            return $nostoCustomer;
         }
+        return null;
     }
 
     /**
-     * Adds the shopping cart tagging to the view.
+     * Generates the shopping cart tagging data to be added the view.
      *
      * This tagging should be present on all pages as long as the user has
      * something in the cart.
      *
-     * @param Enlight_View_Default $view the view.
-     * @suppress PhanDeprecatedFunction
-     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+     * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
+     * @return NostoCartModel|null
      */
-    protected function addCartTagging(Enlight_View_Default $view)
+    public function generateCartTagging()
     {
         /** @var Shopware\Models\Order\Basket[] $baskets */
         /** @noinspection PhpUndefinedMethodInspection */
@@ -1077,14 +1073,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         );
 
         $nostoCart = new NostoCartModel();
-        $nostoCart->loadData($baskets);
-        $view->assign('nostoCart', $nostoCart);
+        $nostoCart->loadData($baskets); // Do not return directly, needs to be built in this context
+        return $nostoCart;
     }
 
     /**
      * Adds the hcid tagging for cart and customer.
-     *
-     * @param Enlight_View_Default $view the view.
      *
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
      */
@@ -1094,21 +1088,20 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     }
 
     /**
-     * Adds the variation tagging.
+     * Generates the variation tagging data to be added to the view.
      *
-     * @param Enlight_View_Default $view the view.
-     *
-     * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
+     * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
+     * @return MarkupableString|null
      */
-    protected function addVariationTagging(Enlight_View_Default $view)
+    public function generateVariationTagging()
     {
         if (CurrencyHelper::isMultiCurrencyEnabled(Shopware()->Shop())) {
-            $variationObj = new MarkupableString(
+            return new MarkupableString(
                 CurrencyHelper::getCurrentCurrencyCode(),
                 'nosto_variation'
             );
-            $view->assign('nostoVariation', $variationObj);
         }
+        return null;
     }
 
     /**

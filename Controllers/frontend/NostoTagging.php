@@ -369,4 +369,30 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
             'action' => 'index'
         ]);
     }
+
+    /**
+     * Echoes the tagging data to the template using action tags
+     * @see https://developers.shopware.com/blog/2016/07/11/on-action-tags/
+     * @throws Exception
+     */
+    public function noCacheTaggingAction()
+    {
+        $this->Front()->Plugins()->ViewRenderer()->setNoRender(true);
+        $html = '';
+        /** @noinspection PhpUndefinedMethodInspection */
+        $nostoFrontEnd = Shopware()->Plugins()->Frontend()->NostoTagging();
+        $cartTagging = $nostoFrontEnd->generateCartTagging();
+        if ($cartTagging) {
+            $html .= $cartTagging->toHtml();
+        }
+        $customerTagging = $nostoFrontEnd->generateCustomerTagging();
+        if ($customerTagging) {
+            $html .= $customerTagging->toHtml();
+        }
+        $variationTagging = $nostoFrontEnd->generateVariationTagging();
+        if ($variationTagging) {
+            $html .= $variationTagging->toHtml();
+        }
+        echo $html;
+    }
 }
