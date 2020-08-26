@@ -41,6 +41,7 @@ use Shopware\Models\Attribute\Order as OrderAttribute;
 use Shopware\Models\Order\Order as OrderModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Order confirmation component. Used to send order information to Nosto.
@@ -64,12 +65,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
     {
         try {
             $shop = Shopware()->Shop();
-        } catch (Exception $e) {
+        } catch (ServiceNotFoundException $e) {
+            $shop = $order->getShop();
             // Shopware throws an exception if service does not exist.
             // This would be the case when using Shopware API or cli
-            $shop = $order->getShop();
+        } catch (\Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+            return;
         }
         if ($shop === null) {
             return;
@@ -96,7 +99,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $orderConfirmation->send($model, $customerId);
                 } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
-                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
+                    Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
+                        sprintf("Nosto order update upsert failed. Message was: %s",
+                            $e->getMessage()
+                        )
+                    );
                 }
             }
         }
