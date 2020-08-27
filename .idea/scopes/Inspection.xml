@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Inspection" pattern="(file[Shopware]:Components//*||file[Shopware]:Controllers//*||file[Shopware]:Models//*||file[Shopware]:Views//*)&amp;&amp;!file[Shopware]:vendor/bin//*" />
+  <scope name="Inspection" pattern="file[Shopware]:Components//*||file[Shopware]:Controllers//*||file[Shopware]:Models//*||file[Shopware]:Views//*" />
 </component>
