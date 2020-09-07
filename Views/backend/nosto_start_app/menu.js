@@ -43,9 +43,9 @@ Ext.define('Shopware.apps.NostoStartApp.Menu', {
    */
   afterRender: function () {
     //noinspection JSCheckFunctionSignatures
-    const me = this,
-      //noinspection JSUnresolvedFunction
-      result = me.callParent(arguments);
+    const me = this;
+    //noinspection JSUnresolvedFunction
+    const result = me.callParent(arguments);
 
     if (location.href.search("openNosto") !== -1) {
       //noinspection JSUnresolvedFunction,JSUnresolvedVariable

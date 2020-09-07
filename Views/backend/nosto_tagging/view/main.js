@@ -120,9 +120,9 @@ Ext.define('Shopware.apps.NostoTagging.view.Main', {
    * @return Shopware.apps.NostoTagging.model.Account
    */
   getActiveAccount: function () {
-    const me = this,
-      //noinspection JSUnresolvedFunction
-      activeTab = me.tabPanel.getActiveTab();
+    const me = this;
+    //noinspection JSUnresolvedFunction
+    const activeTab = me.tabPanel.getActiveTab();
     let activeAccount = null;
 
     //noinspection JSUnresolvedFunction

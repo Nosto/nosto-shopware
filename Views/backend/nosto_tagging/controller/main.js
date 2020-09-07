@@ -67,6 +67,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
    */
   showWindow: function () {
     const me = this;
+    //noinspection JSUnresolvedFunction
     me.accountStore = me.getStore('Account');
     //noinspection JSUnresolvedFunction
     me.mainWindow = me.getView('Main').create({
@@ -155,6 +156,7 @@ Ext.define('Shopware.apps.NostoTagging.controller.Main', {
     }
     //noinspection JSUnresolvedVariable
     json = ('' + event.data).substr(7);
+    //noinspection JSUnresolvedVariable
     data = Ext.decode(json);
     if (typeof data === 'object' && data.type) {
       account = me.mainWindow.getActiveAccount();

@@ -55,7 +55,6 @@ use Shopware\Models\Attribute\Order as OrderAttribute;
 use Shopware\CustomModels\Nosto\Setting\Setting;
 use Nosto\Object\Signup\Account as NostoAccount;
 use phpseclib\Crypt\Random as NostoCryptRandom;
-use Doctrine\ORM\TransactionRequiredException;
 use Shopware\Components\Model\ModelManager;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
@@ -965,9 +964,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
      * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws TransactionRequiredException
-     * @throws Enlight_Event_Exception
      * @noinspection PhpUnused
      */
     public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
@@ -1044,8 +1040,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @throws Enlight_Event_Exception
      * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws TransactionRequiredException
      * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
      * @return NostoCustomerModel|null
      */
@@ -1098,6 +1092,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     /**
      * Adds the hcid tagging for cart and customer.
      *
+     * @param Enlight_View_Default $view
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontend
      */
     protected function addHcidTagging(Enlight_View_Default $view)
@@ -1192,7 +1187,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
      * @throws OptimisticLockException
      * @throws ORMException
-     * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
      * @noinspection PhpUnused
      */
@@ -1221,7 +1215,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @throws OptimisticLockException
      * @throws NonUniqueResultException
      * @throws ORMException
-     * @throws TransactionRequiredException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendDetail
      */
     protected function addProductTagging(Enlight_View_Default $view)
@@ -1257,8 +1250,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @param Enlight_Controller_ActionEventArgs $args the event arguments.
      * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws TransactionRequiredException
      * @throws Enlight_Event_Exception
      * @noinspection PhpUnused
      */
@@ -1286,8 +1277,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @throws Enlight_Event_Exception
      * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws TransactionRequiredException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendListing
      */
     protected function addCategoryTagging(Enlight_View_Default $view)
