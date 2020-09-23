@@ -80,15 +80,18 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
         $settingsCustomFields = array();
         // Add variant configuration group options into custom attributes
         try {
-            $configurator = $detail->getConfiguratorOptions()->getValues();
-            foreach ($configurator as $config) {
-                /** @var Option $config */
-                if (!$config instanceof Option
-                    || $config->getGroup() === null
-                ) {
-                    continue;
+            $configuratorOptions = $detail->getConfiguratorOptions();
+            if ($configuratorOptions !== null) {
+                $configurator = $configuratorOptions->getValues();
+                foreach ($configurator as $config) {
+                    /** @var Option $config */
+                    if (!$config instanceof Option
+                        || $config->getGroup() === null
+                    ) {
+                        continue;
+                    }
+                    $settingsCustomFields[$config->getGroup()->getName()] = $config->getName();
                 }
-                $settingsCustomFields[$config->getGroup()->getName()] = $config->getName();
             }
         } catch (\Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
