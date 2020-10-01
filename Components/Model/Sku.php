@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,18 +31,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
-use Shopware\Models\Article\Detail;
 use Nosto\Object\Product\Sku as NostoSku;
+use Shopware\Models\Article\Detail;
 use Shopware\Models\Shop\Shop;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as Image;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields as CustomFieldsHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Image as Image;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price as PriceHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Sku

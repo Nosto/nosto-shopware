@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,22 +31,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
-use Nosto\Nosto;
-use Nosto\Helper\OAuthHelper as NostoOAuthClient;
-use Shopware\Models\Shop\Shop;
-use Shopware\CustomModels\Nosto\Account\Account;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
-use Shopware\Models\Shop\Repository;
-use Doctrine\ORM\TransactionRequiredException;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\TransactionRequiredException;
+use Nosto\Helper\OAuthHelper as NostoOAuthClient;
+use Nosto\Nosto;
+use Shopware\CustomModels\Nosto\Account\Account;
+use Shopware\Models\Shop\Repository;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
 
 /**
  * Main backend controller. Handles account create/connect/delete requests
@@ -55,6 +56,7 @@ use Doctrine\ORM\AbstractQuery;
  *
  * @package Shopware
  * @subpackage Controllers_Backend
+ * @noinspection PhpUnused
  */
 class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Backend_ExtJs
 {
@@ -64,6 +66,8 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * Loads the Nosto ExtJS sub-application for configuring Nosto for the shops.
      * Default action.
      * @noinspection PhpMissingParentCallCommonInspection
+     * @noinspection PhpUnused
+     * @noinspection NullPointerExceptionInspection
      */
     public function indexAction()
     {
@@ -75,6 +79,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      *
      * This action should only be accessed by the Main controller in the client
      * side application.
+     * @noinspection PhpUnused
      */
     public function loadSettingsAction()
     {
@@ -112,6 +117,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * @throws ORMInvalidArgumentException
      * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function getAccountsAction()
     {
@@ -146,11 +152,19 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             if ($shop instanceof Shop === false) {
                 continue;
             }
-            /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap()); /** @phan-suppress-current-line PhanParamTooMany */
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                /** @phan-suppress-next-line PhanParamTooMany PhanTypeMismatchArgument */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
+            }
             $account = NostoComponentAccount::findAccount($shop);
             if (isset($oauthParams[$shop->getId()])) {
-                /** @noinspection PhpUndefinedVariableInspection */
                 $params = $oauthParams[$shop->getId()];
             }
             $accountData = array(
@@ -185,6 +199,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * @throws ORMInvalidArgumentException
      * @throws Exception
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function createAccountAction()
     {
@@ -203,8 +218,17 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $identity = Shopware()->Auth()->getIdentity();
 
         if ($shop !== null) {
-            /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
+            }
             /** @noinspection BadExceptionsProcessingInspection */
             try {
                 $account = NostoComponentAccount::createAccount(
@@ -233,7 +257,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
                     'shopId' => $shop->getId(),
                     'shopName' => $shop->getName()
                 );
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             }
@@ -254,6 +278,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * @throws ORMInvalidArgumentException
      * @throws OptimisticLockException
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function deleteAccountAction()
     {
@@ -261,7 +286,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $data = array();
         $accountId = $this->Request()->getParam('id', null);
         $shopId = $this->Request()->getParam('shopId', null);
-        /** @var \Shopware\CustomModels\Nosto\Account\Account $account */
+        /** @var Account $account */
         $account = Shopware()->Models()->find(
             '\Shopware\CustomModels\Nosto\Account\Account',
             $accountId
@@ -272,8 +297,17 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         /** @noinspection PhpUndefinedMethodInspection */
         $identity = Shopware()->Auth()->getIdentity();
         if ($account !== null && $shop !== null) {
-            /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
+            }
             NostoComponentAccount::removeAccount($account, $identity);
             $success = true;
             $data = array(
@@ -303,6 +337,7 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      * side application.
      * @throws Exception
      * @suppress PhanDeprecatedFunction
+     * @noinspection PhpUnused
      */
     public function connectAccountAction()
     {
@@ -316,8 +351,17 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $locale = Shopware()->Auth()->getIdentity()->locale;
 
         if ($shop !== null) {
-            /** @noinspection PhpDeprecationInspection */
-            $shop->registerResources(Shopware()->Bootstrap());
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
+                $shop->registerResources(Shopware()->Bootstrap());
+            } else {
+                /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
+                $shop->registerResources();
+            }
             $meta = new MetaOauth();
             $meta->loadData($shop, $locale);
             $success = true;

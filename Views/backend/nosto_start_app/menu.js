@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,29 +29,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 //{block name="backend/index/view/menu" append}
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoStartApp.Menu', {
-    override: 'Shopware.apps.Index.view.Menu',
+  override: 'Shopware.apps.Index.view.Menu',
 
-    /**
-     * @Override
-     */
-    afterRender: function () {
-        var me = this,
-            result = me.callParent(arguments);
+  /**
+   * @Override
+   */
+  afterRender: function () {
+    //noinspection JSCheckFunctionSignatures
+    const me = this;
+    //noinspection JSUnresolvedFunction
+    const result = me.callParent(arguments);
 
-        if (location.href.search("openNosto") !== -1) {
-            Shopware.app.Application.addSubApplication({
-                name: 'Shopware.apps.NostoTagging'
-            });
-        }
-
-        return result;
+    if (location.href.search("openNosto") !== -1) {
+      //noinspection JSUnresolvedFunction,JSUnresolvedVariable
+      Shopware.app.Application.addSubApplication({
+        //noinspection JSUnresolvedVariable
+        name: 'Shopware.apps.NostoTagging'
+      });
     }
+
+    return result;
+  }
 });
 //{/block}

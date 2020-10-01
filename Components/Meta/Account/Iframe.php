@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +31,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
-use Shopware\Models\Shop\Shop;
-use Shopware\Models\Shop\Locale;
 use Nosto\Object\Iframe as Iframe;
+use Shopware\Models\Shop\Locale;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
 
 /**
  * Meta-data class for information included in the plugin configuration iframe.
@@ -65,7 +66,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
         if ($locale === null) {
             $locale = $shop->getLocale();
         }
-        /** @noinspection PhpUndefinedMethodInspection */
         if ($identity !== null) {
             list($firstName, $lastName) = explode(' ', $identity->name);
             $this->setFirstName($firstName);
@@ -81,7 +81,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
         $this->setPreviewUrlSearch(NostoComponentUrl::getSearchPagePreviewUrl($shop));
         $this->setPreviewUrlCart(NostoComponentUrl::getCartPagePreviewUrl($shop));
         $this->setPreviewUrlFront(NostoComponentUrl::getFrontPagePreviewUrl($shop));
-        /** @noinspection PhpDeprecationInspection */
         $this->setShopName(Shopware()->App() . ' - ' . $shop->getName());
         $this->setPlatform(NostoTaggingBootstrap::PLATFORM_NAME);
     }

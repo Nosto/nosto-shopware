@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +31,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
+
 
 use Nosto\Object\Cart\Cart;
 use Shopware\Models\Order\Basket;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem as CartLineItem;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem as CartLineItem;
 
 /**
  * Model for shopping cart information. This is used when compiling the info

@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +31,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
 use Nosto\Object\Order\Buyer as NostoOrderBuyer;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
-use Shopware\Models\Customer\Customer;
-use Shopware\Models\Customer\Address;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware\Models\Country\Country;
-use /** @noinspection PhpDeprecationInspection */ Shopware\Models\Customer\Billing;
+use Shopware\Models\Customer\Address;
+use Shopware\Models\Customer\Billing;
+use Shopware\Models\Customer\Customer;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
 
 /**
  * Model for order buyer information. This is used when compiling the info about
@@ -61,7 +62,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
      * @throws Enlight_Event_Exception
      * @suppress PhanUndeclaredClassInstanceof
      * @suppress PhanUndeclaredClassMethod
-
      */
     public function loadData(Customer $customer)
     {
@@ -86,9 +86,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
             } else {
                 /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
                 /** @var Billing $address */
-                /** @noinspection PhpDeprecationInspection */
-                $address = $customer->getBilling(); /** @phan-suppress-current-line PhanUndeclaredMethod */
-                /** @noinspection PhpDeprecationInspection */
+                /** @phan-suppress-next-line PhanUndeclaredMethod */
+                $address = $customer->getBilling();
                 if ($address instanceof Billing) {
                     $this->setFirstName($address->getFirstName());
                     $this->setLastName($address->getLastName());
@@ -101,7 +100,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                             ->getRepository('\Shopware\Models\Country\Country')
                             ->findOneBy(array('id' => $address->getCountryId()));
                         $this->setCountry($country->getName());
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         /** @noinspection PhpUndefinedMethodInspection */
                         Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                     }

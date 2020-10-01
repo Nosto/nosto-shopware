@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,121 +29,128 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoTagging.view.Main', {
-    /**
-     * Extends the Enlight application window.
-     * @string
-     */
-    extend: 'Enlight.app.Window',
+  /**
+   * Extends the Enlight application window.
+   * @string
+   */
+  extend: 'Enlight.app.Window',
 
-    /**
-     * Window title.
-     * @string
-     */
-    title: 'Nosto',
+  /**
+   * Window title.
+   * @string
+   */
+  title: 'Nosto',
 
-    /**
-     * Window layout.
-     * @string
-     */
-    layout: 'fit',
+  /**
+   * Window layout.
+   * @string
+   */
+  layout: 'fit',
 
-    /**
-     * Window width.
-     * @integer
-     */
-    width: "70%",
+  /**
+   * Window width.
+   * @integer
+   */
+  width: "70%",
 
-    /**
-     * Window height.
-     * @integer
-     */
-    height: "90%",
+  /**
+   * Window height.
+   * @integer
+   */
+  height: "90%",
 
-    /**
-     * Initializes the component.
-     *
-     * @public
-     * @return void
-     */
-    initComponent: function () {
-        var me = this;
-        me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
-            layout: 'fit',
-            items: []
-        });
-        me.callParent(arguments);
-    },
+  /**
+   * Initializes the component.
+   *
+   * @public
+   * @return void
+   */
+  initComponent: function () {
+    const me = this;
+    //noinspection JSUnresolvedVariable
+    me.items = me.tabPanel = Ext.create('Ext.tab.Panel', {
+      layout: 'fit',
+      items: []
+    });
+    //noinspection JSUnresolvedFunction,JSCheckFunctionSignatures
+    me.callParent(arguments);
+  },
 
-    /**
-     * Creates tabs for each account in the account store
-     * and adds them to the tab panel.
-     *
-     * @public
-     * @return void
-     */
-    initAccountTabs: function () {
-        var me = this,
-            i = 0,
-            tab;
+  /**
+   * Creates tabs for each account in the account store
+   * and adds them to the tab panel.
+   *
+   * @public
+   * @return void
+   */
+  initAccountTabs: function () {
+    const me = this;
+    let i = 0,
+      tab;
+    //noinspection JSUnresolvedFunction
+    me.accountStore.each(function (account) {
+      //noinspection JSUnresolvedExtXType
+      tab = me.tabPanel.add({
+        title: account.get('shopName'),
+        xtype: 'component',
+        autoEl: {
+          'tag': 'iframe',
+          'data-shopId': account.get('shopId'),
+          'src': account.get('url')
+        },
+        shopId: account.get('shopId')
+      });
+      if (++i === 1) {
+        //noinspection JSUnresolvedFunction
+        me.tabPanel.setActiveTab(tab);
+      }
+    });
+  },
 
-        me.accountStore.each(function (account) {
-            // noinspection JSUnresolvedExtXType
-            tab = me.tabPanel.add({
-                title: account.get('shopName'),
-                xtype: 'component',
-                autoEl: {
-                    'tag': 'iframe',
-                    'data-shopId': account.get('shopId'),
-                    'src': account.get('url')
-                },
-                shopId: account.get('shopId')
-            });
-            if (++i === 1) {
-                me.tabPanel.setActiveTab(tab);
-            }
-        });
-    },
+  /**
+   * Getter for the active account model.
+   *
+   * @public
+   * @return Shopware.apps.NostoTagging.model.Account
+   */
+  getActiveAccount: function () {
+    const me = this;
+    //noinspection JSUnresolvedFunction
+    const activeTab = me.tabPanel.getActiveTab();
+    let activeAccount = null;
 
-    /**
-     * Getter for the active account model.
-     *
-     * @public
-     * @return Shopware.apps.NostoTagging.model.Account
-     */
-    getActiveAccount: function () {
-        var me = this,
-            activeTab = me.tabPanel.getActiveTab(),
-            activeAccount = null;
+    //noinspection JSUnresolvedFunction
+    me.accountStore.each(function (account) {
+      if (account.get('shopId') === activeTab.shopId) {
+        activeAccount = account;
+      }
+    });
+    return activeAccount;
+  },
 
-        me.accountStore.each(function (account) {
-            if (account.get('shopId') === activeTab.shopId) {
-                activeAccount = account;
-            }
-        });
-        return activeAccount;
-    },
+  /**
+   * Reloads the active iframe window with url from account model.
+   *
+   * @public
+   * @param account Shopware.apps.NostoTagging.model.Account
+   */
+  reloadIframe: function (account) {
+    //noinspection JSUnresolvedVariable
+    const me = this;
+    let elements;
 
-    /**
-     * Reloads the active iframe window with url from account model.
-     *
-     * @public
-     * @param account Shopware.apps.NostoTagging.model.Account
-     */
-    reloadIframe: function (account) {
-        var me = this,
-            elements;
-
-        elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
-        if (typeof elements[0] !== 'undefined') {
-            elements[0].src = account.get('url');
-        } else {
-            throw new Error('Nosto: failed to re-load iframe for shop #' + account.get('shopId'));
-        }
+    //noinspection JSCheckFunctionSignatures,JSUnresolvedFunction,JSUnresolvedVariable
+    elements = Ext.query('#' + me.tabPanel.getId() + ' iframe[data-shopId="' + account.get('shopId') + '"]');
+    if (typeof elements[0] !== 'undefined') {
+      elements[0].src = account.get('url');
+    } else {
+      throw new Error('Nosto: failed to re-load iframe for shop #' + account.get('shopId'));
     }
+  }
 });
