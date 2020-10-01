@@ -11,7 +11,7 @@
     "ext-json": "*"
   },
   "require-dev": {
-	"phan/phan": "^2.6",
+    "phan/phan": "^2.6",
     "squizlabs/php_codesniffer": "^3.5",
     "phpmd/phpmd": "^2.6",
     "sebastian/phpcpd": "4.1.0",
@@ -26,5 +26,49 @@
     "psr-4": {
       "Nosto\\": ""
     }
+  },
+  "scripts": {
+    "preparePackage": [
+      "rm -fr NostoTagging",
+      "mkdir NostoTagging",
+      "rsync -avr --exclude='vendor/' * NostoTagging",
+      "composer install -d NostoTagging/ --no-dev"
+    ],
+    "pre-archive-cmd": [
+      "@preparePackage"
+    ]
+  },
+  "archive": {
+    "exclude": [
+      "*.*",
+      "Dockerfile",
+      "LICENSE",
+      "!NostoTagging",
+      "NostoTagging/build.xml",
+      "NostoTagging/vendor/nosto/php-sdk/codeception.yml",
+      "NostoTagging/vendor/nosto/php-sdk/.gitignore",
+      "NostoTagging/vendor/nosto/php-sdk/Gruntfile.js",
+      "NostoTagging/vendor/nosto/php-sdk/package.json",
+      "NostoTagging/vendor/nosto/php-sdk/composer.json",
+      "NostoTagging/vendor/nosto/php-sdk/src/.env.example",
+      "NostoTagging/vendor/nosto/php-sdk/phan.php",
+      "NostoTagging/composer.json",
+      "NostoTagging/composer.lock",
+      "NostoTagging/Dockerfile",
+      "NostoTagging/Jenkinsfile",
+      "NostoTagging/vendor/.github",
+      "NostoTagging/tests/",
+      "NostoTagging/phing/",
+      "NostoTagging/build/",
+      "NostoTagging/.phan/",
+      "NostoTagging/build.xml",
+      "NostoTagging/ruleset.xml",
+      "NostoTagging/Gruntfile",
+      "NostoTagging/codeception",
+      "NostoTagging/package.json",
+      "NostoTagging/phan.php",
+      "NostoTagging/idea.properties",
+      "NostoTagging/NostoTagging"
+    ]
   }
 }
