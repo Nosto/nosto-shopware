@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,13 +31,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Category\Category;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Query\Expr\Join;
+use Shopware\Models\Category\Category;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
@@ -78,7 +79,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Models_Product_Repository
             // Since the path in the database is saved with || between
             // the parents ids, we concatenate those and get all child
             // categories from the given language.
-            ->setParameter('path', '%|'.(int)$category->getId().'|%');
+            ->setParameter('path', '%|' . (int)$category->getId() . '|%');
         if (!empty($id)) {
             $result = $result->andWhere('details.number = :id')
                 ->setParameter('id', $id)

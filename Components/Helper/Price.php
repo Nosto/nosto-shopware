@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,17 +31,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Helper\PriceHelper as NostoPriceHelper;
 use Doctrine\Common\Collections\ArrayCollection;
+use Nosto\Helper\PriceHelper as NostoPriceHelper;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
-use Shopware\Models\Shop\Shop;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Customer\Group;
+use Shopware\Models\Shop\Shop;
 use Shopware\Models\Tax\Tax;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 
@@ -186,7 +187,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             if ($taxRulesApplied === false) {
                 $articleTax = $tax->getTax();
                 if ($articleTax > 0) {
-                    $priceAfterTaxes= $priceWithoutTax * (1 + ($articleTax / 100));
+                    $priceAfterTaxes = $priceWithoutTax * (1 + ($articleTax / 100));
                 }
             }
         }
@@ -313,7 +314,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $discounts = $detail->getArticle()->getPriceGroup()->getDiscounts();
             return self::getProductPriceRateAfterDiscount($discounts, $shop);
         }
-        /** @var Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
         return (1 - $customerGroup->getDiscount() / 100);
     }
@@ -331,7 +331,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
             $discounts = $article->getPriceGroup()->getDiscounts();
             return self::getProductPriceRateAfterDiscount($discounts, $shop);
         }
-        /** @var Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
         return (1 - $customerGroup->getDiscount() / 100);
     }
@@ -346,7 +345,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
     private static function getProductPriceRateAfterDiscount($discounts, Shop $shop)
     {
         // Get the customer group discount
-        /** @var Group $customerGroup */
         $customerGroup = $shop->getCustomerGroup();
         $priceRate = 1 - $customerGroup->getDiscount() / 100;
         // Handle the price group
@@ -371,6 +369,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @return string
      * @suppress PhanUndeclaredMethod
      * @deprecated
+     * @noinspection PhpUnused
      */
     public static function format($price)
     {

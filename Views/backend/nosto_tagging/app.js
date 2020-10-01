@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,23 +29,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2016 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoTagging', {
-    extend: 'Enlight.app.SubApplication',
-    name: 'Shopware.apps.NostoTagging',
-    bulkLoad: true,
-    loadPath: '{url action=load}',
-    controllers: ['Main'],
-    stores: ['Account'],
-    models: ['Account'],
-    views: ['Main'],
-    launch: function () {
-        var me = this,
-            ctrl = me.getController('Main');
-        return ctrl.mainWindow;
-    }
+  extend: 'Enlight.app.SubApplication',
+  name: 'Shopware.apps.NostoTagging',
+  bulkLoad: true,
+  loadPath: '{url action=load}',
+  controllers: ['Main'],
+  stores: ['Account'],
+  models: ['Account'],
+  views: ['Main'],
+  launch: function () {
+    const me = this;
+    //noinspection JSUnresolvedFunction
+    const ctrl = me.getController('Main');
+    return ctrl.mainWindow;
+  }
 });

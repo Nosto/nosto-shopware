@@ -1,6 +1,7 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
- * Copyright (c) 2019, Nosto Solutions Ltd
+ * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,15 +31,16 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @author Nosto Solutions Ltd <shopware@nosto.com>
- * @copyright Copyright (c) 2019 Nosto Solutions Ltd (http://www.nosto.com)
+ * @copyright Copyright (c) 2020 Nosto Solutions Ltd (http://www.nosto.com)
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoCustomerComponent;
-use Shopware\CustomModels\Nosto\Customer\Customer as CustomerModel;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoHelperUrl;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Shopware\CustomModels\Nosto\Customer\Customer as CustomerModel;
 use Shopware\Models\Order\Basket;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoCustomerComponent;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoHelperUrl;
 
 /**
  *
@@ -78,6 +80,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
      *
      * @return null|string
      * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function generateRestoreToCartLink()
     {
@@ -134,7 +137,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
                 Shopware()->Models()->flush($basketItem);
             }
             $this->updateNostoCustomerCartHash($sessionId, $newSessionId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             return false;
@@ -148,6 +151,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
      * @param $sessionId
      * @param $newSessionId
      * @throws OptimisticLockException
+     * @throws ORMException
      */
     private function updateNostoCustomerCartHash($sessionId, $newSessionId)
     {
@@ -171,6 +175,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
      *
      * @return null|object|CustomerModel
      * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function updateNostoId()
     {
@@ -194,7 +199,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
                 $nostoCustomer->setSessionId($this->getSessionId());
                 $nostoCustomer->setNostoId($nostoCustomerId);
                 $nostoCustomer->setRestoreCartHash($this->generateRestoreCartHash());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
             }
