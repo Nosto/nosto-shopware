@@ -76,8 +76,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * @suppress PhanDeprecatedFunction
      * @throws OptimisticLockException
      * @throws ORMException
-     * @throws ORMException
-     * @throws ORMException
      */
     public static function persistSession()
     {
