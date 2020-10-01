@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ALL */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.

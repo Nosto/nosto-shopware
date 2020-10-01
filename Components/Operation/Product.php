@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,16 +35,16 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Nosto\NostoException;
 use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
 use Shopware\Models\Article\Article;
-use Shopware\Models\Shop\Shop;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
-use Shopware\Models\Shop\Repository;
 use Shopware\Models\Category\Category;
-use Nosto\NostoException;
+use Shopware\Models\Shop\Repository;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
 
 /**
  * Product operation component. Used for communicating create/update/delete
@@ -76,6 +77,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      * @param Article $article the article model.
      * @param boolean $allStores if true Nosto accounts from all stores will be returned
      * @return NostoAccount[] the accounts mapped in the shop IDs.
+     * @throws NostoException
+     * @throws NostoException
      */
     protected function getAccounts(Article $article, $allStores = false)
     {
@@ -140,10 +143,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
             }
             /** @noinspection PhpUndefinedMethodInspection */
             if (Shopware()->Plugins()->Frontend()->NostoTagging()->getShopwareVersion() < "5.6") {
+                /** @noinspection PhpDeprecationInspection */
+                /** @noinspection PhpMethodParametersCountMismatchInspection */
                 /** @phan-suppress-next-line PhanParamTooMany hanTypeMismatchArgument */
                 $shop->registerResources(Shopware()->Bootstrap());
             } else {
                 /** @phan-suppress-next-line PhanTypeMismatchArgument */
+                /** @noinspection PhpDeprecationInspection */
                 $shop->registerResources();
             }
             $model = new Product();
@@ -153,7 +159,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                     $op = new UpsertProduct($account);
                     $op->addProduct($model);
                     $op->upsert();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }
@@ -178,7 +184,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
                 $op->setProductIds($products);
                 try {
                     $op->delete();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
                 }

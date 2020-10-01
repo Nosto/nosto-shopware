@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection PhpUnused */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,13 +34,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner as NostoAccountOwner;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
-use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Object\Signup\Billing;
 use Nosto\Object\Signup\Signup;
-use Shopware\Models\Shop\Shop;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Shop\Locale;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Owner as NostoAccountOwner;
 
 /**
  * Meta-data class for account information sent to Nosto during account create.
@@ -118,7 +118,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
         if ($locale === null) {
             $locale = $shop->getLocale();
         }
-        /** @noinspection PhpDeprecationInspection */
         $this->title = Shopware()->App() . ' - ' . $shop->getName();
         /** @noinspection RandomApiMigrationInspection */
         $this->name = substr(sha1(rand()), 0, 8);
@@ -346,6 +345,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
 
     /**
      * @return boolean
+     * @noinspection PhpUnused
      */
     public function getUseCurrencyExchangeRates()
     {
@@ -354,6 +354,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account
 
     /**
      * @return string
+     * @noinspection PhpUnused
      */
     public function getDefaultVariationId()
     {

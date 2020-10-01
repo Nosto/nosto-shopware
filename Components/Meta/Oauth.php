@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnused PhpIllegalPsrClassPathInspection */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,12 +34,12 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Types\OAuthInterface as NostoOAuthClientMetaDataInterface;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
-use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Nosto\Request\Api\Token as NostoApiToken;
-use Shopware\Models\Shop\Shop;
+use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
+use Nosto\Types\OAuthInterface as NostoOAuthClientMetaDataInterface;
 use Shopware\Models\Shop\Locale;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 
 /**
  * Meta-data class for handling OAuth 2 requests during account connect.

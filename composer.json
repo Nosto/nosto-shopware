@@ -11,7 +11,6 @@
     "ext-json": "*"
   },
   "require-dev": {
-    "php": ">=7.2.0",
     "phan/phan": "^2.6",
     "squizlabs/php_codesniffer": "^3.5",
     "phpmd/phpmd": "^2.6",
@@ -27,5 +26,46 @@
     "psr-4": {
       "Nosto\\": ""
     }
+  },
+  "scripts": {
+    "preparePackageFiles": [
+      "rm -fr tmpPackageSources",
+      "mkdir tmpPackageSources",
+      "rsync -avr --exclude='vendor/' --exclude='build/' --exclude='tmpPackageSources' --exclude='*.zip' * tmpPackageSources",
+      "composer install -d tmpPackageSources/ --no-dev",
+      "@removeRedundantPackageFiles"
+    ],
+    "removeRedundantPackageFiles": [
+      "rm tmpPackageSources/composer.json",
+      "rm tmpPackageSources/composer.lock",
+      "rm tmpPackageSources/build.xml",
+      "rm tmpPackageSources/Dockerfile",
+      "rm tmpPackageSources/LICENSE",
+      "rm tmpPackageSources/phan.php",
+      "rm tmpPackageSources/ruleset.xml",
+      "rm tmpPackageSources/Shopware.iml",
+      "rm tmpPackageSources/idea.properties",
+      "rm tmpPackageSources/vendor/nosto/php-sdk/composer.json",
+      "rm tmpPackageSources/vendor/nosto/php-sdk/composer.lock",
+      "rm tmpPackageSources/vendor/nosto/php-sdk/build.xml",
+      "rm tmpPackageSources/vendor/nosto/php-sdk/Dockerfile",
+      "rm tmpPackageSources/vendor/nosto/php-sdk/Jenkinsfile",
+      "rm tmpPackageSources/vendor/nosto/php-sdk/phan.php"
+    ],
+    "archivePackageFiles": [
+      "rm -fr Frontend",
+      "mkdir Frontend",
+      "mv tmpPackageSources Frontend/",
+      "mv Frontend/tmpPackageSources Frontend/NostoTagging",
+      "zip -r NostoTagging-X.Y.Z.zip Frontend"
+    ],
+    "cleanupPackageFiles": [
+      "rm -fr Frontend"
+    ],
+    "build-package": [
+      "@preparePackageFiles",
+      "@archivePackageFiles",
+      "@cleanupPackageFiles"
+    ]
   }
 }

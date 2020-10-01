@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUnusedAliasInspection */
+/** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -94,6 +95,7 @@ class Customer extends ModelEntity
 
     /**
      * @return int
+     * @noinspection PhpUnused
      */
     public function getId()
     {

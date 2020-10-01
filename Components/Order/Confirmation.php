@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,11 +35,12 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Nosto\NostoException;
 use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
 use Shopware\Models\Attribute\Order as OrderAttribute;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Shopware\Models\Order\Order as OrderModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
@@ -54,6 +56,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
      *
      * @param OrderModel $order the order model.
      *
+     * @throws NostoException
+     * @throws NostoException
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostUpdateOrder
      * @suppress PhanUndeclaredMethod
      */
@@ -65,7 +69,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
             $shop = $order->getShop();
             // Shopware throws an exception if service does not exist.
             // This would be the case when using Shopware API or cli
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             return;
@@ -93,7 +97,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $model->loadData($order);
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($model, $customerId);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
                         sprintf("Nosto order update upsert failed. Message was: %s",

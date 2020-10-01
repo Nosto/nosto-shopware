@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,12 +35,13 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Nosto\NostoException;
+use Nosto\Object\Signup\Account;
+use Nosto\Operation\SyncRates;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_ExchangeRates as ExchangeRatesHelper;
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
-use Nosto\Object\Signup\Account;
-use Shopware\Models\Shop\Shop;
-use Nosto\Operation\SyncRates;
 
 /**
  * Exchange Rates operation component. Used for updating exchange rates to Nosto
@@ -63,10 +65,10 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
         $collection = $ratesHelper->buildExchangeRatesCollection($shop);
         try {
             return $currencyService->update($collection);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
-                'Failed to update exchange rates: '.
+                'Failed to update exchange rates: ' .
                 $e->getMessage()
             );
             return false;
@@ -78,6 +80,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_ExchangeRates
      * has multi currency enabled
      *
      * @return bool
+     * @throws NostoException
+     * @throws NostoException
      */
     public function updateExchangeRates()
     {

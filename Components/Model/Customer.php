@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,17 +35,17 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
-use Nosto\Object\Customer;
-use Nosto\NostoException;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
-use Shopware\Models\Customer\Address;
-use Shopware\Models\Attribute\Customer as CustomerAttribute;
-use Shopware\Models\Customer\Customer as CustomerModel;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Nosto\NostoException;
+use Nosto\Object\Customer;
+use Shopware\Models\Attribute\Customer as CustomerAttribute;
+use Shopware\Models\Customer\Address;
+use Shopware\Models\Customer\Customer as CustomerModel;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Email as EmailHelper;
 
 /**
  * Model for customer information. This is used when compiling the info about
@@ -102,11 +103,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      *
      * @param CustomerModel $customer
      *
-     * @throws NostoException if customer reference cannot be fetched or created
+     * @return void
      * @throws ORMInvalidArgumentException
      * @throws OptimisticLockException
      * @throws ORMException
-     * @return void
+     * @throws NostoException if customer reference cannot be fetched or created
      */
     public function populateCustomerReference(CustomerModel $customer)
     {

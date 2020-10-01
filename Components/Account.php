@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpUnusedAliasInspection */
+/** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,21 +36,22 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
-use Nosto\Object\Signup\Account as NostoAccount;
-use Nosto\Request\Api\Token as NostoApiToken;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Nosto\Helper\IframeHelper;
 use Nosto\NostoException;
+use Nosto\Object\Signup\Account as NostoAccount;
 use Nosto\Operation\AccountSignup;
 use Nosto\Operation\UninstallAccount;
-use Shopware\Models\Shop\Shop;
-use Shopware\Models\Shop\Locale;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account as MetaAccount;
+use Nosto\Request\Api\Token as NostoApiToken;
 use Shopware\CustomModels\Nosto\Account\Account as AccountCustomModel;
+use Shopware\Models\Shop\Locale;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account as MetaAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe as Iframe;
 use Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder as UserBuilder;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
  * Account component. Used as a helper to manage Nosto account inside Shopware.
@@ -56,6 +59,7 @@ use Doctrine\ORM\ORMInvalidArgumentException;
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
+/** @phan-file-suppress PhanUnreferencedUseNormal */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Account
 {
     /**
@@ -100,7 +104,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
         }
         $operation = new AccountSignup($meta);
         $nostoAccount = $operation->create();
-        /** @noinspection PhpParamsInspection */
         return self::convertToShopwareAccount($nostoAccount, $shop);
     }
 
@@ -146,8 +149,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * @param AccountCustomModel $account the account to remove.
      * @param $identity
+     * @throws NostoException
      * @throws OptimisticLockException
-     * @throws ORMInvalidArgumentException
+     * @throws ORMException
      */
     public static function removeAccount(AccountCustomModel $account, $identity)
     {
@@ -159,7 +163,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
             $operation = new UninstallAccount($nostoAccount);
             $user = new UserBuilder();
             $operation->delete($user->build($identity));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
         }
@@ -170,6 +174,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * @param AccountCustomModel $account the account model.
      * @return NostoAccount the nosto account.
+     * @throws NostoException
      */
     public static function convertToNostoAccount(AccountCustomModel $account)
     {
@@ -193,6 +198,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      *
      * @param Shop $shop the shop to check the account for.
      * @return bool true if account exists and is connected to Nosto, false otherwise.
+     * @throws NostoException
      */
     public static function accountExistsAndIsConnected(Shop $shop)
     {
@@ -213,14 +219,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
      * @param AccountCustomModel|null $account the account to get the url
      * @param stdClass|null $identity (optional) user identity.
      * @param array $params (optional) parameters for the url.
-     * @suppress PhanUndeclaredMethod
      * @return string the url.
+     * @throws NostoException
+     * @suppress PhanUndeclaredMethod
      */
     public static function buildAccountIframeUrl(
         Shop $shop,
         Locale $locale = null,
-        AccountCustomModel
-        $account = null,
+        AccountCustomModel $account = null,
         $identity = null,
         array $params = array()
     ) {

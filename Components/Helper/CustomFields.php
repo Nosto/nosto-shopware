@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,9 +35,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Article\Detail;
 use Nosto\Helper\SerializationHelper;
 use Shopware\Models\Article\Configurator\Option;
+use Shopware\Models\Article\Detail;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
@@ -90,7 +91,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
                 }
                 $settingsCustomFields[$config->getGroup()->getName()] = $config->getName();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->warning($e->getMessage());
         }
@@ -115,7 +116,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
      */
     public static function getFreeTextCustomFields(Detail $detail)
     {
-        /** @var Detail $detail */
         $propertiesAndValues = SerializationHelper::getProperties(
             $detail->getAttribute()
         );

@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -62,8 +63,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status exten
         if (method_exists($status, 'getName')) {
             $description = $status->getName();
         } else {
-            /** @noinspection PhpDeprecationInspection */
-            $description = $status->getDescription(); /** @phan-suppress-current-line PhanUndeclaredMethod */
+            /** @noinspection PhpUndefinedMethodInspection */
+            /** @phan-suppress-next-line PhanUndeclaredMethod */
+            $description = $status->getDescription();
         }
         $this->setCode($this->convertDescriptionToCode($description));
         $this->setLabel($description);

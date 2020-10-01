@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,8 +35,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\Models\Category\Category;
 use Nosto\Object\Category as NostoCategory;
+use Shopware\Models\Category\Category;
 
 /**
  * Model for product category information. This is used when compiling the info
@@ -48,10 +49,6 @@ use Nosto\Object\Category as NostoCategory;
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
 {
-    /**
-     * @var string the full category path with categories separated by a `/` sign.
-     */
-    protected $categoryPath;
 
     /**
      * Loads the category data from a category model.

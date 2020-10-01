@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpUnusedAliasInspection */
+/** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,8 +36,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware\CustomModels\Nosto\Customer\Customer;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Shopware\CustomModels\Nosto\Customer\Customer;
 
 /**
  * Customer component. Used as a helper to manage the Nosto user session inside
@@ -44,6 +48,7 @@ use Doctrine\ORM\OptimisticLockException;
  * @package Shopware
  * @subpackage Plugins_Frontend
  */
+/** @phan-file-suppress PhanUnreferencedUseNormal */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
 {
     /**
@@ -70,6 +75,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      * belonged to.
      * @suppress PhanDeprecatedFunction
      * @throws OptimisticLockException
+     * @throws ORMException
      */
     public static function persistSession()
     {

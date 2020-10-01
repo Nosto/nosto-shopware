@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,9 +35,9 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\ORM\AbstractQuery;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Shop\Shop;
-use Doctrine\ORM\AbstractQuery;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
 
 /**
@@ -62,7 +63,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
             ->setFirstResult(0)
             ->setMaxResults(1)
             ->getQuery()
-            ->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
         if (empty($result)) {
             return null;
         }
@@ -183,6 +184,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Url
     /**
      * Generates a unique URL to restore cart contents
      *
+     * @param Shop $shop
      * @param $hash
      * @return string
      */

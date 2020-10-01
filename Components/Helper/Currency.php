@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,10 +35,11 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
-use Shopware\Models\Shop\Shop;
-use Shopware\Models\Shop\Currency;
+use Doctrine\Common\Collections\ArrayCollection;
 use Nosto\Object\Format;
+use Shopware\Models\Shop\Currency;
+use Shopware\Models\Shop\Shop;
+use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 
 /**
  * Helper class for Currency
@@ -59,7 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
      * If it's a sub shop, returns the parent's currencies
      *
      * @param Shop $shop
-     * @return \Doctrine\Common\Collections\ArrayCollection|Currency[]
+     * @return ArrayCollection|Currency[]
      */
     public static function getCurrencies(Shop $shop)
     {
@@ -163,7 +165,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         return Shopware()->Shop()->getCurrency()->getCurrency();
     }
-    
+
     /**
      * @param Currency $currency
      * @return bool|null
@@ -172,7 +174,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency
     {
         switch ($currency->getSymbolPosition()) {
             case self::CURRENCY_SYMBOL_LEFT:
-            // Shopware's default is before the amount
+                // Shopware's default is before the amount
             case self::CURRENCY_SYMBOL_DEFAULT:
                 return true;
             case self::CURRENCY_SYMBOL_RIGHT:

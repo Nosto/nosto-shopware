@@ -33,19 +33,20 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoTagging', {
-    extend: 'Enlight.app.SubApplication',
-    name: 'Shopware.apps.NostoTagging',
-    bulkLoad: true,
-    loadPath: '{url action=load}',
-    controllers: ['Main'],
-    stores: ['Account'],
-    models: ['Account'],
-    views: ['Main'],
-    launch: function () {
-        var me = this,
-            ctrl = me.getController('Main');
-        return ctrl.mainWindow;
-    }
+  extend: 'Enlight.app.SubApplication',
+  name: 'Shopware.apps.NostoTagging',
+  bulkLoad: true,
+  loadPath: '{url action=load}',
+  controllers: ['Main'],
+  stores: ['Account'],
+  models: ['Account'],
+  views: ['Main'],
+  launch: function () {
+    const me = this;
+    //noinspection JSUnresolvedFunction
+    const ctrl = me.getController('Main');
+    return ctrl.mainWindow;
+  }
 });

@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -35,12 +36,11 @@
  */
 
 use Nosto\Object\Order\Order as NostoOrder;
+use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Order;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem as OrderLineItem;
-use Nosto\NostoException;
-use Shopware\Models\Order\Detail;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Status as OrderStatus;
 
 /**
  * Model for order information. This is used when compiling the info about an
@@ -62,7 +62,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
      *
      * @param Order $order the order model.
      * @throws Enlight_Event_Exception
-     * @throws NostoException
      */
     public function loadData(Order $order)
     {

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -39,6 +39,7 @@
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
+ * @noinspection PhpUnused
  */
 abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
 {
@@ -50,6 +51,8 @@ abstract class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Base
      * @param string $name the property name.
      * @return mixed the property value.
      * @throws Exception if public getter does not exist.
+     * @noinspection PhpUnused
+     * @noinspection MagicMethodsValidityInspection
      */
     public function __get($name)
     {

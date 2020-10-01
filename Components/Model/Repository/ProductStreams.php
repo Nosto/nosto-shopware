@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -34,6 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
+use Doctrine\DBAL\Connection;
 use Shopware\Models\Article\Article;
 
 /**
@@ -45,12 +47,13 @@ use Shopware\Models\Article\Article;
 class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams
 {
     /**
-     * @var \Doctrine\DBAL\Connection|mixed
+     * @var Connection|mixed
      */
     private $conn;
 
     /**
      * Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_ProductStreams constructor.
+     * @noinspection PhpUnused
      */
     public function __construct()
     {
@@ -75,7 +78,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_Product
                 ->setParameter(':articleId', $article->getId())
                 ->execute()
                 ->fetchAll();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @noinspection PhpUndefinedMethodInspection */
             Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error($e->getMessage());
             return array();

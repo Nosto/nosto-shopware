@@ -34,24 +34,28 @@
  */
 
 //{block name="backend/index/view/menu" append}
-//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures
+//noinspection JSUnusedGlobalSymbols,JSCheckFunctionSignatures,JSUnresolvedVariable
 Ext.define('Shopware.apps.NostoStartApp.Menu', {
-    override: 'Shopware.apps.Index.view.Menu',
+  override: 'Shopware.apps.Index.view.Menu',
 
-    /**
-     * @Override
-     */
-    afterRender: function () {
-        var me = this,
-            result = me.callParent(arguments);
+  /**
+   * @Override
+   */
+  afterRender: function () {
+    //noinspection JSCheckFunctionSignatures
+    const me = this;
+    //noinspection JSUnresolvedFunction
+    const result = me.callParent(arguments);
 
-        if (location.href.search("openNosto") !== -1) {
-            Shopware.app.Application.addSubApplication({
-                name: 'Shopware.apps.NostoTagging'
-            });
-        }
-
-        return result;
+    if (location.href.search("openNosto") !== -1) {
+      //noinspection JSUnresolvedFunction,JSUnresolvedVariable
+      Shopware.app.Application.addSubApplication({
+        //noinspection JSUnresolvedVariable
+        name: 'Shopware.apps.NostoTagging'
+      });
     }
+
+    return result;
+  }
 });
 //{/block}
