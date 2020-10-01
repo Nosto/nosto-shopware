@@ -186,11 +186,11 @@ jobs:
     ############################################################################
 
     - name: Build archive using composer
-      run: composer archive --format=zip
+      run: composer build-package
 
     - name: Archive built package
       uses: actions/upload-artifact@v1
       with:
         name: NostoTagging-X.Y.Z.zip
-        path: nosto-shopware-archive.zip
+        path: NostoTagging-X.Y.Z.zip
 
