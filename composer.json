@@ -66,7 +66,8 @@
       "@preparePackageFiles",
       "@archivePackageFiles",
       "@cleanupPackageFiles"
-    ]
+    ],
+    "ci:inspect": "./inspect.sh"
   },
   "config": {
     "process-timeout": 3600
