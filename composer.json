@@ -67,5 +67,8 @@
       "@archivePackageFiles",
       "@cleanupPackageFiles"
     ]
+  },
+  "config": {
+    "process-timeout": 3600
   }
 }
