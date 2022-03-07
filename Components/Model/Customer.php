@@ -67,11 +67,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      */
     public function loadData(CustomerModel $customer)
     {
-        if ($customer->getDefaultBillingAddress() instanceof Address) {
-            $this->setFirstName($customer->getDefaultBillingAddress()->getFirstname());
-            $this->setLastName($customer->getDefaultBillingAddress()->getLastname());
-        }
-        $this->setEmail($customer->getEmail());
         $emailHelper = new EmailHelper();
         $this->setMarketingPermission(
             $emailHelper->isEmailOptedIn($customer->getEmail())
