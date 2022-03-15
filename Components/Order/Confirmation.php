@@ -96,7 +96,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     }
                     $nostoOrder = new NostoOrderModel();
                     $nostoOrder->loadData($order);
-                    $nostoOrder->setCustomer(new OrderBuyer());
+                    $nostoOrder->setCustomer(new OrderBuyer()); // Remove customer data from order API calls
 
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
                     $orderConfirmation->send($nostoOrder, $customerId);
