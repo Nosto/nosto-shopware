@@ -77,14 +77,22 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                 /** @var Address $address */
                 $address = $customer->getDefaultBillingAddress();
                 if ($address instanceof Address) {
+                    $this->setFirstName($address->getFirstname());
+                    $this->setLastName($address->getLastname());
+                    $this->setPostCode($address->getZipCode());
+                    $this->setPhone($address->getPhone());
                     $this->setCountry($address->getCountry()->getIso());
                 }
             } elseif (method_exists('\Shopware\Models\Customer\Customer', 'getBilling')) {
                 /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
                 /** @var Billing $address */
-				/** @noinspection PhpUndefinedMethodInspection */
+                /** @noinspection PhpUndefinedMethodInspection */
                 $address = $customer->getBilling(); /** @phan-suppress-current-line PhanUndeclaredMethod */
                 if ($address instanceof Billing) {
+                    $this->setFirstName($address->getFirstName());
+                    $this->setLastName($address->getLastName());
+                    $this->setPostCode($address->getZipCode());
+                    $this->setPhone($address->getPhone());
                     try {
                         /** @var Country $country */
                         $country = Shopware()

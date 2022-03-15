@@ -41,6 +41,7 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 use Nosto\NostoException;
 use Nosto\Object\Customer;
 use Shopware\Models\Attribute\Customer as CustomerAttribute;
+use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer as CustomerModel;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoBootstrap;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Customer as CustomerHelper;
@@ -66,6 +67,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Customer
      */
     public function loadData(CustomerModel $customer)
     {
+        if ($customer->getDefaultBillingAddress() instanceof Address) {
+            $this->setFirstName($customer->getDefaultBillingAddress()->getFirstname());
+            $this->setLastName($customer->getDefaultBillingAddress()->getLastname());
+        }
+        $this->setEmail($customer->getEmail());
         $emailHelper = new EmailHelper();
         $this->setMarketingPermission(
             $emailHelper->isEmailOptedIn($customer->getEmail())
