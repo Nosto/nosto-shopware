@@ -41,6 +41,7 @@ use Shopware\Models\Attribute\Order as OrderAttribute;
 use Shopware\Models\Order\Order as OrderModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderModel;
+use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
@@ -93,10 +94,12 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     ) {
                         $customerId = $attribute->getNostoCustomerId();
                     }
-                    $model = new NostoOrderModel();
-                    $model->loadData($order);
+                    $nostoOrder = new NostoOrderModel();
+                    $nostoOrder->loadData($order);
+                    $nostoOrder->setCustomer(new OrderBuyer()); // Remove customer data from order API calls
+
                     $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
-                    $orderConfirmation->send($model, $customerId);
+                    $orderConfirmation->send($nostoOrder, $customerId);
                 } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(
