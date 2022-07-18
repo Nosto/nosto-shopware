@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.5.0
+- Remove personally identifiable information from the module
+
 ## 2.4.9
 - Add null guard for fetching custom fields configuration for a product
 
