@@ -1081,7 +1081,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             array(
                 'sessionId' => (Shopware()->Session()->offsetExists('sessionId')
                     ? Shopware()->Session()->offsetGet('sessionId')
-                    : Shopware()->SessionID())  // @phan-suppress-current-line PhanDeprecatedFunction
+                    : null)  // @phan-suppress-current-line PhanDeprecatedFunction
             )
         );
 
