@@ -607,7 +607,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Return all shops from a backend context
      *
      * @return array shops
-     * @noinspection PhpUndefinedClassInspection
      * @noinspection PhpUnused
      */
     public function getAllActiveShops()
@@ -615,7 +614,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         /** @phan-suppress-next-line UndeclaredTypeInInlineVar */
         /** @var Shopware_Proxies_ShopwareModelsShopRepositoryProxy $repository */
         $repository = Shopware()->Container()->get('models')->getRepository('Shopware\Models\Shop\Shop');
-        /** @noinspection PhpUndefinedMethodInspection */
         return $repository->getActiveShops();
     }
 
@@ -1076,7 +1074,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     public function generateCartTagging()
     {
         /** @var Shopware\Models\Order\Basket[] $baskets */
-        /** @noinspection PhpUndefinedMethodInspection */
         $baskets = Shopware()->Models()->getRepository('\Shopware\Models\Order\Basket')->findBy(
             array(
                 'sessionId' => (Shopware()->Session()->offsetExists('sessionId')

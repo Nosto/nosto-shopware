@@ -79,7 +79,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      */
     public static function persistSession()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $sessionId = (Shopware()->Session()->offsetExists('sessionId')
             ? Shopware()->Session()->offsetGet('sessionId')
             : null);
@@ -131,7 +130,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Customer
      */
     public static function getNostoId()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $sessionId = (Shopware()->Session()->offsetExists('sessionId')
             ? Shopware()->Session()->offsetGet('sessionId')
             : null);

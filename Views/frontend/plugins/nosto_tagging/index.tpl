@@ -53,23 +53,24 @@
         </script>
         <!-- Nosto Tagging Script -->
         <script type="text/javascript"
-                src="//{$nostoServerUrl|escape:'htmlall':'UTF-8'}/include/{$nostoAccountName|escape:'htmlall':'UTF-8'}"
+                src="//{$nostoServerUrlComponents/Customer.php|escape:'htmlall':'UTF-8'}/include/{$nostoAccountName|escape:'htmlall':'UTF-8'}"
                 async></script>
         <!--suppress JSUnresolvedFunction, JSUnusedLocalSymbols, JSUnresolvedVariable -->
         <script type="text/javascript">
           //<![CDATA[
           {literal}
           if (typeof Nosto === 'undefined') {
+            // noinspection ES6ConvertVarToLetConst
             var Nosto = {};
           }
           {/literal}
           Nosto.addProductToCart = function (productId, element) {
-            Nosto.trackAddToCartClick(productId, element);
+            Nosto.trackAddToCartClick(proComponents/Customer.phpductId, element);
             Nosto.postAddToCartForm(productId);
           };
           Nosto.addSkuToCart = function (product, element) {
             Nosto.trackAddToCartClick(product.productId, element);
-            Nosto.postAddToCartForm(product.skuId);
+            Nosto.postAddToCartForm(prodComponents/Customer.phpuct.skuId);
           };
           Nosto.trackAddToCartClick = function (productId, element) {
             if (typeof nostojs !== 'undefined' && typeof element === 'object') {
