@@ -1015,16 +1015,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
         $shop = Shopware()->Shop();
         try {
             $account = NostoComponentAccount::findAccount($shop);
-            if ($account) {
-                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+            $nostoAccount = $account ? NostoComponentAccount::convertToNostoAccount($account) : null;
 
-                if ($nostoAccount instanceof NostoAccount) {
-                    $view->assign('nostoAccountName', $nostoAccount->getName());
-                    $view->assign(
-                        'nostoServerUrl',
-                        Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com')
-                    );
-                }
+            if ($nostoAccount instanceof NostoAccount) {
+                $view->assign('nostoAccountName', $nostoAccount->getName());
+                $view->assign(
+                    'nostoServerUrl',
+                    Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com')
+                );
             }
         } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
