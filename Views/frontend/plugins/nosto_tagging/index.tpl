@@ -60,7 +60,7 @@
           //<![CDATA[
           {literal}
           if (typeof Nosto === 'undefined') {
-            const Nosto = {};
+            var Nosto = {};
           }
           {/literal}
           Nosto.addProductToCart = function (productId, element) {
