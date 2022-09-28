@@ -968,8 +968,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
     {
-        if (!$this->shopHasConnectedAccount()
-            || !$this->validateEvent($args->getSubject(), 'frontend')
+        if (!$this->validateEvent($args->getSubject(), 'frontend')
         ) {
             return;
         }
@@ -1017,15 +1016,17 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         $shop = Shopware()->Shop();
         try {
-            $nostoAccount = NostoComponentAccount::convertToNostoAccount(
-                NostoComponentAccount::findAccount($shop)
-            );
-            if ($nostoAccount instanceof NostoAccount) {
-                $view->assign('nostoAccountName', $nostoAccount->getName());
-                $view->assign(
-                    'nostoServerUrl',
-                    Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com')
-                );
+            $account = NostoComponentAccount::findAccount($shop);
+            if ($account) {
+                $nostoAccount = NostoComponentAccount::convertToNostoAccount($account);
+
+                if ($nostoAccount instanceof NostoAccount) {
+                    $view->assign('nostoAccountName', $nostoAccount->getName());
+                    $view->assign(
+                        'nostoServerUrl',
+                        Nosto::getEnvVariable('NOSTO_SERVER_URL', 'connect.nosto.com')
+                    );
+                }
             }
         } catch (Exception $e) {
             $this->getLogger()->warning($e->getMessage());
