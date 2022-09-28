@@ -85,7 +85,7 @@ use Nosto\Nosto;
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.5.0';
+    const PLUGIN_VERSION = '2.5.1';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
     const SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION = '5.3.0';
