@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.5.1
+- Change Nosto script from `const` to `var` to be globally accessible by the browser.
+- Remove all references to non-existent `Shopware()->SessionID()` method.
+
 ## 2.5.0
 - Remove personally identifiable information from the module
 

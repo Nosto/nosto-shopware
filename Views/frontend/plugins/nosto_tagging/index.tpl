@@ -60,7 +60,10 @@
           //<![CDATA[
           {literal}
           if (typeof Nosto === 'undefined') {
-            const Nosto = {};
+            // We need to set Nosto as var instead of const
+            // to make it global (accessible in the whole window)
+            // noinspection ES6ConvertVarToLetConst
+            var Nosto = {};
           }
           {/literal}
           Nosto.addProductToCart = function (productId, element) {
