@@ -85,7 +85,7 @@ use Nosto\Nosto;
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.5.0';
+    const PLUGIN_VERSION = '2.5.1';
     const MENU_PARENT_ID = 23;  // Configuration
     const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
     const SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION = '5.3.0';
@@ -968,8 +968,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      */
     public function onPostDispatchFrontend(Enlight_Controller_ActionEventArgs $args)
     {
-        if (!$this->shopHasConnectedAccount()
-            || !$this->validateEvent($args->getSubject(), 'frontend')
+        if (!$this->validateEvent($args->getSubject(), 'frontend')
         ) {
             return;
         }
@@ -1017,9 +1016,9 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     {
         $shop = Shopware()->Shop();
         try {
-            $nostoAccount = NostoComponentAccount::convertToNostoAccount(
-                NostoComponentAccount::findAccount($shop)
-            );
+            $account = NostoComponentAccount::findAccount($shop);
+            $nostoAccount = $account ? NostoComponentAccount::convertToNostoAccount($account) : null;
+
             if ($nostoAccount instanceof NostoAccount) {
                 $view->assign('nostoAccountName', $nostoAccount->getName());
                 $view->assign(
@@ -1075,12 +1074,11 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
     public function generateCartTagging()
     {
         /** @var Shopware\Models\Order\Basket[] $baskets */
-        /** @noinspection PhpUndefinedMethodInspection */
         $baskets = Shopware()->Models()->getRepository('\Shopware\Models\Order\Basket')->findBy(
             array(
                 'sessionId' => (Shopware()->Session()->offsetExists('sessionId')
                     ? Shopware()->Session()->offsetGet('sessionId')
-                    : Shopware()->SessionID())  // @phan-suppress-current-line PhanDeprecatedFunction
+                    : null)  // @phan-suppress-current-line PhanDeprecatedFunction
             )
         );
 
