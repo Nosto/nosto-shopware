@@ -69,7 +69,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem ext
                     ->Models()
                     ->getRepository('\Shopware\Models\Article\Detail')
                     ->findOneBy(array('articleId' => $detail->getArticleId()));
-                if ($articleDetail !== null) {
+                // Check if the article is a product
+                if ($articleDetail !== null && $articleDetail->getKind() === 1) {
                     $this->setProductId($articleDetail->getNumber());
                 }
             } catch (Exception $e) {
