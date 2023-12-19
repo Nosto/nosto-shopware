@@ -487,6 +487,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * Creates Nosto emotions for Shopping World templates
      *
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::install
+     * @suppress PhanTypeMismatchArgument
      */
     protected function createMyEmotions()
     {
@@ -1070,6 +1071,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      *
      * @see Shopware_Controllers_Frontend_NostoTagging::noCacheTaggingAction
      * @return NostoCartModel|null
+     * @suppress PhanDeprecatedFunction
      */
     public function generateCartTagging()
     {
@@ -1334,6 +1336,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
      * @param Enlight_View_Default $view the view.
      *
      * @throws Enlight_Event_Exception
+     * @suppress PhanDeprecatedFunction
      * @see Shopware_Plugins_Frontend_NostoTagging_Bootstrap::onPostDispatchFrontendCheckout
      */
     protected function addOrderTagging(Enlight_View_Default $view)
