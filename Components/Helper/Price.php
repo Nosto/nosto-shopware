@@ -161,6 +161,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Price
      * @param Price $price
      * @param Tax $tax
      * @return float|int
+     * @suppress PhanTypeMismatchReturnNullable
+     * @suppress PhanTypeInvalidLeftOperandOfNumericOp
      */
     public static function applyTaxes(
         $priceWithoutTax,
