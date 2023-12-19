@@ -141,6 +141,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                         $shop->getId()
                     ));
                 }
+                // @phan-suppress-next-line PhanTypeMismatchArgument
                 $token = $this->getAuthenticatedToken($shop, $code);
                 $result = $this->fireRequest($token);
                 $nostoAccount = new NostoAccount($token->getMerchantName());
