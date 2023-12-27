@@ -65,6 +65,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Repository_Product
      *
      * @param Article $article
      * @return array
+     * @suppress PhanDeprecatedFunction
      */
     public function getProductStreamsSelectionName(Article $article)
     {

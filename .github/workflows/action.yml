@@ -14,8 +14,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
-        tools: composer:v1, prestissimo
+        php-version: '7.4'
+        tools: composer:v2
         extensions: ast
         coverage: none
 
@@ -64,8 +64,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
-        tools: composer:v1, prestissimo
+        php-version: '7.4'
+        tools: composer:v2
         extensions: ast
         coverage: none
 
@@ -111,8 +111,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
-        tools: composer:v1, prestissimo
+        php-version: '7.4'
+        tools: composer:v2
         extensions: ast
         coverage: none
 
@@ -162,8 +162,8 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
-        tools: composer:v1, prestissimo
+        php-version: '7.4'
+        tools: composer:v2
         extensions: ast
         coverage: none
 

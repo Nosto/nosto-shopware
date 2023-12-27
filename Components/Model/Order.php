@@ -71,8 +71,14 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         try {
             $paymentProvider = $payment->getName();
             $paymentPlugin = $payment->getPlugin();
-            if ($paymentPlugin !== null && $paymentPlugin->getVersion()) {
-                $paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+            if ($payment instanceof \Shopware\Models\Payment\Payment) {
+                $paymentProvider = $payment->getName();
+                $paymentPlugin = $payment->getPlugin();
+                if ($paymentPlugin !== null && $paymentPlugin->getVersion()) {
+                    $paymentProvider .= sprintf(' [%s]', $paymentPlugin->getVersion());
+                }
+            } else {
+                throw new \InvalidArgumentException(sprintf("Could not determine payment method of order %s", $order->getNumber()));
             }
         } catch (Exception $e) {
             $paymentProvider = 'unknown';
