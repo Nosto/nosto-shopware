@@ -197,5 +197,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: NostoTagging-${{steps.plugin_version.outputs.PLUGIN_VERSION}}
-        path: build/package
+        path: build/src
 
