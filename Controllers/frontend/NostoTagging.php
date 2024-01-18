@@ -102,7 +102,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
     ) {
         if ($request && $response) {
             /** @noinspection PhpMethodParametersCountMismatchInspection */
-			/** @phan-suppress-next-line PhanParamTooMany */
+            /** @phan-suppress-next-line PhanParamTooMany */
             parent::__construct($request, $response);
         }
         $this->productRepository = new ProductRepository();
