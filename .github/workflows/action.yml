@@ -196,6 +196,6 @@ jobs:
     - name: Archive built package
       uses: actions/upload-artifact@v3
       with:
-        name: ${{steps.plugin_version.outputs.PLUGIN_VERSION}}-Nosto.-.Personalization.for.PrestaShop
+        name: NostoTagging-${{steps.plugin_version.outputs.PLUGIN_VERSION}}.zip
         path: build/package
 
