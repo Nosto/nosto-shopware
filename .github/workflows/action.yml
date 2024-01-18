@@ -188,7 +188,7 @@ jobs:
     - name: Get plugin version number
       id: plugin_version
       run: |
-        echo "::set-output name=PLUGIN_VERSION::$(cat bootstrap.php | grep 'const PLUGIN_VERSION =' | awk '{print $4}' | tr "\'" " " | tr ";" " " | xargs)"        
+        echo "::set-output name=PLUGIN_VERSION::$(cat Bootstrap.php | grep 'const PLUGIN_VERSION =' | awk '{print $4}' | tr "\'" " " | tr ";" " " | xargs)"        
 
     - name: Build archive using composer
       run: ./vendor/bin/phing -verbose -Dversion="${{steps.plugin_version.outputs.PLUGIN_VERSION}}"
@@ -196,6 +196,6 @@ jobs:
     - name: Archive built package
       uses: actions/upload-artifact@v3
       with:
-        name: NostoTagging-${{steps.plugin_version.outputs.PLUGIN_VERSION}}.zip
+        name: NostoTagging-${{steps.plugin_version.outputs.PLUGIN_VERSION}}
         path: build/package
 
