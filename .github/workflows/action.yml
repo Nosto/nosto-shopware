@@ -191,7 +191,7 @@ jobs:
         echo "::set-output name=PLUGIN_VERSION::$(cat Bootstrap.php | grep 'const PLUGIN_VERSION =' | awk '{print $4}' | tr "\'" " " | tr ";" " " | xargs)"        
 
     - name: Build archive using composer
-      run: ./vendor/bin/phing -verbose -Dversion="${{steps.plugin_version.outputs.PLUGIN_VERSION}}"
+      run: ./vendor/bin/phing -verbose -Dversion="${{steps.plugin_version.outputs.PLUGIN_VERSION}}" -DcomposerDir=/root/.composer
 
     - name: Archive built package
       uses: actions/upload-artifact@v3
