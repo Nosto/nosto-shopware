@@ -116,6 +116,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             $this->$setterMethod($values);
         }
         $this->setCategories($this->buildCategoryPaths($article, $shop));
+        $this->setParentCategoryIds($this->buildParentCategoryIds($article));
         $this->setDescription($article->getDescriptionLong());
         if ($article->getSupplier() instanceof Supplier) {
             $brand = $article->getSupplier()->getName();
@@ -462,6 +463,21 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
             $paths = $this->generateRelatedProductSelectionStreams($article, $paths);
         }
         return $paths;
+    }
+
+    /**
+     * Returns the product categories parent id's
+     *
+     * @param Article $article
+     * @return array
+     */
+    protected function buildParentCategoryIds(Article $article)
+    {
+        $parentCategories = [];
+        foreach ($article->getCategories() as $category) {
+            $parentCategories[] = $category->getParentId();
+        }
+        return array_values(array_unique($parentCategories));
     }
 
     /**
