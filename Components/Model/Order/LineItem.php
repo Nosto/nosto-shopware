@@ -36,7 +36,7 @@
  */
 
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
-use Nosto\Object\Cart\LineItem as NostoLineItem;
+use Nosto\Model\Cart\LineItem as NostoLineItem;
 use Shopware\Models\Order\Detail as OrderDetail;
 
 /**

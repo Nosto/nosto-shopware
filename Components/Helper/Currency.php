@@ -36,7 +36,7 @@
  */
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Nosto\Object\Format;
+use Nosto\Model\Format;
 use Shopware\Models\Shop\Currency;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;

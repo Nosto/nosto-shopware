@@ -35,7 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Order\Order as NostoOrder;
+use Nosto\Model\Order\Order as NostoOrder;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Order;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;

@@ -36,7 +36,7 @@
  */
 
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoAccount;
+use Nosto\Model\Signup\Account as NostoAccount;
 use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
 use Shopware\Models\Article\Article;

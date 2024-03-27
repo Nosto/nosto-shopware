@@ -35,7 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Category as NostoCategory;
+use Nosto\Model\Category\Category as NostoCategory;
 use Shopware\Models\Category\Category;
 
 /**
@@ -61,6 +61,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Category
     {
         $nostoCategory = new NostoCategory();
         $nostoCategory->setCategoryString(self::buildCategoryPath($category));
+        //@TODO: or is it path here?
 
         Shopware()->Events()->notify(
             __CLASS__ . '_AfterLoad',

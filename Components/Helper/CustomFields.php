@@ -119,7 +119,8 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CustomFields
      */
     public static function getFreeTextCustomFields(Detail $detail)
     {
-        $propertiesAndValues = SerializationHelper::getProperties(
+        //@TODO: double check this
+        $propertiesAndValues = SerializationHelper::toAssocArray(
             $detail->getAttribute()
         );
         $customFields = array();

@@ -35,7 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Signup\Owner;
+use Nosto\Model\Signup\Owner;
 
 /**
  * Meta-data class for account owner information sent to Nosto during account

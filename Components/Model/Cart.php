@@ -36,7 +36,7 @@
  */
 
 
-use Nosto\Object\Cart\Cart;
+use Nosto\Model\Cart\Cart;
 use Shopware\Models\Order\Basket;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoComponentCustomer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;

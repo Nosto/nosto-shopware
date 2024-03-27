@@ -35,11 +35,10 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Iframe as Iframe;
+use Nosto\Model\ConnectionMetadata;
 use Shopware\Models\Shop\Locale;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as NostoTaggingBootstrap;
-use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
 
 /**
  * Meta-data class for information included in the plugin configuration iframe.
@@ -48,7 +47,7 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoComponentUrl;
  * @subpackage Plugins_Frontend
  */
 class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
-    extends Iframe
+    extends ConnectionMetadata
 {
     /**
      * Loads the iframe data from the shop model.
@@ -67,20 +66,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Account_Iframe
             $locale = $shop->getLocale();
         }
         if ($identity !== null) {
-            list($firstName, $lastName) = explode(' ', $identity->name);
+            [$firstName, $lastName] = explode(' ', $identity->name);
             $this->setFirstName($firstName);
             $this->setLastName($lastName);
             $this->setEmail($identity->email);
         }
         $this->setLanguageIsoCode(strtolower(substr($locale->getLocale(), 0, 2)));
         $this->setLanguageIsoCodeShop(strtolower(substr($shop->getLocale()->getLocale(), 0, 2)));
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->setUniqueId(Shopware()->Plugins()->Frontend()->NostoTagging()->getUniqueId());
-        $this->setPreviewUrlProduct(NostoComponentUrl::getProductPagePreviewUrl($shop));
-        $this->setPreviewUrlCategory(NostoComponentUrl::getCategoryPagePreviewUrl($shop));
-        $this->setPreviewUrlSearch(NostoComponentUrl::getSearchPagePreviewUrl($shop));
-        $this->setPreviewUrlCart(NostoComponentUrl::getCartPagePreviewUrl($shop));
-        $this->setPreviewUrlFront(NostoComponentUrl::getFrontPagePreviewUrl($shop));
         $this->setShopName(Shopware()->App() . ' - ' . $shop->getName());
         $this->setPlatform(NostoTaggingBootstrap::PLATFORM_NAME);
     }

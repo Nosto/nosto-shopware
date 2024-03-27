@@ -40,7 +40,7 @@ use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\TransactionRequiredException;
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
-use Nosto\Object\Cart\LineItem;
+use Nosto\Model\Cart\LineItem;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Order\Basket;

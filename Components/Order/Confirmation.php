@@ -36,7 +36,7 @@
  */
 
 use Nosto\NostoException;
-use Nosto\Operation\OrderConfirm as NostoOrderConfirmation;
+use Nosto\Operation\Order\OrderCreate as NostoOrderCreate;
 use Shopware\Models\Attribute\Order as OrderAttribute;
 use Shopware\Models\Order\Order as OrderModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
@@ -88,7 +88,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                         ->Models()
                         ->getRepository('\Shopware\Models\Attribute\Order')
                         ->findOneBy(array('orderId' => $order->getId()));
-                    $customerId = null;
+                    $customerId = '';
                     if ($attribute instanceof OrderAttribute
                         && method_exists($attribute, 'getNostoCustomerId')
                     ) {
@@ -98,8 +98,13 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Order_Confirmation
                     $nostoOrder->loadData($order);
                     $nostoOrder->setCustomer(new OrderBuyer()); // Remove customer data from order API calls
 
-                    $orderConfirmation = new NostoOrderConfirmation($nostoAccount);
-                    $orderConfirmation->send($nostoOrder, $customerId);
+                    $orderService = new NostoOrderCreate(
+                        $nostoOrder,
+                        $nostoAccount,
+                        NostoOrderCreate::IDENTIFIER_BY_CID,
+                        $customerId
+                    );
+                    $orderService->execute();
                 } catch (Exception $e) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     Shopware()->Plugins()->Frontend()->NostoTagging()->getLogger()->error(

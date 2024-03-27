@@ -37,8 +37,8 @@
 
 use Doctrine\ORM\NonUniqueResultException;
 use Nosto\NostoException;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Object\Product\SkuCollection;
+use Nosto\Model\Product\Product as NostoProduct;
+use Nosto\Model\Product\SkuCollection;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;

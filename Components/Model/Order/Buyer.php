@@ -35,7 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Order\Buyer as NostoOrderBuyer;
+use Nosto\Model\Order\Buyer as NostoOrderBuyer;
 use Shopware\Models\Country\Country;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Billing;
