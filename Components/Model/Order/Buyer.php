@@ -36,7 +36,6 @@
  */
 
 use Nosto\Model\Order\Buyer as NostoOrderBuyer;
-use Shopware\Models\Country\Country;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Billing;
 use Shopware\Models\Customer\Customer;
@@ -94,7 +93,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer extend
                     $this->setPostCode($address->getZipCode());
                     $this->setPhone($address->getPhone());
                     try {
-                        /** @var Country $country */
                         $country = Shopware()
                             ->Models()
                             ->getRepository('\Shopware\Models\Country\Country')

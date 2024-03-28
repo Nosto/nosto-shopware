@@ -51,8 +51,6 @@ use Nosto\Model\Signup\Account as NostoAccount;
 use Nosto\Operation\OAuth\AuthorizationCode;
 use Nosto\Request\Api\Token as NostoApiToken;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
-use Shopware\Models\Article\Article;
-use Shopware\Models\Order\Order;
 use Shopware\Models\Shop\DetachedShop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore as CartRestore;
@@ -141,7 +139,7 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
                         $shop->getId()
                     ));
                 }
-                // @phan-suppress-next-line PhanTypeMismatchArgument
+                // @phan-suppress-next-line PhanTypeMismatchArgumentSuperType
                 $token = $this->getAuthenticatedToken($shop, $code);
                 $result = $this->fireRequest($token);
                 $nostoAccount = new NostoAccount($token->getMerchantName());
@@ -225,7 +223,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
 
         $collection = new ProductCollection();
         foreach ($articlesIds as $articleId) {
-            /** @var Article $article */
             $article = Shopware()->Models()->find(
                 '\Shopware\Models\Article\Article',
                 (int)$articleId['id']
@@ -280,7 +277,6 @@ class Shopware_Controllers_Frontend_NostoTagging extends Enlight_Controller_Acti
         $collection = new OrderCollection();
         $shop = Shopware()->Shop()->getId();
         foreach ($result as $row) {
-            /** @var Order $order */
             $order = Shopware()->Models()->getRepository('\Shopware\Models\Order\Order')
                 ->findOneBy(array('number' => $row['number']));
             if ($order === null || $order->getShop()->getId() != $shop) {

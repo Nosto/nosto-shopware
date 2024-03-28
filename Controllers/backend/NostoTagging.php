@@ -43,7 +43,6 @@ use Doctrine\ORM\TransactionRequiredException;
 use Nosto\Helper\OAuthHelper as NostoOAuthClient;
 use Nosto\Nosto;
 use Shopware\CustomModels\Nosto\Account\Account;
-use Shopware\Models\Shop\Repository;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Meta_Oauth as MetaOauth;
@@ -121,7 +120,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
      */
     public function getAccountsAction()
     {
-        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository('\Shopware\Models\Shop\Shop');
         if (method_exists($repository, 'getActiveShops')) {
             $result = $repository->getActiveShops(AbstractQuery::HYDRATE_ARRAY);
@@ -211,7 +209,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         if ($details) {
             $details = json_decode($details);
         }
-        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository('\Shopware\Models\Shop\Shop');
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */
@@ -291,7 +288,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
             '\Shopware\CustomModels\Nosto\Account\Account',
             $accountId
         );
-        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository('\Shopware\Models\Shop\Shop');
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */
@@ -344,7 +340,6 @@ class Shopware_Controllers_Backend_NostoTagging extends Shopware_Controllers_Bac
         $success = false;
         $data = array();
         $shopId = $this->Request()->getParam('shopId', null);
-        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository('\Shopware\Models\Shop\Shop');
         $shop = $repository->getActiveById($shopId);
         /** @noinspection PhpUndefinedMethodInspection */

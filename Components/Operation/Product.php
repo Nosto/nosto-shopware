@@ -40,8 +40,6 @@ use Nosto\Model\Signup\Account as NostoAccount;
 use Nosto\Operation\DeleteProduct;
 use Nosto\Operation\UpsertProduct;
 use Shopware\Models\Article\Article;
-use Shopware\Models\Category\Category;
-use Shopware\Models\Shop\Repository;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Account as NostoComponentAccount;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product as Product;
@@ -94,7 +92,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
         if ($allStores === true) {
             $inShops = $allShops;
         } else {
-            /** @var Category $cat */
             foreach ($article->getCategories() as $cat) {
                 /** @var Shop $shop */
                 foreach ($allShops as $shop) {
@@ -134,7 +131,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Operation_Product
      */
     public function update(Article $article)
     {
-        /** @var Repository $repository */
         $repository = Shopware()->Models()->getRepository('\Shopware\Models\Shop\Shop');
         foreach ($this->getAccounts($article) as $shopId => $account) {
             $shop = $repository->getActiveById($shopId);

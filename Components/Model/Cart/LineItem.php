@@ -41,8 +41,6 @@ use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\TransactionRequiredException;
 use Nosto\Helper\PriceHelper as NostoPriceHelper;
 use Nosto\Model\Cart\LineItem;
-use Shopware\Models\Article\Article;
-use Shopware\Models\Article\Detail;
 use Shopware\Models\Order\Basket;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
 
@@ -79,8 +77,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
                 '\Shopware\Models\Article\Article',
                 $basket->getArticleId()
             );
-
-            /** @var Article $article */
             if (!empty($article)) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $skuTaggingAllowed = Shopware()
@@ -89,7 +85,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart_LineItem
                     ->NostoTagging()
                     ->Config()
                     ->get(Bootstrap::CONFIG_SKU_TAGGING);
-                /** @var Detail $detailNumber */
                 $detailNumber = Shopware()
                     ->Models()
                     ->getRepository('\Shopware\Models\Article\Detail')
