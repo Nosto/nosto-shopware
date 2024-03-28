@@ -36,7 +36,7 @@
  */
 
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account;
+use Nosto\Model\Signup\Account;
 use Nosto\Operation\SyncRates;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;

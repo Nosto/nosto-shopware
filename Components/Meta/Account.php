@@ -34,8 +34,8 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Signup\Billing;
-use Nosto\Object\Signup\Signup;
+use Nosto\Model\Signup\Billing;
+use Nosto\Model\Signup\Signup;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Shop\Locale;
 use Shopware\Models\Shop\Shop;

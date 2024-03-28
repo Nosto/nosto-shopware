@@ -39,7 +39,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Nosto\NostoException;
-use Nosto\Object\Customer;
+use Nosto\Model\Customer;
 use Shopware\Models\Attribute\Customer as CustomerAttribute;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer as CustomerModel;

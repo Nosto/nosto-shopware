@@ -1,5 +1,4 @@
-<?php /** @noinspection PhpUnusedAliasInspection */
-/** @noinspection PhpIllegalPsrClassPathInspection */
+<?php
 /**
  * Copyright (c) 2020, Nosto Solutions Ltd
  * All rights reserved.
@@ -42,6 +41,7 @@ use Shopware\Components\Model\ModelEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @phan-file-suppress PhanUnreferencedUseNormal
  * @ORM\Entity(repositoryClass="Repository")
  * @ORM\Table(name="s_nostotagging_account",uniqueConstraints={@ORM\UniqueConstraint(name="shop", columns={"shop_id"})})
  */

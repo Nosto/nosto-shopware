@@ -37,13 +37,12 @@
 
 use Doctrine\ORM\NonUniqueResultException;
 use Nosto\NostoException;
-use Nosto\Object\Product\Product as NostoProduct;
-use Nosto\Object\Product\SkuCollection;
+use Nosto\Model\Product\Product as NostoProduct;
+use Nosto\Model\Product\SkuCollection;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Supplier;
-use Shopware\Models\Category\Category;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Translation\Translation;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;
@@ -443,7 +442,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Product extends No
         $paths = array();
         $helper = new NostoCategory();
         $shopCatId = $shop->getCategory()->getId();
-        /** @var Category $category */
         foreach ($article->getCategories() as $category) {
             // Only include categories that are under the shop's root category.
             if (strpos($category->getPath(), '|' . $shopCatId . '|') !== false) {

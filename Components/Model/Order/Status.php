@@ -35,7 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Order\OrderStatus as NostoOrderStatus;
+use Nosto\Model\Order\OrderStatus as NostoOrderStatus;
 use Shopware\Models\Order\Order;
 
 /**

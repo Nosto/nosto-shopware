@@ -39,9 +39,9 @@
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Nosto\Helper\IframeHelper;
+use Nosto\Helper\ConnectionHelper;
 use Nosto\NostoException;
-use Nosto\Object\Signup\Account as NostoAccount;
+use Nosto\Model\Signup\Account as NostoAccount;
 use Nosto\Operation\AccountSignup;
 use Nosto\Operation\UninstallAccount;
 use Nosto\Request\Api\Token as NostoApiToken;
@@ -241,7 +241,7 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Account
             $params['v'] = NostoTaggingBootstrap::PLATFORM_UI_VERSION;
         }
         $user = new UserBuilder();
-        return IframeHelper::getUrl(
+        return ConnectionHelper::getUrl(
             $meta,
             $nostoAccount,
             $user->build($identity),

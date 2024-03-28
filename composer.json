@@ -6,12 +6,12 @@
   ],
   "version": "2.5.2",
   "require": {
-    "php": ">=5.4.0",
-    "nosto/php-sdk": "3.15.*",
+    "php": ">=7.4",
+    "nosto/php-sdk": "7.3.*",
     "ext-json": "*"
   },
   "require-dev": {
-    "phan/phan": "^2.6",
+    "phan/phan": "^5.4",
     "squizlabs/php_codesniffer": "^3.5",
     "phpmd/phpmd": "^2.6",
     "sebastian/phpcpd": "4.1.0",
@@ -19,8 +19,7 @@
     "shopware/shopware": "~5.7",
     "wimg/php-compatibility": "^9.0",
     "staabm/annotate-pull-request-from-checkstyle": "^1.1",
-    "mridang/pmd-annotations": "^0.0.2",
-    "drenso/phan-extensions": "^2.5"
+    "mridang/pmd-annotations": "^0.0.2"
   },
   "autoload": {
     "psr-4": {

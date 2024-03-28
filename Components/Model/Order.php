@@ -35,8 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Order\Order as NostoOrder;
-use Shopware\Models\Order\Detail;
+use Nosto\Model\Order\Order as NostoOrder;
 use Shopware\Models\Order\Order;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_Buyer as OrderBuyer;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order_LineItem as OrderLineItem;
@@ -95,7 +94,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order extends Nost
         $buyerInfo->loadData($order->getCustomer());
         $this->setCustomer($buyerInfo);
         foreach ($order->getDetails() as $detail) {
-            /** @var Detail $detail */
             if ($this->includeSpecialLineItems || $detail->getArticleId() > 0) {
                 $item = new OrderLineItem();
                 $item->loadData($detail);

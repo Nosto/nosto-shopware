@@ -38,7 +38,6 @@
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Shopware\CustomModels\Nosto\Customer\Customer as CustomerModel;
-use Shopware\Models\Order\Basket;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Customer as NostoCustomerComponent;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Url as NostoHelperUrl;
 
@@ -131,7 +130,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Components_Helper_CartRestore
                 ->findBy(array('sessionId' => $sessionId));
 
             foreach ($basketItems as $basketItem) {
-                /** @var Basket $basketItem */
                 $basketItem->setSessionId($newSessionId);
                 Shopware()->Models()->persist($basketItem);
                 Shopware()->Models()->flush($basketItem);

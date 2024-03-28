@@ -35,7 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\Product\Sku as NostoSku;
+use Nosto\Model\Product\Sku as NostoSku;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;

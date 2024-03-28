@@ -48,13 +48,11 @@ use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Order as NostoOrderM
 use Shopware_Plugins_Frontend_NostoTagging_Components_Model_Cart as NostoCartModel;
 use Shopware_Plugins_Frontend_NostoTagging_Components_Helper_Currency as CurrencyHelper;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Models\Customer\Customer as CustomerModel;
 use Nosto\Request\Http\HttpRequest as NostoHttpRequest;
 use Shopware\Models\Attribute\Order as OrderAttribute;
 use Shopware\CustomModels\Nosto\Setting\Setting;
-use Nosto\Object\Signup\Account as NostoAccount;
-use phpseclib\Crypt\Random as NostoCryptRandom;
+use Nosto\Model\Signup\Account as NostoAccount;
 use Shopware\Components\Model\ModelManager;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
@@ -64,12 +62,12 @@ use Shopware\Components\CacheManager;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Config\Element;
-use Nosto\Object\MarkupableString;
+use Nosto\Model\MarkupableString;
 use Shopware\Models\Order\Order;
 use Shopware\Models\Shop\Shop;
 use Doctrine\ORM\ORMException;
-use Nosto\Object\SearchTerm;
-use Nosto\Object\PageType;
+use Nosto\Model\SearchTerm;
+use Nosto\Model\PageType;
 use Nosto\NostoException;
 use Nosto\Nosto;
 
@@ -80,34 +78,33 @@ use Nosto\Nosto;
  *
  * @package Shopware
  * @subpackage Plugins_Frontend
- * @noinspection PhpIllegalPsrClassPathInspection
  */
 class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
-    const PLATFORM_NAME = 'shopware';
-    const PLUGIN_VERSION = '2.5.2';
-    const MENU_PARENT_ID = 23;  // Configuration
-    const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
-    const SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION = '5.3.0';
-    const PLATFORM_UI_VERSION = '1';
-    const PAGE_TYPE_FRONT_PAGE = 'front';
-    const PAGE_TYPE_CART = 'cart';
-    const PAGE_TYPE_PRODUCT = 'product';
-    const PAGE_TYPE_CATEGORY = 'category';
-    const PAGE_TYPE_SEARCH = 'search';
-    const PAGE_TYPE_NOTFOUND = 'notfound';
-    const PAGE_TYPE_ORDER = 'order';
-    const SERVICE_ATTRIBUTE_CRUD = 'shopware_attribute.crud_service';
-    const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
-    const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
-    const CONFIG_SEND_CUSTOMER_DATA = 'send_customer_data';
-    const CONFIG_SKU_TAGGING= 'sku_tagging';
-    const CONFIG_PRODUCT_STREAMS = 'product_streams';
-    const CONFIG_CUSTOM_FIELD_TAGGING = 'custom_field_tagging';
-    const CONFIG_MULTI_CURRENCY = 'multi_currency';
-    const CONFIG_MULTI_CURRENCY_DISABLED = 'multi_currency_disabled';
-    const CONFIG_MULTI_CURRENCY_EXCHANGE_RATES = 'multi_currency_exchange_rates';
-    const MYSQL_TABLE_ALREADY_EXISTS_ERROR = 'SQLSTATE[42S01]';
+    public const PLATFORM_NAME = 'shopware';
+    public const PLUGIN_VERSION = '2.5.2';
+    public const MENU_PARENT_ID = 23;  // Configuration
+    public const NEW_ATTRIBUTE_MANAGER_VERSION = '5.2.0';
+    public const SUPPORT_SHOW_REVIEW_SUB_SHOP_ONLY_VERSION = '5.3.0';
+    public const PLATFORM_UI_VERSION = '1';
+    public const PAGE_TYPE_FRONT_PAGE = 'front';
+    public const PAGE_TYPE_CART = 'cart';
+    public const PAGE_TYPE_PRODUCT = 'product';
+    public const PAGE_TYPE_CATEGORY = 'category';
+    public const PAGE_TYPE_SEARCH = 'search';
+    public const PAGE_TYPE_NOTFOUND = 'notfound';
+    public const PAGE_TYPE_ORDER = 'order';
+    public const SERVICE_ATTRIBUTE_CRUD = 'shopware_attribute.crud_service';
+    public const NOSTO_CUSTOM_ATTRIBUTE_PREFIX = 'nosto';
+    public const NOSTO_CUSTOMER_REFERENCE_FIELD = 'customer_reference';
+    public const CONFIG_SEND_CUSTOMER_DATA = 'send_customer_data';
+    public const CONFIG_SKU_TAGGING= 'sku_tagging';
+    public const CONFIG_PRODUCT_STREAMS = 'product_streams';
+    public const CONFIG_CUSTOM_FIELD_TAGGING = 'custom_field_tagging';
+    public const CONFIG_MULTI_CURRENCY = 'multi_currency';
+    public const CONFIG_MULTI_CURRENCY_DISABLED = 'multi_currency_disabled';
+    public const CONFIG_MULTI_CURRENCY_EXCHANGE_RATES = 'multi_currency_exchange_rates';
+    public const MYSQL_TABLE_ALREADY_EXISTS_ERROR = 'SQLSTATE[42S01]';
 
     private static $productUpdated = false;
 
@@ -376,7 +373,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             self::validateMyAttribute($attribute);
             if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
                 $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-                /** @var CrudService $attributeService */
                 $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
                 $attributeService->update(
                     $attribute['table'],
@@ -790,7 +786,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             self::validateMyAttribute($attribute);
             if (version_compare($this->getShopwareVersion(), self::NEW_ATTRIBUTE_MANAGER_VERSION, '>=')) {
                 $fieldName = sprintf('%s_%s', $attribute['prefix'], $attribute['field']);
-                /** @var CrudService $attributeService */
                 $attributeService = $this->get(self::SERVICE_ATTRIBUTE_CRUD);
                 $attributeService->delete(
                     $attribute['table'],
@@ -984,7 +979,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
 
         $locale = Shopware()->Shop()->getLocale()->getLocale();
         $view->assign('nostoVersion', $this->getVersion());
-        $view->assign('nostoUniqueId', $this->getUniqueId());
         $view->assign('nostoLanguage', strtolower(substr($locale, 0, 2)));
     }
 
@@ -1115,31 +1109,6 @@ class Shopware_Plugins_Frontend_NostoTagging_Bootstrap extends Shopware_Componen
             );
         }
         return null;
-    }
-
-    /**
-     * Returns a unique ID for this Shopware installation.
-     * @suppress PhanUndeclaredClassMethod
-     * @return string
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function getUniqueId()
-    {
-        $setting = Shopware()
-            ->Models()
-            ->getRepository('\Shopware\CustomModels\Nosto\Setting\Setting')
-            ->findOneBy(array('name' => 'uniqueId'));
-
-        if (is_null($setting)) {
-            $setting = new Setting();
-            $setting->setName('uniqueId');
-            $setting->setValue(bin2hex(NostoCryptRandom::string(32)));
-            Shopware()->Models()->persist($setting);
-            Shopware()->Models()->flush($setting);
-        }
-
-        return $setting->getValue();
     }
 
     /**

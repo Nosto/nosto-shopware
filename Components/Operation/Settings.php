@@ -38,7 +38,7 @@
 
 use Doctrine\ORM\Mapping as ORM;
 use Nosto\NostoException;
-use Nosto\Object\Settings as NostoSettings;
+use Nosto\Model\Settings as NostoSettings;
 use Nosto\Operation\UpdateSettings as NostoUpdateSettings;
 use Shopware\Models\Shop\Shop;
 use Shopware_Plugins_Frontend_NostoTagging_Bootstrap as Bootstrap;

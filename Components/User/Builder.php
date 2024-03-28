@@ -35,7 +35,7 @@
  * @license http://opensource.org/licenses/BSD-3-Clause BSD 3-Clause
  */
 
-use Nosto\Object\User;
+use Nosto\Model\User;
 
 /**
  * Class Shopware_Plugins_Frontend_NostoTagging_Components_User_Builder
