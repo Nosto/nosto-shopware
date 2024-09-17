@@ -45,7 +45,7 @@ jobs:
         ./vendor/bin/phpcs --standard=ruleset.xml --severity=10 --report=checkstyle --report-file=chkphpcs.xml .
 
     - name: Archive code sniffing results
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: phpcs-xml-result
         path: chkphpcs.xml
@@ -92,7 +92,7 @@ jobs:
       run: ./vendor/bin/phpmd . xml codesize,naming,unusedcode,controversial,design --exclude vendor,var,build,tests,.phan --reportfile pmdphpmd.xml --ignore-violations-on-exit
 
     - name: Archive mess detection results
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: phpmd-xml-result
         path: pmdphpmd.xml
@@ -141,7 +141,7 @@ jobs:
       continue-on-error: true
 
     - name: Archive copy-paste detection results
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: phdpcpd-xml-result
         path: phdpcpd.xml
@@ -194,7 +194,7 @@ jobs:
       run: ./vendor/bin/phing -verbose -Dversion="${{steps.plugin_version.outputs.PLUGIN_VERSION}}" -DcomposerDir=/root/.composer
 
     - name: Archive built package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: NostoTagging-${{steps.plugin_version.outputs.PLUGIN_VERSION}}
         path: build/src
