@@ -70,9 +70,9 @@
             Nosto.trackAddToCartClick(productId, element);
             Nosto.postAddToCartForm(productId);
           };
-          Nosto.addSkuToCart = function (product, element, _quantity) {
+          Nosto.addSkuToCart = function (product, element, quantity) {
             Nosto.trackAddToCartClick(product, element);
-            Nosto.postAddToCartForm(product.skuId, _quantity);
+            Nosto.postAddToCartForm(product.skuId, quantity);
           };
           Nosto.trackAddToCartClick = function (product, element) {
             if (window.nostojs) {
@@ -84,14 +84,14 @@
               }
             }
           };
-          Nosto.postAddToCartForm = function (productId, _quantity) {
+          Nosto.postAddToCartForm = function (productId, quantity) {
             const form = document.createElement('form');
             form.setAttribute('method', 'post');
             form.setAttribute('action', '{url controller=checkout action=addArticle}');
             const fields = {
               'sActionIdentifier': '{$sUniqueRand}',
               'sAdd': productId,
-              'sQuantity': _quantity || 1
+              'sQuantity': quantity || 1
             };
             for (let key in fields) {
               if (fields.hasOwnProperty(key)) {
