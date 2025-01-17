@@ -70,28 +70,28 @@
             Nosto.trackAddToCartClick(productId, element);
             Nosto.postAddToCartForm(productId);
           };
-          Nosto.addSkuToCart = function (product, element) {
-            Nosto.trackAddToCartClick(product.productId, element);
-            Nosto.postAddToCartForm(product.skuId);
+          Nosto.addSkuToCart = function (product, element, quantity) {
+            Nosto.trackAddToCartClick(product, element);
+            Nosto.postAddToCartForm(product.skuId, quantity);
           };
-          Nosto.trackAddToCartClick = function (productId, element) {
-            if (typeof nostojs !== 'undefined' && typeof element === 'object') {
+          Nosto.trackAddToCartClick = function (product, element) {
+            if (window.nostojs) {
               const slotId = Nosto.resolveContextSlotId(element);
               if (slotId) {
                 nostojs(function (api) {
-                  api.recommendedProductAddedToCart(productId, slotId);
+                  api.reportAddToCart(product, slotId);
                 });
               }
             }
           };
-          Nosto.postAddToCartForm = function (productId) {
+          Nosto.postAddToCartForm = function (productId, quantity) {
             const form = document.createElement('form');
             form.setAttribute('method', 'post');
             form.setAttribute('action', '{url controller=checkout action=addArticle}');
             const fields = {
               'sActionIdentifier': '{$sUniqueRand}',
               'sAdd': productId,
-              'sQuantity': 1
+              'sQuantity': quantity || 1
             };
             for (let key in fields) {
               if (fields.hasOwnProperty(key)) {
@@ -108,7 +108,12 @@
             }
             form.submit();
           };
+
           Nosto.resolveContextSlotId = function (element) {
+            if (!element || typeof element === "string") {
+                return element
+            }
+
             const m = 20;
             let n = 0;
             let e = element;
